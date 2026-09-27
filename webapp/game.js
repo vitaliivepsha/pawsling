@@ -399,13 +399,13 @@ const CHAPTERS = [
   { name: 'Спальня', key: 'bedroom', col: '#5ce1c6', hp: 1.5, atk: 1.2,
     hud: '#0a161c', line: '#1f4a50', shade: 'rgba(6,16,22,.92)', fx: ['#5ce1c6', '#cfe8ff', '#ffe8a3', '#9fd8e0'], shape: 'star',
     beam: [[40, 60], [200, 60], [0, 470]], beamCol: '170,215,255' },
-  { name: 'Ванна', key: 'bath', col: '#6ec3ff', hp: 1.6, atk: 1.25,
+  { name: 'Ванна', key: 'bath', col: '#6ec3ff', hp: 1.8, atk: 1.35,
     hud: '#0b1622', line: '#24506e', shade: 'rgba(6,14,24,.92)', fx: ['#bfe6ff', '#6ec3ff', '#ffffff', '#9fe8ff'], shape: 'bubble',
     beam: [[20, 60], [130, 60], [60, 340]], beamCol: '200,235,255' },
-  { name: 'Балкон', key: 'balcony', col: '#9ee06a', hp: 1.75, atk: 1.3,
+  { name: 'Балкон', key: 'balcony', col: '#9ee06a', hp: 2.05, atk: 1.45,
     hud: '#0f1a10', line: '#3c5a2a', shade: 'rgba(8,16,8,.92)', fx: ['#9ee06a', '#ffd166', '#ff8fb1', '#e8ffd0'], shape: 'leaf',
     beam: [[250, 120], [450, 120], [150, 560]], beamCol: '210,225,255' },
-  { name: 'Горище', key: 'attic', col: '#ffb070', hp: 1.9, atk: 1.35,
+  { name: 'Горище', key: 'attic', col: '#ffb070', hp: 2.3, atk: 1.55,
     hud: '#1a120c', line: '#5a3b24', shade: 'rgba(18,12,8,.92)', fx: ['#ffb070', '#e8d2b0', '#c9a27a', '#fff1d6'], shape: 'dust',
     beam: [[170, 60], [290, 60], [110, 470]], beamCol: '255,225,180' },
 ];
@@ -445,7 +445,7 @@ const LEVELS = [
     waves: [[['brush', 100, 200], ['brush', 350, 200], ['mop', 225, 300]], [['spray', 70, 160], ['vac', 225, 180], ['spray', 380, 160], ['brush', 150, 400], ['brush', 300, 400]]] },
   { ch: 3, par: 19,
     waves: [[['vac', 110, 200], ['vac', 340, 200], ['vac', 225, 380]], [['mop', 90, 250], ['brush', 225, 200], ['mop', 360, 250], ['spray', 225, 430]], [['brush', 120, 180], ['mop', 225, 300], ['brush', 330, 180], ['vac', 90, 450], ['vac', 360, 450]]] },
-  { ch: 3, par: 16, boss: .7,
+  { ch: 3, par: 16, boss: .8,
     waves: [[['brush', 110, 300], ['spray', 225, 180], ['brush', 340, 300]], [['boss', 225, 250], ['brush', 85, 440], ['brush', 365, 440]]] },
   // balcony: fans blow heroes off course
   { ch: 4, par: 7, tip: 'Вентилятори здувають героїв убік, цілься з запасом',
@@ -458,7 +458,7 @@ const LEVELS = [
     waves: [[['fan', 100, 180], ['mop', 225, 250], ['fan', 350, 180]], [['brush', 150, 200], ['brush', 300, 200], ['fan', 225, 380], ['spray', 80, 440], ['spray', 370, 440]]] },
   { ch: 4, par: 19,
     waves: [[['vac', 90, 170], ['fan', 225, 220], ['vac', 360, 170]], [['mop', 110, 300], ['fan', 225, 160], ['mop', 340, 300], ['brush', 225, 440]], [['fan', 90, 200], ['fan', 360, 200], ['mop', 225, 330], ['spray', 120, 460], ['spray', 330, 460]]] },
-  { ch: 4, par: 16, boss: .75,
+  { ch: 4, par: 16, boss: .85,
     waves: [[['fan', 110, 300], ['mop', 225, 180], ['fan', 340, 300]], [['boss', 225, 240], ['fan', 85, 440], ['fan', 365, 440]]] },
   // attic: RC cars drive around between turns
   { ch: 5, par: 7, tip: 'Радіомашинки щоходу переїжджають на нове місце',
@@ -471,7 +471,7 @@ const LEVELS = [
     waves: [[['rc', 225, 170], ['brush', 100, 280], ['brush', 350, 280]], [['fan', 110, 200], ['rc', 225, 300], ['fan', 340, 200], ['mop', 225, 460]]] },
   { ch: 5, par: 20,
     waves: [[['rc', 100, 200], ['rc', 225, 300], ['rc', 350, 200]], [['mop', 90, 170], ['brush', 225, 220], ['mop', 360, 170], ['fan', 225, 420]], [['rc', 80, 180], ['rc', 370, 180], ['mop', 225, 260], ['brush', 120, 430], ['fan', 330, 430]]] },
-  { ch: 5, par: 24, boss: .65,
+  { ch: 5, par: 24, boss: .85,
     waves: [[['rc', 110, 200], ['brush', 225, 300], ['rc', 340, 200]], [['fan', 100, 300], ['mop', 225, 200], ['fan', 350, 300]], [['boss', 225, 240], ['rc', 85, 440], ['rc', 365, 440]]] },
 ];
 const BOXSETS = [[[55, 470], [395, 120]], [[60, 130], [390, 470]], [[50, 560], [400, 560]], [[395, 470], [55, 120]], [[40, 330], [410, 330]]];
@@ -1465,7 +1465,7 @@ function setupWave(n) {
   }
   const waves = G.lvl.waves, ch = G.ch;
   const list = endless ? genWave(n) : waves[n];
-  const hpMul = endless ? 1 + n * .1 : ch.hp, atkMul = endless ? 1 + n * .05 : ch.atk;
+  const hpMul = endless ? 1 + n * .14 : ch.hp, atkMul = endless ? 1 + n * .07 : ch.atk;
   const bossMul = endless ? .5 : (G.lvl.boss || 1);
   G.enemies = list.map(([type, x, y], i) => {
     const d = ENEMY[type];
