@@ -26,6 +26,13 @@
 <script>
 (function () {
   var v = Date.now(), boot = document.getElementById('boot'), stage = 'css';
+  // On some Android phones (seen on a Snapdragon 732G / Adreno 618) the game canvas stayed black or
+  // flickered unless a WebGL context had been created on the page first; this probe fixes it and
+  // is harmless elsewhere. Keep it before the game script loads.
+  try {
+    var gl = document.createElement('canvas').getContext('webgl'), glx = gl && gl.getExtension('WEBGL_debug_renderer_info');
+    if (glx) gl.getParameter(glx.UNMASKED_RENDERER_WEBGL);
+  } catch (e) {}
   // show the page right away instead of Telegram's placeholder, even if the game fails to start
   try { var tg = window.Telegram && Telegram.WebApp; if (tg) { tg.ready(); tg.expand(); } } catch (e) {}
   // on any startup problem show what went wrong instead of a black screen
