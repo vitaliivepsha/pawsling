@@ -1709,11 +1709,11 @@ function stepShot(dt) {
       Snd.play('snack');
     }
 
-    const tr = s.trail, lp = tr.pts[tr.pts.length - 1];
+    const trail = s.trail, lp = trail.pts[trail.pts.length - 1];
     if (dist(h.x, h.y, lp[0], lp[1]) > 10) {
       const np = [h.x, h.y];
       checkKnots(lp, np);
-      tr.pts.push(np);
+      trail.pts.push(np);
     }
 
     const sp = Math.hypot(h.vx, h.vy);
