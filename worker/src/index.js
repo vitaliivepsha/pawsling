@@ -14,7 +14,7 @@ const MAX_AGE = 7 * 24 * 3600; // initData older than this is refused
 const LIMITS = { night: 500, stars: 300 }; // anything above is not a real result
 const TOP = 20;
 // Items sold for Telegram Stars (currency XTR). The price is checked again at pre-checkout.
-const ITEMS = { continue: { stars: 10 } };
+const ITEMS = { continue: { stars: 1 } };
 const TEXT = {
   uk: { title: 'Друге дихання', desc: 'Продовж рівень: повна міцність квартири й усі герої знову на ногах.',
     start: n => `Привіт, ${n}! Роботи-пилососи захопили квартиру. Запускай котів і єнотів, як з рогатки!`, play: '🐾 Грати' },
