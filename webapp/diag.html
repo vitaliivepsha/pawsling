@@ -54,11 +54,20 @@
       (p.done ? ' (закрито нормально)' : ' (обірвався — можливо, падіння)') +
       '\nВимкнено: ' + (off.length ? off.join(', ') : 'нічого') +
       '\nЗапуск: ' + (p.flags.cssfirst ? 'спершу стилі' : 'стилі й гра разом') + ', ' + (p.flags.auto ? 'одразу при відкритті' : 'кнопкою') +
+      (p.flags.preset ? '\nПосилання: ' + p.flags.preset : '') +
       '\nПолотно: ' + (p.canvas || '?') + (p.err ? '\nПомилка: ' + p.err : '');
     FLAGS.forEach(function (f) { document.getElementById('f-' + f).checked = !!p.flags[f]; });
   }
-  var gl = '';
-  try {
+  // ?run&… links start at once with every visual feature on and only the launch details changed:
+  // css=1 styles before the game, boot=1 the game's "Завантаження…" overlay, webgl=1 the GPU probe,
+  // raf=1 the frame counter, hud=1 the counter label
+  var q = new URLSearchParams(location.search), preset = null;
+  if (q.has('run')) {
+    preset = { rooms: true, lighter: true, shadow: true, grad: true, dpr: true, auto: true, preset: location.search };
+    ['css', 'boot', 'webgl', 'raf', 'hud'].forEach(function (k) { preset[k === 'css' ? 'cssfirst' : k] = q.get(k) === '1'; });
+  }
+  var gl = 'не перевірялось';
+  if (!preset || preset.webgl) try {
     var g = document.createElement('canvas').getContext('webgl'), ext = g && g.getExtension('WEBGL_debug_renderer_info');
     gl = ext ? g.getParameter(ext.UNMASKED_RENDERER_WEBGL) : (g ? 'webgl ok' : 'no webgl');
   } catch (e) { gl = 'webgl error'; }
@@ -94,19 +103,31 @@
     }
     var run = { flags: flags, alive: 0, frames: 0, done: false, err: '' }, t0 = Date.now();
     put(run);
-    var raf = window.requestAnimationFrame.bind(window);
-    window.requestAnimationFrame = function (cb) { return raf(function (t) { run.frames++; cb(t); }); };
+    if (flags.raf !== false) {
+      var raf = window.requestAnimationFrame.bind(window);
+      window.requestAnimationFrame = function (cb) { return raf(function (t) { run.frames++; cb(t); }); };
+    } else run.frames = 'не рахувались';
     window.addEventListener('error', function (e) { run.err = String(e.message || e.error); put(run); });
     window.addEventListener('pagehide', function () { run.done = true; put(run); });
     var hud = document.getElementById('hud');
+    if (flags.hud === false) hud.remove();
     setInterval(function () {
       run.alive = Math.round((Date.now() - t0) / 100) / 10;
       var cv = document.getElementById('game');
       run.canvas = cv.width + '×' + cv.height + ' px, на екрані ' + cv.style.width + ' × ' + cv.style.height;
+      if (window.__pawslingOk) run.canvas += ', перший кадр є';
       put(run);
-      hud.textContent = run.alive + ' с · ' + run.frames + ' кадрів · ' + cv.width + '×' + cv.height;
+      if (flags.hud !== false) hud.textContent = run.alive + ' с · ' + run.frames + ' кадрів · ' + cv.width + '×' + cv.height;
     }, 500);
     document.getElementById('panel').remove();
+    if (flags.boot) {
+      // the same full-screen "Завантаження…" layer and error hooks as in index.html
+      var boot = document.createElement('div');
+      boot.id = 'boot'; boot.textContent = 'Завантаження…';
+      boot.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;z-index:9;background:#110e22;display:flex;align-items:center;justify-content:center;text-align:center;padding:16px;font-weight:800';
+      document.body.appendChild(boot);
+      window.__bootErr = function (err) { run.err = String(err && (err.message || err)); put(run); var b = document.getElementById('boot'); if (b) b.textContent = 'Помилка: ' + run.err; };
+    }
     var v = Date.now(), css = document.createElement('link'), jsDone = false;
     css.rel = 'stylesheet'; css.href = 'game.css?v=' + v;
     function loadJs() {
@@ -124,6 +145,7 @@
   // "auto" repeats the real launch: the settings are saved, the page reloads and the game starts at once
   var AUTO = 'pawsling-diag-auto', pending = null;
   try { pending = JSON.parse(localStorage.getItem(AUTO) || 'null'); localStorage.removeItem(AUTO); } catch (e) {}
+  if (preset) { go(preset); return; }
   if (pending) { go(pending); return; }
   document.getElementById('go').onclick = function () {
     var flags = {};
