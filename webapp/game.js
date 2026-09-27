@@ -19,7 +19,7 @@ function resize() {
   const b = document.body;
   const aw = Math.max(240, b.clientWidth - 32), ah = Math.max(320, b.clientHeight - 16);
   scale = Math.min(aw / W, ah / H);
-  dpr = Math.min(3, window.devicePixelRatio || 1);
+  dpr = Math.min(2, window.devicePixelRatio || 1);
   cv.style.width = (W * scale) + 'px';
   cv.style.height = (H * scale) + 'px';
   cv.width = Math.round(W * scale * dpr);
@@ -649,6 +649,7 @@ function glowAt(x, y, r, rgb, a) {
 }
 function flick(t, k = 0) { return .5 + .25 * Math.sin(t * 9 + k) + .15 * Math.sin(t * 23 + k * 3) + .1 * Math.sin(t * 41 + k); }
 function drawRoomUnder(c) {
+  if (LOWFX) return;
   const t = RM ? 0 : T;
   ctx.save(); ctx.globalCompositeOperation = 'lighter';
   if (c === 0) {
@@ -689,6 +690,7 @@ function drawRoomUnder(c) {
   ctx.restore();
 }
 function drawRoomOver(c) {
+  if (LOWFX) return;
   const t = RM ? 0 : T, ch = CHAPTERS[c];
   ctx.save(); ctx.globalCompositeOperation = 'lighter';
   if (c === 2) {
@@ -1750,8 +1752,8 @@ function drawTrails() {
     ctx.beginPath(); ctx.moveTo(t.pts[0][0], t.pts[0][1]);
     for (let i = 1; i < t.pts.length; i++) ctx.lineTo(t.pts[i][0], t.pts[i][1]);
     ctx.strokeStyle = t.gold ? '#ffd166' : t.color; ctx.lineWidth = 4.5;
-    if (age <= 0) { ctx.shadowColor = ctx.strokeStyle; ctx.shadowBlur = 10; }
-    ctx.stroke(); ctx.shadowBlur = 0;
+    if (age <= 0 && !LOWFX) { const w = ctx.lineWidth; ctx.globalAlpha = .25; ctx.lineWidth = 11; ctx.stroke(); ctx.globalAlpha = .95; ctx.lineWidth = w; }
+    ctx.stroke();
     // twisted-yarn look: dark twists plus a soft highlight strand
     ctx.strokeStyle = 'rgba(0,0,0,.28)'; ctx.lineWidth = 4.5; ctx.setLineDash([1.5, 4.5]); ctx.stroke();
     ctx.strokeStyle = 'rgba(255,255,255,.45)'; ctx.lineWidth = 1.2; ctx.setLineDash([3, 3]); ctx.lineDashOffset = 2.5; ctx.stroke();
@@ -2300,11 +2302,19 @@ const DEV = location.hash === '#dev';
 const nextFrame = DEV ? cb => setTimeout(() => cb(performance.now()), 16) : requestAnimationFrame;
 if (DEV) window.__pawsling = { get G() { return G; }, get SCREEN() { return SCREEN; }, startLevel, launch, PROG: () => PROG };
 let last = performance.now();
+// Slow devices: if frames keep taking longer than ~45 ms, drop the animated room lights.
+let LOWFX = false, slowMs = 0, failed = false;
 function frame(now) {
-  const dt = Math.min(.033, (now - last) / 1000);
+  const raw = now - last, dt = Math.min(.033, raw / 1000);
   last = now; T += dt;
-  update(dt);
-  draw();
+  if (!LOWFX && !DEV) { slowMs = raw > 45 ? slowMs + raw : Math.max(0, slowMs - raw); if (slowMs > 1500) LOWFX = true; }
+  try {
+    update(dt);
+    draw();
+    if (!window.__pawslingOk) { window.__pawslingOk = true; const b = document.getElementById('boot'); if (b) b.remove(); }
+  } catch (e) {
+    if (!failed && window.__bootErr) { failed = true; window.__bootErr(e); }
+  }
   nextFrame(frame);
 }
 nextFrame(frame);

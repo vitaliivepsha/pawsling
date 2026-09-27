@@ -11,7 +11,8 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@900&family=Nunito:wght@700;800;900&display=swap">
 <style>
   html,body{height:100%;margin:0;background:#110e22;color:#f4efe6;font-family:Nunito,system-ui,sans-serif}
-  #boot{position:fixed;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:16px;font-weight:800}
+  #boot{position:fixed;top:0;left:0;right:0;bottom:0;z-index:9;background:#110e22;display:flex;align-items:center;justify-content:center;text-align:center;padding:16px;font-weight:800}
+  #boot small{display:block;margin:10px auto;max-width:90vw;opacity:.75;word-break:break-word}
   #boot button{margin-top:12px;font:inherit;padding:10px 20px;border-radius:12px;border:0;background:#ffc857;color:#15122a}
 </style>
 </head>
@@ -24,19 +25,38 @@
 -->
 <script>
 (function () {
-  var v = Date.now(), boot = document.getElementById('boot');
-  function fail() {
-    boot.innerHTML = 'Не вдалося завантажити гру.<br>Перевір інтернет.<br><button type="button" onclick="location.reload()">Спробувати ще</button>';
-  }
+  var v = Date.now(), boot = document.getElementById('boot'), stage = 'css';
+  // show the page right away instead of Telegram's placeholder, even if the game fails to start
+  try { var tg = window.Telegram && Telegram.WebApp; if (tg) { tg.ready(); tg.expand(); } } catch (e) {}
+  // on any startup problem show what went wrong instead of a black screen
+  window.__bootErr = function (err) {
+    var msg = err && (err.message || err) || 'unknown';
+    if (err && err.stack) msg += ' | ' + String(err.stack).split(/\n/).slice(0, 2).join(' ');
+    boot = document.getElementById('boot') || document.body.appendChild(Object.assign(document.createElement('div'), { id: 'boot' }));
+    boot.innerHTML = '<div>Гра не запустилась.<br><small id="bootmsg"></small><br><button type="button" onclick="location.reload()">Спробувати ще</button></div>';
+    document.getElementById('bootmsg').textContent = '[' + stage + '] ' + msg;
+  };
+  window.addEventListener('error', function (e) { if (!window.__pawslingOk) window.__bootErr(e.error || (e.message + ' @' + e.lineno)); });
+  (function watchdog() {
+    setTimeout(function () {
+      if (window.__pawslingOk) return;
+      if (document.hidden) watchdog(); else window.__bootErr('timeout');
+    }, 12000);
+  })();
   var css = document.createElement('link');
   css.rel = 'stylesheet'; css.href = 'game.css?v=' + v;
-  css.onload = css.onerror = function () {
+  var started = false;
+  function startGame() {
+    if (started) return;
+    started = true; stage = 'js';
     var js = document.createElement('script');
     js.src = 'game.js?v=' + v;
-    js.onload = function () { boot.remove(); };
-    js.onerror = fail;
+    js.onload = function () { stage = 'run'; };
+    js.onerror = function () { window.__bootErr('game.js not loaded'); };
     document.body.appendChild(js);
-  };
+  }
+  css.onload = css.onerror = startGame;
+  setTimeout(startGame, 3000); // some WebViews never fire load events on stylesheets
   document.head.appendChild(css);
 })();
 </script>
