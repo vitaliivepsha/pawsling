@@ -49,6 +49,8 @@ The game runs without a permanently running server: the page is on GitHub Pages
      then appears in the bot's profile, and the game opens via `t.me/<bot>?startapp`.
    - Edit Bot → Edit Description: the greeting shown before pressing Start.
    - Edit Bot → Edit About: a short description in the profile.
+   - `/setuserpic`: the bot's profile picture, `assets/bot-avatar.png` (1024×1024, drawn with the
+     game's own hero code; Telegram crops it to a circle, the yarn ring sits just inside it).
 
 With the bot stopped, `/start` gets no reply. That is expected: players go in through the menu
 button or "Open App".
