@@ -3,7 +3,9 @@
 A slingshot game for Telegram (Mini App): cats and raccoons against an uprising of robot vacuums.
 
 ```
-webapp/index.html   the whole game in one file (canvas + synthesised sounds, no assets)
+webapp/index.html   a tiny loader that fetches the game past Telegram's cache
+webapp/game.js      the whole game (canvas + synthesised sounds, no assets)
+webapp/game.css     page styles for the game
 bot/                a small bot that opens the game: /start and the "Грати" menu button
 ```
 
@@ -29,10 +31,13 @@ The game runs without a permanently running server: the page is on GitHub Pages
 (https://vitaliivepsha.github.io/pawsling/webapp/), and everything else is configured in Telegram.
 
 1. **Hosting.** GitHub Pages from the `main` branch, `/ (root)` folder. Every push to `main`
-   updates the game within a minute or two.
+   updates the game within a minute or two. Telegram's WebView caches pages hard, so
+   `index.html` only loads `game.js` and `game.css` with a fresh `?v=` on every launch: players
+   get the new version as soon as Pages has it. Keep game changes in those two files; if
+   `index.html` itself ever changes, bump the `?v=` in the game address (step 2 and @BotFather).
 2. **Menu button "Грати".** `bot/bot.py` sets it via `setChatMenuButton`. **One run is enough**:
    Telegram remembers the button, and it stays after the bot is stopped. Rerun only if the game
-   address changes.
+   address changes. The current address is `https://vitaliivepsha.github.io/pawsling/webapp/?v=2`.
    ```bash
    cd bot
    cp .env.example .env      # fill in BOT_TOKEN and WEBAPP_URL
