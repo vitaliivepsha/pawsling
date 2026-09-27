@@ -446,22 +446,22 @@ const CHAPTERS = [
   { name: 'Кухня', key: 'kitchen', col: '#ff9f43', hp: 1, atk: 1,
     hud: '#1d120c', line: '#5a3620', shade: 'rgba(22,12,8,.9)', fx: ['#ffd9a8', '#ff9f43', '#fff3e0', '#ffc857'], shape: 'bubble',
     beam: [[450, 190], [450, 330], [250, 300]], beamCol: '255,190,110' },
-  { name: 'Вітальня', key: 'living', col: '#b18cff', hp: 1.25, atk: 1.15,
+  { name: 'Вітальня', key: 'living', col: '#b18cff', hp: 1.25, atk: 1.2,
     hud: '#17122a', line: '#4a3775', shade: 'rgba(16,11,30,.9)', fx: ['#b18cff', '#ffd166', '#ff8fb1', '#5ce1c6'], shape: 'confetti',
     beam: [[300, 60], [430, 60], [160, 556]], beamCol: '255,230,190' },
-  { name: 'Спальня', key: 'bedroom', col: '#5ce1c6', hp: 1.5, atk: 1.2,
+  { name: 'Спальня', key: 'bedroom', col: '#5ce1c6', hp: 1.55, atk: 1.3,
     hud: '#0a161c', line: '#1f4a50', shade: 'rgba(6,16,22,.92)', fx: ['#5ce1c6', '#cfe8ff', '#ffe8a3', '#9fd8e0'], shape: 'star',
     beam: [[40, 60], [200, 60], [0, 470]], beamCol: '170,215,255' },
-  { name: 'Ванна', key: 'bath', col: '#6ec3ff', hp: 1.8, atk: 1.35,
+  { name: 'Ванна', key: 'bath', col: '#6ec3ff', hp: 1.85, atk: 1.55,
     hud: '#0b1622', line: '#24506e', shade: 'rgba(6,14,24,.92)', fx: ['#bfe6ff', '#6ec3ff', '#ffffff', '#9fe8ff'], shape: 'bubble',
     beam: [[20, 60], [130, 60], [60, 340]], beamCol: '200,235,255' },
-  { name: 'Балкон', key: 'balcony', col: '#9ee06a', hp: 2.05, atk: 1.45,
+  { name: 'Балкон', key: 'balcony', col: '#9ee06a', hp: 2.05, atk: 1.65,
     hud: '#0f1a10', line: '#3c5a2a', shade: 'rgba(8,16,8,.92)', fx: ['#9ee06a', '#ffd166', '#ff8fb1', '#e8ffd0'], shape: 'leaf',
     beam: [[250, 120], [450, 120], [150, 560]], beamCol: '210,225,255' },
-  { name: 'Горище', key: 'attic', col: '#ffb070', hp: 2.3, atk: 1.55,
+  { name: 'Горище', key: 'attic', col: '#ffb070', hp: 2.3, atk: 1.62,
     hud: '#1a120c', line: '#5a3b24', shade: 'rgba(18,12,8,.92)', fx: ['#ffb070', '#e8d2b0', '#c9a27a', '#fff1d6'], shape: 'dust',
     beam: [[170, 60], [290, 60], [110, 470]], beamCol: '255,225,180' },
-  { name: 'Гараж', key: 'garage', col: '#a9c1d9', hp: 2.7, atk: 1.7,
+  { name: 'Гараж', key: 'garage', col: '#a9c1d9', hp: 2.7, atk: 1.75,
     hud: '#121317', line: '#4a4d57', shade: 'rgba(10,10,14,.92)', fx: ['#ffd166', '#c9d3dd', '#ff9f43', '#8a96a3'], shape: 'confetti',
     beam: [[300, 60], [440, 60], [200, 540]], beamCol: '230,240,255' },
   { name: 'Підвал', key: 'basement', col: '#8fd14f', hp: 3.1, atk: 1.9,
@@ -525,12 +525,12 @@ const LEVELS = [
   { ch: 5, par: 12,
     waves: [[['rc', 110, 180], ['rc', 340, 180], ['spray', 225, 300]], [['mop', 120, 230], ['rc', 225, 380], ['mop', 330, 230], ['brush', 225, 150]]] },
   { ch: 5, par: 10,
-    waves: [[['rc', 90, 160], ['fan', 225, 250], ['rc', 360, 160], ['spray', 150, 420], ['spray', 300, 420]]] },
+    waves: [[['rc', 90, 160], ['brush', 225, 250], ['vac', 360, 160], ['spray', 150, 420], ['vac', 300, 420]]] },
   { ch: 5, par: 14,
     waves: [[['rc', 225, 170], ['brush', 100, 280], ['brush', 350, 280]], [['fan', 110, 200], ['rc', 225, 300], ['fan', 340, 200], ['mop', 225, 460]]] },
   { ch: 5, par: 20,
     waves: [[['rc', 100, 200], ['rc', 225, 300], ['rc', 350, 200]], [['mop', 90, 170], ['brush', 225, 220], ['mop', 360, 170], ['fan', 225, 420]], [['rc', 80, 180], ['rc', 370, 180], ['mop', 225, 260], ['brush', 120, 430], ['fan', 330, 430]]] },
-  { ch: 5, par: 24, boss: .85,
+  { ch: 5, par: 23, boss: .75,
     waves: [[['rc', 110, 200], ['brush', 225, 300], ['rc', 340, 200]], [['fan', 100, 300], ['mop', 225, 200], ['fan', 350, 300]], [['boss', 225, 240], ['rc', 85, 440], ['rc', 365, 440]]] },
   // garage: shield bots protect their neighbors, twins split in two
   { ch: 6, par: 8, tip: 'shield',
@@ -547,11 +547,11 @@ const LEVELS = [
     waves: [[['shield', 110, 300], ['split', 225, 180], ['shield', 340, 300]], [['split', 100, 220], ['fan', 225, 330], ['split', 350, 220]], [['boss', 225, 240], ['shield', 120, 380], ['shield', 330, 380]]] },
   // basement: every enemy type at once, and the web-spinning spider boss
   { ch: 7, par: 9, tip: 'basement',
-    waves: [[['shield', 225, 170], ['split', 110, 260], ['split', 340, 260], ['brush', 225, 380]]] },
+    waves: [[['shield', 225, 170], ['split', 110, 260], ['split', 340, 260], ['vac', 225, 380]]] },
   { ch: 7, par: 14,
     waves: [[['rc', 100, 180], ['rc', 350, 180], ['fan', 225, 300]], [['shield', 120, 200], ['shield', 330, 200], ['mop', 225, 300], ['spray', 225, 450]]] },
   { ch: 7, par: 11,
-    waves: [[['split', 90, 170], ['brush', 225, 220], ['split', 360, 170], ['fan', 110, 420], ['fan', 340, 420]]] },
+    waves: [[['split', 90, 170], ['brush', 225, 220], ['split', 360, 170], ['fan', 110, 420], ['vac', 340, 420]]] },
   { ch: 7, par: 16,
     waves: [[['mop', 225, 160], ['shield', 110, 260], ['shield', 340, 260]], [['rc', 225, 200], ['split', 100, 330], ['split', 350, 330], ['brush', 225, 460]]] },
   { ch: 7, par: 22,
@@ -5359,7 +5359,7 @@ loadDaily();
 // #dev: timer-driven loop (keeps running in hidden tabs) plus a state hook for testing
 const DEV = location.hash === '#dev';
 const nextFrame = DEV ? cb => setTimeout(() => cb(performance.now()), 16) : requestAnimationFrame;
-if (DEV) window.__pawsling = { get G() { return G; }, get SCREEN() { return SCREEN; }, get DAILY() { return DAILY; }, startLevel, startEndless, launch, PROG: () => PROG, MAP, BOARD, setScreen, secondWind, setInv, get INV() { return INV; }, prepLevel, setupWave };
+if (DEV) window.__pawsling = { get G() { return G; }, set G(v) { G = v; }, get SCREEN() { return SCREEN; }, get DAILY() { return DAILY; }, startLevel, startEndless, launch, PROG: () => PROG, MAP, BOARD, setScreen, secondWind, setInv, get INV() { return INV; }, prepLevel, setupWave, step: dt => update(dt), LEVELS, CHAPTERS, ENEMY };
 let last = performance.now();
 // Slow devices: if frames keep taking longer than ~45 ms, drop the animated room lights.
 let LOWFX = false, slowMs = 0, failed = false;
