@@ -908,10 +908,9 @@ function setupWave(n) {
   const boss = G.enemies.find(e => e.type === 'boss');
   if (boss) { startBossIntro(boss); return; }
   G.state = 'banner';
-  const hasBoss = false;
   const sub = n === 0 && G.lvl.tip ? G.lvl.tip : `Хвиля ${n + 1} з ${waves.length}`;
   G.banner = { title: `Рівень ${G.li + 1} · ${ch.name}`, sub, t: n === 0 && G.lvl.tip ? 2.2 : 1.5, max: n === 0 && G.lvl.tip ? 2.2 : 1.5, done: () => { G.state = 'aim'; announceHero(); } };
-  Snd.play(hasBoss ? 'boss' : 'wave');
+  Snd.play('wave');
 }
 
 // ---------- shooting ----------
