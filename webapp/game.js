@@ -3809,6 +3809,15 @@ function drawSpiderBoss(e, r, t) {
   for (const [dx, dy] of [[-.3, -.2], [-.1, -.26], [.1, -.26], [.3, -.2]]) circ(dx * r, dy * r, r * .045);
   ctx.shadowBlur = 0;
 }
+function zap(x1, y1, x2, y2, segs, amp, seed) {
+  ctx.beginPath(); ctx.moveTo(x1, y1);
+  for (let k = 1; k < segs; k++) {
+    const u = k / segs, j = Math.sin(seed * 12.9898 + k * 78.233) * 43758.5453;
+    const off = (j - Math.floor(j) - .5) * 2 * amp, nx = -(y2 - y1), ny = x2 - x1, nl = Math.hypot(nx, ny) || 1;
+    ctx.lineTo(x1 + (x2 - x1) * u + nx / nl * off, y1 + (y2 - y1) * u + ny / nl * off);
+  }
+  ctx.lineTo(x2, y2); ctx.stroke();
+}
 function drawMagnet(e, r, t) {
   // field rings creeping inwards show how far the pull reaches
   ctx.strokeStyle = 'rgba(255,120,140,.14)'; ctx.lineWidth = 1.5; ctx.setLineDash([4, 8]); ctx.lineDashOffset = t * 20;
@@ -3817,18 +3826,59 @@ function drawMagnet(e, r, t) {
     const ph = frac(t * .7 + k / 3);
     ctx.strokeStyle = `rgba(255,140,160,${.2 * ph})`; ctx.beginPath(); ctx.arc(0, 0, MAG_R - ph * (MAG_R - r), 0, TAU); ctx.stroke();
   }
-  const g = ctx.createRadialGradient(-r * .3, -r * .3, r * .1, 0, 0, r);
-  g.addColorStop(0, '#c9d3e6'); g.addColorStop(1, '#6b778c');
-  ctx.fillStyle = g; circ(0, 0, r);
-  ctx.strokeStyle = '#3a4252'; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.arc(0, 0, r, 0, TAU); ctx.stroke();
-  // a horseshoe magnet on its head
-  ctx.lineCap = 'butt';
-  ctx.strokeStyle = '#e5484d'; ctx.lineWidth = r * .3; ctx.beginPath(); ctx.arc(0, -r * .55, r * .42, Math.PI, 0); ctx.stroke();
-  ctx.fillStyle = '#e8ecf2'; ctx.fillRect(-r * .57, -r * .56, r * .3, r * .24); ctx.fillRect(r * .27, -r * .56, r * .3, r * .24);
-  angryEyes(0, r * .15, r * .55, '#ff3b5c');
+  // bolts drawn in by the field
+  for (let k = 0; k < 4; k++) {
+    const ph = frac(t * .5 + k / 4), a = k * 1.7 + t * .8, d = MAG_R * (1 - ph) + r * ph;
+    ctx.save(); ctx.globalAlpha *= Math.sin(ph * Math.PI) * .9;
+    ctx.translate(Math.cos(a) * d, Math.sin(a) * d); ctx.rotate(a + t * 3);
+    ctx.fillStyle = '#c9d3dd'; ctx.fillRect(-r * .1, -r * .035, r * .2, r * .07); ctx.fillRect(-r * .12, -r * .07, r * .06, r * .14);
+    ctx.restore();
+  }
+  // the horseshoe body, opening downwards, with silver N and S poles
+  const R0 = r * .6, wth = r * .5, cy = -r * .05, leg = r * .72;
+  const body = () => {
+    ctx.beginPath();
+    ctx.arc(0, cy, R0 + wth / 2, Math.PI, 0);
+    ctx.lineTo(R0 + wth / 2, cy + leg); ctx.lineTo(R0 - wth / 2, cy + leg); ctx.lineTo(R0 - wth / 2, cy);
+    ctx.arc(0, cy, R0 - wth / 2, 0, Math.PI, true);
+    ctx.lineTo(-R0 + wth / 2, cy + leg); ctx.lineTo(-R0 - wth / 2, cy + leg); ctx.closePath();
+  };
+  const g = ctx.createLinearGradient(0, -r, 0, r);
+  g.addColorStop(0, '#ff6b70'); g.addColorStop(1, '#b3232b');
+  ctx.fillStyle = g; body(); ctx.fill();
+  ctx.strokeStyle = '#6e1519'; ctx.lineWidth = 2.5; body(); ctx.stroke();
+  ctx.strokeStyle = 'rgba(255,255,255,.35)'; ctx.lineWidth = r * .07; ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.arc(0, cy, R0 + wth * .25, Math.PI * 1.15, Math.PI * 1.45); ctx.stroke();
+  for (const sd of [-1, 1]) {
+    const px = sd * R0, py = cy + leg - r * .02;
+    const pg = ctx.createLinearGradient(px - wth / 2, 0, px + wth / 2, 0);
+    pg.addColorStop(0, '#f4f7fb'); pg.addColorStop(1, '#9aa6b8');
+    ctx.fillStyle = pg; rr(px - wth / 2, py, wth, r * .3, r * .06); ctx.fill();
+    ctx.strokeStyle = '#4a5466'; ctx.lineWidth = 2; rr(px - wth / 2, py, wth, r * .3, r * .06); ctx.stroke();
+    ctx.fillStyle = '#2a3148'; ctx.font = `900 ${Math.round(r * .22)}px ${FD}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(sd < 0 ? 'N' : 'S', px, py + r * .16);
+  }
+  // sparks jump between the poles before it attacks
+  if (e.timer <= 1 || frac(t * .8) < .15) {
+    ctx.save(); ctx.globalCompositeOperation = 'lighter';
+    ctx.strokeStyle = '#9fd0ff'; ctx.lineWidth = 2; ctx.lineCap = 'round';
+    zap(-R0, cy + leg + r * .3, R0, cy + leg + r * .3, 7, r * .12, Math.floor(t * 12));
+    ctx.restore();
+  }
+  angryEyes(0, cy - R0 + r * .02, r * .62, '#ffe066');
 }
 function drawDroneBoss(e, r, t) {
   ctx.lineCap = 'round';
+  // its own little storm cloud with rain
+  ctx.strokeStyle = 'rgba(160,190,255,.45)'; ctx.lineWidth = 1.5;
+  for (let k = 0; k < 9; k++) {
+    const ph = frac(t * 1.4 + k * .37), x = -r * .9 + k * r * .22;
+    ctx.beginPath(); ctx.moveTo(x, -r * 1.25 + ph * r * .9); ctx.lineTo(x - r * .04, -r * 1.25 + ph * r * .9 + r * .12); ctx.stroke();
+  }
+  for (const [x, y, rad, col] of [[-r * .55, -r * 1.35, r * .32, '#2b3350'], [r * .5, -r * 1.32, r * .3, '#2b3350'], [0, -r * 1.48, r * .4, '#343d60'], [-r * .2, -r * 1.3, r * .3, '#3b456b'], [r * .25, -r * 1.28, r * .28, '#3b456b']]) {
+    ctx.fillStyle = col; circ(x, y, rad);
+  }
+  ctx.fillStyle = 'rgba(255,255,255,.08)'; circ(-r * .05, -r * 1.58, r * .22);
   // four arms with spinning rotors
   for (const a of [-2.36, -.79, .79, 2.36]) {
     const ax = Math.cos(a) * r * 1.05, ay = Math.sin(a) * r * .95;
@@ -3848,11 +3898,20 @@ function drawDroneBoss(e, r, t) {
   // a crackling tesla coil
   ctx.fillStyle = '#b87333'; rr(-r * .1, -r * .95, r * .2, r * .32, r * .05); ctx.fill();
   ctx.fillStyle = '#c9d3dd'; circ(0, -r, r * .13);
+  ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.lineCap = 'round';
   if (frac(t * 1.7) < .5) {
-    ctx.strokeStyle = '#ffe066'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(0, -r);
-    for (let k = 1; k <= 4; k++) ctx.lineTo(Math.sin(t * 40 + k * 2) * r * .25, -r - k * r * .1);
-    ctx.stroke();
+    // a bolt from the cloud down to the coil
+    ctx.strokeStyle = '#ffe066'; ctx.lineWidth = 2.5; zap(r * .05, -r * 1.3, 0, -r, 5, r * .1, Math.floor(t * 14));
+    glowAt(0, -r, r * .35, '255,224,102', .35);
   }
+  // arcs hop between neighbouring rotors
+  const arms = [-2.36, -.79, .79, 2.36].map(a => [Math.cos(a) * r * 1.05, Math.sin(a) * r * .95]);
+  for (let k = 0; k < 4; k++) {
+    if (frac(t * 1.3 + k * .29) > (e.timer <= 1 ? .6 : .25)) continue;
+    const [x1, y1] = arms[k], [x2, y2] = arms[(k + 1) % 4];
+    ctx.strokeStyle = 'rgba(160,200,255,.85)'; ctx.lineWidth = 1.8; zap(x1, y1, x2, y2, 8, r * .12, Math.floor(t * 10) + k);
+  }
+  ctx.restore();
   // one big camera eye under angry brows
   ctx.fillStyle = '#0d1020'; circ(0, r * .05, r * .34);
   const eg = ctx.createRadialGradient(0, r * .05, 1, 0, r * .05, r * .28);
@@ -3894,9 +3953,29 @@ function drawMole(e, r, t) {
   angryEyes(0, -r * .23, r * .55, '#ffb347');
 }
 function drawMowerBoss(e, r, t) {
-  // wheels
-  ctx.fillStyle = '#15171e';
-  for (const [x, y] of [[-.78, -.5], [.78, -.5], [-.78, .55], [.78, .55]]) { rr(x * r - r * .16, y * r - r * .26, r * .32, r * .52, r * .1); ctx.fill(); }
+  // grass clippings spraying out of both sides
+  for (let k = 0; k < 10; k++) {
+    const ph = frac(t * 1.8 + k * .137), sd = k % 2 ? 1 : -1;
+    const x = sd * (r * .8 + ph * r * .9), y = r * .3 + Math.sin(k * 2.3) * r * .25 - ph * r * .3;
+    ctx.save(); ctx.globalAlpha *= 1 - ph; ctx.translate(x, y); ctx.rotate(k + t * 6);
+    ctx.fillStyle = k % 3 ? '#8fd14f' : '#5aa032'; ctx.fillRect(-r * .06, -r * .018, r * .12, r * .036);
+    ctx.restore();
+  }
+  // exhaust puffs from a little pipe
+  ctx.fillStyle = '#4a4f5a'; rr(r * .5, -r * 1.05, r * .12, r * .3, r * .04); ctx.fill();
+  for (let k = 0; k < 3; k++) {
+    const ph = frac(t * .9 + k / 3);
+    ctx.fillStyle = `rgba(190,195,205,${.45 * (1 - ph)})`; circ(r * .56 + ph * r * .25, -r * 1.1 - ph * r * .45, r * (.07 + ph * .12));
+  }
+  // wheels with moving treads
+  for (const [x, y] of [[-.78, -.5], [.78, -.5], [-.78, .55], [.78, .55]]) {
+    const wx = x * r - r * .16, wy = y * r - r * .26, ww = r * .32, wh = r * .52;
+    ctx.fillStyle = '#15171e'; rr(wx, wy, ww, wh, r * .1); ctx.fill();
+    ctx.save(); rr(wx, wy, ww, wh, r * .1); ctx.clip();
+    ctx.fillStyle = '#343844';
+    for (let q = -1; q < 6; q++) ctx.fillRect(wx, wy + ((q * r * .12 + t * r * .8) % (r * .72)) - r * .06, ww, r * .045);
+    ctx.restore();
+  }
   // the grass box on its back, overflowing
   ctx.fillStyle = '#2f6b34'; rr(-r * .5, -r * 1.12, r, r * .4, r * .12); ctx.fill();
   ctx.strokeStyle = '#1b3d1e'; ctx.lineWidth = 2; rr(-r * .5, -r * 1.12, r, r * .4, r * .12); ctx.stroke();
@@ -3917,6 +3996,11 @@ function drawMowerBoss(e, r, t) {
   // a visor with angry eyes
   ctx.fillStyle = '#15122a'; rr(-r * .52, -r * .58, r * 1.04, r * .38, r * .16); ctx.fill();
   angryEyes(0, -r * .39, r * .72, '#ff3b5c');
+  // headlights
+  for (const sd of [-1, 1]) {
+    ctx.save(); ctx.globalCompositeOperation = 'lighter'; glowAt(sd * r * .5, r * .66, r * .3, '255,240,170', .45); ctx.restore();
+    ctx.fillStyle = '#fff6c9'; circ(sd * r * .5, r * .66, r * .09);
+  }
 }
 function drawWeb(x, y, R) {
   ctx.save(); ctx.translate(x, y);
