@@ -905,10 +905,12 @@ function setupWave(n) {
   G.trails = []; G.snacks = [];
   for (let i = 0; i < 3; i++) spawnSnack();
   placeLaser();
+  const boss = G.enemies.find(e => e.type === 'boss');
+  if (boss) { startBossIntro(boss); return; }
   G.state = 'banner';
-  const hasBoss = G.enemies.some(e => e.type === 'boss');
-  const sub = n === 0 && G.lvl.tip ? G.lvl.tip : hasBoss ? 'Бос! Бий у жовтий сенсор' : `Хвиля ${n + 1} з ${waves.length}`;
-  G.banner = { title: `Рівень ${G.li + 1} · ${ch.name}`, sub, t: n === 0 && G.lvl.tip ? 2.2 : 1.5, max: n === 0 && G.lvl.tip ? 2.2 : 1.5, done: () => { G.state = 'aim'; } };
+  const hasBoss = false;
+  const sub = n === 0 && G.lvl.tip ? G.lvl.tip : `Хвиля ${n + 1} з ${waves.length}`;
+  G.banner = { title: `Рівень ${G.li + 1} · ${ch.name}`, sub, t: n === 0 && G.lvl.tip ? 2.2 : 1.5, max: n === 0 && G.lvl.tip ? 2.2 : 1.5, done: () => { G.state = 'aim'; announceHero(); } };
   Snd.play(hasBoss ? 'boss' : 'wave');
 }
 
@@ -1203,6 +1205,7 @@ function nextTurn() {
   if (G.snacks.length < 4 && Math.random() < .7) spawnSnack();
   for (const e of G.enemies) if (e.type === 'boss') e.weakT += 1.3;
   G.state = 'aim';
+  announceHero();
 }
 
 function waveClear() {
@@ -1246,6 +1249,7 @@ function update(dt) {
     G.banner.t -= dt;
     if (G.banner.t <= 0) { const d = G.banner.done; G.banner = null; d(); }
   }
+  else if (G.state === 'bossintro') updateBossIntro(dt);
   const drag0 = Math.pow(.05, dt);
   for (const p of G.parts) {
     const d = p.shape === 'spark' ? Math.pow(.2, dt) : drag0;
@@ -1264,6 +1268,7 @@ function update(dt) {
   for (const b of G.beams) b.life -= dt;
   G.beams = G.beams.filter(b => b.life > 0);
   for (const h of G.heroes) { if (h.hurt > 0) h.hurt -= dt; if (h.happy > 0) h.happy -= dt; }
+  if (G.typeTag && G.state === 'aim') { G.typeTag.life -= dt; if (G.typeTag.life <= 0) G.typeTag = null; }
   G.hpLag = G.hpLag > G.hp ? G.hpLag + (G.hp - G.hpLag) * Math.min(1, dt * 2.5) : G.hp;
   for (const e of G.enemies) {
     if (e.flash > 0) e.flash -= dt;
@@ -1337,6 +1342,158 @@ function heroEyes(h, r, o, mood) {
     }
   }
   if (mood === 'sad') { ctx.fillStyle = '#7ec8e3'; ctx.beginPath(); ctx.moveTo(r * .42, r * .08); ctx.quadraticCurveTo(r * .52, r * .26, r * .42, r * .3); ctx.quadraticCurveTo(r * .32, r * .26, r * .42, r * .08); ctx.fill(); }
+}
+
+const TYPE_TAG = { bounce: ['ВІДСКОК', 'відбивається від ворогів'], pierce: ['ПРОШИВАННЯ', 'пролітає ворогів наскрізь'] };
+// ---------- boss intro ----------
+// Before a boss wave: warning stripes, the boss drops in with a thud, then its name, a room-specific
+// nickname and catchphrase, its stats and the sensor hint. A tap skips it after a moment.
+const BOSS_TITLES = [
+  ['Гроза крихт', 'Жодної крихти на підлозі!'],
+  ['Володар пульта', 'Цей диван тепер мій!'],
+  ['Нічний жах', 'Час спати... назавжди!'],
+];
+const INTRO_LEN = 4.2, INTRO_LAND = .9;
+function startBossIntro(boss) {
+  G.state = 'bossintro';
+  G.intro = { t: 0, boss, landed: false };
+  Amb.duck(.3);
+  playBossIntro();
+}
+function endBossIntro() {
+  G.intro = null;
+  Amb.duck(1);
+  G.state = 'aim';
+  announceHero();
+}
+function updateBossIntro(dt) {
+  const I = G.intro;
+  I.t += dt;
+  if (!I.landed && I.t >= INTRO_LAND) {
+    I.landed = true;
+    G.shake = Math.max(G.shake, 16);
+    haptic('heavy');
+  }
+  if (I.t >= INTRO_LEN) endBossIntro();
+}
+function playBossIntro() {
+  if (!Snd.c || !Snd.on) return;
+  const s = Snd;
+  try {
+    for (let i = 0; i < 3; i++) s.tone(520, .24, 'sawtooth', .05, 800, i * .28, 1800);
+    s.tone(55, 1.2, 'sawtooth', .13, 36, INTRO_LAND, 420);
+    s.noise(.9, .25, 320, 80, INTRO_LAND, 'lowpass');
+    s.seq(100, [[1.9, 43, 2, 'brass', 1.2], [1.9, 46, 2, 'brass', 1], [1.9, 50, 2, 'brass', .9], [1.9, 31, 2, 'bass'],
+      [1.9, null, 0, 'crash'], [1.9, null, 0, 'kick'], [2.4, null, 0, 'kick', .7], [2.9, null, 0, 'kick', .7]]);
+  } catch (e) {}
+}
+function hazardBand(y, h, off) {
+  ctx.save(); ctx.beginPath(); ctx.rect(0, y, W, h); ctx.clip();
+  ctx.fillStyle = '#ffc857'; ctx.fillRect(0, y, W, h);
+  ctx.fillStyle = '#15122a';
+  for (let x = -h * 2 + (off % (h * 1.6)); x < W + h; x += h * 1.6) {
+    ctx.beginPath(); ctx.moveTo(x, y + h); ctx.lineTo(x + h * .8, y + h); ctx.lineTo(x + h * 1.6, y); ctx.lineTo(x + h * .8, y); ctx.closePath(); ctx.fill();
+  }
+  ctx.restore();
+}
+function drawBossIntro() {
+  const I = G.intro;
+  if (!I || G.state !== 'bossintro') return;
+  const t = I.t, c = LEVELS[G.li].ch, ch = G.ch, e = I.boss;
+  const fadeOut = Math.min(1, (INTRO_LEN - t) / .3), a = Math.min(1, t / .25, fadeOut);
+  const ease = k => 1 - Math.pow(1 - Math.min(1, Math.max(0, k)), 3);
+  ctx.save();
+  ctx.globalAlpha = a;
+  ctx.fillStyle = 'rgba(8,6,18,.9)'; ctx.fillRect(0, 0, W, H);
+  // warning stripes sliding in from both sides
+  const band = ease(t / .35);
+  ctx.save(); ctx.translate((1 - band) * -W, 0); hazardBand(84, 30, RM ? 0 : T * 60); ctx.restore();
+  ctx.save(); ctx.translate((1 - band) * W, 0); hazardBand(706, 30, RM ? 0 : -T * 60); ctx.restore();
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  if (t < INTRO_LAND + .4 || Math.sin(T * 10) > -.2) {
+    ctx.fillStyle = '#ff4d6d'; ctx.font = `900 16px ${FD}`;
+    ctx.fillText('УВАГА · БОС НАБЛИЖАЄТЬСЯ', W / 2, 138);
+  }
+  // the boss drops in and lands with a shockwave
+  const by = 280, R = 104;
+  const k = RM ? 1 : Math.min(1, t / INTRO_LAND), y = RM ? by : -R + (by + R) * k * k;
+  ctx.save(); ctx.globalCompositeOperation = 'lighter';
+  glowAt(W / 2, by, 210, '255,59,92', (I.landed ? .35 + .1 * Math.sin(T * 5) : .15) * a);
+  ctx.restore();
+  if (I.landed && !RM) {
+    const s = t - INTRO_LAND;
+    if (s < .6) {
+      ctx.strokeStyle = `rgba(255,200,87,${1 - s / .6})`; ctx.lineWidth = 6;
+      ctx.beginPath(); ctx.ellipse(W / 2, by + R * .85, R * (1 + s * 3), R * (.3 + s), 0, 0, TAU); ctx.stroke();
+    }
+  }
+  ctx.fillStyle = 'rgba(0,0,0,.45)'; ctx.beginPath(); ctx.ellipse(W / 2, by + R * .9, R * (.5 + .45 * k), R * .22 * k, 0, 0, TAU); ctx.fill();
+  ctx.save(); ctx.translate(W / 2, y); drawBoss(e, R, RM ? 0 : T); ctx.restore();
+  // name, nickname and catchphrase
+  const nameK = ease((t - 1.05) / .35);
+  if (nameK > 0) {
+    ctx.globalAlpha = a * nameK;
+    ctx.save(); ctx.translate(W / 2, 432); ctx.scale(.7 + .3 * nameK, .7 + .3 * nameK);
+    ctx.shadowColor = '#ff3b5c'; ctx.shadowBlur = 18;
+    ctx.fillStyle = '#ff4d6d'; ctx.font = `900 36px ${FD}`; ctx.fillText('РОБО-БОС 9000', 0, 0);
+    ctx.restore();
+    const [title, quote] = BOSS_TITLES[c];
+    ctx.fillStyle = ch.col; ctx.font = `900 19px ${FD}`; ctx.fillText(`«${title}»`, W / 2, 470);
+    ctx.fillStyle = '#c9c2e6'; ctx.font = `italic 800 14px ${FB}`; ctx.fillText(`„${quote}“`, W / 2, 498);
+  }
+  // stats chips
+  const statK = ease((t - 1.45) / .3);
+  if (statK > 0) {
+    ctx.globalAlpha = a * statK;
+    const chips = [['Міцність', e.maxHp], ['Удар', e.atk], ['Атакує', `кожні ${e.maxTimer} ходи`]];
+    const cw = 128, gap = 10, x0 = W / 2 - (cw * 3 + gap * 2) / 2;
+    chips.forEach(([label, val], i) => {
+      const x = x0 + i * (cw + gap), yy = 530 + (1 - statK) * 14;
+      ctx.fillStyle = '#231e44'; rr(x, yy, cw, 50, 12); ctx.fill();
+      ctx.strokeStyle = '#3b3563'; ctx.lineWidth = 1.5; rr(x, yy, cw, 50, 12); ctx.stroke();
+      ctx.fillStyle = '#8f88b5'; ctx.font = `800 11px ${FB}`; ctx.fillText(label, x + cw / 2, yy + 15);
+      ctx.fillStyle = '#f4efe6'; ctx.font = `900 ${typeof val === 'number' ? 18 : 13}px ${FD}`; ctx.fillText(String(val), x + cw / 2, yy + 34);
+    });
+  }
+  // how to beat it
+  const hintK = ease((t - 1.8) / .3);
+  if (hintK > 0) {
+    ctx.globalAlpha = a * hintK;
+    const hy = 604;
+    ctx.fillStyle = 'rgba(255,224,102,.12)'; rr(40, hy, W - 80, 44, 14); ctx.fill();
+    ctx.strokeStyle = '#ffe066'; ctx.lineWidth = 1.5; rr(40, hy, W - 80, 44, 14); ctx.stroke();
+    const p = 1 + Math.sin(T * 6) * .15;
+    ctx.fillStyle = 'rgba(255,224,102,.35)'; circ(66, hy + 22, 13 * p);
+    ctx.fillStyle = '#ffe066'; circ(66, hy + 22, 8); ctx.fillStyle = '#fff'; circ(66, hy + 22, 3);
+    ctx.textAlign = 'left'; ctx.fillStyle = '#ffe066'; ctx.font = `900 14px ${FB}`;
+    ctx.fillText('Бий у жовтий сенсор: потрійна шкода', 88, hy + 23);
+    ctx.textAlign = 'center';
+  }
+  if (t > 2.3) {
+    ctx.globalAlpha = a * (.55 + .45 * Math.sin(T * 4));
+    ctx.fillStyle = '#c9c2e6'; ctx.font = `800 13px ${FB}`; ctx.fillText('Торкнись, щоб почати', W / 2, 676);
+  }
+  ctx.restore();
+}
+
+function announceHero() { G.typeTag = { life: 1.6, max: 1.6 }; }
+function drawTypeTag() {
+  const tg = G.typeTag;
+  if (!tg || G.state !== 'aim' || drag) return;
+  const h = G.heroes[G.cur], k = tg.life / tg.max;
+  const a = Math.min(1, k * 3, (1 - k) * 8), rise = (1 - k) * 10;
+  const [title, sub] = TYPE_TAG[h.type];
+  const y = Math.max(TOP + 34, h.y - h.r - 44 - rise);
+  ctx.save(); ctx.globalAlpha = a;
+  ctx.font = `900 15px ${FD}`;
+  const w = Math.max(ctx.measureText(title).width, 120) + 26;
+  const x = Math.max(w / 2 + 8, Math.min(W - w / 2 - 8, h.x));
+  ctx.fillStyle = 'rgba(21,18,42,.92)'; rr(x - w / 2, y - 20, w, 40, 12); ctx.fill();
+  ctx.strokeStyle = h.yarn; ctx.lineWidth = 2; rr(x - w / 2, y - 20, w, 40, 12); ctx.stroke();
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillStyle = h.yarn; ctx.fillText(title, x, y - 6);
+  ctx.fillStyle = '#c9c2e6'; ctx.font = `800 10px ${FB}`; ctx.fillText(sub, x, y + 10);
+  ctx.restore();
 }
 
 function heart(x, y, s, fill) {
@@ -1785,18 +1942,68 @@ function drawAim() {
   ctx.strokeStyle = 'rgba(0,0,0,.3)'; ctx.lineWidth = 1; ctx.beginPath(); ctx.arc(px, py, 4, .5, 2.6); ctx.stroke();
   ctx.strokeStyle = G.zoomArmed ? '#ffd166' : '#fff'; ctx.lineWidth = 3; ctx.globalAlpha = .5;
   ctx.beginPath(); ctx.arc(h.x, h.y, h.r + 12, -Math.PI / 2, -Math.PI / 2 + TAU * pl / 90); ctx.stroke(); ctx.globalAlpha = 1;
+  // simulate the first stretch of the flight: walls and enemies, bouncing off or piercing through
+  const pierce = h.type === 'pierce', col = G.zoomArmed ? '#ffd166' : h.yarn;
+  const inside = new Set(), marks = [];
   let x = h.x, y = h.y, vx = dx, vy = dy;
-  for (let i = 1; i <= 34; i++) {
+  const STEPS = 42;
+  for (let i = 1; i <= STEPS; i++) {
     for (let k = 0; k < 9; k++) {
       x += vx; y += vy;
       if (x < h.r) { x = h.r; vx = -vx; }
       if (x > W - h.r) { x = W - h.r; vx = -vx; }
       if (y < TOP + h.r) { y = TOP + h.r; vy = -vy; }
       if (y > BOT - h.r) { y = BOT - h.r; vy = -vy; }
+      for (const e of G.enemies) {
+        if (!e.alive) continue;
+        const ex = x - e.x, ey = y - e.y, d = Math.hypot(ex, ey) || 1, rs = h.r + e.r;
+        if (d >= rs) { inside.delete(e); continue; }
+        if (inside.has(e)) continue;
+        inside.add(e);
+        const nx = ex / d, ny = ey / d;
+        if (pierce) marks.push({ e, i });
+        else {
+          x = e.x + nx * rs; y = e.y + ny * rs;
+          const vn = vx * nx + vy * ny;
+          if (vn < 0) { vx -= 2 * vn * nx; vy -= 2 * vn * ny; }
+          marks.push({ x: e.x + nx * e.r, y: e.y + ny * e.r, nx, ny, i });
+        }
+      }
     }
-    ctx.globalAlpha = 1 - i / 36;
-    ctx.fillStyle = G.zoomArmed ? '#ffd166' : h.yarn; circ(x, y, 4 - i * .07);
-    ctx.fillStyle = '#fff'; circ(x, y, 1.8 - i * .03);
+    ctx.globalAlpha = 1 - i / (STEPS + 2);
+    if (pierce) {
+      // arrowheads: this hero flies straight through
+      const a = Math.atan2(vy, vx), s2 = 6.5 - i * .07;
+      ctx.save(); ctx.translate(x, y); ctx.rotate(a);
+      ctx.fillStyle = col; ctx.beginPath(); ctx.moveTo(s2, 0); ctx.lineTo(-s2 * .8, -s2 * .75); ctx.lineTo(-s2 * .35, 0); ctx.lineTo(-s2 * .8, s2 * .75); ctx.closePath(); ctx.fill();
+      ctx.restore();
+    } else {
+      ctx.fillStyle = col; circ(x, y, 4.2 - i * .06);
+      ctx.fillStyle = '#fff'; circ(x, y, 1.9 - i * .025);
+    }
+  }
+  ctx.globalAlpha = 1;
+  for (const m of marks) {
+    const a = Math.max(.5, 1 - m.i / (STEPS + 2));
+    ctx.globalAlpha = a;
+    if (pierce) {
+      // dashed ring: the enemy gets hit and the hero keeps going
+      ctx.setLineDash([6, 5]);
+      ctx.strokeStyle = '#15122a'; ctx.lineWidth = 5; ctx.beginPath(); ctx.arc(m.e.x, m.e.y, m.e.r + 8, 0, TAU); ctx.stroke();
+      ctx.strokeStyle = col; ctx.lineWidth = 2.5; ctx.stroke(); ctx.setLineDash([]);
+    } else {
+      // impact star where the hero hits and rebounds
+      ctx.lineCap = 'round';
+      for (const [sc, lw] of [['#15122a', 5.5], ['#fff', 2.5]]) {
+        ctx.strokeStyle = sc; ctx.lineWidth = lw;
+        for (let q = 0; q < 5; q++) {
+          const ang = Math.atan2(m.ny, m.nx) + (q - 2) * .5;
+          ctx.beginPath(); ctx.moveTo(m.x + Math.cos(ang) * 6, m.y + Math.sin(ang) * 6); ctx.lineTo(m.x + Math.cos(ang) * 16, m.y + Math.sin(ang) * 16); ctx.stroke();
+        }
+      }
+      ctx.fillStyle = '#15122a'; circ(m.x, m.y, 5.5);
+      ctx.fillStyle = col; circ(m.x, m.y, 4);
+    }
   }
   ctx.globalAlpha = 1;
 }
@@ -2237,6 +2444,7 @@ function drawGame() {
   drawFx();
   drawRoomOver(c);
   drawAim();
+  drawTypeTag();
   ctx.restore();
   drawTexts();
   ctx.restore();
@@ -2250,6 +2458,7 @@ function drawGame() {
   }
   drawHUD();
   drawBanner();
+  drawBossIntro();
   if (G.state === 'win' || G.state === 'lose') { UI = []; drawEnd(); }
 }
 
@@ -2277,6 +2486,7 @@ cv.addEventListener('pointerdown', ev => {
     const b = UI[i];
     if (p.x >= b.x && p.x <= b.x + b.w && p.y >= b.y && p.y <= b.y + b.h) { Snd.play('click'); b.cb(); return; }
   }
+  if (SCREEN === 'game' && G && G.state === 'bossintro') { if (G.intro.t > .6) endBossIntro(); return; }
   if (SCREEN !== 'game' || !G || G.state !== 'aim') return;
   if (p.y > TOP && p.y < BOT) {
     try { cv.setPointerCapture(ev.pointerId); } catch (e) {}
