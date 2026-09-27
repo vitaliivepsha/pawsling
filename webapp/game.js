@@ -55,6 +55,7 @@ function haptic(kind) {
 // ---------- utils ----------
 const rnd = (a, b) => a + Math.random() * (b - a);
 const hexRgb = h => [1, 3, 5].map(i => parseInt(h.slice(i, i + 2), 16)).join(',');
+const hexA = (h, a) => `rgba(${hexRgb(h)},${a})`;
 const dist = (ax, ay, bx, by) => Math.hypot(ax - bx, ay - by);
 function angDiff(a, b) {
   let d = (a - b) % TAU;
@@ -1091,6 +1092,16 @@ function tr(key, ...a) {
   return typeof v === 'function' ? v(...a) : v;
 }
 // shrink a font until the text fits
+// break text into lines no wider than maxW in the current font
+function splitLines(text, maxW) {
+  const out = []; let line = '';
+  for (const w of String(text).split(' ')) {
+    const t = line ? line + ' ' + w : w;
+    if (ctx.measureText(t).width > maxW && line) { out.push(line); line = w; } else line = t;
+  }
+  if (line) out.push(line);
+  return out;
+}
 function fitFont(text, maxW, size, weight = 900, fam = FD) {
   let s = size;
   ctx.font = `${weight} ${s}px ${fam}`;
@@ -1794,7 +1805,7 @@ function uiBtn(x, y, w, h, label, cb, primary) {
   const g = ctx.createLinearGradient(0, y, 0, y + h);
   g.addColorStop(0, primary ? '#ffd87a' : '#2e2859'); g.addColorStop(1, primary ? '#ffb938' : '#1f1a40');
   ctx.fillStyle = g; rr(x, y, w, h, 14); ctx.fill();
-  ctx.fillStyle = 'rgba(255,255,255,.16)'; rr(x + 6, y + 4, w - 12, h * .32, 10); ctx.fill();
+  ctx.fillStyle = primary ? 'rgba(255,255,255,.16)' : 'rgba(255,255,255,.05)'; rr(x + 6, y + 4, w - 12, h * .32, 10); ctx.fill();
   if (!primary) { ctx.strokeStyle = '#4a4278'; ctx.lineWidth = 2; rr(x, y, w, h, 14); ctx.stroke(); }
   ctx.fillStyle = primary ? '#15122a' : '#f4efe6';
   fitFont(label, w - 18, h > 48 ? 20 : 16); ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
@@ -2812,20 +2823,24 @@ function drawBossIntro() {
   if (skK > 0) {
     ctx.globalAlpha = a * skK;
     const [sName, sDesc] = tr('bossSkills')[e.kind == null ? 6 : e.kind], sy = 546;
-    ctx.fillStyle = 'rgba(35,30,68,.95)'; rr(30, sy, W - 60, 58, 14); ctx.fill();
-    ctx.strokeStyle = bc; ctx.lineWidth = 2; rr(30, sy, W - 60, 58, 14); ctx.stroke();
+    ctx.font = `800 13px ${FB}`;
+    const lines = splitLines(sDesc, W - 92).slice(0, 2), boxH = 42 + lines.length * 17;
+    ctx.fillStyle = 'rgba(35,30,68,.95)'; rr(30, sy, W - 60, boxH, 14); ctx.fill();
+    ctx.strokeStyle = bc; ctx.lineWidth = 2; rr(30, sy, W - 60, boxH, 14); ctx.stroke();
+    I.hintY = sy + boxH + 10;
     ctx.textAlign = 'left';
     ctx.fillStyle = '#8f88b5'; ctx.font = `800 11px ${FB}`; ctx.fillText(tr('skillLabel').toUpperCase(), 46, sy + 16);
     const lw = ctx.measureText(tr('skillLabel').toUpperCase()).width;
     ctx.fillStyle = bc; fitFont(sName, W - 120 - lw, 15); ctx.fillText(sName, 54 + lw, sy + 16);
-    ctx.fillStyle = '#f4efe6'; fitFont(sDesc, W - 92, 13, 800, FB); ctx.fillText(sDesc, 46, sy + 40);
+    ctx.fillStyle = '#f4efe6'; ctx.font = `800 13px ${FB}`;
+    lines.forEach((ln, i) => { fitFont(ln, W - 92, 13, 800, FB); ctx.fillText(ln, 46, sy + 38 + i * 17); });
     ctx.textAlign = 'center';
   }
   // how to beat it
   const hintK = ease((t - 2.0) / .3);
   if (hintK > 0) {
     ctx.globalAlpha = a * hintK;
-    const hy = 614;
+    const hy = Math.min(I.hintY || 614, 650);
     ctx.fillStyle = 'rgba(255,224,102,.12)'; rr(30, hy, W - 60, 40, 14); ctx.fill();
     ctx.strokeStyle = '#ffe066'; ctx.lineWidth = 1.5; rr(30, hy, W - 60, 40, 14); ctx.stroke();
     const p = 1 + Math.sin(T * 6) * .15;
@@ -2837,7 +2852,7 @@ function drawBossIntro() {
   }
   if (t > 2.4) {
     ctx.globalAlpha = a * (.55 + .45 * Math.sin(T * 4));
-    ctx.fillStyle = '#c9c2e6'; ctx.font = `800 13px ${FB}`; ctx.fillText(tr('tapToStart'), W / 2, 682);
+    ctx.fillStyle = '#c9c2e6'; ctx.font = `800 13px ${FB}`; ctx.fillText(tr('tapToStart'), W / 2, Math.max(682, Math.min(I.hintY || 614, 650) + 58));
   }
   ctx.restore();
 }
@@ -4024,9 +4039,11 @@ const FEATURES = () => tr('features').map((f, i) => [FEATURE_COLS[i], ...f]);
 function drawHowto() {
   ctx.drawImage(BGS[1], 0, 0, W, H);
   ctx.fillStyle = 'rgba(12,10,26,.9)'; ctx.fillRect(0, 0, W, H);
-  HEROES.filter(h => h.id !== 'spark').forEach((h, i) => {
-    drawHero(h, 90 + i * 90, 100 + Math.sin(T * 3 + i) * 5, 26, null, { look: [0, .6] });
-    ctx.fillStyle = h.yarn; ctx.font = `900 12px ${FD}`; ctx.textAlign = 'center'; ctx.fillText(h.name, 90 + i * 90, 148);
+  const cast = HEROES.filter(h => h.id !== 'spark'), step = (W - 24) / cast.length, hr = Math.min(26, step * .31);
+  cast.forEach((h, i) => {
+    const x = 12 + step * (i + .5);
+    drawHero(h, x, 100 + Math.sin(T * 3 + i) * 5, hr, null, { look: [0, .6] });
+    ctx.fillStyle = h.yarn; ctx.textAlign = 'center'; fitFont(h.name, step - 4, 12); ctx.fillText(h.name, x, 148);
   });
   ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
   ctx.fillStyle = '#ffc857'; ctx.font = `900 56px ${FD}`; ctx.fillText('Pawsling', W / 2, 200);
@@ -4528,7 +4545,13 @@ function drawShop() {
     const have = (INV[key] || 0) + (PROG.hats && PROG.hats[id.slice(4)] ? 1 : 0);
     ctx.fillStyle = '#1d1938'; rr(16, y, W - 32, step - 8, 14); ctx.fill();
     ctx.strokeStyle = perm && have ? 'rgba(92,225,198,.5)' : '#3b3563'; ctx.lineWidth = 1.5; rr(16, y, W - 32, step - 8, 14); ctx.stroke();
-    drawShopIcon(id, 52, y + 32);
+    const ts = Math.min(48, step - 20), tx = 28, ty = y + (step - 8 - ts) / 2;
+    const tint = id.startsWith('hero_') ? ['#6d4fb0', '#3a2b6b'] : id.startsWith('hat_') ? ['#c9962e', '#6b4a14'] : id === 'rainbow' ? ['#ff8fb1', '#6ec3ff'] : ['#d9577f', '#5a2440'];
+    const tg = ctx.createLinearGradient(tx, ty, tx + ts, ty + ts);
+    tg.addColorStop(0, tint[0]); tg.addColorStop(1, tint[1]);
+    ctx.fillStyle = tg; rr(tx, ty, ts, ts, 12); ctx.fill();
+    ctx.fillStyle = 'rgba(255,255,255,.14)'; rr(tx + 3, ty + 3, ts - 6, ts * .34, 9); ctx.fill();
+    drawShopIcon(id, tx + ts / 2, ty + ts / 2);
     ctx.textAlign = 'left'; ctx.textBaseline = 'middle'; ctx.fillStyle = '#f4efe6';
     fitFont(tr('item.' + id), W - 250, 15); ctx.fillText(tr('item.' + id), 88, y + 22);
     const desc = perm ? tr('itemd.' + id) : `${tr('itemd.' + id)} · ${tr('owned', have)}`;
@@ -4849,24 +4872,60 @@ const STORY = {
         { bg: 1, actors: [{ e: 'vac', x: 130, y: 250, r: 52 }, { h: 'nugget', x: 290, y: 250, r: 64, mood: 'happy' }], who: 'nugget' }],
 };
 let STORYRUN = null;
-function showStory(key, then) { STORYRUN = { key, i: 0, then }; setScreen('story'); }
+function showStory(key, then) { STORYRUN = { key, i: 0, then, at: T }; setScreen('story'); }
 function storyNext(skip) {
   const st = STORYRUN;
   if (!st) return;
-  if (!skip && st.i < STORY[st.key].length - 1) { st.i++; Snd.play('click'); return; }
+  if (!skip && st.i < STORY[st.key].length - 1) { st.i++; st.at = T; Snd.play('click'); return; }
   PROG.story = { ...(PROG.story || {}), [st.key]: 1 }; saveProg();
   STORYRUN = null; st.then();
 }
 const ENEMY_DRAW = { vac: drawVac, spray: drawSpray, mop: drawMop, brush: drawBrush, fan: drawFan, rc: drawRc, shield: drawShield, split: drawSplit };
+// halftone dots, the printed-comic texture
+function halftone(x0, y0, w, h, col, step, maxR, fromX, fromY) {
+  ctx.fillStyle = col;
+  const far = Math.hypot(w, h);
+  for (let y = y0; y < y0 + h; y += step) for (let x = x0 + ((y - y0) / step % 2) * step / 2; x < x0 + w; x += step) {
+    const r = maxR * Math.max(0, 1 - Math.hypot(x - fromX, y - fromY) / far * 1.6);
+    if (r > .3) { ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fill(); }
+  }
+}
 function drawStory() {
-  const st = STORYRUN, panels = STORY[st.key], pn = panels[st.i];
+  const st = STORYRUN, panels = STORY[st.key], pn = panels[st.i], ch = CHAPTERS[pn.bg] || CHAPTERS[0];
+  const k = RM ? 1 : Math.min(1, (T - (st.at || 0)) / .4), ease = 1 - Math.pow(1 - k, 3);
   ctx.fillStyle = '#0c0a1a'; ctx.fillRect(0, 0, W, H);
+  halftone(0, 0, W, H, hexA(ch.col, .12), 14, 4, W, 0);
   UI.push({ x: 0, y: 0, w: W, h: H, cb: () => storyNext(false) });
-  const px = 20, py = 90, pw = W - 40, ph = 400;
-  // the room, framed like a comic panel
-  ctx.save(); rr(px, py, pw, ph, 18); ctx.clip();
+  // chapter label like a comic's title strip
+  const label = st.key === 'end' ? '★ ★ ★' : ch.name;
+  ctx.save(); ctx.translate(W / 2, 52); ctx.rotate(-.03);
+  ctx.font = `900 20px ${FD}`; const lw = ctx.measureText(label).width + 36;
+  ctx.fillStyle = '#15122a'; rr(-lw / 2 + 4, -18 + 4, lw, 36, 8); ctx.fill();
+  ctx.fillStyle = ch.col; rr(-lw / 2, -18, lw, 36, 8); ctx.fill();
+  ctx.strokeStyle = '#15122a'; ctx.lineWidth = 3; rr(-lw / 2, -18, lw, 36, 8); ctx.stroke();
+  ctx.fillStyle = '#15122a'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(label, 0, 1);
+  ctx.restore();
+  // the panel slides in slightly tilted, with a thick ink border
+  const px = 22, py = 96, pw = W - 44, ph = 392, tilt = (st.i % 2 ? 1 : -1) * .018;
+  ctx.save();
+  ctx.globalAlpha = Math.min(1, k * 1.5);
+  ctx.translate(W / 2 + (1 - ease) * 80, py + ph / 2); ctx.rotate(tilt + (1 - ease) * .06); ctx.translate(-W / 2, -(py + ph / 2));
+  ctx.fillStyle = 'rgba(0,0,0,.5)'; ctx.fillRect(px + 8, py + 10, pw, ph);
+  ctx.save(); ctx.beginPath(); ctx.rect(px, py, pw, ph); ctx.clip();
   ctx.drawImage(BGS[pn.bg], 0, (TOP + 70) * 2, W * 2, 450 * 2, px, py, pw, ph);
-  ctx.fillStyle = 'rgba(8,6,18,.35)'; ctx.fillRect(px, py, pw, ph);
+  ctx.fillStyle = 'rgba(8,6,18,.3)'; ctx.fillRect(px, py, pw, ph);
+  if (pn.who === 'boss') {
+    // action lines burst out from behind the boss
+    ctx.save(); ctx.globalCompositeOperation = 'lighter';
+    const cx = px + 205, cy = py + 230;
+    for (let i = 0; i < 36; i++) {
+      const a = i / 36 * TAU + (RM ? 0 : T * .15), w = .035;
+      ctx.fillStyle = hexA(BOSS_COL[pn.kind] || '#ff4d6d', i % 2 ? .1 : .18);
+      ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx + Math.cos(a - w) * 500, cy + Math.sin(a - w) * 500); ctx.lineTo(cx + Math.cos(a + w) * 500, cy + Math.sin(a + w) * 500); ctx.closePath(); ctx.fill();
+    }
+    ctx.restore();
+  }
+  halftone(px, py, pw, ph, 'rgba(0,0,0,.28)', 9, 2.6, px + pw, py + ph);
   ctx.translate(px, py);
   for (const a of pn.actors) {
     if (a.h) { const h = HEROES.find(d => d.id === a.h); drawHero(h, a.x, a.y, a.r, null, { mood: a.mood, look: [0, .3] }); continue; }
@@ -4877,27 +4936,51 @@ function drawStory() {
     ctx.restore();
   }
   ctx.restore();
-  ctx.strokeStyle = '#f4efe6'; ctx.lineWidth = 3; rr(px, py, pw, ph, 18); ctx.stroke();
-  // the line, in a speech box with the speaker's name
-  const by = py + ph + 20, bh = 150;
-  ctx.fillStyle = '#f4efe6'; rr(px, by, pw, bh, 16); ctx.fill();
+  ctx.strokeStyle = '#f4efe6'; ctx.lineWidth = 9; ctx.strokeRect(px, py, pw, ph);
+  ctx.strokeStyle = '#15122a'; ctx.lineWidth = 4; ctx.strokeRect(px, py, pw, ph);
+  ctx.restore();
+  // the line: a speech box with a name plate, or a yellow narration box
+  const text = tr(`st.${st.key}.${st.i}`), by = py + ph + 30, bw = pw;
+  ctx.font = `${pn.who ? 800 : 'italic 800'} 15px ${FB}`;
+  const lines = splitLines(text, bw - 40), bh = Math.max(96, 34 + lines.length * 21 + (pn.who ? 14 : 0));
+  const bk = RM ? 1 : Math.min(1, Math.max(0, (T - (st.at || 0) - .15) / .3)), pop = .9 + .1 * (1 - Math.pow(1 - bk, 3));
+  ctx.save(); ctx.globalAlpha = bk;
+  ctx.translate(W / 2, by + bh / 2); ctx.rotate(-tilt * .6); ctx.scale(pop, pop); ctx.translate(-W / 2, -(by + bh / 2));
+  const fill = pn.who ? '#fbf7ee' : '#ffe08a';
+  ctx.fillStyle = '#15122a'; rr(px + 5, by + 6, bw, bh, 14); ctx.fill();
+  ctx.fillStyle = fill; rr(px, by, bw, bh, 14); ctx.fill();
   if (pn.who) {
     const sx = pn.who === 'boss' ? 205 : (pn.actors.find(a => a.h === pn.who) || pn.actors[0]).x;
-    ctx.beginPath(); ctx.moveTo(px + sx - 14, by + 2); ctx.lineTo(px + sx, by - 18); ctx.lineTo(px + sx + 14, by + 2); ctx.closePath(); ctx.fill();
+    ctx.fillStyle = fill; ctx.strokeStyle = '#15122a'; ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.moveTo(px + sx - 16, by + 1); ctx.lineTo(px + sx + 4, by - 24); ctx.lineTo(px + sx + 12, by + 1); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(px + sx - 16, by); ctx.lineTo(px + sx + 4, by - 24); ctx.lineTo(px + sx + 12, by); ctx.stroke();
+  }
+  ctx.strokeStyle = '#15122a'; ctx.lineWidth = 3; rr(px, by, bw, bh, 14); ctx.stroke();
+  if (pn.who) {
+    ctx.fillStyle = fill; ctx.fillRect(px + (pn.who === 'boss' ? 205 : (pn.actors.find(a => a.h === pn.who) || pn.actors[0]).x) - 14, by - 1, 24, 4);
   }
   ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
-  let ty = by + 28;
+  let ty = by + 26;
   if (pn.who) {
     const name = pn.who === 'boss' ? bossName({ kind: pn.kind }) : HEROES.find(d => d.id === pn.who).name;
-    const col = pn.who === 'boss' ? BOSS_COL[pn.kind] : HEROES.find(d => d.id === pn.who).dark;
-    ctx.fillStyle = col; fitFont(name, pw - 40, 16); ctx.fillText(name, px + 20, ty); ty += 28;
+    const col = pn.who === 'boss' ? BOSS_COL[pn.kind] : HEROES.find(d => d.id === pn.who).yarn;
+    ctx.font = `900 14px ${FD}`; const nw = Math.min(bw - 60, ctx.measureText(name).width + 22);
+    ctx.save(); ctx.translate(px + 14, by - 12); ctx.rotate(-.04);
+    ctx.fillStyle = col; rr(0, 0, nw, 26, 7); ctx.fill();
+    ctx.strokeStyle = '#15122a'; ctx.lineWidth = 3; rr(0, 0, nw, 26, 7); ctx.stroke();
+    ctx.fillStyle = '#15122a'; fitFont(name, nw - 18, 14); ctx.fillText(name, 11, 14);
+    ctx.restore();
+    ty += 12;
   }
   ctx.fillStyle = '#1b1830'; ctx.font = `${pn.who ? 800 : 'italic 800'} 15px ${FB}`;
-  wrap(tr(`st.${st.key}.${st.i}`), px + 20, ty, pw - 40, 21);
-  // progress and skip
+  lines.forEach((ln, i) => ctx.fillText(ln, px + 20, ty + i * 21));
+  ctx.restore();
+  // progress dots and skip
+  const n = panels.length, dx = W / 2 - (n - 1) * 9;
+  for (let i = 0; i < n; i++) { ctx.fillStyle = i === st.i ? ch.col : '#3b3563'; circ(dx + i * 18, 690, i === st.i ? 6 : 4.5); }
   ctx.textAlign = 'center'; ctx.fillStyle = '#8f88b5'; ctx.font = `800 12px ${FB}`;
-  ctx.fillText(`${st.i + 1} / ${panels.length} · ${tr('storyTap')}`, W / 2, 700);
-  uiBtn(W - 150, 730, 130, 42, tr('storySkip'), () => storyNext(true), false);
+  ctx.fillText(tr('storyTap'), W / 2, 712);
+  uiBtn(W - 150, 736, 130, 42, tr('storySkip'), () => storyNext(true), false);
 }
 
 function drawEnd() {
