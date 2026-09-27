@@ -34,7 +34,7 @@ if (TG) {
     if (tgv('6.1')) {
       TG.setHeaderColor('#15122a');
       TG.setBackgroundColor('#110e22');
-      TG.BackButton.onClick(() => { if (SCREEN === 'game') goMap(); else if (SCREEN === 'howto') closeHowto(); else if (SCREEN === 'lang' || SCREEN === 'board') setScreen('map'); });
+      TG.BackButton.onClick(() => { if (SCREEN === 'game') goMap(); else if (SCREEN === 'howto') closeHowto(); else if (['lang', 'board', 'shop', 'prep'].includes(SCREEN)) setScreen('map'); });
     }
     if (tgv('7.7')) TG.disableVerticalSwipes();
     TG.onEvent('viewportChanged', resize);
@@ -393,8 +393,13 @@ const HEROES = [
     dmg: 700, speed: 1150, r: 25, skill: 'кожен удар відкладає атаку ворога на хід', combo: 'Нічний перекус' },
   { id: 'nugget', name: 'Наґет', kind: 'raccoon', type: 'pierce', fur: '#b9a78f', dark: '#4a3f35', muzzle: '#f1ece4', eye: '#ffffff', yarn: '#ff8fb1',
     dmg: 380, speed: 1300, r: 23, skill: 'кожен удар вибухає по сусідніх ворогах', combo: 'Скарб зі смітника' },
+  // bought in the shop; joins the team as a fifth hero
+  { id: 'spark', name: 'Іскра', kind: 'cat', type: 'bounce', fur: '#f4f1ea', dark: '#c9c2b0', muzzle: '#ffffff', eye: '#4fc3f7', yarn: '#ffe14d',
+    dmg: 480, speed: 1400, r: 22, skill: 'удар перескакує блискавкою на найближчого ворога', combo: 'Грозова хмара' },
 ];
 const START = [[90, 612], [180, 632], [270, 632], [360, 612]];
+const START5 = [[62, 612], [143, 632], [225, 642], [307, 632], [388, 612]];
+const startPos = (i, n) => (n > 4 ? START5 : START)[i];
 const ENEMY = {
   vac:   { r: 24, hp: 1600,  timer: 3, atk: 1250 },
   spray: { r: 22, hp: 1200,  timer: 2, atk: 900 },
@@ -577,7 +582,28 @@ const I18N = {
     allKo: 'Усі герої в нокауті. Спробуй ще раз', waveTry: (a, b) => `Хвиля ${a} з ${b}. Спробуй ще раз`,
     'st.knots': 'Вузлів зав\'язано', 'st.lasers': 'Лазер спіймано', 'st.crits': 'Критів по сенсору', 'st.portals': 'Телепортів',
     newBestLevel: 'Новий рекорд для цього рівня!', newBestNight: 'Новий рекорд нічної зміни!', again: 'Ще раз', map: 'Карта', next: 'Далі',
-    toMap: 'До карти', allDone: 'Квартиру врятовано! Усі рівні пройдено', lang: 'Мова', secondWind: 'Друге дихання', secondWindSub: 'Повна міцність і всі герої на ногах', secondWindGo: 'Друге дихання!', payWait: 'Відкриваю оплату…', payFailed: 'Оплата не пройшла. Спробуй ще раз', langAuto: 'Автоматично',
+    toMap: 'До карти', allDone: 'Квартиру врятовано! Усі рівні пройдено', lang: 'Мова',
+    shop: 'Магазин',
+    shopTgOnly: 'Магазин працює, коли гра відкрита в Telegram',
+    equip: 'Вдягнути',
+    unequip: 'Зняти',
+    inTeam: 'У команді',
+    startLvl: 'Почати',
+    cancel: 'Скасувати',
+    boosters: 'Підсилення на цей рівень',
+    boostHeart: 'Серце+',
+    boostHeartD: '+1 серце кожному героєві',
+    boostMeter: 'Швидкий старт',
+    boostMeterD: 'Пів шкали «Бешкету» одразу',
+    owned: n => `у вас: ${n}`,
+    'item.heart3': 'Серце+ ×3', 'itemd.heart3': '+1 серце кожному героєві, 3 рівні',
+    'item.meter3': 'Швидкий старт ×3', 'itemd.meter3': 'Пів шкали «Бешкету» на старті, 3 рівні',
+    'item.hero_spark': 'Іскра', 'itemd.hero_spark': 'Удар перескакує блискавкою на сусіда',
+    'item.hat_party': 'Святковий ковпак', 'itemd.hat_party': 'Для всієї команди',
+    'item.hat_crown': 'Корона', 'itemd.hat_crown': 'Для всієї команди',
+    'item.hat_bow': 'Бантик', 'itemd.hat_bow': 'Для всієї команди',
+    'item.rainbow': 'Райдужна нитка', 'itemd.rainbow': 'Нитки переливаються веселкою',
+    'hero.spark.name': 'Іскра', 'hero.spark.skill': 'удар перескакує блискавкою на найближчого ворога', 'hero.spark.combo': 'Грозова хмара', secondWind: 'Друге дихання', secondWindSub: 'Повна міцність і всі герої на ногах', secondWindGo: 'Друге дихання!', payWait: 'Відкриваю оплату…', payFailed: 'Оплата не пройшла. Спробуй ще раз', langAuto: 'Автоматично',
     aria: 'Гра Pawsling. Потягни від героя назад і відпусти, щоб запустити його, як з рогатки.',
     board: 'Рейтинг', boardNight: 'Нічна зміна', boardStars: 'Зірки', boardYou: 'ти', boardEmpty: 'Поки що нікого. Будь першим!',
     boardLoading: 'Завантаження…', boardError: 'Не вдалося завантажити рейтинг. Перевір інтернет і спробуй ще.',
@@ -628,7 +654,28 @@ const I18N = {
     allKo: 'All heroes knocked out. Try again', waveTry: (a, b) => `Wave ${a} of ${b}. Try again`,
     'st.knots': 'Knots tied', 'st.lasers': 'Lasers caught', 'st.crits': 'Sensor crits', 'st.portals': 'Teleports',
     newBestLevel: 'New record for this level!', newBestNight: 'New Night Shift record!', again: 'Again', map: 'Map', next: 'Next',
-    toMap: 'To the map', allDone: 'Home saved! All levels complete', lang: 'Language', secondWind: 'Second wind', secondWindSub: 'Full home strength, every hero back up', secondWindGo: 'Second wind!', payWait: 'Opening payment…', payFailed: 'Payment failed. Try again', langAuto: 'Automatic',
+    toMap: 'To the map', allDone: 'Home saved! All levels complete', lang: 'Language',
+    shop: 'Shop',
+    shopTgOnly: 'The shop works when the game is opened in Telegram',
+    equip: 'Wear',
+    unequip: 'Remove',
+    inTeam: 'In the team',
+    startLvl: 'Start',
+    cancel: 'Cancel',
+    boosters: 'Boosters for this level',
+    boostHeart: 'Heart+',
+    boostHeartD: '+1 heart for every hero',
+    boostMeter: 'Quick start',
+    boostMeterD: 'Half a Mischief meter right away',
+    owned: n => `you have: ${n}`,
+    'item.heart3': 'Heart+ ×3', 'itemd.heart3': '+1 heart for every hero, 3 levels',
+    'item.meter3': 'Quick start ×3', 'itemd.meter3': 'Half a Mischief meter at the start, 3 levels',
+    'item.hero_spark': 'Sparky', 'itemd.hero_spark': 'Her hits arc like lightning to a neighbor',
+    'item.hat_party': 'Party hat', 'itemd.hat_party': 'For the whole team',
+    'item.hat_crown': 'Crown', 'itemd.hat_crown': 'For the whole team',
+    'item.hat_bow': 'Bow', 'itemd.hat_bow': 'For the whole team',
+    'item.rainbow': 'Rainbow yarn', 'itemd.rainbow': 'Threads shimmer like a rainbow',
+    'hero.spark.name': 'Sparky', 'hero.spark.skill': 'each hit arcs like lightning to the nearest enemy', 'hero.spark.combo': 'Thundercloud', secondWind: 'Second wind', secondWindSub: 'Full home strength, every hero back up', secondWindGo: 'Second wind!', payWait: 'Opening payment…', payFailed: 'Payment failed. Try again', langAuto: 'Automatic',
     aria: 'Pawsling. Pull back from a hero and let go to launch it like a slingshot.',
     board: 'Leaderboard', boardNight: 'Night Shift', boardStars: 'Stars', boardYou: 'you', boardEmpty: 'Nobody here yet. Be the first!',
     boardLoading: 'Loading…', boardError: 'Could not load the leaderboard. Check your connection and try again.',
@@ -679,7 +726,28 @@ const I18N = {
     allKo: 'Wszyscy bohaterowie znokautowani. Spróbuj jeszcze raz', waveTry: (a, b) => `Fala ${a} z ${b}. Spróbuj jeszcze raz`,
     'st.knots': 'Zawiązane supły', 'st.lasers': 'Złapane lasery', 'st.crits': 'Kryty w czujnik', 'st.portals': 'Teleporty',
     newBestLevel: 'Nowy rekord tego poziomu!', newBestNight: 'Nowy rekord nocnej zmiany!', again: 'Jeszcze raz', map: 'Mapa', next: 'Dalej',
-    toMap: 'Do mapy', allDone: 'Mieszkanie uratowane! Wszystkie poziomy ukończone', lang: 'Język', secondWind: 'Drugi oddech', secondWindSub: 'Pełna wytrzymałość i wszyscy bohaterowie na nogach', secondWindGo: 'Drugi oddech!', payWait: 'Otwieram płatność…', payFailed: 'Płatność nie powiodła się. Spróbuj ponownie', langAuto: 'Automatycznie',
+    toMap: 'Do mapy', allDone: 'Mieszkanie uratowane! Wszystkie poziomy ukończone', lang: 'Język',
+    shop: 'Sklep',
+    shopTgOnly: 'Sklep działa, gdy gra jest otwarta w Telegramie',
+    equip: 'Załóż',
+    unequip: 'Zdejmij',
+    inTeam: 'W drużynie',
+    startLvl: 'Start',
+    cancel: 'Anuluj',
+    boosters: 'Wzmocnienia na ten poziom',
+    boostHeart: 'Serce+',
+    boostHeartD: '+1 serce dla każdego bohatera',
+    boostMeter: 'Szybki start',
+    boostMeterD: 'Pół paska psot od razu',
+    owned: n => `masz: ${n}`,
+    'item.heart3': 'Serce+ ×3', 'itemd.heart3': '+1 serce dla każdego bohatera, 3 poziomy',
+    'item.meter3': 'Szybki start ×3', 'itemd.meter3': 'Pół paska psot na starcie, 3 poziomy',
+    'item.hero_spark': 'Iskra', 'itemd.hero_spark': 'Jej ciosy przeskakują piorunem na sąsiada',
+    'item.hat_party': 'Czapeczka imprezowa', 'itemd.hat_party': 'Dla całej drużyny',
+    'item.hat_crown': 'Korona', 'itemd.hat_crown': 'Dla całej drużyny',
+    'item.hat_bow': 'Kokardka', 'itemd.hat_bow': 'Dla całej drużyny',
+    'item.rainbow': 'Tęczowa włóczka', 'itemd.rainbow': 'Nitki mienią się tęczą',
+    'hero.spark.name': 'Iskra', 'hero.spark.skill': 'każde trafienie przeskakuje piorunem na najbliższego wroga', 'hero.spark.combo': 'Chmura burzowa', secondWind: 'Drugi oddech', secondWindSub: 'Pełna wytrzymałość i wszyscy bohaterowie na nogach', secondWindGo: 'Drugi oddech!', payWait: 'Otwieram płatność…', payFailed: 'Płatność nie powiodła się. Spróbuj ponownie', langAuto: 'Automatycznie',
     aria: 'Pawsling. Pociągnij od bohatera do tyłu i puść, żeby wystrzelić go jak z procy.',
     board: 'Ranking', boardNight: 'Nocna zmiana', boardStars: 'Gwiazdki', boardYou: 'ty', boardEmpty: 'Jeszcze nikogo tu nie ma. Bądź pierwszy!',
     boardLoading: 'Ładowanie…', boardError: 'Nie udało się wczytać rankingu. Sprawdź internet i spróbuj ponownie.',
@@ -730,7 +798,28 @@ const I18N = {
     allKo: 'Alle Helden k.o. Versuch es nochmal', waveTry: (a, b) => `Welle ${a} von ${b}. Versuch es nochmal`,
     'st.knots': 'Geknüpfte Knoten', 'st.lasers': 'Laser gefangen', 'st.crits': 'Sensor-Krits', 'st.portals': 'Teleports',
     newBestLevel: 'Neuer Rekord für dieses Level!', newBestNight: 'Neuer Nachtschicht-Rekord!', again: 'Nochmal', map: 'Karte', next: 'Weiter',
-    toMap: 'Zur Karte', allDone: 'Wohnung gerettet! Alle Level geschafft', lang: 'Sprache', secondWind: 'Zweite Luft', secondWindSub: 'Volle Stärke und alle Helden wieder auf den Beinen', secondWindGo: 'Zweite Luft!', payWait: 'Zahlung wird geöffnet…', payFailed: 'Zahlung fehlgeschlagen. Versuch es nochmal', langAuto: 'Automatisch',
+    toMap: 'Zur Karte', allDone: 'Wohnung gerettet! Alle Level geschafft', lang: 'Sprache',
+    shop: 'Shop',
+    shopTgOnly: 'Der Shop funktioniert, wenn das Spiel in Telegram geöffnet ist',
+    equip: 'Anziehen',
+    unequip: 'Ablegen',
+    inTeam: 'Im Team',
+    startLvl: 'Start',
+    cancel: 'Abbrechen',
+    boosters: 'Booster für dieses Level',
+    boostHeart: 'Herz+',
+    boostHeartD: '+1 Herz für jeden Helden',
+    boostMeter: 'Schnellstart',
+    boostMeterD: 'Halbe Unfug-Leiste sofort',
+    owned: n => `du hast: ${n}`,
+    'item.heart3': 'Herz+ ×3', 'itemd.heart3': '+1 Herz für jeden Helden, 3 Level',
+    'item.meter3': 'Schnellstart ×3', 'itemd.meter3': 'Halbe Unfug-Leiste zum Start, 3 Level',
+    'item.hero_spark': 'Funke', 'itemd.hero_spark': 'Ihre Treffer springen als Blitz weiter',
+    'item.hat_party': 'Partyhut', 'itemd.hat_party': 'Für das ganze Team',
+    'item.hat_crown': 'Krone', 'itemd.hat_crown': 'Für das ganze Team',
+    'item.hat_bow': 'Schleife', 'itemd.hat_bow': 'Für das ganze Team',
+    'item.rainbow': 'Regenbogenwolle', 'itemd.rainbow': 'Fäden schimmern wie ein Regenbogen',
+    'hero.spark.name': 'Funke', 'hero.spark.skill': 'jeder Treffer springt als Blitz auf den nächsten Gegner über', 'hero.spark.combo': 'Gewitterwolke', secondWind: 'Zweite Luft', secondWindSub: 'Volle Stärke und alle Helden wieder auf den Beinen', secondWindGo: 'Zweite Luft!', payWait: 'Zahlung wird geöffnet…', payFailed: 'Zahlung fehlgeschlagen. Versuch es nochmal', langAuto: 'Automatisch',
     aria: 'Pawsling. Zieh vom Helden zurück und lass los, um ihn wie mit einer Schleuder abzufeuern.',
     board: 'Rangliste', boardNight: 'Nachtschicht', boardStars: 'Sterne', boardYou: 'du', boardEmpty: 'Noch niemand hier. Sei der Erste!',
     boardLoading: 'Wird geladen…', boardError: 'Rangliste konnte nicht geladen werden. Prüfe die Verbindung und versuch es nochmal.',
@@ -781,7 +870,28 @@ const I18N = {
     allKo: 'Todos los héroes K.O. Inténtalo de nuevo', waveTry: (a, b) => `Oleada ${a} de ${b}. Inténtalo de nuevo`,
     'st.knots': 'Nudos atados', 'st.lasers': 'Láseres atrapados', 'st.crits': 'Críticos al sensor', 'st.portals': 'Teletransportes',
     newBestLevel: '¡Nuevo récord en este nivel!', newBestNight: '¡Nuevo récord del turno de noche!', again: 'Otra vez', map: 'Mapa', next: 'Siguiente',
-    toMap: 'Al mapa', allDone: '¡Piso salvado! Todos los niveles completados', lang: 'Idioma', secondWind: 'Segundo aliento', secondWindSub: 'Resistencia completa y todos los héroes en pie', secondWindGo: '¡Segundo aliento!', payWait: 'Abriendo el pago…', payFailed: 'El pago falló. Inténtalo de nuevo', langAuto: 'Automático',
+    toMap: 'Al mapa', allDone: '¡Piso salvado! Todos los niveles completados', lang: 'Idioma',
+    shop: 'Tienda',
+    shopTgOnly: 'La tienda funciona cuando el juego se abre en Telegram',
+    equip: 'Poner',
+    unequip: 'Quitar',
+    inTeam: 'En el equipo',
+    startLvl: 'Empezar',
+    cancel: 'Cancelar',
+    boosters: 'Potenciadores para este nivel',
+    boostHeart: 'Corazón+',
+    boostHeartD: '+1 corazón para cada héroe',
+    boostMeter: 'Inicio rápido',
+    boostMeterD: 'Media barra de travesura desde el inicio',
+    owned: n => `tienes: ${n}`,
+    'item.heart3': 'Corazón+ ×3', 'itemd.heart3': '+1 corazón para cada héroe, 3 niveles',
+    'item.meter3': 'Inicio rápido ×3', 'itemd.meter3': 'Media barra de travesura al empezar, 3 niveles',
+    'item.hero_spark': 'Chispa', 'itemd.hero_spark': 'Sus golpes saltan como un rayo al vecino',
+    'item.hat_party': 'Gorro de fiesta', 'itemd.hat_party': 'Para todo el equipo',
+    'item.hat_crown': 'Corona', 'itemd.hat_crown': 'Para todo el equipo',
+    'item.hat_bow': 'Lazo', 'itemd.hat_bow': 'Para todo el equipo',
+    'item.rainbow': 'Hilo arcoíris', 'itemd.rainbow': 'Los hilos brillan como un arcoíris',
+    'hero.spark.name': 'Chispa', 'hero.spark.skill': 'cada golpe salta como un rayo al enemigo más cercano', 'hero.spark.combo': 'Nube de tormenta', secondWind: 'Segundo aliento', secondWindSub: 'Resistencia completa y todos los héroes en pie', secondWindGo: '¡Segundo aliento!', payWait: 'Abriendo el pago…', payFailed: 'El pago falló. Inténtalo de nuevo', langAuto: 'Automático',
     aria: 'Pawsling. Tira hacia atrás desde un héroe y suelta para lanzarlo como con un tirachinas.',
     board: 'Clasificación', boardNight: 'Turno de noche', boardStars: 'Estrellas', boardYou: 'tú', boardEmpty: 'Aún no hay nadie. ¡Sé el primero!',
     boardLoading: 'Cargando…', boardError: 'No se pudo cargar la clasificación. Revisa la conexión e inténtalo de nuevo.',
@@ -1438,6 +1548,10 @@ function iconBtn(x, y, kind, cb) {
   ctx.fillStyle = '#f4efe6'; ctx.strokeStyle = '#f4efe6'; ctx.lineWidth = 2.2; ctx.lineCap = 'round';
   if (kind === 'back') {
     ctx.beginPath(); ctx.moveTo(cx + 3, cy - 7); ctx.lineTo(cx - 4, cy); ctx.lineTo(cx + 3, cy + 7); ctx.stroke();
+  } else if (kind === 'bag') {
+    ctx.fillStyle = '#ff8fb1'; rr(cx - 8, cy - 3, 16, 12, 3); ctx.fill();
+    ctx.strokeStyle = '#ff8fb1'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(cx, cy - 3, 5, Math.PI, 0); ctx.stroke();
+    star(cx + 7, cy - 8, 4.5, '#ffd166');
   } else if (kind === 'trophy') {
     ctx.fillStyle = '#ffc857'; ctx.strokeStyle = '#ffc857'; ctx.lineWidth = 2;
     ctx.beginPath(); ctx.moveTo(cx - 7, cy - 8); ctx.lineTo(cx + 7, cy - 8);
@@ -1462,9 +1576,9 @@ function newRun(li) {
   G = {
     li, lvl: LEVELS[li], ch: CHAPTERS[LEVELS[li].ch],
     state: 'banner', wave: 0, turn: 1, hp: 12000, maxHp: 12000, meter: 0, zoomArmed: false, cur: 0,
-    heroes: HEROES.map((d, i) => {
-      const hearts = d.id === 'bandit' ? 4 : 3;
-      return { ...d, x: START[i][0], y: START[i][1], vx: 0, vy: 0, hearts, maxHearts: hearts, ko: 0 };
+    heroes: HEROES.filter(d => d.id !== 'spark' || owns('hero_spark')).map((d, i, team) => {
+      const hearts = d.id === 'bandit' ? 4 : 3, [sx, sy] = startPos(i, team.length);
+      return { ...d, x: sx, y: sy, vx: 0, vy: 0, hearts, maxHearts: hearts, ko: 0 };
     }),
     enemies: [], boxes: [], snacks: [], trails: [], parts: [], rings: [], texts: [], beams: [],
     laser: null, shot: null, attackQueue: [], timer: 0, shake: 0, banner: null, hitstop: 0, flash: null, confetti: [], hpLag: 12000,
@@ -1602,7 +1716,7 @@ function pickBoxes(n) {
   for (let k = 0; k < BOXSETS.length; k++) {
     const set = BOXSETS[(Math.max(0, G.li) + n + k) % BOXSETS.length];
     const ok = set.every(([x, y]) =>
-      G.enemies.every(e => dist(x, y, e.x, e.y) > e.r + 45) && START.every(([sx, sy]) => dist(x, y, sx, sy) > 55));
+      G.enemies.every(e => dist(x, y, e.x, e.y) > e.r + 45) && START.concat(START5).every(([sx, sy]) => dist(x, y, sx, sy) > 55));
     if (ok) return set.map(([x, y]) => ({ x, y }));
   }
   return [];
@@ -1631,7 +1745,7 @@ function setupWave(n) {
   G.mul = { hp: endless ? 1 + n * .14 : ch.hp, atk: endless ? 1 + n * .07 : ch.atk, boss: endless ? .5 : (G.lvl.boss || 1) };
   G.enemies = list.map(([type, x, y], i) => makeEnemy(type, x, y, i));
   G.boxes = pickBoxes(n);
-  G.heroes.forEach((h, i) => { h.x = START[i][0]; h.y = START[i][1]; h.vx = h.vy = 0; });
+  G.heroes.forEach((h, i) => { [h.x, h.y] = startPos(i, G.heroes.length); h.vx = h.vy = 0; });
   G.trails = []; G.snacks = []; G.puddles = [];
   for (let i = 0; i < 3; i++) spawnSnack();
   placeLaser();
@@ -1732,6 +1846,15 @@ function hitEnemy(e, nx, ny) {
     ring(e.x, e.y, 90, '#c9a86a');
     for (const o of G.enemies) if (o !== e && o.alive && dist(e.x, e.y, o.x, o.y) < 90 + o.r) damageEnemy(o, 220 * (s.zoom ? 2 : 1));
   }
+  if (h.id === 'spark') {
+    let near = null, nd = 220;
+    for (const o of G.enemies) if (o !== e && o.alive) { const d = dist(e.x, e.y, o.x, o.y); if (d < nd) { nd = d; near = o; } }
+    if (near) {
+      G.beams.push({ x1: e.x, y1: e.y, x2: near.x, y2: near.y, life: .3, max: .3, col: '#ffe14d', w: 5 });
+      sparks(near.x, near.y, 8, '#ffe14d');
+      damageEnemy(near, dmg * .5);
+    }
+  }
 }
 
 function triggerCombo(o) {
@@ -1755,6 +1878,13 @@ function triggerCombo(o) {
     ftext(o.x, o.y - o.r - 32, '+' + v + ' HP', '#5ce1c6', 16);
     burst(o.x, o.y, '#5ce1c6', 12);
     Snd.play('heal');
+  } else if (o.id === 'spark') {
+    const alive = G.enemies.filter(e => e.alive).sort(() => Math.random() - .5).slice(0, 3);
+    for (const e of alive) {
+      G.beams.push({ x1: e.x, y1: TOP, x2: e.x, y2: e.y, life: .4, max: .4, col: '#ffe14d', w: 6 });
+      damageEnemy(e, 300 * z);
+    }
+    flash('#ffe14d', .2);
   } else {
     addMeter(12 * z);
     ftext(o.x, o.y - o.r - 32, tr('plusMischief', 12 * z), '#ff8fb1', 14);
@@ -2091,7 +2221,7 @@ function update(dt) {
 }
 
 // ---------- drawing: actors ----------
-const HIDX = { mochi: 0, pixel: 1, bandit: 2, nugget: 3 };
+const HIDX = { mochi: 0, pixel: 1, bandit: 2, nugget: 3, spark: 4 };
 function paw(x, y, s, col) {
   ctx.fillStyle = col;
   ctx.beginPath(); ctx.ellipse(x, y + s * .25, s * .5, s * .42, 0, 0, TAU); ctx.fill();
@@ -2437,6 +2567,32 @@ function drawThreats() {
   }
 }
 
+function drawHat(kind, r) {
+  ctx.save(); ctx.lineJoin = 'round'; ctx.lineWidth = 1.5;
+  if (kind === 'party') {
+    ctx.translate(r * .1, -r * .82); ctx.rotate(.12);
+    ctx.fillStyle = '#ff8fb1'; ctx.strokeStyle = '#c2466e';
+    ctx.beginPath(); ctx.moveTo(-r * .38, 0); ctx.lineTo(r * .38, 0); ctx.lineTo(0, -r * .95); ctx.closePath(); ctx.fill();
+    ctx.save(); ctx.clip(); ctx.fillStyle = '#ffd166';
+    for (let k = 0; k < 3; k++) { ctx.beginPath(); ctx.moveTo(-r * .5, -r * (.1 + k * .3)); ctx.lineTo(r * .5, -r * (.26 + k * .3)); ctx.lineTo(r * .5, -r * (.36 + k * .3)); ctx.lineTo(-r * .5, -r * (.2 + k * .3)); ctx.fill(); }
+    ctx.restore(); ctx.stroke();
+    ctx.fillStyle = '#fff'; circ(0, -r * .95, r * .13);
+  } else if (kind === 'crown') {
+    ctx.translate(0, -r * .86);
+    ctx.fillStyle = '#ffd166'; ctx.strokeStyle = '#b8892a';
+    ctx.beginPath(); ctx.moveTo(-r * .5, r * .12); ctx.lineTo(-r * .5, -r * .3); ctx.lineTo(-r * .25, -r * .08); ctx.lineTo(0, -r * .42);
+    ctx.lineTo(r * .25, -r * .08); ctx.lineTo(r * .5, -r * .3); ctx.lineTo(r * .5, r * .12); ctx.closePath(); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#e5484d'; circ(0, -r * .02, r * .08);
+    ctx.fillStyle = '#4fc3f7'; circ(-r * .3, r * .02, r * .06); circ(r * .3, r * .02, r * .06);
+  } else {
+    ctx.translate(-r * .55, -r * .8); ctx.rotate(-.3);
+    ctx.fillStyle = '#ff5d8f'; ctx.strokeStyle = '#b8325e';
+    for (const sd of [-1, 1]) { ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(sd * r * .42, -r * .22); ctx.lineTo(sd * r * .42, r * .22); ctx.closePath(); ctx.fill(); ctx.stroke(); }
+    ctx.fillStyle = '#ff8fb1'; ctx.beginPath(); ctx.arc(0, 0, r * .12, 0, TAU); ctx.fill(); ctx.stroke();
+  }
+  ctx.restore();
+}
+
 // Each hero is a little character: Mochi a fluffy tabby with a bell, Pixel a cool black cat with shades,
 // Bandit a raccoon in a bandana, Nugget a chubby raccoon crowned with a bottle cap.
 function drawHero(h, x, y, r, glow, o = {}) {
@@ -2499,6 +2655,10 @@ function drawHero(h, x, y, r, glow, o = {}) {
     ctx.lineTo(r * .72, r * .2); ctx.quadraticCurveTo(0, r * .02, -r * .72, r * .2); ctx.closePath(); ctx.fill();
     ctx.fillStyle = h.muzzle;
     for (const s of [-1, 1]) { ctx.beginPath(); ctx.ellipse(s * r * .38, -r * .43, r * .19, r * .065, s * .28, 0, TAU); ctx.fill(); }
+  } else if (id === 'spark') {
+    ctx.fillStyle = '#ffe14d'; ctx.strokeStyle = '#d4a800'; ctx.lineWidth = 1.2;
+    ctx.beginPath(); ctx.moveTo(-r * .02, -r * .9); ctx.lineTo(-r * .2, -r * .55); ctx.lineTo(-r * .02, -r * .58);
+    ctx.lineTo(-r * .12, -r * .3); ctx.lineTo(r * .16, -r * .68); ctx.lineTo(-r * .01, -r * .65); ctx.lineTo(r * .12, -r * .9); ctx.closePath(); ctx.fill(); ctx.stroke();
   } else {
     ctx.fillStyle = 'rgba(122,100,80,.85)';
     for (const s of [-1, 1]) { ctx.beginPath(); ctx.ellipse(s * r * .37, -r * .04, r * .33, r * .25, s * .35, 0, TAU); ctx.fill(); }
@@ -2559,7 +2719,10 @@ function drawHero(h, x, y, r, glow, o = {}) {
     ctx.beginPath(); ctx.moveTo(r * .66, r * .66); ctx.lineTo(r * 1.08, r * .5 + fl); ctx.lineTo(r * 1.0, r * .78 + fl); ctx.closePath(); ctx.fill();
     ctx.fillStyle = 'rgba(255,255,255,.7)'; for (const [dx, dy] of [[-.35, .78], [0, .86], [.35, .78], [-.1, 1.0], [.12, .96]]) circ(r * dx, r * dy, r * .035 + .3);
     ctx.fillStyle = '#3fb8a0'; circ(r * .68, r * .66, r * .1);
-  } else {
+  } else if (id === 'spark') {
+    ctx.strokeStyle = '#4fc3f7'; ctx.lineWidth = r * .14; ctx.beginPath(); ctx.arc(0, 0, r * .9, .28 * Math.PI, .72 * Math.PI); ctx.stroke();
+    ctx.fillStyle = '#ffe14d'; ctx.beginPath(); ctx.moveTo(r * .04, r * .86); ctx.lineTo(-r * .1, r * 1.04); ctx.lineTo(0, r * 1.02); ctx.lineTo(-r * .05, r * 1.16); ctx.lineTo(r * .1, r * .96); ctx.lineTo(0, r * .98); ctx.closePath(); ctx.fill();
+  } else if (!(o.hat !== false && activeHat())) {
     ctx.save(); ctx.translate(r * .16, -r * .9); ctx.rotate(.25);
     ctx.fillStyle = '#ffd166'; ctx.strokeStyle = '#b8892a'; ctx.lineWidth = 1.5;
     ctx.beginPath(); ctx.moveTo(-r * .32, r * .08);
@@ -2569,6 +2732,8 @@ function drawHero(h, x, y, r, glow, o = {}) {
     ctx.fillStyle = 'rgba(255,255,255,.8)'; circ(-r * .02, -r * .01, r * .025);
     ctx.restore();
   }
+  const hat = o.hat === false ? null : activeHat();
+  if (hat) drawHat(hat, r);
   // front paws
   const px = id === 'bandit' ? .6 : .46, pc = cat ? h.fur : h.dark;
   for (const s of [-1, 1]) {
@@ -3116,9 +3281,19 @@ function drawTrails() {
     ctx.globalAlpha = age <= 0 ? .95 : age === 1 ? .6 : .32;
     ctx.beginPath(); ctx.moveTo(t.pts[0][0], t.pts[0][1]);
     for (let i = 1; i < t.pts.length; i++) ctx.lineTo(t.pts[i][0], t.pts[i][1]);
-    ctx.strokeStyle = t.gold ? '#ffd166' : t.color; ctx.lineWidth = 4.5;
+    const rainbow = !t.gold && rainbowOn();
+    ctx.strokeStyle = rainbow ? 'rgba(255,255,255,.7)' : t.gold ? '#ffd166' : t.color;
+    ctx.lineWidth = 4.5;
     if (age <= 0 && !LOWFX) { const w = ctx.lineWidth; ctx.globalAlpha = .25; ctx.lineWidth = 11; ctx.stroke(); ctx.globalAlpha = .95; ctx.lineWidth = w; }
-    ctx.stroke();
+    if (rainbow) {
+      // the colour runs along the thread, one hue step per segment
+      for (let i = 1; i < t.pts.length; i++) {
+        ctx.strokeStyle = `hsl(${(i * 9 + T * 60) % 360},90%,65%)`;
+        ctx.beginPath(); ctx.moveTo(t.pts[i - 1][0], t.pts[i - 1][1]); ctx.lineTo(t.pts[i][0], t.pts[i][1]); ctx.stroke();
+      }
+      ctx.beginPath(); ctx.moveTo(t.pts[0][0], t.pts[0][1]);
+      for (let i = 1; i < t.pts.length; i++) ctx.lineTo(t.pts[i][0], t.pts[i][1]);
+    } else ctx.stroke();
     // twisted-yarn look: dark twists plus a soft highlight strand
     ctx.strokeStyle = 'rgba(0,0,0,.28)'; ctx.lineWidth = 4.5; ctx.setLineDash([1.5, 4.5]); ctx.stroke();
     ctx.strokeStyle = 'rgba(255,255,255,.45)'; ctx.lineWidth = 1.2; ctx.setLineDash([3, 3]); ctx.lineDashOffset = 2.5; ctx.stroke();
@@ -3284,7 +3459,7 @@ function drawHUD() {
   }
 
   G.heroes.forEach((h, i) => {
-    const x = 36 + i * 60, y = 710, cur = i === G.cur, R0 = cur ? 26 : 24;
+    const many = G.heroes.length > 4, x = many ? 28 + i * 49 : 36 + i * 60, y = 710, cur = i === G.cur, R0 = (cur ? 26 : 24) - (many ? 3 : 0);
     if (cur) { ctx.save(); ctx.globalCompositeOperation = 'lighter'; glowAt(x, y, 44, hexRgb(h.yarn), .3 + .1 * Math.sin(T * 4)); ctx.restore(); }
     const g = ctx.createLinearGradient(0, y - R0, 0, y + R0);
     g.addColorStop(0, cur ? '#3a3170' : '#231e44'); g.addColorStop(1, cur ? '#211a46' : '#15122a');
@@ -3416,7 +3591,7 @@ const FEATURES = () => tr('features').map((f, i) => [FEATURE_COLS[i], ...f]);
 function drawHowto() {
   ctx.drawImage(BGS[1], 0, 0, W, H);
   ctx.fillStyle = 'rgba(12,10,26,.9)'; ctx.fillRect(0, 0, W, H);
-  HEROES.forEach((h, i) => {
+  HEROES.filter(h => h.id !== 'spark').forEach((h, i) => {
     drawHero(h, 90 + i * 90, 100 + Math.sin(T * 3 + i) * 5, 26, null, { look: [0, .6] });
     ctx.fillStyle = h.yarn; ctx.font = `900 12px ${FD}`; ctx.textAlign = 'center'; ctx.fillText(h.name, 90 + i * 90, 148);
   });
@@ -3670,7 +3845,7 @@ function drawMap() {
       for (let s = 0; s < 3; s++) star(x - 16 + s * 16, y + r + 12, 7, s < got ? '#ffc857' : '#2f2a52', s < got ? null : '#3b3563');
       const sy = y - r - 6 - MAP.y;
       if (sy < MAP_VIEW && sy + r * 2 + 30 > 0) UI.push({ x: x - r - 6, y: sy, w: r * 2 + 12, h: r * 2 + 30, cb: () => {
-        if (open) startLevel(li); else { Snd.play('locked'); haptic('warning'); }
+        if (open) prepLevel(li); else { Snd.play('locked'); haptic('warning'); }
       } });
     });
   }
@@ -3690,9 +3865,10 @@ function drawMap() {
   const nightOpen = PROG.unlocked >= ENDLESS_UNLOCK;
   const rec = PROG.endless || 0;
   uiBtn(154, 736, W - 170, 46, nightOpen ? (rec ? `${tr('night')} · ${rec}` : tr('night')) : tr('nightAfter'),
-    () => { if (nightOpen) startEndless(); else { Snd.play('locked'); haptic('warning'); } }, nightOpen);
+    () => { if (nightOpen) prepLevel(-1); else { Snd.play('locked'); haptic('warning'); } }, nightOpen);
   iconBtn(W - 46, 13, 'sound', () => Snd.toggle());
   iconBtn(W - 90, 13, 'trophy', () => openBoard('night'));
+  iconBtn(62, 13, 'bag', () => { SHOP.msg = null; setScreen('shop'); refreshInv(); });
   langBtn();
 }
 function langBtn() {
@@ -3766,6 +3942,142 @@ function drawSecondWind() {
   return true;
 }
 
+
+// ---------- shop: boosters, hats, rainbow yarn, a new hero ----------
+// The worker keeps each player's inventory; a paid item is credited there by the payment webhook.
+const PRICES = { heart3: 15, meter3: 15, hat_party: 20, hat_crown: 30, hat_bow: 20, rainbow: 25, hero_spark: 50 }; // = ITEMS in the worker
+const GRANTS = { heart3: { heart: 3 }, meter3: { meter: 3 }, hat_party: { hat_party: 1 }, hat_crown: { hat_crown: 1 }, hat_bow: { hat_bow: 1 },
+  rainbow: { rainbow: 1 }, hero_spark: { hero_spark: 1 } };
+const SHOP_LIST = ['heart3', 'meter3', 'hero_spark', 'hat_party', 'hat_crown', 'hat_bow', 'rainbow'];
+let INV = {};
+const PENDING = {}; // bought here but not yet confirmed by the server
+const COS = { hat: lsGet('pawsling-hat') || '', rainbow: lsGet('pawsling-rainbow') !== 'off' };
+const SHOP = { busy: null, msg: null };
+const owns = k => (INV[k] || 0) > 0;
+const activeHat = () => (COS.hat && owns('hat_' + COS.hat) ? COS.hat : null);
+const rainbowOn = () => COS.rainbow && owns('rainbow');
+const serverOn = () => !!(TG && TG.initData && BOARD_URL);
+function setHat(h) { COS.hat = h; lsSet('pawsling-hat', h); }
+function setRainbow(on) { COS.rainbow = on; lsSet('pawsling-rainbow', on ? 'on' : 'off'); }
+async function api(path, body) {
+  const r = await fetch(BOARD_URL + path, {
+    method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ initData: TG.initData, ...body }),
+  });
+  if (!r.ok) throw new Error('HTTP ' + r.status);
+  return r.json();
+}
+function setInv(items) {
+  for (const k in PENDING) { if ((items[k] || 0) >= PENDING[k]) delete PENDING[k]; else items[k] = PENDING[k]; }
+  INV = items;
+}
+async function refreshInv(tries = 1) {
+  if (!serverOn()) return;
+  for (let i = 0; i < tries; i++) {
+    try { setInv((await api('/inventory', {})).items || {}); } catch (e) {}
+    if (!Object.keys(PENDING).length) return;
+    await new Promise(r => setTimeout(r, 1500));
+  }
+}
+function buyItem(id) {
+  if (SHOP.busy) return;
+  if (!canPay()) { SHOP.msg = tr('shopTgOnly'); return; }
+  SHOP.busy = id; SHOP.msg = null;
+  api('/invoice', { item: id, lang: LANG }).then(({ link }) => TG.openInvoice(link, st => {
+    SHOP.busy = null;
+    if (st === 'paid') {
+      for (const [k, n] of Object.entries(GRANTS[id] || {})) { INV[k] = (INV[k] || 0) + n; PENDING[k] = INV[k]; }
+      if (id.startsWith('hat_')) setHat(id.slice(4));
+      if (id === 'rainbow') setRainbow(true);
+      Snd.play('zoom'); haptic('success');
+      refreshInv(6);
+    } else if (st === 'failed') SHOP.msg = tr('payFailed');
+  })).catch(() => { SHOP.busy = null; SHOP.msg = tr('payFailed'); });
+}
+function useBooster(k) {
+  INV[k] = Math.max(0, (INV[k] || 0) - 1);
+  if (serverOn()) api('/use', { item: k }).then(r => r.items && setInv(r.items)).catch(() => {});
+}
+
+// before a level: switch on boosters the player owns
+let PREP = null;
+function prepLevel(li) { // li = -1 for Night Shift
+  if (!owns('heart') && !owns('meter')) { if (li < 0) startEndless(); else startLevel(li); return; }
+  PREP = { li, heart: false, meter: false };
+  setScreen('prep');
+}
+function startPrepared() {
+  const pr = PREP; PREP = null;
+  if (pr.li < 0) startEndless(); else startLevel(pr.li);
+  if (pr.heart && owns('heart')) { useBooster('heart'); for (const h of G.heroes) { h.maxHearts++; h.hearts++; } }
+  if (pr.meter && owns('meter')) { useBooster('meter'); G.meter = Math.max(G.meter, 50); }
+}
+function drawPrep() {
+  drawMap(); UI = [];
+  ctx.fillStyle = 'rgba(12,10,26,.9)'; ctx.fillRect(0, 0, W, H);
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillStyle = '#ffc857';
+  const title = PREP.li < 0 ? tr('night') : tr('levelRoom', PREP.li + 1, CHAPTERS[LEVELS[PREP.li].ch].name);
+  fitFont(title, W - 60, 26); ctx.fillText(title, W / 2, 200);
+  ctx.fillStyle = '#c9c2e6'; ctx.font = `800 14px ${FB}`; ctx.fillText(tr('boosters'), W / 2, 238);
+  const row = (y, key, name, desc) => {
+    const on = PREP[key], have = INV[key] || 0;
+    UI.push({ x: 40, y, w: W - 80, h: 70, cb: () => { if (have) PREP[key] = !PREP[key]; } });
+    ctx.fillStyle = on ? 'rgba(255,200,87,.16)' : '#1d1938'; rr(40, y, W - 80, 70, 14); ctx.fill();
+    ctx.strokeStyle = on ? '#ffc857' : '#3b3563'; ctx.lineWidth = 2; rr(40, y, W - 80, 70, 14); ctx.stroke();
+    ctx.strokeStyle = on ? '#ffc857' : '#8f88b5'; ctx.lineWidth = 2.5; rr(58, y + 23, 24, 24, 6); ctx.stroke();
+    if (on) { ctx.beginPath(); ctx.moveTo(63, y + 35); ctx.lineTo(68, y + 41); ctx.lineTo(77, y + 28); ctx.stroke(); }
+    ctx.textAlign = 'left'; ctx.fillStyle = have ? '#f4efe6' : '#6f6893'; fitFont(name, W - 250, 16); ctx.fillText(name, 96, y + 24);
+    ctx.fillStyle = '#b9b2da'; fitFont(desc, W - 150, 12, 700, FB); ctx.fillText(desc, 96, y + 48);
+    ctx.textAlign = 'right'; ctx.fillStyle = '#ffc857'; ctx.font = `900 14px ${FD}`; ctx.fillText(tr('owned', have), W - 56, y + 24);
+  };
+  row(268, 'heart', tr('boostHeart'), tr('boostHeartD'));
+  row(352, 'meter', tr('boostMeter'), tr('boostMeterD'));
+  uiBtn(75, 460, W - 150, 56, tr('startLvl'), startPrepared, true);
+  uiBtn(75, 530, W - 150, 46, tr('cancel'), () => { PREP = null; setScreen('map'); }, false);
+}
+
+function drawShopIcon(id, x, y) {
+  if (id === 'heart3') { heart(x, y + 2, 11, '#ff5d7a'); ctx.fillStyle = '#fff'; ctx.font = `900 11px ${FD}`; ctx.textAlign = 'center'; ctx.fillText('+1', x, y + 1); }
+  else if (id === 'meter3') {
+    ctx.fillStyle = '#231e44'; rr(x - 20, y - 8, 40, 16, 8); ctx.fill();
+    ctx.fillStyle = '#ff8fb1'; rr(x - 20, y - 8, 20, 16, 8); ctx.fill();
+    ctx.strokeStyle = '#ffd166'; ctx.lineWidth = 1.5; rr(x - 20, y - 8, 40, 16, 8); ctx.stroke();
+  } else if (id === 'hero_spark') drawHero(HEROES.find(h => h.id === 'spark'), x, y + 3, 17, null, { hat: false, look: [0, .6] });
+  else if (id === 'rainbow') {
+    ctx.lineWidth = 3; ctx.lineCap = 'round';
+    ['#ff5d7a', '#ffd166', '#9ee06a', '#6ec3ff', '#b18cff'].forEach((c, k) => { ctx.strokeStyle = c; ctx.beginPath(); ctx.arc(x, y + 10, 20 - k * 3.4, Math.PI, 0); ctx.stroke(); });
+  } else { ctx.save(); ctx.translate(x, y + 16); drawHat(id.slice(4), 26); ctx.restore(); }
+}
+function drawShop() {
+  ctx.fillStyle = '#110e22'; ctx.fillRect(0, 0, W, H);
+  const g = ctx.createRadialGradient(W / 2, 60, 10, W / 2, 60, 320);
+  g.addColorStop(0, 'rgba(255,200,87,.14)'); g.addColorStop(1, 'rgba(255,200,87,0)');
+  ctx.fillStyle = g; ctx.fillRect(0, 0, W, 400);
+  iconBtn(12, 13, 'back', () => setScreen('map'));
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillStyle = '#ffc857'; fitFont(tr('shop'), W - 120, 30); ctx.fillText(tr('shop'), W / 2, 32);
+  SHOP_LIST.forEach((id, i) => {
+    const y = 76 + i * 76, perm = !GRANTS[id].heart && !GRANTS[id].meter, key = Object.keys(GRANTS[id])[0], have = INV[key] || 0;
+    ctx.fillStyle = '#1d1938'; rr(16, y, W - 32, 68, 14); ctx.fill();
+    ctx.strokeStyle = perm && have ? 'rgba(92,225,198,.5)' : '#3b3563'; ctx.lineWidth = 1.5; rr(16, y, W - 32, 68, 14); ctx.stroke();
+    drawShopIcon(id, 52, y + 32);
+    ctx.textAlign = 'left'; ctx.textBaseline = 'middle'; ctx.fillStyle = '#f4efe6';
+    fitFont(tr('item.' + id), W - 250, 15); ctx.fillText(tr('item.' + id), 88, y + 22);
+    const desc = perm ? tr('itemd.' + id) : `${tr('itemd.' + id)} · ${tr('owned', have)}`;
+    ctx.fillStyle = '#b9b2da'; fitFont(desc, W - 250, 11.5, 700, FB); ctx.fillText(desc, 88, y + 46);
+    let label = `★ ${PRICES[id]}`, cb = () => buyItem(id), primary = true;
+    if (SHOP.busy === id) label = tr('payWait');
+    else if (perm && have) {
+      primary = false;
+      if (id === 'hero_spark') { label = tr('inTeam'); cb = () => {}; }
+      else if (id === 'rainbow') { const on = rainbowOn(); label = on ? tr('unequip') : tr('equip'); cb = () => setRainbow(!on); }
+      else { const kind = id.slice(4), on = activeHat() === kind; label = on ? tr('unequip') : tr('equip'); cb = () => setHat(on ? '' : kind); }
+    }
+    uiBtn(W - 142, y + 12, 114, 44, label, cb, primary);
+  });
+  const note = SHOP.msg || (canPay() ? '' : tr('shopTgOnly'));
+  if (note) { ctx.textAlign = 'center'; ctx.fillStyle = SHOP.msg ? '#ff8fb1' : '#8f88b5'; ctx.font = `800 13px ${FB}`; wrap(note, W / 2, 628, W - 60, 18); }
+}
+
 function drawEnd() {
   const win = G.state === 'win';
   ctx.fillStyle = G.ch.shade; ctx.fillRect(0, 0, W, H);
@@ -3776,7 +4088,7 @@ function drawEnd() {
     for (const p of G.confetti) drawPart(p);
   }
   chTrim(c, 0, 0, W, G.ch.col + '44'); chTrim(c, 0, H - 10, W, G.ch.col + '44');
-  G.heroes.forEach((h, i) => drawHero(h, 90 + i * 90, 150 + (win ? Math.abs(Math.sin(T * 5 + i)) * -14 : 6), 28, null, { mood: win ? 'happy' : 'sad', look: [0, 1] }));
+  G.heroes.forEach((h, i) => drawHero(h, W / 2 + (i - (G.heroes.length - 1) / 2) * (G.heroes.length > 4 ? 80 : 90), 150 + (win ? Math.abs(Math.sin(T * 5 + i)) * -14 : 6), 28, null, { mood: win ? 'happy' : 'sad', look: [0, 1] }));
   ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
   ctx.fillStyle = win ? '#ffc857' : '#ff6b85'; ctx.font = `900 34px ${FD}`;
   const endTitle = win ? tr('levelDone', G.li + 1) : G.lvl.endless ? tr('shiftOver') : tr('vacWon');
@@ -3916,6 +4228,8 @@ function draw() {
   else if (SCREEN === 'howto') drawHowto();
   else if (SCREEN === 'lang') drawLang();
   else if (SCREEN === 'board') drawBoard();
+  else if (SCREEN === 'shop') drawShop();
+  else if (SCREEN === 'prep') drawPrep();
   else drawMap();
 }
 
@@ -3996,11 +4310,12 @@ cv.addEventListener('keydown', ev => {
 
 // ---------- boot ----------
 loadProg();
+refreshInv();
 setScreen(lsGet('pawsling-seen') || PROG.unlocked > 1 ? 'map' : 'howto');
 // #dev: timer-driven loop (keeps running in hidden tabs) plus a state hook for testing
 const DEV = location.hash === '#dev';
 const nextFrame = DEV ? cb => setTimeout(() => cb(performance.now()), 16) : requestAnimationFrame;
-if (DEV) window.__pawsling = { get G() { return G; }, get SCREEN() { return SCREEN; }, startLevel, startEndless, launch, PROG: () => PROG, MAP, BOARD, setScreen, secondWind };
+if (DEV) window.__pawsling = { get G() { return G; }, get SCREEN() { return SCREEN; }, startLevel, startEndless, launch, PROG: () => PROG, MAP, BOARD, setScreen, secondWind, setInv, get INV() { return INV; }, prepLevel };
 let last = performance.now();
 // Slow devices: if frames keep taking longer than ~45 ms, drop the animated room lights.
 let LOWFX = false, slowMs = 0, failed = false;
