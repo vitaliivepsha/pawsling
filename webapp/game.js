@@ -206,6 +206,8 @@ const ROOM_SFX = [
     kill: s => { s.noise(.35, .09, 900, 300, 0, 'lowpass'); s.tone(260, .2, 'triangle', .06, 520); } },
   { wall: s => { s.tone(620, .12, 'square', .025, null, 0, 2400); s.tone(930, .1, 'square', .018, null, 0, 2400); },
     kill: s => { INST.clang(s, 900, .3, 0, 1.2); s.noise(.25, .08, 2500, 800, 0, 'bandpass'); } },
+  { wall: s => { s.tone(160, .1, 'sine', .1, 80); s.noise(.06, .05, 600, null, 0, 'lowpass'); },
+    kill: s => { s.noise(.3, .08, 1200, 400, 0, 'lowpass'); s.tone(300, .15, 'triangle', .05, 150); } },
 ];
 const SOUNDS = {
   click: s => s.tone(700, .05, 'triangle', .08),
@@ -318,6 +320,7 @@ const Amb = {
     else if (room === 3) { const w = bed('bandpass', 600, .8, .012); lfo(.2, .006, w.gg.gain); }
     else if (room === 4) { const w = bed('lowpass', 500, .5, .03); lfo(.09, .02, w.gg.gain); }
     else if (room === 5) { const w = bed('highpass', 3000, .5, .02); lfo(.3, .008, w.gg.gain); }
+    else if (room === 7) { const w = bed('lowpass', 140, .8, .04); lfo(.07, .015, w.gg.gain); }
     else {
       bed('lowpass', 200, .7, .03);
       const hum = c.createOscillator(), hg = c.createGain(); hum.type = 'triangle'; hum.frequency.value = 100; hg.gain.value = .004;
@@ -354,6 +357,10 @@ const Amb = {
           if (r < .5) s.tone(900 + Math.random() * 500, .04, 'sine', .02, 500, d);
           else if (r < .75) s.tone(180, .35, 'sawtooth', .012, 140, d, 700);
           this.next += .7 + Math.random() * 1.3;
+        } else if (this.room === 7) {
+          if (r < .6) s.tone(700 + Math.random() * 500, .05, 'sine', .03, 380, d);
+          else if (r < .75) s.tone(90, .5, 'sawtooth', .01, 70, d, 500);
+          this.next += .9 + Math.random() * 1.5;
         } else if (this.room === 6) {
           if (r < .4) s.tone(1500 + Math.random() * 900, .07, 'square', .008, null, d, 3000);
           else if (r < .6) s.tone(900 + Math.random() * 400, .05, 'sine', .02, 500, d);
@@ -436,6 +443,9 @@ const CHAPTERS = [
   { name: 'Гараж', key: 'garage', col: '#a9c1d9', hp: 2.7, atk: 1.7,
     hud: '#121317', line: '#4a4d57', shade: 'rgba(10,10,14,.92)', fx: ['#ffd166', '#c9d3dd', '#ff9f43', '#8a96a3'], shape: 'confetti',
     beam: [[300, 60], [440, 60], [200, 540]], beamCol: '230,240,255' },
+  { name: 'Підвал', key: 'basement', col: '#8fd14f', hp: 3.1, atk: 1.9,
+    hud: '#0e120c', line: '#3a4a2a', shade: 'rgba(8,10,6,.92)', fx: ['#8fd14f', '#c9d3dd', '#e8ecf2', '#6b7a5a'], shape: 'dust',
+    beam: [[360, 60], [440, 60], [290, 330]], beamCol: '200,255,170' },
 ];
 const LEVELS = [
   { ch: 0, par: 5, noBoxes: true, tip: 'Потягни від героя назад і відпусти',
@@ -514,6 +524,19 @@ const LEVELS = [
     waves: [[['split', 100, 200], ['split', 225, 300], ['split', 350, 200]], [['shield', 90, 170], ['mop', 225, 230], ['shield', 360, 170], ['fan', 225, 420]], [['shield', 225, 170], ['split', 100, 300], ['split', 350, 300], ['brush', 225, 430], ['rc', 90, 460]]] },
   { ch: 6, par: 25, boss: .62,
     waves: [[['shield', 110, 300], ['split', 225, 180], ['shield', 340, 300]], [['split', 100, 220], ['fan', 225, 330], ['split', 350, 220]], [['boss', 225, 240], ['shield', 120, 380], ['shield', 330, 380]]] },
+  // basement: every enemy type at once, and the web-spinning spider boss
+  { ch: 7, par: 9, tip: 'basement',
+    waves: [[['shield', 225, 170], ['split', 110, 260], ['split', 340, 260], ['brush', 225, 380]]] },
+  { ch: 7, par: 14,
+    waves: [[['rc', 100, 180], ['rc', 350, 180], ['fan', 225, 300]], [['shield', 120, 200], ['shield', 330, 200], ['mop', 225, 300], ['spray', 225, 450]]] },
+  { ch: 7, par: 11,
+    waves: [[['split', 90, 170], ['brush', 225, 220], ['split', 360, 170], ['fan', 110, 420], ['fan', 340, 420]]] },
+  { ch: 7, par: 16,
+    waves: [[['mop', 225, 160], ['shield', 110, 260], ['shield', 340, 260]], [['rc', 225, 200], ['split', 100, 330], ['split', 350, 330], ['brush', 225, 460]]] },
+  { ch: 7, par: 22,
+    waves: [[['vac', 90, 160], ['spray', 225, 200], ['vac', 360, 160], ['mop', 225, 340]], [['shield', 225, 180], ['fan', 90, 320], ['fan', 360, 320], ['split', 225, 440]], [['rc', 100, 200], ['rc', 350, 200], ['shield', 225, 300], ['brush', 120, 450], ['mop', 330, 450]]] },
+  { ch: 7, par: 26, boss: .6, tip: 'web',
+    waves: [[['shield', 110, 300], ['brush', 225, 180], ['shield', 340, 300]], [['split', 100, 220], ['rc', 225, 330], ['split', 350, 220]], [['boss', 225, 240], ['split', 110, 420], ['split', 340, 420]]] },
 ];
 const BOXSETS = [[[55, 470], [395, 120]], [[60, 130], [390, 470]], [[50, 560], [400, 560]], [[395, 470], [55, 120]], [[40, 330], [410, 330]]];
 const BTN = { x: 276, y: 688, w: 158, h: 50 };
@@ -542,7 +565,7 @@ const I18N = {
     'hero.pixel.name': 'Піксель', 'hero.pixel.skill': 'пролітає крізь ворогів наскрізь', 'hero.pixel.combo': 'Лазерний погляд',
     'hero.bandit.name': 'Бандит', 'hero.bandit.skill': 'кожен удар відкладає атаку ворога на хід', 'hero.bandit.combo': 'Нічний перекус',
     'hero.nugget.name': 'Наґет', 'hero.nugget.skill': 'кожен удар вибухає по сусідніх ворогах', 'hero.nugget.combo': 'Скарб зі смітника',
-    'room.kitchen': 'Кухня', 'room.living': 'Вітальня', 'room.bedroom': 'Спальня', 'room.bath': 'Ванна', 'room.balcony': 'Балкон', 'room.attic': 'Горище', 'room.garage': 'Гараж',
+    'room.kitchen': 'Кухня', 'room.living': 'Вітальня', 'room.bedroom': 'Спальня', 'room.bath': 'Ванна', 'room.balcony': 'Балкон', 'room.attic': 'Горище', 'room.garage': 'Гараж', 'room.basement': 'Підвал', 'tip.basement': 'Підвал: усі вороги разом, і вони міцніші, ніж будь-коли', 'tip.web': 'Павук обплутує героїв: зачепи обплутаного друга пострілом, щоб звільнити', webStuck: 'У павутині!', webFreed: 'Звільнили!',
     'tip.shield': 'Щитоботи захищають сусідів: спершу збий щитобота', 'tip.split': 'Двійнята після знищення розпадаються на двох малюків', shielded: 'щит', 'cry.shield': 'Дзинь!', 'cry.split': 'Бульк!', 'cry.mini': 'Пі-пі!',
     'tip.0': 'Потягни від героя назад і відпусти', 'tip.1': 'Перетни стару нитку, і вузол вибухне', 'tip.2': 'Коти женуться за червоною лазерною точкою',
     'tip.3': 'Бий у жовтий сенсор: потрійна шкода', 'tip.4': 'Швабри в броні: Піксель і Наґет б\'ють їх удвічі сильніше',
@@ -558,14 +581,14 @@ const I18N = {
     'tag.bounce': ['ВІДСКОК', 'відбивається від ворогів'], 'tag.pierce': ['ПРОШИВАННЯ', 'пролітає ворогів наскрізь'],
     bossTitles: [['Гроза крихт', 'Жодної крихти на підлозі!'], ['Володар пульта', 'Цей диван тепер мій!'], ['Нічний жах', 'Час спати... назавжди!'],
       ['Мильний барон', 'Змию вас у каналізацію!'], ['Буревій', 'Вас здує з балкона!'], ['Горищний привид', 'Тут ніхто не живе... крім мене!'],
-      ['Залізний механік', 'Розберу вас на гвинтики!']],
-    bossNames: ['БЛЕНДЕР «МЕГАМІКС»', 'ТЕЛЕБОС 3000', 'БУДИЛЬНИК-ДЗВОНАР', 'ПРАЛЬКА «БАРАБАН»', 'ПОВІТРОДУВ «ШКВАЛ»', 'ПИЛОСОС-ПРИВИД', 'РОБО-БОС 9000'],
+      ['Залізний механік', 'Розберу вас на гвинтики!'], ['Підвальний прядильник', 'Ніхто не вийде з мого підвалу!']],
+    bossNames: ['БЛЕНДЕР «МЕГАМІКС»', 'ТЕЛЕБОС 3000', 'БУДИЛЬНИК-ДЗВОНАР', 'ПРАЛЬКА «БАРАБАН»', 'ПОВІТРОДУВ «ШКВАЛ»', 'ПИЛОСОС-ПРИВИД', 'РОБО-БОС 9000', 'ПАВУК «ТЕНЕТА»'],
     bossSkills: [['Смузі-калюжі', 'Після атаки лишає липку калюжу: герої в ній гальмують'], ['Реклама', 'Кожна атака викликає міні-пилосос (до двох одразу)'],
       ['Дзвін', 'Б\'є всіх героїв на ногах одразу, по 1 ♥ кожному'], ['Мильна піна', 'Піна повністю гасить перший удар. Після атаки відростає'],
       ['Шквал', 'Атака відкидає всіх героїв подалі від нього'], ['Хованки', 'Після атаки зникає й з\'являється в іншому місці'],
-      ['Друга фаза', 'На половині міцності лагодить себе й атакує частіше']],
-    bossCries: ['ВЖИК-ВЖИК!', 'НЕ ПЕРЕМИКАЙТЕ!', 'ДЗЕЛЕНЬ-ДЗЕЛЕНЬ!', 'ВІДЖИМ!', 'ФУУУХ!', 'У-у-у-у!', 'ТУРБО-ВСМОКТУВАННЯ!'],
-    bossFx: ['Липко!', 'Реклама!', 'Дзвін!', 'Піна!', 'Шквал!', 'Бу!', 'Друга фаза!'], skillLabel: 'Уміння',
+      ['Друга фаза', 'На половині міцності лагодить себе й атакує частіше'], ['Павутина', 'Обплутує героя, якого вдарив: той пропускає хід, якщо друг не звільнить його пострілом']],
+    bossCries: ['ВЖИК-ВЖИК!', 'НЕ ПЕРЕМИКАЙТЕ!', 'ДЗЕЛЕНЬ-ДЗЕЛЕНЬ!', 'ВІДЖИМ!', 'ФУУУХ!', 'У-у-у-у!', 'ТУРБО-ВСМОКТУВАННЯ!', 'ТКУ-ТКУ-ТКУ!'],
+    bossFx: ['Липко!', 'Реклама!', 'Дзвін!', 'Піна!', 'Шквал!', 'Бу!', 'Друга фаза!', 'Павутина!'], skillLabel: 'Уміння',
     bossWarn: 'УВАГА · БОС НАБЛИЖАЄТЬСЯ', bossName: 'РОБО-БОС 9000', 'stat.hp': 'Міцність', 'stat.atk': 'Удар', 'stat.every': 'Атакує',
     'stat.everyN': n => `кожні ${n} ходи`, bossHint: 'Бий у жовтий сенсор: потрійна шкода', tapToStart: 'Торкнись, щоб почати',
     turn: n => `Хід ${n}`, hudWave: n => ` · хвиля ${n}`, pullHint: 'Тягни від героя назад і відпускай', par3: n => `3 зірки: пройти за ${n} ходів або швидше`,
@@ -614,7 +637,7 @@ const I18N = {
     'hero.pixel.name': 'Pixel', 'hero.pixel.skill': 'flies straight through enemies', 'hero.pixel.combo': 'Laser Stare',
     'hero.bandit.name': 'Bandit', 'hero.bandit.skill': 'each hit delays the enemy attack by a turn', 'hero.bandit.combo': 'Midnight Snack',
     'hero.nugget.name': 'Nugget', 'hero.nugget.skill': 'each hit blasts nearby enemies', 'hero.nugget.combo': 'Trash Treasure',
-    'room.kitchen': 'Kitchen', 'room.living': 'Living room', 'room.bedroom': 'Bedroom', 'room.bath': 'Bathroom', 'room.balcony': 'Balcony', 'room.attic': 'Attic', 'room.garage': 'Garage',
+    'room.kitchen': 'Kitchen', 'room.living': 'Living room', 'room.bedroom': 'Bedroom', 'room.bath': 'Bathroom', 'room.balcony': 'Balcony', 'room.attic': 'Attic', 'room.garage': 'Garage', 'room.basement': 'Basement', 'tip.basement': 'Basement: every enemy type at once, and tougher than ever', 'tip.web': 'The spider webs heroes: hit a webbed friend with a shot to free them', webStuck: 'Stuck in a web!', webFreed: 'Freed!',
     'tip.shield': 'Shield bots protect their neighbors: take the shield bot out first', 'tip.split': 'Twins split into two little ones when destroyed', shielded: 'shield', 'cry.shield': 'Clang!', 'cry.split': 'Blorp!', 'cry.mini': 'Meep!',
     'tip.0': 'Pull back from a hero and let go', 'tip.1': 'Cross an old thread and the knot explodes', 'tip.2': 'Cats chase the red laser dot',
     'tip.3': 'Hit the yellow sensor: triple damage', 'tip.4': 'Mops are armored: Pixel and Nugget hit them twice as hard',
@@ -630,14 +653,14 @@ const I18N = {
     'tag.bounce': ['BOUNCE', 'rebounds off enemies'], 'tag.pierce': ['PIERCE', 'flies through enemies'],
     bossTitles: [['Crumb Terror', 'Not a single crumb on the floor!'], ['Remote Overlord', 'This couch is mine now!'], ['Night Terror', 'Time to sleep... forever!'],
       ['Soap Baron', 'Down the drain you go!'], ['Stormbringer', 'I\'ll blow you off the balcony!'], ['Attic Phantom', 'Nobody lives up here... but me!'],
-      ['Iron Mechanic', 'I\'ll take you apart, bolt by bolt!']],
-    bossNames: ['MEGAMIX BLENDER', 'TELEBOSS 3000', 'BELLRINGER ALARM', 'DRUM WASHER', 'GALE BLOWER', 'GHOST VACUUM', 'ROBO-BOSS 9000'],
+      ['Iron Mechanic', 'I\'ll take you apart, bolt by bolt!'], ['Cellar Spinner', 'Nobody leaves my basement!']],
+    bossNames: ['MEGAMIX BLENDER', 'TELEBOSS 3000', 'BELLRINGER ALARM', 'DRUM WASHER', 'GALE BLOWER', 'GHOST VACUUM', 'ROBO-BOSS 9000', 'WEB-SPINNER'],
     bossSkills: [['Smoothie puddles', 'After attacking it leaves a sticky puddle that slows heroes down'], ['Commercial break', 'Every attack summons a mini vacuum (up to two at once)'],
       ['Ring!', 'Hits every standing hero at once, 1 ♥ each'], ['Soap foam', 'Foam fully soaks up the first hit. It grows back after an attack'],
       ['Gale', 'Its attack blows all heroes away from it'], ['Hide and seek', 'After attacking it vanishes and reappears elsewhere'],
-      ['Second phase', 'At half toughness it repairs itself and attacks more often']],
-    bossCries: ['WHIRR-WHIRR!', 'DON\'T TOUCH THAT DIAL!', 'RING-A-LING!', 'SPIN CYCLE!', 'FWOOOSH!', 'Boooo!', 'TURBO SUCK!'],
-    bossFx: ['Sticky!', 'Ad break!', 'Ring!', 'Foam!', 'Gale!', 'Boo!', 'Second phase!'], skillLabel: 'Ability',
+      ['Second phase', 'At half toughness it repairs itself and attacks more often'], ['Web', 'Wraps the hero it hits: that hero skips a turn unless a friend frees them with a shot']],
+    bossCries: ['WHIRR-WHIRR!', 'DON\'T TOUCH THAT DIAL!', 'RING-A-LING!', 'SPIN CYCLE!', 'FWOOOSH!', 'Boooo!', 'TURBO SUCK!', 'SKITTER-SKITTER!'],
+    bossFx: ['Sticky!', 'Ad break!', 'Ring!', 'Foam!', 'Gale!', 'Boo!', 'Second phase!', 'Webbed!'], skillLabel: 'Ability',
     bossWarn: 'WARNING · BOSS INCOMING', bossName: 'ROBO-BOSS 9000', 'stat.hp': 'Toughness', 'stat.atk': 'Hit', 'stat.every': 'Attacks',
     'stat.everyN': n => `every ${n} turns`, bossHint: 'Hit the yellow sensor: triple damage', tapToStart: 'Tap to start',
     turn: n => `Turn ${n}`, hudWave: n => ` · wave ${n}`, pullHint: 'Pull back from a hero and let go', par3: n => `3 stars: finish in ${n} turns or fewer`,
@@ -686,7 +709,7 @@ const I18N = {
     'hero.pixel.name': 'Pixel', 'hero.pixel.skill': 'przelatuje przez wrogów na wylot', 'hero.pixel.combo': 'Laserowe spojrzenie',
     'hero.bandit.name': 'Bandyta', 'hero.bandit.skill': 'każde trafienie opóźnia atak wroga o turę', 'hero.bandit.combo': 'Nocna przekąska',
     'hero.nugget.name': 'Nugget', 'hero.nugget.skill': 'każde trafienie wybucha na pobliskich wrogach', 'hero.nugget.combo': 'Skarb ze śmietnika',
-    'room.kitchen': 'Kuchnia', 'room.living': 'Salon', 'room.bedroom': 'Sypialnia', 'room.bath': 'Łazienka', 'room.balcony': 'Balkon', 'room.attic': 'Strych', 'room.garage': 'Garaż',
+    'room.kitchen': 'Kuchnia', 'room.living': 'Salon', 'room.bedroom': 'Sypialnia', 'room.bath': 'Łazienka', 'room.balcony': 'Balkon', 'room.attic': 'Strych', 'room.garage': 'Garaż', 'room.basement': 'Piwnica', 'tip.basement': 'Piwnica: wszystkie rodzaje wrogów naraz, twardsze niż kiedykolwiek', 'tip.web': 'Pająk oplata bohaterów: traf oplątanego przyjaciela strzałem, by go uwolnić', webStuck: 'W pajęczynie!', webFreed: 'Uwolniony!',
     'tip.shield': 'Tarczoboty chronią sąsiadów: najpierw zbij tarczobota', 'tip.split': 'Bliźniaki po zniszczeniu rozpadają się na dwa maluchy', shielded: 'tarcza', 'cry.shield': 'Brzdęk!', 'cry.split': 'Bulk!', 'cry.mini': 'Pip!',
     'tip.0': 'Pociągnij od bohatera do tyłu i puść', 'tip.1': 'Przetnij starą nitkę, a supeł wybuchnie', 'tip.2': 'Koty gonią czerwoną kropkę lasera',
     'tip.3': 'Trafiaj w żółty czujnik: potrójne obrażenia', 'tip.4': 'Mopy mają pancerz: Pixel i Nugget biją je dwa razy mocniej',
@@ -702,14 +725,14 @@ const I18N = {
     'tag.bounce': ['ODBICIE', 'odbija się od wrogów'], 'tag.pierce': ['PRZEBICIE', 'przelatuje przez wrogów'],
     bossTitles: [['Postrach okruszków', 'Ani okruszka na podłodze!'], ['Władca pilota', 'Ta kanapa jest teraz moja!'], ['Nocny koszmar', 'Czas spać... na zawsze!'],
       ['Mydlany baron', 'Spłuczę was do kanalizacji!'], ['Wichrowy', 'Zdmuchnę was z balkonu!'], ['Upiór ze strychu', 'Nikt tu nie mieszka... oprócz mnie!'],
-      ['Żelazny mechanik', 'Rozkręcę was na śrubki!']],
-    bossNames: ['BLENDER MEGAMIX', 'TELEBOSS 3000', 'BUDZIK-DZWONNIK', 'PRALKA «BĘBEN»', 'DMUCHAWA «WICHER»', 'ODKURZACZ-DUCH', 'ROBO-BOSS 9000'],
+      ['Żelazny mechanik', 'Rozkręcę was na śrubki!'], ['Piwniczny tkacz', 'Nikt nie wyjdzie z mojej piwnicy!']],
+    bossNames: ['BLENDER MEGAMIX', 'TELEBOSS 3000', 'BUDZIK-DZWONNIK', 'PRALKA «BĘBEN»', 'DMUCHAWA «WICHER»', 'ODKURZACZ-DUCH', 'ROBO-BOSS 9000', 'PAJĄK «SIEĆ»'],
     bossSkills: [['Kałuże smoothie', 'Po ataku zostawia lepką kałużę, która spowalnia bohaterów'], ['Reklama', 'Każdy atak przywołuje mini-odkurzacz (maks. dwa naraz)'],
       ['Dzwonek', 'Trafia wszystkich stojących bohaterów naraz, po 1 ♥'], ['Piana', 'Piana całkowicie pochłania pierwszy cios. Odrasta po ataku'],
       ['Wicher', 'Jego atak odrzuca wszystkich bohaterów'], ['Chowany', 'Po ataku znika i pojawia się w innym miejscu'],
-      ['Druga faza', 'Przy połowie wytrzymałości naprawia się i atakuje częściej']],
-    bossCries: ['WZIUU-WZIUU!', 'NIE PRZEŁĄCZAJ!', 'DRRRYŃ!', 'WIROWANIE!', 'FIUUUCH!', 'Uuuuu!', 'TURBO-SSANIE!'],
-    bossFx: ['Lepko!', 'Reklama!', 'Dzwonek!', 'Piana!', 'Wicher!', 'Buu!', 'Druga faza!'], skillLabel: 'Umiejętność',
+      ['Druga faza', 'Przy połowie wytrzymałości naprawia się i atakuje częściej'], ['Pajęczyna', 'Oplata trafionego bohatera: traci turę, chyba że przyjaciel uwolni go strzałem']],
+    bossCries: ['WZIUU-WZIUU!', 'NIE PRZEŁĄCZAJ!', 'DRRRYŃ!', 'WIROWANIE!', 'FIUUUCH!', 'Uuuuu!', 'TURBO-SSANIE!', 'TUP-TUP-TUP!'],
+    bossFx: ['Lepko!', 'Reklama!', 'Dzwonek!', 'Piana!', 'Wicher!', 'Buu!', 'Druga faza!', 'Oplątany!'], skillLabel: 'Umiejętność',
     bossWarn: 'UWAGA · NADCHODZI BOSS', bossName: 'ROBO-BOSS 9000', 'stat.hp': 'Wytrzymałość', 'stat.atk': 'Cios', 'stat.every': 'Atakuje',
     'stat.everyN': n => `co ${n} tury`, bossHint: 'Trafiaj w żółty czujnik: potrójne obrażenia', tapToStart: 'Dotknij, aby zacząć',
     turn: n => `Tura ${n}`, hudWave: n => ` · fala ${n}`, pullHint: 'Ciągnij od bohatera do tyłu i puszczaj', par3: n => `3 gwiazdki: ukończ w ${n} tur lub mniej`,
@@ -758,7 +781,7 @@ const I18N = {
     'hero.pixel.name': 'Pixel', 'hero.pixel.skill': 'fliegt glatt durch Gegner hindurch', 'hero.pixel.combo': 'Laserblick',
     'hero.bandit.name': 'Bandit', 'hero.bandit.skill': 'jeder Treffer verzögert den Gegnerangriff um einen Zug', 'hero.bandit.combo': 'Mitternachtssnack',
     'hero.nugget.name': 'Nugget', 'hero.nugget.skill': 'jeder Treffer explodiert bei nahen Gegnern', 'hero.nugget.combo': 'Mülltonnenschatz',
-    'room.kitchen': 'Küche', 'room.living': 'Wohnzimmer', 'room.bedroom': 'Schlafzimmer', 'room.bath': 'Badezimmer', 'room.balcony': 'Balkon', 'room.attic': 'Dachboden', 'room.garage': 'Garage',
+    'room.kitchen': 'Küche', 'room.living': 'Wohnzimmer', 'room.bedroom': 'Schlafzimmer', 'room.bath': 'Badezimmer', 'room.balcony': 'Balkon', 'room.attic': 'Dachboden', 'room.garage': 'Garage', 'room.basement': 'Keller', 'tip.basement': 'Keller: alle Gegnerarten auf einmal, härter als je zuvor', 'tip.web': 'Die Spinne umspinnt Helden: triff einen eingesponnenen Freund, um ihn zu befreien', webStuck: 'Im Netz!', webFreed: 'Befreit!',
     'tip.shield': 'Schildbots schützen ihre Nachbarn: schalte zuerst den Schildbot aus', 'tip.split': 'Zwillinge zerfallen beim Zerstören in zwei Kleine', shielded: 'Schild', 'cry.shield': 'Kling!', 'cry.split': 'Blubb!', 'cry.mini': 'Piep!',
     'tip.0': 'Vom Helden nach hinten ziehen und loslassen', 'tip.1': 'Kreuze einen alten Faden und der Knoten explodiert', 'tip.2': 'Katzen jagen den roten Laserpunkt',
     'tip.3': 'Triff den gelben Sensor: dreifacher Schaden', 'tip.4': 'Wischmopps sind gepanzert: Pixel und Nugget treffen sie doppelt',
@@ -774,14 +797,14 @@ const I18N = {
     'tag.bounce': ['ABPRALL', 'prallt von Gegnern ab'], 'tag.pierce': ['DURCHSCHLAG', 'fliegt durch Gegner'],
     bossTitles: [['Krümelschreck', 'Kein Krümel auf dem Boden!'], ['Fernbedienungsfürst', 'Das Sofa gehört jetzt mir!'], ['Nachtmahr', 'Schlafenszeit... für immer!'],
       ['Seifenbaron', 'Ab in den Abfluss mit euch!'], ['Sturmbringer', 'Ich puste euch vom Balkon!'], ['Dachbodengeist', 'Hier wohnt niemand... außer mir!'],
-      ['Eiserner Mechaniker', 'Ich schraub euch auseinander!']],
-    bossNames: ['MIXER MEGAMIX', 'TELEBOSS 3000', 'WECKER-BIMMLER', 'WASCHTROMMEL', 'STURMBLÄSER', 'GEISTERSAUGER', 'ROBO-BOSS 9000'],
+      ['Eiserner Mechaniker', 'Ich schraub euch auseinander!'], ['Kellerweber', 'Aus meinem Keller kommt keiner raus!']],
+    bossNames: ['MIXER MEGAMIX', 'TELEBOSS 3000', 'WECKER-BIMMLER', 'WASCHTROMMEL', 'STURMBLÄSER', 'GEISTERSAUGER', 'ROBO-BOSS 9000', 'SPINNE «NETZ»'],
     bossSkills: [['Smoothie-Pfützen', 'Hinterlässt nach dem Angriff eine klebrige Pfütze, die Helden bremst'], ['Werbepause', 'Jeder Angriff ruft einen Mini-Sauger (höchstens zwei)'],
       ['Klingeln', 'Trifft alle stehenden Helden gleichzeitig, je 1 ♥'], ['Seifenschaum', 'Schaum schluckt den ersten Treffer ganz. Wächst nach einem Angriff nach'],
       ['Sturm', 'Sein Angriff bläst alle Helden von ihm weg'], ['Versteckspiel', 'Verschwindet nach dem Angriff und taucht woanders auf'],
-      ['Zweite Phase', 'Bei halber Stärke repariert er sich und greift öfter an']],
-    bossCries: ['WIRR-WIRR!', 'NICHT UMSCHALTEN!', 'RRRRING!', 'SCHLEUDERGANG!', 'FUUUSCH!', 'Huuuu!', 'TURBO-SAUGEN!'],
-    bossFx: ['Klebrig!', 'Werbung!', 'Klingeling!', 'Schaum!', 'Sturm!', 'Buh!', 'Zweite Phase!'], skillLabel: 'Fähigkeit',
+      ['Zweite Phase', 'Bei halber Stärke repariert er sich und greift öfter an'], ['Netz', 'Umspinnt den getroffenen Helden: er setzt einen Zug aus, wenn ihn kein Freund per Schuss befreit']],
+    bossCries: ['WIRR-WIRR!', 'NICHT UMSCHALTEN!', 'RRRRING!', 'SCHLEUDERGANG!', 'FUUUSCH!', 'Huuuu!', 'TURBO-SAUGEN!', 'KRABBEL-KRABBEL!'],
+    bossFx: ['Klebrig!', 'Werbung!', 'Klingeling!', 'Schaum!', 'Sturm!', 'Buh!', 'Zweite Phase!', 'Eingesponnen!'], skillLabel: 'Fähigkeit',
     bossWarn: 'ACHTUNG · BOSS NAHT', bossName: 'ROBO-BOSS 9000', 'stat.hp': 'Stärke', 'stat.atk': 'Schlag', 'stat.every': 'Angriff',
     'stat.everyN': n => `alle ${n} Züge`, bossHint: 'Triff den gelben Sensor: dreifacher Schaden', tapToStart: 'Tippen zum Starten',
     turn: n => `Zug ${n}`, hudWave: n => ` · Welle ${n}`, pullHint: 'Vom Helden zurückziehen und loslassen', par3: n => `3 Sterne: in ${n} Zügen oder weniger`,
@@ -830,7 +853,7 @@ const I18N = {
     'hero.pixel.name': 'Pixel', 'hero.pixel.skill': 'atraviesa a los enemigos', 'hero.pixel.combo': 'Mirada láser',
     'hero.bandit.name': 'Bandido', 'hero.bandit.skill': 'cada golpe retrasa el ataque enemigo un turno', 'hero.bandit.combo': 'Tentempié nocturno',
     'hero.nugget.name': 'Nugget', 'hero.nugget.skill': 'cada golpe explota sobre los enemigos cercanos', 'hero.nugget.combo': 'Tesoro de la basura',
-    'room.kitchen': 'Cocina', 'room.living': 'Salón', 'room.bedroom': 'Dormitorio', 'room.bath': 'Baño', 'room.balcony': 'Balcón', 'room.attic': 'Desván', 'room.garage': 'Garaje',
+    'room.kitchen': 'Cocina', 'room.living': 'Salón', 'room.bedroom': 'Dormitorio', 'room.bath': 'Baño', 'room.balcony': 'Balcón', 'room.attic': 'Desván', 'room.garage': 'Garaje', 'room.basement': 'Sótano', 'tip.basement': 'Sótano: todos los enemigos a la vez, más duros que nunca', 'tip.web': 'La araña atrapa a los héroes: golpea a un amigo atrapado para liberarlo', webStuck: '¡En la telaraña!', webFreed: '¡Liberado!',
     'tip.shield': 'Los escudobots protegen a sus vecinos: elimina primero al escudobot', 'tip.split': 'Los gemelos se parten en dos pequeños al destruirlos', shielded: 'escudo', 'cry.shield': '¡Clang!', 'cry.split': '¡Blop!', 'cry.mini': '¡Pip!',
     'tip.0': 'Tira hacia atrás desde un héroe y suelta', 'tip.1': 'Cruza un hilo viejo y el nudo explotará', 'tip.2': 'Los gatos persiguen el punto láser rojo',
     'tip.3': 'Golpea el sensor amarillo: daño triple', 'tip.4': 'Las fregonas tienen armadura: Pixel y Nugget les pegan el doble',
@@ -846,14 +869,14 @@ const I18N = {
     'tag.bounce': ['REBOTE', 'rebota en los enemigos'], 'tag.pierce': ['PERFORAR', 'atraviesa a los enemigos'],
     bossTitles: [['Terror de las migas', '¡Ni una miga en el suelo!'], ['Señor del mando', '¡Este sofá ahora es mío!'], ['Pesadilla nocturna', 'Hora de dormir... ¡para siempre!'],
       ['Barón del jabón', '¡Os mando por el desagüe!'], ['Tormentoso', '¡Os soplaré del balcón!'], ['Fantasma del desván', 'Aquí no vive nadie... ¡salvo yo!'],
-      ['Mecánico de hierro', '¡Os desmonto tornillo a tornillo!']],
-    bossNames: ['BATIDORA MEGAMIX', 'TELEJEFE 3000', 'DESPERTADOR CAMPANERO', 'LAVADORA TAMBOR', 'SOPLADOR VENDAVAL', 'ASPIRADORA FANTASMA', 'ROBO-JEFE 9000'],
+      ['Mecánico de hierro', '¡Os desmonto tornillo a tornillo!'], ['Tejedor del sótano', '¡Nadie sale de mi sótano!']],
+    bossNames: ['BATIDORA MEGAMIX', 'TELEJEFE 3000', 'DESPERTADOR CAMPANERO', 'LAVADORA TAMBOR', 'SOPLADOR VENDAVAL', 'ASPIRADORA FANTASMA', 'ROBO-JEFE 9000', 'ARAÑA «TELARAÑA»'],
     bossSkills: [['Charcos de batido', 'Tras atacar deja un charco pegajoso que frena a los héroes'], ['Anuncios', 'Cada ataque invoca una mini aspiradora (hasta dos a la vez)'],
       ['¡Ring!', 'Golpea a todos los héroes en pie a la vez, 1 ♥ a cada uno'], ['Espuma', 'La espuma absorbe del todo el primer golpe. Vuelve a crecer tras atacar'],
       ['Vendaval', 'Su ataque aleja de un soplido a todos los héroes'], ['Escondite', 'Tras atacar desaparece y reaparece en otro sitio'],
-      ['Segunda fase', 'A media vida se repara y ataca más a menudo']],
-    bossCries: ['¡BRRR-BRRR!', '¡NO CAMBIES DE CANAL!', '¡RIIING!', '¡CENTRIFUGADO!', '¡FUUUSH!', '¡Buuuu!', '¡TURBOASPIRADO!'],
-    bossFx: ['¡Pegajoso!', '¡Anuncio!', '¡Ring!', '¡Espuma!', '¡Vendaval!', '¡Bu!', '¡Segunda fase!'], skillLabel: 'Habilidad',
+      ['Segunda fase', 'A media vida se repara y ataca más a menudo'], ['Telaraña', 'Envuelve al héroe que golpea: pierde un turno si un amigo no lo libera con un disparo']],
+    bossCries: ['¡BRRR-BRRR!', '¡NO CAMBIES DE CANAL!', '¡RIIING!', '¡CENTRIFUGADO!', '¡FUUUSH!', '¡Buuuu!', '¡TURBOASPIRADO!', '¡TIC-TIC-TIC!'],
+    bossFx: ['¡Pegajoso!', '¡Anuncio!', '¡Ring!', '¡Espuma!', '¡Vendaval!', '¡Bu!', '¡Segunda fase!', '¡Atrapado!'], skillLabel: 'Habilidad',
     bossWarn: 'ATENCIÓN · LLEGA EL JEFE', bossName: 'ROBO-JEFE 9000', 'stat.hp': 'Vida', 'stat.atk': 'Golpe', 'stat.every': 'Ataca',
     'stat.everyN': n => `cada ${n} turnos`, bossHint: 'Golpea el sensor amarillo: daño triple', tapToStart: 'Toca para empezar',
     turn: n => `Turno ${n}`, hudWave: n => ` · oleada ${n}`, pullHint: 'Tira hacia atrás desde un héroe y suelta', par3: n => `3 estrellas: termina en ${n} turnos o menos`,
@@ -1368,7 +1391,57 @@ function roomGarage(b, ch) {
     for (let x = -60; x < W + 60; x += 28) { c.beginPath(); c.moveTo(x, 0); c.lineTo(x + 12, 0); c.lineTo(x + 12 + H * .3, H); c.lineTo(x + H * .3, H); c.fill(); }
   });
 }
-const ROOMS = [roomKitchen, roomLiving, roomBedroom, roomBath, roomBalcony, roomAttic, roomGarage];
+function roomBasement(b, ch) {
+  const R = seeded(83);
+  b.fillStyle = '#1c2019'; b.fillRect(0, TOP, W, BOT - TOP);
+  // irregular flagstones
+  for (let y = TOP, j = 0; y < BOT; y += 58, j++) {
+    for (let x = -(j % 2) * 40, i = 0; x < W; i++) {
+      const w = 70 + R() * 50, h = 54;
+      const c = 30 + R() * 14 | 0;
+      b.fillStyle = `rgb(${c},${c + 4},${c - 2})`; rr(x + 2, y + 2, w - 4, h - 4, 6, b); b.fill();
+      b.fillStyle = 'rgba(255,255,255,.035)'; rr(x + 4, y + 4, w - 8, 5, 3, b); b.fill();
+      if (R() < .35) { b.fillStyle = 'rgba(143,209,79,.06)'; b.beginPath(); b.ellipse(x + R() * w, y + R() * h, 10 + R() * 14, 5 + R() * 6, R() * 3, 0, TAU); b.fill(); }
+      x += w;
+    }
+  }
+  windowLight(b, ch, .07);
+  // pipes and valves along the top wall
+  b.fillStyle = 'rgba(0,0,0,.35)'; b.fillRect(0, TOP + 30, W, 6);
+  for (const [y, col] of [[TOP + 6, '#6b5a48'], [TOP + 20, '#586070']]) {
+    b.fillStyle = col; b.fillRect(0, y, W, 9);
+    b.fillStyle = 'rgba(255,255,255,.15)'; b.fillRect(0, y + 1, W, 2);
+    for (let x = 40; x < W; x += 110) { b.fillStyle = '#3a3f4d'; b.fillRect(x, y - 2, 8, 13); }
+  }
+  for (const x of [120, 300]) {
+    b.fillStyle = '#b83a3a'; b.beginPath(); b.arc(x, TOP + 24, 9, 0, TAU); b.fill();
+    b.strokeStyle = '#7a2222'; b.lineWidth = 2; b.beginPath(); b.moveTo(x - 7, TOP + 24); b.lineTo(x + 7, TOP + 24); b.moveTo(x, TOP + 17); b.lineTo(x, TOP + 31); b.stroke();
+  }
+  // shelves with jars on the left, a boiler in the right corner
+  b.fillStyle = 'rgba(0,0,0,.35)'; b.fillRect(4, 250, 38, 150);
+  b.fillStyle = '#5a4430'; for (const y of [250, 300, 350, 398]) b.fillRect(0, y, 40, 5);
+  for (let k = 0; k < 9; k++) {
+    const x = 6 + (k % 3) * 11, y = 262 + Math.floor(k / 3) * 50;
+    b.fillStyle = ['rgba(255,160,60,.7)', 'rgba(160,220,90,.7)', 'rgba(200,60,80,.7)'][k % 3]; rr(x, y + 12, 9, 24, 3, b); b.fill();
+    b.fillStyle = '#c9c2b0'; b.fillRect(x, y + 10, 9, 4);
+  }
+  b.fillStyle = 'rgba(0,0,0,.4)'; rr(W - 78, BOT - 150, 76, 132, 10, b); b.fill();
+  b.fillStyle = '#4a5060'; rr(W - 82, BOT - 156, 76, 132, 10, b); b.fill();
+  b.fillStyle = '#2a2d33'; rr(W - 72, BOT - 120, 56, 40, 6, b); b.fill();
+  b.fillStyle = 'rgba(255,120,40,.55)'; rr(W - 66, BOT - 112, 44, 24, 4, b); b.fill();
+  b.fillStyle = '#c9d3dd'; b.beginPath(); b.arc(W - 44, BOT - 138, 10, 0, TAU); b.fill();
+  b.strokeStyle = '#2a2d33'; b.lineWidth = 2; b.beginPath(); b.moveTo(W - 44, BOT - 138); b.lineTo(W - 38, BOT - 144); b.stroke();
+  // a big cobweb in the top-left corner
+  b.strokeStyle = 'rgba(235,240,245,.16)'; b.lineWidth = 1;
+  for (let k = 0; k < 7; k++) { const a = k / 6 * Math.PI / 2; b.beginPath(); b.moveTo(0, TOP + 36); b.lineTo(Math.cos(a) * 130, TOP + 36 + Math.sin(a) * 130); b.stroke(); }
+  for (const rad of [30, 58, 86, 112]) { b.beginPath(); b.arc(0, TOP + 36, rad, 0, Math.PI / 2); b.stroke(); }
+  vignette(b, '2,4,0', .75);
+  hudBars(b, ch, c => {
+    c.strokeStyle = 'rgba(143,209,79,.06)'; c.lineWidth = 1;
+    for (let x = 0; x < W; x += 48) for (let y = 0; y < H; y += 48) { c.beginPath(); c.arc(x, y, 14, 0, TAU); c.stroke(); }
+  });
+}
+const ROOMS = [roomKitchen, roomLiving, roomBedroom, roomBath, roomBalcony, roomAttic, roomGarage, roomBasement];
 const BGS = CHAPTERS.map((ch, i) => layer(b => { b.fillStyle = ch.hud; b.fillRect(0, 0, W, H); ROOMS[i](b, ch); }));
 freeze(BGS);
 
@@ -1420,6 +1493,15 @@ function drawRoomUnder(c) {
   } else if (c === 5) {
     const f = .8 + .2 * flick(t * .5);
     glowAt(225, TOP + 150, 200, '255,200,130', .12 * f);
+  } else if (c === 7) {
+    // a bare bulb swinging on its cord, and the boiler's glow
+    const sx = 225 + (RM ? 0 : Math.sin(t * .8) * 22), sy = TOP + 110;
+    ctx.globalCompositeOperation = 'source-over'; ctx.strokeStyle = 'rgba(20,20,20,.8)'; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.moveTo(225, TOP + 36); ctx.lineTo(sx, sy - 8); ctx.stroke();
+    ctx.globalCompositeOperation = 'lighter';
+    glowAt(sx, sy, 230, '255,220,150', .13);
+    ctx.fillStyle = 'rgba(255,236,190,.9)'; circ(sx, sy, 5);
+    glowAt(W - 44, BOT - 100, 90, '255,120,40', .12 + .05 * flick(t));
   } else if (c === 6) {
     const off = frac(t * .13) > .96 && Math.sin(t * 60) > 0;
     if (!off) glowAt(225, TOP + 70, 260, '220,235,255', .11);
@@ -1503,6 +1585,10 @@ function chIcon(c, x, y, s, col) {
     ctx.beginPath(); ctx.moveTo(x - s * .6, y + s * .1); ctx.lineTo(x, y - s * .5); ctx.lineTo(x + s * .6, y + s * .1); ctx.stroke();
     ctx.beginPath(); ctx.moveTo(x - s * .4, y - s * .05); ctx.lineTo(x - s * .4, y + s * .5); ctx.lineTo(x + s * .4, y + s * .5); ctx.lineTo(x + s * .4, y - s * .05); ctx.stroke();
     ctx.fillRect(x - s * .12, y + s * .08, s * .24, s * .24);
+  } else if (c === 7) {
+    ctx.lineWidth = s * .07;
+    for (const a of [2.6, 3.0, 3.4, 3.8, .54, .14, -.26, -.66]) { ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + Math.cos(a) * s * .62, y + Math.sin(a) * s * .5 + s * .08); ctx.stroke(); }
+    circ(x, y - s * .02, s * .26); circ(x, y - s * .32, s * .16);
   } else {
     ctx.lineWidth = s * .17;
     ctx.beginPath(); ctx.moveTo(x - s * .45, y + s * .45); ctx.lineTo(x + s * .12, y - s * .12); ctx.stroke();
@@ -1609,6 +1695,7 @@ function advanceHero() {
   for (let i = 0; i < G.heroes.length; i++) {
     n = (n + 1) % G.heroes.length;
     const h = G.heroes[n];
+    if (h.webbed && !h.ko) { h.webbed = false; ftext(h.x, h.y - h.r - 20, tr('webStuck'), '#e8ecf2', 15); continue; }
     if (!h.ko) break;
     if (--h.ko === 0) wake(h, 1, tr('woke'));
   }
@@ -1726,7 +1813,7 @@ function makeEnemy(type, x, y, i) {
   const d = ENEMY[type], m = G.mul;
   // a boss belongs to its room: G.lvl.ch picks which of the seven it is
   const kind = type === 'boss' ? G.lvl.ch % BOSS_COUNT : undefined;
-  const bossHp = kind === 1 ? .85 : 1, bossAtk = kind === 2 ? .8 : 1;
+  const bossHp = kind === 1 ? .85 : 1, bossAtk = kind === 2 ? .8 : kind === 7 ? .75 : 1; // the spider also takes turns away with its web
   const hp = Math.round(d.hp * m.hp * (type === 'boss' ? m.boss * bossHp : 1) / 50) * 50;
   return { type, kind, x, y, r: d.r, hp, maxHp: hp, timer: d.timer + (i % 2), maxTimer: d.timer, atk: Math.round(d.atk * m.atk * bossAtk / 50) * 50,
     alive: true, flash: 0, ph: Math.random() * 6, weak: Math.PI / 2, weakT: Math.PI / 2, foam: kind === 3, fade: 0 };
@@ -1745,7 +1832,7 @@ function setupWave(n) {
   G.mul = { hp: endless ? 1 + n * .14 : ch.hp, atk: endless ? 1 + n * .07 : ch.atk, boss: endless ? .5 : (G.lvl.boss || 1) };
   G.enemies = list.map(([type, x, y], i) => makeEnemy(type, x, y, i));
   G.boxes = pickBoxes(n);
-  G.heroes.forEach((h, i) => { [h.x, h.y] = startPos(i, G.heroes.length); h.vx = h.vy = 0; });
+  G.heroes.forEach((h, i) => { [h.x, h.y] = startPos(i, G.heroes.length); h.vx = h.vy = 0; h.webbed = false; });
   G.trails = []; G.snacks = []; G.puddles = [];
   for (let i = 0; i < 3; i++) spawnSnack();
   placeLaser();
@@ -1990,6 +2077,7 @@ function stepShot(dt) {
       if (o === h || s.combos.has(o)) continue;
       if (dist(h.x, h.y, o.x, o.y) >= h.r + o.r) continue;
       s.combos.add(o);
+      if (o.webbed) { o.webbed = false; ftext(o.x, o.y - o.r - 40, tr('webFreed'), '#e8ecf2', 15); burst(o.x, o.y, '#e8ecf2', 12); }
       if (o.ko) { wake(o, 2, tr('revived')); Snd.play('heal'); haptic('success'); }
       else triggerCombo(o);
     }
@@ -2290,8 +2378,8 @@ function heroEyes(h, r, o, mood) {
 // ---------- the seven bosses ----------
 // One per room, in room order: blender, TV, alarm clock, washing machine, leaf blower, ghost vacuum
 // and the Robo-Boss 9000 in the garage. Each keeps the yellow sensor and adds its own ability.
-const BOSS_COUNT = 7;
-const BOSS_COL = ['#ff8fb1', '#6ec3ff', '#ffc857', '#bfe9ff', '#9ee06a', '#c9b8ff', '#ff4d6d'];
+const BOSS_COUNT = 8;
+const BOSS_COL = ['#ff8fb1', '#6ec3ff', '#ffc857', '#bfe9ff', '#9ee06a', '#c9b8ff', '#ff4d6d', '#8fd14f'];
 const bossName = e => (tr('bossNames') || [])[e.kind] || tr('bossName');
 function heroFreeSpot(x, y, e) {
   for (const o of G.enemies) {
@@ -2355,6 +2443,12 @@ function bossAfterAttack(e, t) {
     burst(e.x, e.y, '#c9b8ff', 22, 220); burst(e.x, e.y, '#8f88b5', 14, 160);
     e.x = p[0]; e.y = p[1]; e.fade = 1;
     ring(e.x, e.y, e.r * 1.8, col); ftext(e.x, e.y - e.r - 30, fx, col, 18); Snd.play('boo');
+  } else if (e.kind === 7) {
+    // a web strand pins the hero it hit: that hero loses its next turn unless an ally frees it with a shot
+    if (t.ko) return;
+    t.webbed = true;
+    G.beams.push({ x1: e.x, y1: e.y, x2: t.x, y2: t.y, life: .6, max: .6, col: '#e8ecf2', w: 3 });
+    ftext(t.x, t.y - t.r - 34, fx, col, 18); Snd.play('armor');
   }
 }
 function drawPuddles() {
@@ -2946,7 +3040,7 @@ function drawMop(e, r, t) {
 }
 
 function drawBoss(e, r, t) {
-  [drawBlender, drawTvBoss, drawClockBoss, drawWasher, drawBlower, drawGhostVac, drawRoboBoss][e.kind == null ? 6 : e.kind](e, r, t);
+  [drawBlender, drawTvBoss, drawClockBoss, drawWasher, drawBlower, drawGhostVac, drawRoboBoss, drawSpiderBoss][e.kind == null ? 6 : e.kind](e, r, t);
   drawSensor(e, r);
 }
 function drawSensor(e, r) {
@@ -3125,6 +3219,48 @@ function drawGhostVac(e, r, t) {
   ctx.fillStyle = '#2a1f45'; ctx.beginPath(); ctx.ellipse(0, r * .15, r * .1, r * .13, 0, 0, TAU); ctx.fill();
   ctx.fillStyle = 'rgba(200,190,230,.6)';
   for (let i = 0; i < 6; i++) { const ph = frac(t * .4 + i / 6); circ(Math.cos(i * 2.1) * r * (.9 + ph * .4), -r * .2 + Math.sin(i * 1.3) * r * .5 - ph * r * .4, 2); }
+  ctx.restore();
+}
+function drawSpiderBoss(e, r, t) {
+  ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  // eight legs, stepping in turn
+  [2.5, 2.9, 3.3, 3.7, .64, .24, -.16, -.56].forEach((a0, i) => {
+    const a = a0 + (RM ? 0 : Math.sin(t * 6 + i * 1.3) * .08);
+    const kx = Math.cos(a) * r * 1.25, ky = Math.sin(a) * r * 1.25 - r * .35, fx = Math.cos(a) * r * 1.62, fy = Math.sin(a) * r * 1.62 + r * .25;
+    ctx.beginPath(); ctx.moveTo(Math.cos(a) * r * .6, Math.sin(a) * r * .6); ctx.lineTo(kx, ky); ctx.lineTo(fx, fy);
+    ctx.strokeStyle = '#15171e'; ctx.lineWidth = r * .14; ctx.stroke();
+    ctx.strokeStyle = '#8fd14f'; ctx.lineWidth = r * .045; ctx.stroke();
+  });
+  // abdomen with warning stripes
+  const ag = ctx.createRadialGradient(-r * .2, -r * .75, r * .1, 0, -r * .55, r * .7);
+  ag.addColorStop(0, '#4a5264'); ag.addColorStop(1, '#15171e');
+  ctx.fillStyle = ag; ctx.beginPath(); ctx.ellipse(0, -r * .55, r * .62, r * .5, 0, 0, TAU); ctx.fill();
+  ctx.strokeStyle = '#8fd14f'; ctx.lineWidth = r * .07;
+  for (const k of [-.18, 0, .18]) { ctx.beginPath(); ctx.ellipse(0, -r * .55 + k * r, r * .5, r * .1, 0, Math.PI * 1.1, Math.PI * 1.9); ctx.stroke(); }
+  // body
+  const g = ctx.createRadialGradient(-r * .3, -r * .1, r * .1, 0, r * .1, r * .85);
+  g.addColorStop(0, '#5a6378'); g.addColorStop(1, '#1b1e27');
+  ctx.fillStyle = g; circ(0, r * .1, r * .72);
+  ctx.strokeStyle = '#8fd14f'; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.arc(0, r * .1, r * .72, 0, TAU); ctx.stroke();
+  // vacuum intake with a spinning brush
+  ctx.fillStyle = '#0d0e12'; ctx.beginPath(); ctx.ellipse(0, r * .55, r * .38, r * .14, 0, 0, TAU); ctx.fill();
+  ctx.strokeStyle = '#6b7a5a'; ctx.lineWidth = 2;
+  for (let i = 0; i < 4; i++) { const a = t * 10 + i * Math.PI / 2; ctx.beginPath(); ctx.moveTo(0, r * .55); ctx.lineTo(Math.cos(a) * r * .3, r * .55 + Math.sin(a) * r * .1); ctx.stroke(); }
+  // a cluster of red eyes
+  angryEyes(0, r * .02, r * .66, '#ff3b5c');
+  ctx.fillStyle = '#ff3b5c'; ctx.shadowColor = '#ff3b5c'; ctx.shadowBlur = 6;
+  for (const [dx, dy] of [[-.3, -.2], [-.1, -.26], [.1, -.26], [.3, -.2]]) circ(dx * r, dy * r, r * .045);
+  ctx.shadowBlur = 0;
+}
+function drawWeb(x, y, R) {
+  ctx.save(); ctx.translate(x, y);
+  ctx.strokeStyle = 'rgba(235,240,245,.75)'; ctx.lineWidth = 1.3;
+  for (let k = 0; k < 8; k++) { const a = k * TAU / 8 + .2; ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(Math.cos(a) * R, Math.sin(a) * R); ctx.stroke(); }
+  for (const f of [.35, .65, .95]) {
+    ctx.beginPath();
+    for (let k = 0; k <= 8; k++) { const a = k * TAU / 8 + .2, rr2 = R * f * (k % 2 ? .92 : 1); ctx.lineTo(Math.cos(a) * rr2, Math.sin(a) * rr2); }
+    ctx.stroke();
+  }
   ctx.restore();
 }
 function drawRoboBoss(e, r, t) {
@@ -3554,6 +3690,7 @@ function chTrim(c, x, y, w, col) {
   else if (c === 3) { ctx.strokeStyle = col; ctx.lineWidth = 1.2; for (let px = x + 6; px < x + w; px += 11) { ctx.beginPath(); ctx.arc(px, y + 5, (px / 11 | 0) % 2 ? 3.2 : 2, 0, TAU); ctx.stroke(); } }
   else if (c === 4) { for (let px = x + 8; px < x + w; px += 14) { ctx.save(); ctx.translate(px, y + 5); ctx.rotate((px / 14 | 0) % 2 ? .6 : -.6); ctx.beginPath(); ctx.ellipse(0, 0, 4.5, 2, 0, 0, TAU); ctx.fill(); ctx.restore(); } }
   else if (c === 5) { for (let px = x + 2; px < x + w; px += 16) ctx.fillRect(px, y + 3.5, 10, 3); }
+  else if (c === 7) { ctx.strokeStyle = col; ctx.lineWidth = 1; for (let px = x + 8; px < x + w; px += 18) { ctx.beginPath(); ctx.moveTo(px - 6, y + 1); ctx.lineTo(px + 6, y + 9); ctx.moveTo(px + 6, y + 1); ctx.lineTo(px - 6, y + 9); ctx.moveTo(px, y); ctx.lineTo(px, y + 10); ctx.stroke(); } }
   else { for (let px = x - 10; px < x + w; px += 14) { ctx.beginPath(); ctx.moveTo(px, y + 9); ctx.lineTo(px + 6, y + 9); ctx.lineTo(px + 12, y + 1); ctx.lineTo(px + 6, y + 1); ctx.fill(); } }
   ctx.restore();
 }
@@ -3659,6 +3796,12 @@ function drawNode(c, x, y, r, col, open) {
     ctx.closePath(); ctx.fill();
     ctx.strokeStyle = '#5a6a7c'; ctx.lineWidth = 2.5; ctx.stroke();
     ctx.fillStyle = 'rgba(255,255,255,.35)'; ctx.beginPath(); ctx.ellipse(x - r * .45, y - r * .5, r * .18, r * .08, -.6, 0, TAU); ctx.fill();
+  } else if (c === 7) {
+    // a web
+    ctx.fillStyle = '#2a3322'; circ(x, y, r);
+    ctx.strokeStyle = col; ctx.lineWidth = 1.5;
+    for (let k = 0; k < 8; k++) { const a = k * TAU / 8; ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + Math.cos(a) * r, y + Math.sin(a) * r); ctx.stroke(); }
+    for (const f of [.4, .72]) { ctx.beginPath(); ctx.arc(x, y, r * f, 0, TAU); ctx.stroke(); }
   } else {
     // a glowing moon
     ctx.shadowColor = col; ctx.shadowBlur = 18;
@@ -4198,6 +4341,7 @@ function drawGame() {
       ctx.save(); ctx.translate(h.x, h.y); ctx.rotate(ang); ctx.scale(1 + k, 1 - k); ctx.rotate(-ang);
       drawHero(h, 0, 0, h.r, gold ? '#ffd166' : null, ho); ctx.restore();
     } else drawHero(h, h.x, h.y, h.r, gold ? '#ffd166' : null, ho);
+    if (h.webbed) drawWeb(h.x, h.y, h.r + 10);
   });
   drawFx();
   drawRoomOver(c);
@@ -4315,7 +4459,7 @@ setScreen(lsGet('pawsling-seen') || PROG.unlocked > 1 ? 'map' : 'howto');
 // #dev: timer-driven loop (keeps running in hidden tabs) plus a state hook for testing
 const DEV = location.hash === '#dev';
 const nextFrame = DEV ? cb => setTimeout(() => cb(performance.now()), 16) : requestAnimationFrame;
-if (DEV) window.__pawsling = { get G() { return G; }, get SCREEN() { return SCREEN; }, startLevel, startEndless, launch, PROG: () => PROG, MAP, BOARD, setScreen, secondWind, setInv, get INV() { return INV; }, prepLevel };
+if (DEV) window.__pawsling = { get G() { return G; }, get SCREEN() { return SCREEN; }, startLevel, startEndless, launch, PROG: () => PROG, MAP, BOARD, setScreen, secondWind, setInv, get INV() { return INV; }, prepLevel, setupWave };
 let last = performance.now();
 // Slow devices: if frames keep taking longer than ~45 ms, drop the animated room lights.
 let LOWFX = false, slowMs = 0, failed = false;

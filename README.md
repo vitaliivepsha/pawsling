@@ -12,12 +12,14 @@ worker/             the leaderboard: a Cloudflare Worker with a D1 database
 
 ## Gameplay
 
-- 36 levels in 7 rooms, each room ends with a boss: Kitchen, Living room, Bedroom (4 levels each),
-  Bathroom, Balcony, Attic, Garage (6 levels each). The map scrolls.
+- 42 levels in 8 rooms, each room ends with a boss: Kitchen, Living room, Bedroom (4 levels each),
+  Bathroom, Balcony, Attic, Garage, Basement (6 levels each). The map scrolls.
+- The basement mixes every enemy type (toughness ×3.1) and ends with the Web-Spinner: after each
+  attack it webs the hero it hit, who skips their next turn unless an ally frees them with a shot.
 - Later rooms bring new enemies: a toothbrush heals enemies nearby, a fan blows heroes off course,
   an RC car drives to a new spot every turn; in the garage a shield bot cuts damage to its neighbors
   to 35% and twins split into two minis when destroyed.
-- Each room is tougher than the last (enemy toughness ×1 in the kitchen up to ×2.7 in the garage).
+- Each room is tougher than the last (enemy toughness ×1 in the kitchen up to ×3.1 in the basement).
 - Stars: 3 for finishing within the par turn count, 2 for up to 1.5×par, 1 otherwise.
 - Night Shift (unlocks after level 4): endless generated waves, a boss every 5th wave, the room changes
   every 5 waves; the record is the number of waves survived.
