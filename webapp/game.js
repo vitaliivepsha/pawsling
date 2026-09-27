@@ -435,10 +435,16 @@ const totalStars = () => Object.values(PROG.stars).reduce((a, b) => a + b, 0);
 
 // ---------- rooms: one themed floor per chapter ----------
 function seeded(s) { return () => (s = (s * 16807) % 2147483647) / 2147483647; }
+// Room layers are painted once on the CPU (willReadFrequently) and then frozen into an ImageBitmap:
+// on some Android GPUs (Adreno 618) painting them on the GPU left big patches of bright green and cyan.
 function layer(fn) {
   const c = document.createElement('canvas');
   c.width = W * 2; c.height = H * 2;
-  const b = c.getContext('2d'); b.scale(2, 2); fn(b); return c;
+  const b = c.getContext('2d', { willReadFrequently: true }); b.scale(2, 2); fn(b); return c;
+}
+function freeze(list) {
+  if (!window.createImageBitmap) return;
+  list.forEach((c, i) => createImageBitmap(c).then(bm => { list[i] = bm; }).catch(() => {}));
 }
 const frac = v => v - Math.floor(v);
 function beamPt(ch, u, v) {
@@ -640,6 +646,7 @@ function roomBedroom(b, ch) {
 }
 const ROOMS = [roomKitchen, roomLiving, roomBedroom];
 const BGS = CHAPTERS.map((ch, i) => layer(b => { b.fillStyle = ch.hud; b.fillRect(0, 0, W, H); ROOMS[i](b, ch); }));
+freeze(BGS);
 
 // animated room life: drawn under the actors (steam, TV glow, moonbeam) and over them (motes, fireflies)
 function glowAt(x, y, r, rgb, a) {

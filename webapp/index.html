@@ -36,7 +36,11 @@
     boot.innerHTML = '<div>Гра не запустилась.<br><small id="bootmsg"></small><br><button type="button" onclick="location.reload()">Спробувати ще</button></div>';
     document.getElementById('bootmsg').textContent = '[' + stage + '] ' + msg;
   };
-  window.addEventListener('error', function (e) { if (!window.__pawslingOk) window.__bootErr(e.error || (e.message + ' @' + e.lineno)); });
+  // only the game's own files count: other origins (telegram.org) report an opaque "Script error."
+  window.addEventListener('error', function (e) {
+    if (window.__pawslingOk || !e.filename || e.filename.indexOf(location.origin) !== 0) return;
+    window.__bootErr(e.error || (e.message + ' @' + e.lineno));
+  });
   (function watchdog() {
     setTimeout(function () {
       if (window.__pawslingOk) return;
