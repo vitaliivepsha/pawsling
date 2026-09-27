@@ -35,21 +35,26 @@
   <label><input type="checkbox" id="f-shadow" checked> Тіні й розмиття (shadowBlur)</label>
   <label><input type="checkbox" id="f-grad" checked> Радіальні градієнти</label>
   <label><input type="checkbox" id="f-dpr" checked> Висока роздільність екрана</label>
+  <div style="margin-top:12px">Як запускати:</div>
+  <label><input type="checkbox" id="f-cssfirst"> Спершу стилі, потім гра (як у справжній грі)</label>
+  <label><input type="checkbox" id="f-auto"> Одразу при відкритті сторінки, без кнопки (як у справжній грі)</label>
   <button type="button" id="go">Запустити гру</button>
 </div>
 <script>
 (function () {
-  var LS = 'pawsling-diag', FLAGS = ['rooms', 'lighter', 'shadow', 'grad', 'dpr'];
+  var LS = 'pawsling-diag', FLAGS = ['rooms', 'lighter', 'shadow', 'grad', 'dpr', 'cssfirst', 'auto'];
   function get() { try { return JSON.parse(localStorage.getItem(LS) || 'null'); } catch (e) { return null; } }
   function put(o) { try { localStorage.setItem(LS, JSON.stringify(o)); } catch (e) {} }
 
   var p = get(), prev = document.getElementById('prev');
   if (p) {
-    var off = FLAGS.filter(function (f) { return !p.flags[f]; });
+    var off = FLAGS.slice(0, 5).filter(function (f) { return !p.flags[f]; });
     prev.innerHTML = '<pre></pre>';
     prev.firstChild.textContent = 'Попередній запуск: протримався ' + p.alive + ' с, кадрів: ' + p.frames +
       (p.done ? ' (закрито нормально)' : ' (обірвався — можливо, падіння)') +
-      '\nВимкнено: ' + (off.length ? off.join(', ') : 'нічого') + (p.err ? '\nПомилка: ' + p.err : '');
+      '\nВимкнено: ' + (off.length ? off.join(', ') : 'нічого') +
+      '\nЗапуск: ' + (p.flags.cssfirst ? 'спершу стилі' : 'стилі й гра разом') + ', ' + (p.flags.auto ? 'одразу при відкритті' : 'кнопкою') +
+      '\nПолотно: ' + (p.canvas || '?') + (p.err ? '\nПомилка: ' + p.err : '');
     FLAGS.forEach(function (f) { document.getElementById('f-' + f).checked = !!p.flags[f]; });
   }
   var gl = '';
@@ -67,9 +72,7 @@
   ].join('\n');
   try { if (tg) { tg.ready(); tg.expand(); } } catch (e) {}
 
-  document.getElementById('go').onclick = function () {
-    var flags = {};
-    FLAGS.forEach(function (f) { flags[f] = document.getElementById('f-' + f).checked; });
+  function go(flags) {
     var P = CanvasRenderingContext2D.prototype;
     if (!flags.lighter) {
       var gco = Object.getOwnPropertyDescriptor(P, 'globalCompositeOperation');
@@ -97,16 +100,38 @@
     window.addEventListener('pagehide', function () { run.done = true; put(run); });
     var hud = document.getElementById('hud');
     setInterval(function () {
-      run.alive = Math.round((Date.now() - t0) / 100) / 10; put(run);
-      hud.textContent = run.alive + ' с · ' + run.frames + ' кадрів';
+      run.alive = Math.round((Date.now() - t0) / 100) / 10;
+      var cv = document.getElementById('game');
+      run.canvas = cv.width + '×' + cv.height + ' px, на екрані ' + cv.style.width + ' × ' + cv.style.height;
+      put(run);
+      hud.textContent = run.alive + ' с · ' + run.frames + ' кадрів · ' + cv.width + '×' + cv.height;
     }, 500);
     document.getElementById('panel').remove();
-    var v = Date.now(), css = document.createElement('link');
+    var v = Date.now(), css = document.createElement('link'), jsDone = false;
     css.rel = 'stylesheet'; css.href = 'game.css?v=' + v;
+    function loadJs() {
+      if (jsDone) return;
+      jsDone = true;
+      var js = document.createElement('script');
+      js.src = 'game.js?v=' + v;
+      document.body.appendChild(js);
+    }
+    if (flags.cssfirst) { css.onload = css.onerror = loadJs; setTimeout(loadJs, 3000); }
     document.head.appendChild(css);
-    var js = document.createElement('script');
-    js.src = 'game.js?v=' + v;
-    document.body.appendChild(js);
+    if (!flags.cssfirst) loadJs();
+  }
+
+  // "auto" repeats the real launch: the settings are saved, the page reloads and the game starts at once
+  var AUTO = 'pawsling-diag-auto', pending = null;
+  try { pending = JSON.parse(localStorage.getItem(AUTO) || 'null'); localStorage.removeItem(AUTO); } catch (e) {}
+  if (pending) { go(pending); return; }
+  document.getElementById('go').onclick = function () {
+    var flags = {};
+    FLAGS.forEach(function (f) { flags[f] = document.getElementById('f-' + f).checked; });
+    if (flags.auto) {
+      try { localStorage.setItem(AUTO, JSON.stringify(flags)); } catch (e) {}
+      location.reload();
+    } else go(flags);
   };
 })();
 </script>
