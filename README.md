@@ -11,8 +11,15 @@ bot/                a small bot that opens the game: /start and the "Грати"
 
 ## Gameplay
 
-- 12 levels in 3 rooms (Kitchen, Living room, Bedroom), each room ends with a boss.
+- 30 levels in 6 rooms, each room ends with a boss: Kitchen, Living room, Bedroom (4 levels each),
+  Bathroom, Balcony, Attic (6 levels each). The map scrolls.
+- The new rooms bring new enemies: a toothbrush heals enemies nearby, a fan blows heroes off course,
+  an RC car drives to a new spot every turn.
 - Stars: 3 for finishing within the par turn count, 2 for up to 1.5×par, 1 otherwise.
+- Night Shift (unlocks after level 4): endless generated waves, a boss every 5th wave, the room changes
+  every 5 waves; the record is the number of waves survived.
+- Heroes have hearts (Bandit 4, the others 3). A hero at 0 hearts is knocked out for 2 turns; an ally
+  touching them with a shot revives them. Enemies hit the closest standing hero.
 - Progress is saved in localStorage and, inside Telegram, in `CloudStorage`, so it syncs across devices.
 - Inside Telegram: vibration (`HapticFeedback`), the system Back button, the player's name on the map.
 
