@@ -12,17 +12,20 @@ worker/             the leaderboard: a Cloudflare Worker with a D1 database
 
 ## Gameplay
 
-- 48 levels in 9 rooms, each room ends with a boss: Kitchen, Living room, Bedroom (4 levels each),
-  Bathroom, Balcony, Attic, Garage, Basement, Roof (6 levels each). The map scrolls.
+- 54 levels in 10 rooms, each room ends with a boss: Kitchen, Living room, Bedroom (4 levels each),
+  Bathroom, Balcony, Attic, Garage, Basement, Roof, Garden (6 levels each). The map scrolls.
 - The basement mixes every enemy type (toughness ×3.1) and ends with the Web-Spinner: after each
   attack it webs the hero it hit, who skips their next turn unless an ally frees them with a shot.
 - The roof (toughness ×3.45) adds magnets that pull heroes in and bend their shots, and ends with
   the Thunder Drone: its strike jumps as chain lightning to the closest hero within reach, who
   loses a heart too, so it pays to keep the team spread out.
+- The garden (toughness ×3.6) adds moles that dig underground every other turn, when shots roll
+  right over them, and ends with the Swift Mower: after each attack it charges at the hero it hit
+  and shoves aside anyone in its way.
 - Later rooms bring new enemies: a toothbrush heals enemies nearby, a fan blows heroes off course,
   an RC car drives to a new spot every turn; in the garage a shield bot cuts damage to its neighbors
   to 35% and twins split into two minis when destroyed.
-- Each room is tougher than the last (enemy toughness ×1 in the kitchen up to ×3.45 on the roof).
+- Each room is tougher than the last (enemy toughness ×1 in the kitchen up to ×3.6 in the garden).
 - Stars: 3 for finishing within the par turn count, 2 for up to 1.5×par, 1 otherwise.
 - Night Shift (unlocks after level 4): endless generated waves, a boss every 5th wave, the room changes
   every 5 waves; the record is the number of waves survived.
