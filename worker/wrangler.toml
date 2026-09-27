@@ -4,6 +4,7 @@ compatibility_date = "2025-09-01"
 
 [vars]
 ALLOWED_ORIGIN = "https://vitaliivepsha.github.io"
+WEBAPP_URL = "https://vitaliivepsha.github.io/pawsling/webapp/?v=2"
 
 # `npx wrangler d1 create pawsling` prints the id to put here
 [[d1_databases]]

@@ -1,10 +1,15 @@
-"""Pawsling launcher bot: opens the game Mini App from /start and the chat menu button."""
+"""One-time setup for the Pawsling bot: sets the "Грати" menu button that opens the game.
+
+The bot itself runs on the Cloudflare Worker in ../worker (a webhook): it answers /start and
+handles Telegram Stars payments. Do not run a polling bot for this token, because polling
+removes the webhook and payments would stop working.
+"""
+import asyncio
 import logging
 import os
 
 from dotenv import load_dotenv
-from telegram import InlineKeyboardButton, InlineKeyboardMarkup, MenuButtonWebApp, Update, WebAppInfo
-from telegram.ext import Application, CommandHandler, ContextTypes
+from telegram import Bot, MenuButtonWebApp, WebAppInfo
 
 load_dotenv()
 BOT_TOKEN = os.environ["BOT_TOKEN"]
@@ -15,29 +20,11 @@ logging.getLogger("httpx").setLevel(logging.WARNING)  # its request logs include
 log = logging.getLogger("pawsling")
 
 
-def play_keyboard() -> InlineKeyboardMarkup:
-    return InlineKeyboardMarkup([[InlineKeyboardButton("🐾 Грати", web_app=WebAppInfo(url=WEBAPP_URL))]])
-
-
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
-    name = update.effective_user.first_name if update.effective_user else ""
-    await update.message.reply_text(
-        f"Привіт, {name}! Роботи-пилососи захопили квартиру.\n"
-        "Запускай котів і єнотів, як з рогатки, і відбий кухню, вітальню та спальню.",
-        reply_markup=play_keyboard(),
-    )
-
-
-async def post_init(app: Application) -> None:
-    await app.bot.set_chat_menu_button(menu_button=MenuButtonWebApp(text="Грати", web_app=WebAppInfo(url=WEBAPP_URL)))
+async def main() -> None:
+    async with Bot(BOT_TOKEN) as bot:
+        await bot.set_chat_menu_button(menu_button=MenuButtonWebApp(text="Грати", web_app=WebAppInfo(url=WEBAPP_URL)))
     log.info("Menu button set to %s", WEBAPP_URL)
 
 
-def main() -> None:
-    app = Application.builder().token(BOT_TOKEN).post_init(post_init).build()
-    app.add_handler(CommandHandler(["start", "play"], start))
-    app.run_polling(allowed_updates=Update.ALL_TYPES)
-
-
 if __name__ == "__main__":
-    main()
+    asyncio.run(main())

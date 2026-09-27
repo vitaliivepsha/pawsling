@@ -564,7 +564,7 @@ const I18N = {
     allKo: 'Усі герої в нокауті. Спробуй ще раз', waveTry: (a, b) => `Хвиля ${a} з ${b}. Спробуй ще раз`,
     'st.knots': 'Вузлів зав\'язано', 'st.lasers': 'Лазер спіймано', 'st.crits': 'Критів по сенсору', 'st.portals': 'Телепортів',
     newBestLevel: 'Новий рекорд для цього рівня!', newBestNight: 'Новий рекорд нічної зміни!', again: 'Ще раз', map: 'Карта', next: 'Далі',
-    toMap: 'До карти', allDone: 'Квартиру врятовано! Усі рівні пройдено', lang: 'Мова', langAuto: 'Автоматично',
+    toMap: 'До карти', allDone: 'Квартиру врятовано! Усі рівні пройдено', lang: 'Мова', secondWind: 'Друге дихання', secondWindSub: 'Повна міцність і всі герої на ногах', secondWindGo: 'Друге дихання!', payWait: 'Відкриваю оплату…', payFailed: 'Оплата не пройшла. Спробуй ще раз', langAuto: 'Автоматично',
     aria: 'Гра Pawsling. Потягни від героя назад і відпусти, щоб запустити його, як з рогатки.',
     board: 'Рейтинг', boardNight: 'Нічна зміна', boardStars: 'Зірки', boardYou: 'ти', boardEmpty: 'Поки що нікого. Будь першим!',
     boardLoading: 'Завантаження…', boardError: 'Не вдалося завантажити рейтинг. Перевір інтернет і спробуй ще.',
@@ -608,7 +608,7 @@ const I18N = {
     allKo: 'All heroes knocked out. Try again', waveTry: (a, b) => `Wave ${a} of ${b}. Try again`,
     'st.knots': 'Knots tied', 'st.lasers': 'Lasers caught', 'st.crits': 'Sensor crits', 'st.portals': 'Teleports',
     newBestLevel: 'New record for this level!', newBestNight: 'New Night Shift record!', again: 'Again', map: 'Map', next: 'Next',
-    toMap: 'To the map', allDone: 'Home saved! All levels complete', lang: 'Language', langAuto: 'Automatic',
+    toMap: 'To the map', allDone: 'Home saved! All levels complete', lang: 'Language', secondWind: 'Second wind', secondWindSub: 'Full home strength, every hero back up', secondWindGo: 'Second wind!', payWait: 'Opening payment…', payFailed: 'Payment failed. Try again', langAuto: 'Automatic',
     aria: 'Pawsling. Pull back from a hero and let go to launch it like a slingshot.',
     board: 'Leaderboard', boardNight: 'Night Shift', boardStars: 'Stars', boardYou: 'you', boardEmpty: 'Nobody here yet. Be the first!',
     boardLoading: 'Loading…', boardError: 'Could not load the leaderboard. Check your connection and try again.',
@@ -652,7 +652,7 @@ const I18N = {
     allKo: 'Wszyscy bohaterowie znokautowani. Spróbuj jeszcze raz', waveTry: (a, b) => `Fala ${a} z ${b}. Spróbuj jeszcze raz`,
     'st.knots': 'Zawiązane supły', 'st.lasers': 'Złapane lasery', 'st.crits': 'Kryty w czujnik', 'st.portals': 'Teleporty',
     newBestLevel: 'Nowy rekord tego poziomu!', newBestNight: 'Nowy rekord nocnej zmiany!', again: 'Jeszcze raz', map: 'Mapa', next: 'Dalej',
-    toMap: 'Do mapy', allDone: 'Mieszkanie uratowane! Wszystkie poziomy ukończone', lang: 'Język', langAuto: 'Automatycznie',
+    toMap: 'Do mapy', allDone: 'Mieszkanie uratowane! Wszystkie poziomy ukończone', lang: 'Język', secondWind: 'Drugi oddech', secondWindSub: 'Pełna wytrzymałość i wszyscy bohaterowie na nogach', secondWindGo: 'Drugi oddech!', payWait: 'Otwieram płatność…', payFailed: 'Płatność nie powiodła się. Spróbuj ponownie', langAuto: 'Automatycznie',
     aria: 'Pawsling. Pociągnij od bohatera do tyłu i puść, żeby wystrzelić go jak z procy.',
     board: 'Ranking', boardNight: 'Nocna zmiana', boardStars: 'Gwiazdki', boardYou: 'ty', boardEmpty: 'Jeszcze nikogo tu nie ma. Bądź pierwszy!',
     boardLoading: 'Ładowanie…', boardError: 'Nie udało się wczytać rankingu. Sprawdź internet i spróbuj ponownie.',
@@ -696,7 +696,7 @@ const I18N = {
     allKo: 'Alle Helden k.o. Versuch es nochmal', waveTry: (a, b) => `Welle ${a} von ${b}. Versuch es nochmal`,
     'st.knots': 'Geknüpfte Knoten', 'st.lasers': 'Laser gefangen', 'st.crits': 'Sensor-Krits', 'st.portals': 'Teleports',
     newBestLevel: 'Neuer Rekord für dieses Level!', newBestNight: 'Neuer Nachtschicht-Rekord!', again: 'Nochmal', map: 'Karte', next: 'Weiter',
-    toMap: 'Zur Karte', allDone: 'Wohnung gerettet! Alle Level geschafft', lang: 'Sprache', langAuto: 'Automatisch',
+    toMap: 'Zur Karte', allDone: 'Wohnung gerettet! Alle Level geschafft', lang: 'Sprache', secondWind: 'Zweite Luft', secondWindSub: 'Volle Stärke und alle Helden wieder auf den Beinen', secondWindGo: 'Zweite Luft!', payWait: 'Zahlung wird geöffnet…', payFailed: 'Zahlung fehlgeschlagen. Versuch es nochmal', langAuto: 'Automatisch',
     aria: 'Pawsling. Zieh vom Helden zurück und lass los, um ihn wie mit einer Schleuder abzufeuern.',
     board: 'Rangliste', boardNight: 'Nachtschicht', boardStars: 'Sterne', boardYou: 'du', boardEmpty: 'Noch niemand hier. Sei der Erste!',
     boardLoading: 'Wird geladen…', boardError: 'Rangliste konnte nicht geladen werden. Prüfe die Verbindung und versuch es nochmal.',
@@ -740,7 +740,7 @@ const I18N = {
     allKo: 'Todos los héroes K.O. Inténtalo de nuevo', waveTry: (a, b) => `Oleada ${a} de ${b}. Inténtalo de nuevo`,
     'st.knots': 'Nudos atados', 'st.lasers': 'Láseres atrapados', 'st.crits': 'Críticos al sensor', 'st.portals': 'Teletransportes',
     newBestLevel: '¡Nuevo récord en este nivel!', newBestNight: '¡Nuevo récord del turno de noche!', again: 'Otra vez', map: 'Mapa', next: 'Siguiente',
-    toMap: 'Al mapa', allDone: '¡Piso salvado! Todos los niveles completados', lang: 'Idioma', langAuto: 'Automático',
+    toMap: 'Al mapa', allDone: '¡Piso salvado! Todos los niveles completados', lang: 'Idioma', secondWind: 'Segundo aliento', secondWindSub: 'Resistencia completa y todos los héroes en pie', secondWindGo: '¡Segundo aliento!', payWait: 'Abriendo el pago…', payFailed: 'El pago falló. Inténtalo de nuevo', langAuto: 'Automático',
     aria: 'Pawsling. Tira hacia atrás desde un héroe y suelta para lanzarlo como con un tirachinas.',
     board: 'Clasificación', boardNight: 'Turno de noche', boardStars: 'Estrellas', boardYou: 'tú', boardEmpty: 'Aún no hay nadie. ¡Sé el primero!',
     boardLoading: 'Cargando…', boardError: 'No se pudo cargar la clasificación. Revisa la conexión e inténtalo de nuevo.',
@@ -3365,6 +3365,48 @@ function drawLang() {
   list.forEach(([k, name], i) => uiBtn(75, 240 + i * 68, W - 150, 54, name, () => pick(k), !auto && k === LANG));
 }
 
+// ---------- shop: Second wind for Telegram Stars ----------
+// After a loss the player can buy one continue per run. The invoice comes from the worker,
+// Telegram shows its own payment sheet, and 'paid' resumes the level.
+const WIND_PRICE = 10; // must match ITEMS.continue in worker/src/index.js
+const canPay = () => !!(TG && TG.initData && BOARD_URL && TG.openInvoice && tgv('6.1')) || (DEV && window.__fakePay === true);
+async function buySecondWind() {
+  if (!G || G.buying) return;
+  const run = G;
+  run.buying = true; run.payMsg = null;
+  try {
+    const r = await fetch(BOARD_URL + '/invoice', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ initData: TG.initData, item: 'continue', lang: LANG }),
+    });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const { link } = await r.json();
+    TG.openInvoice(link, status => {
+      run.buying = false;
+      if (status === 'paid') secondWind(run);
+      else if (status === 'failed') run.payMsg = tr('payFailed');
+    });
+  } catch (e) { run.buying = false; run.payMsg = tr('payFailed'); }
+}
+function secondWind(run) {
+  if (G !== run || G.state !== 'lose') return;
+  G.usedWind = true; G.loseReason = null; G.attackQueue = [];
+  G.hp = G.hpLag = G.maxHp;
+  for (const h of G.heroes) { h.ko = 0; h.hearts = h.maxHearts; h.happy = 1; }
+  Amb.duck(1); flash('#5ce1c6', .5); ring(W / 2, (TOP + BOT) / 2, 260, '#5ce1c6');
+  ftext(W / 2, 380, tr('secondWindGo'), '#5ce1c6', 26);
+  Snd.play('heal'); haptic('success');
+  nextTurn();
+}
+function drawSecondWind() {
+  if (G.usedWind || !canPay()) return false;
+  const note = G.payMsg || tr('secondWindSub');
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillStyle = G.payMsg ? '#ff8fb1' : '#c9c2e6';
+  fitFont(note, W - 60, 13, 800, FB); ctx.fillText(note, W / 2, 510);
+  uiBtn(75, 526, W - 150, 56, G.buying ? tr('payWait') : `${tr('secondWind')} · ★ ${WIND_PRICE}`, buySecondWind, true);
+  return true;
+}
+
 function drawEnd() {
   const win = G.state === 'win';
   ctx.fillStyle = G.ch.shade; ctx.fillRect(0, 0, W, H);
@@ -3406,14 +3448,16 @@ function drawEnd() {
     ctx.textAlign = 'center'; ctx.font = `800 14px ${FB}`;
     ctx.fillStyle = G.newBest ? '#5ce1c6' : '#8f88b5';
     ctx.fillText(G.newBest ? tr('newBestNight') : tr('record', wavesWord(PROG.endless || 0)), W / 2, y0 + 150);
-    uiBtn(75, 600, W - 150, 56, tr('again'), startEndless, true);
+    const wind = drawSecondWind();
+    uiBtn(75, 600, W - 150, wind ? 50 : 56, tr('again'), startEndless, !wind);
     uiBtn(75, 670, W - 150, 46, tr('map'), goMap, false);
     return;
   }
   const hasNext = win && G.li < LEVELS.length - 1;
   const li = G.li;
+  const wind = !win && drawSecondWind();
   if (hasNext) uiBtn(75, 600, W - 150, 56, tr('next'), () => startLevel(li + 1), true);
-  else uiBtn(75, 600, W - 150, 56, win ? tr('toMap') : tr('again'), win ? goMap : () => startLevel(li), true);
+  else uiBtn(75, 600, W - 150, wind ? 50 : 56, win ? tr('toMap') : tr('again'), win ? goMap : () => startLevel(li), !wind);
   if (hasNext) {
     uiBtn(75, 670, (W - 160) / 2, 46, tr('again'), () => startLevel(li), false);
     uiBtn(85 + (W - 160) / 2, 670, (W - 160) / 2, 46, tr('map'), goMap, false);
@@ -3596,7 +3640,7 @@ setScreen(lsGet('pawsling-seen') || PROG.unlocked > 1 ? 'map' : 'howto');
 // #dev: timer-driven loop (keeps running in hidden tabs) plus a state hook for testing
 const DEV = location.hash === '#dev';
 const nextFrame = DEV ? cb => setTimeout(() => cb(performance.now()), 16) : requestAnimationFrame;
-if (DEV) window.__pawsling = { get G() { return G; }, get SCREEN() { return SCREEN; }, startLevel, startEndless, launch, PROG: () => PROG, MAP, BOARD, setScreen };
+if (DEV) window.__pawsling = { get G() { return G; }, get SCREEN() { return SCREEN; }, startLevel, startEndless, launch, PROG: () => PROG, MAP, BOARD, setScreen, secondWind };
 let last = performance.now();
 // Slow devices: if frames keep taking longer than ~45 ms, drop the animated room lights.
 let LOWFX = false, slowMs = 0, failed = false;

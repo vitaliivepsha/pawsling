@@ -49,9 +49,10 @@ The game runs without a permanently running server: the page is on GitHub Pages
    `index.html` only loads `game.js` and `game.css` with a fresh `?v=` on every launch: players
    get the new version as soon as Pages has it. Keep game changes in those two files; if
    `index.html` itself ever changes, bump the `?v=` in the game address (step 2 and @BotFather).
-2. **Menu button "Грати".** `bot/bot.py` sets it via `setChatMenuButton`. **One run is enough**:
-   Telegram remembers the button, and it stays after the bot is stopped. Rerun only if the game
-   address changes. The current address is `https://vitaliivepsha.github.io/pawsling/webapp/?v=2`.
+2. **Menu button "Грати".** `bot/bot.py` is a one-time script that sets it via `setChatMenuButton`
+   and exits; Telegram remembers the button. Rerun only if the game address changes. The bot's
+   messages (/start, payments) are handled by the worker's webhook, so never run a polling bot
+   for this token: polling removes the webhook. The current address is `https://vitaliivepsha.github.io/pawsling/webapp/?v=2`.
    ```bash
    cd bot
    cp .env.example .env      # fill in BOT_TOKEN and WEBAPP_URL
@@ -66,10 +67,20 @@ The game runs without a permanently running server: the page is on GitHub Pages
    - `/setuserpic`: the bot's profile picture, `assets/bot-avatar.png` (1024×1024, drawn with the
      game's own hero code; Telegram crops it to a circle, the yarn ring sits just inside it).
 
-With the bot stopped, `/start` gets no reply. That is expected: players go in through the menu
-button or "Open App".
 
-## Leaderboard server
+## Server: leaderboard, payments, bot replies
+
+- `POST /board`: the leaderboard (see below).
+- `POST /invoice`: a Telegram Stars invoice for an in-game item. Today there is one item,
+  **Second wind** (10 Stars, `ITEMS.continue`): after a loss the player continues the level with
+  full home strength and every hero back up, once per run. The price lives in `ITEMS` in
+  `worker/src/index.js` and `WIND_PRICE` in `game.js`; keep them equal.
+- `POST /tg`: the bot's webhook, registered automatically on the first game request. It approves
+  pre-checkout queries (Telegram cancels a payment that is not approved within 10 seconds),
+  records paid purchases in the `purchases` table and answers /start in the player's language.
+  Stars earned go to the bot's balance (withdrawal via Fragment, see @BotFather → Payments).
+
+## Leaderboard
 
 `worker/` is a Cloudflare Worker (free plan) with a D1 database. The game posts Telegram's `initData`
 with every request; the worker checks its signature with the bot token, so a result is always saved
