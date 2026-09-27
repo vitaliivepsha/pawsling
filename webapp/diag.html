@@ -1,0 +1,114 @@
+<!doctype html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<title>Pawsling · діагностика</title>
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Rubik:wght@900&family=Nunito:wght@700;800;900&display=swap">
+<style>
+  html,body{height:100%;margin:0;background:#110e22;color:#f4efe6;font-family:Nunito,system-ui,sans-serif}
+  #panel{position:fixed;inset:0;z-index:9;overflow:auto;background:#110e22;padding:16px;box-sizing:border-box;font-size:14px;line-height:1.4}
+  #panel h1{font-family:Rubik,sans-serif;font-size:22px;margin:0 0 8px;color:#ffc857}
+  #panel pre{white-space:pre-wrap;word-break:break-word;background:#1d1938;padding:10px;border-radius:10px;font-size:12px}
+  #panel label{display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid #2a2548}
+  #panel input{width:22px;height:22px}
+  #panel button{margin-top:14px;width:100%;font:inherit;font-weight:900;padding:14px;border-radius:12px;border:0;background:#ffc857;color:#15122a}
+  #hud{position:fixed;left:6px;top:6px;z-index:8;font:11px monospace;background:rgba(0,0,0,.55);color:#9fd8e0;padding:3px 6px;border-radius:6px;pointer-events:none}
+</style>
+</head>
+<body>
+<!--
+  Diagnostics for the game on phones. It runs the same game.js, can switch heavy canvas features off
+  by patching the canvas API from outside, and keeps a heartbeat in localStorage so that after a crash
+  the next visit shows how far the previous run got.
+-->
+<canvas id="game" tabindex="0"></canvas>
+<div id="hud"></div>
+<div id="panel">
+  <h1>Pawsling · діагностика</h1>
+  <div id="prev"></div>
+  <pre id="info"></pre>
+  <div>Залиш увімкненим тільки те, що хочеш перевірити:</div>
+  <label><input type="checkbox" id="f-rooms" checked> Великі фони кімнат</label>
+  <label><input type="checkbox" id="f-lighter" checked> Світіння (режим «lighter»)</label>
+  <label><input type="checkbox" id="f-shadow" checked> Тіні й розмиття (shadowBlur)</label>
+  <label><input type="checkbox" id="f-grad" checked> Радіальні градієнти</label>
+  <label><input type="checkbox" id="f-dpr" checked> Висока роздільність екрана</label>
+  <button type="button" id="go">Запустити гру</button>
+</div>
+<script>
+(function () {
+  var LS = 'pawsling-diag', FLAGS = ['rooms', 'lighter', 'shadow', 'grad', 'dpr'];
+  function get() { try { return JSON.parse(localStorage.getItem(LS) || 'null'); } catch (e) { return null; } }
+  function put(o) { try { localStorage.setItem(LS, JSON.stringify(o)); } catch (e) {} }
+
+  var p = get(), prev = document.getElementById('prev');
+  if (p) {
+    var off = FLAGS.filter(function (f) { return !p.flags[f]; });
+    prev.innerHTML = '<pre></pre>';
+    prev.firstChild.textContent = 'Попередній запуск: протримався ' + p.alive + ' с, кадрів: ' + p.frames +
+      (p.done ? ' (закрито нормально)' : ' (обірвався — можливо, падіння)') +
+      '\nВимкнено: ' + (off.length ? off.join(', ') : 'нічого') + (p.err ? '\nПомилка: ' + p.err : '');
+    FLAGS.forEach(function (f) { document.getElementById('f-' + f).checked = !!p.flags[f]; });
+  }
+  var gl = '';
+  try {
+    var g = document.createElement('canvas').getContext('webgl'), ext = g && g.getExtension('WEBGL_debug_renderer_info');
+    gl = ext ? g.getParameter(ext.UNMASKED_RENDERER_WEBGL) : (g ? 'webgl ok' : 'no webgl');
+  } catch (e) { gl = 'webgl error'; }
+  var tg = window.Telegram && Telegram.WebApp;
+  document.getElementById('info').textContent = [
+    'UA: ' + navigator.userAgent,
+    'Екран: ' + screen.width + '×' + screen.height + ', DPR ' + window.devicePixelRatio + ', вікно ' + innerWidth + '×' + innerHeight,
+    'Памʼять пристрою: ' + (navigator.deviceMemory || '?') + ' ГБ, ядер: ' + (navigator.hardwareConcurrency || '?'),
+    'GPU: ' + gl,
+    'Telegram: ' + (tg && tg.initData ? tg.platform + ' ' + tg.version : 'ні (звичайний браузер)'),
+  ].join('\n');
+  try { if (tg) { tg.ready(); tg.expand(); } } catch (e) {}
+
+  document.getElementById('go').onclick = function () {
+    var flags = {};
+    FLAGS.forEach(function (f) { flags[f] = document.getElementById('f-' + f).checked; });
+    var P = CanvasRenderingContext2D.prototype;
+    if (!flags.lighter) {
+      var gco = Object.getOwnPropertyDescriptor(P, 'globalCompositeOperation');
+      Object.defineProperty(P, 'globalCompositeOperation', { get: gco.get, set: function (v) { gco.set.call(this, v === 'lighter' ? 'source-over' : v); } });
+    }
+    if (!flags.shadow) {
+      var sb = Object.getOwnPropertyDescriptor(P, 'shadowBlur');
+      Object.defineProperty(P, 'shadowBlur', { get: sb.get, set: function () { sb.set.call(this, 0); } });
+    }
+    if (!flags.grad) {
+      P.createRadialGradient = function (x0, y0, r0, x1, y1, r1) { return this.createLinearGradient(x1, y1 - r1, x1, y1 + r1); };
+    }
+    if (!flags.dpr) Object.defineProperty(window, 'devicePixelRatio', { get: function () { return 1; } });
+    if (!flags.rooms) {
+      // the room layers are 900×1600 canvases; shrink every extra canvas to a quarter of the pixels
+      var wd = Object.getOwnPropertyDescriptor(HTMLCanvasElement.prototype, 'width'), hd = Object.getOwnPropertyDescriptor(HTMLCanvasElement.prototype, 'height');
+      Object.defineProperty(HTMLCanvasElement.prototype, 'width', { get: wd.get, set: function (v) { wd.set.call(this, this.id === 'game' ? v : Math.ceil(v / 2)); } });
+      Object.defineProperty(HTMLCanvasElement.prototype, 'height', { get: hd.get, set: function (v) { hd.set.call(this, this.id === 'game' ? v : Math.ceil(v / 2)); } });
+    }
+    var run = { flags: flags, alive: 0, frames: 0, done: false, err: '' }, t0 = Date.now();
+    put(run);
+    var raf = window.requestAnimationFrame.bind(window);
+    window.requestAnimationFrame = function (cb) { return raf(function (t) { run.frames++; cb(t); }); };
+    window.addEventListener('error', function (e) { run.err = String(e.message || e.error); put(run); });
+    window.addEventListener('pagehide', function () { run.done = true; put(run); });
+    var hud = document.getElementById('hud');
+    setInterval(function () {
+      run.alive = Math.round((Date.now() - t0) / 100) / 10; put(run);
+      hud.textContent = run.alive + ' с · ' + run.frames + ' кадрів';
+    }, 500);
+    document.getElementById('panel').remove();
+    var v = Date.now(), css = document.createElement('link');
+    css.rel = 'stylesheet'; css.href = 'game.css?v=' + v;
+    document.head.appendChild(css);
+    var js = document.createElement('script');
+    js.src = 'game.js?v=' + v;
+    document.body.appendChild(js);
+  };
+})();
+</script>
+</body>
+</html>
