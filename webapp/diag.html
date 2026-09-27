@@ -64,7 +64,7 @@
   var q = new URLSearchParams(location.search), preset = null;
   if (q.has('run')) {
     preset = { rooms: true, lighter: true, shadow: true, grad: true, dpr: true, auto: true, preset: location.search };
-    ['css', 'boot', 'webgl', 'raf', 'hud', 'op', 'ovl'].forEach(function (k) { preset[k === 'css' ? 'cssfirst' : k] = q.get(k) === '1'; });
+    ['css', 'boot', 'webgl', 'raf', 'hud', 'op', 'ovl', 'sw'].forEach(function (k) { preset[k === 'css' ? 'cssfirst' : k] = q.get(k) === '1'; });
   }
   var gl = 'не перевірялось';
   if (!preset || preset.webgl) try {
@@ -117,12 +117,23 @@
       run.canvas = cv.width + '×' + cv.height + ' px, на екрані ' + cv.style.width + ' × ' + cv.style.height;
       if (window.__pawslingOk) run.canvas += ', перший кадр є';
       put(run);
-      if (flags.hud !== false) hud.textContent = run.alive + ' с · ' + run.frames + ' кадрів · ' + cv.width + '×' + cv.height;
+      if (typeof run.frames === 'number') {
+        run.fps = Math.round((run.frames - (run.lastFrames || 0)) * 2); run.lastFrames = run.frames;
+      }
+      if (flags.hud !== false) hud.textContent = run.alive + ' с · ' + (run.fps != null ? run.fps + ' к/с · ' : '') + cv.width + '×' + cv.height;
     }, 500);
     document.getElementById('panel').remove();
     // op=1: canvas slightly translucent; ovl=1: a nearly invisible layer over the whole page.
     // Both keep Chrome from handing the canvas straight to the GPU display overlay.
     if (flags.op) document.getElementById('game').style.opacity = '.995';
+    // sw=1: every 2D canvas is drawn by the CPU (willReadFrequently), keeping the GPU driver out of it
+    if (flags.sw) {
+      var gc = HTMLCanvasElement.prototype.getContext;
+      HTMLCanvasElement.prototype.getContext = function (type, opts) {
+        if (type === '2d') opts = Object.assign({}, opts, { willReadFrequently: true });
+        return gc.call(this, type, opts);
+      };
+    }
     if (flags.ovl) {
       var ov = document.createElement('div');
       ov.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;z-index:7;pointer-events:none;background:rgba(0,0,0,.01)';
