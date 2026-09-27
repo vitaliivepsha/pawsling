@@ -780,11 +780,43 @@ function newRun(li) {
   G = {
     li, lvl: LEVELS[li], ch: CHAPTERS[LEVELS[li].ch],
     state: 'banner', wave: 0, turn: 1, hp: 12000, maxHp: 12000, meter: 0, zoomArmed: false, cur: 0,
-    heroes: HEROES.map((d, i) => ({ ...d, x: START[i][0], y: START[i][1], vx: 0, vy: 0 })),
+    heroes: HEROES.map((d, i) => {
+      const hearts = d.id === 'bandit' ? 4 : 3;
+      return { ...d, x: START[i][0], y: START[i][1], vx: 0, vy: 0, hearts, maxHearts: hearts, ko: 0 };
+    }),
     enemies: [], boxes: [], snacks: [], trails: [], parts: [], rings: [], texts: [], beams: [],
     laser: null, shot: null, attackQueue: [], timer: 0, shake: 0, banner: null, hitstop: 0, flash: null, confetti: [], hpLag: 12000,
-    stats: { knots: 0, lasers: 0, crits: 0, portals: 0 }, stars: 0, newBest: false,
+    stats: { knots: 0, lasers: 0, crits: 0, portals: 0 }, stars: 0, newBest: false, loseReason: null, koTaught: false,
   };
+}
+
+// ---------- hearts, knockouts, targeting ----------
+const KO_TURNS = 2;
+// enemies strike the closest hero who is still on their feet
+function targetOf(e) {
+  let best = null, bd = 1e9;
+  for (const h of G.heroes) {
+    if (h.ko) continue;
+    const d = dist(e.x, e.y, h.x, h.y);
+    if (d < bd) { bd = d; best = h; }
+  }
+  return best;
+}
+function wake(h, hearts, text) {
+  h.ko = 0; h.hearts = Math.min(h.maxHearts, hearts); h.happy = .9;
+  ftext(h.x, h.y - h.r - 18, text, '#5ce1c6', 15);
+  burst(h.x, h.y, '#5ce1c6', 12);
+}
+// next hero in rotation; knocked-out heroes lose their turn and count down to waking up
+function advanceHero() {
+  let n = G.cur;
+  for (let i = 0; i < G.heroes.length; i++) {
+    n = (n + 1) % G.heroes.length;
+    const h = G.heroes[n];
+    if (!h.ko) break;
+    if (--h.ko === 0) wake(h, 1, 'Прокинувся!');
+  }
+  G.cur = n;
 }
 function startLevel(li) { newRun(li); setScreen('game'); setupWave(0); }
 
@@ -1056,7 +1088,10 @@ function stepShot(dt) {
 
     for (const o of G.heroes) {
       if (o === h || s.combos.has(o)) continue;
-      if (dist(h.x, h.y, o.x, o.y) < h.r + o.r) { s.combos.add(o); triggerCombo(o); }
+      if (dist(h.x, h.y, o.x, o.y) >= h.r + o.r) continue;
+      s.combos.add(o);
+      if (o.ko) { wake(o, 2, 'Підняли!'); Snd.play('heal'); haptic('success'); }
+      else triggerCombo(o);
     }
 
     if (s.portalCd <= 0) {
@@ -1124,7 +1159,8 @@ function nextAttack() {
   const e = G.attackQueue.shift();
   if (!e) { nextTurn(); return; }
   if (!e.alive) { G.timer = 0; return; }
-  const t = G.heroes[Math.floor(Math.random() * G.heroes.length)];
+  const t = targetOf(e);
+  if (!t) { G.timer = 0; return; }
   t.hurt = .7;
   G.beams.push({ x1: e.x, y1: e.y, x2: t.x, y2: t.y, life: .45, max: .45, col: e.type === 'spray' ? '#6ec3ff' : '#ff3b5c', w: e.type === 'boss' ? 12 : 6 });
   G.hp = Math.max(0, G.hp - e.atk);
@@ -1135,14 +1171,24 @@ function nextAttack() {
   G.shake = e.type === 'boss' ? 14 : 7;
   flash('#ff3b5c', e.type === 'boss' ? .55 : .35);
   Snd.play(e.type === 'boss' ? 'boss' : 'attack'); haptic('error');
+  const loss = e.type === 'boss' ? 2 : 1;
+  t.hearts = Math.max(0, t.hearts - loss);
+  ftext(t.x, t.y - 52, '-' + loss + ' ♥', '#ff5d7a', 16);
+  if (t.hearts === 0) {
+    t.ko = KO_TURNS;
+    ftext(t.x, t.y + t.r + 18, 'Нокаут!', '#ffc857', 18);
+    if (!G.koTaught) { G.koTaught = true; ftext(W / 2, BOT - 40, 'Зачепи друга пострілом, щоб підняти', '#5ce1c6', 15); }
+    haptic('heavy');
+  }
   e.timer = e.maxTimer;
   G.timer = .6;
-  if (G.hp <= 0) { G.state = 'lose'; Amb.duck(.25); Snd.play('lose'); haptic('error'); }
+  const allKo = G.heroes.every(h => h.ko);
+  if (G.hp <= 0 || allKo) { G.loseReason = allKo ? 'ko' : 'hp'; G.state = 'lose'; Amb.duck(.25); Snd.play('lose'); haptic('error'); }
 }
 
 function nextTurn() {
   G.turn++;
-  G.cur = (G.cur + 1) % G.heroes.length;
+  advanceHero();
   G.trails = G.trails.filter(t => t.turn >= G.turn - 2);
   placeLaser();
   if (G.snacks.length < 4 && Math.random() < .7) spawnSnack();
@@ -1173,9 +1219,10 @@ function waveClear() {
   }
   const heal = Math.round(G.maxHp * .15);
   G.hp = Math.min(G.maxHp, G.hp + heal);
+  for (const h of G.heroes) { if (h.ko) { h.ko = 0; h.hearts = 1; } else h.hearts = Math.min(h.maxHearts, h.hearts + 1); }
   G.state = 'banner';
-  G.banner = { title: 'Хвилю зачищено!', sub: `+${heal} до міцності квартири`, t: 1.5, max: 1.5,
-    done: () => { G.turn++; G.cur = (G.cur + 1) % G.heroes.length; setupWave(G.wave + 1); } };
+  G.banner = { title: 'Хвилю зачищено!', sub: `+${heal} до міцності квартири і +1 ♥ кожному`, t: 1.5, max: 1.5,
+    done: () => { G.turn++; advanceHero(); setupWave(G.wave + 1); } };
   playRound(LEVELS[G.li].ch);
 }
 
@@ -1281,6 +1328,34 @@ function heroEyes(h, r, o, mood) {
     }
   }
   if (mood === 'sad') { ctx.fillStyle = '#7ec8e3'; ctx.beginPath(); ctx.moveTo(r * .42, r * .08); ctx.quadraticCurveTo(r * .52, r * .26, r * .42, r * .3); ctx.quadraticCurveTo(r * .32, r * .26, r * .42, r * .08); ctx.fill(); }
+}
+
+function heart(x, y, s, fill) {
+  ctx.fillStyle = fill; ctx.beginPath();
+  ctx.moveTo(x, y + s * .9);
+  ctx.bezierCurveTo(x - s * 1.4, y - s * .1, x - s * .6, y - s * 1.1, x, y - s * .35);
+  ctx.bezierCurveTo(x + s * .6, y - s * 1.1, x + s * 1.4, y - s * .1, x, y + s * .9);
+  ctx.fill();
+}
+function heartsRow(h, cx, y, s) {
+  const gap = s * 2.6, x0 = cx - (h.maxHearts - 1) * gap / 2;
+  for (let i = 0; i < h.maxHearts; i++) heart(x0 + i * gap, y, s, i < h.hearts ? '#ff5d7a' : 'rgba(59,53,99,.9)');
+}
+// dashed line from each enemy about to strike to the hero it will hit
+function drawThreats() {
+  if (G.state !== 'aim' && G.state !== 'moving') return;
+  for (const e of G.enemies) {
+    if (!e.alive || e.timer > 1) continue;
+    const t = targetOf(e);
+    if (!t) continue;
+    ctx.save();
+    ctx.globalAlpha = .45 + .25 * Math.sin(T * 8);
+    ctx.strokeStyle = '#ff3b5c'; ctx.lineWidth = 2; ctx.setLineDash([6, 6]); ctx.lineDashOffset = RM ? 0 : -T * 30;
+    ctx.beginPath(); ctx.moveTo(e.x, e.y); ctx.lineTo(t.x, t.y); ctx.stroke();
+    ctx.setLineDash([]); ctx.lineWidth = 2.5;
+    ctx.beginPath(); ctx.arc(t.x, t.y, t.r + 13, 0, TAU); ctx.stroke();
+    ctx.restore();
+  }
 }
 
 // Each hero is a little character: Mochi a fluffy tabby with a bell, Pixel a cool black cat with shades,
@@ -1795,8 +1870,8 @@ function drawHUD() {
     ctx.fillStyle = g; circ(x, y, R0);
     ctx.strokeStyle = cur ? h.yarn : '#3b3563'; ctx.lineWidth = cur ? 3 : 2;
     ctx.beginPath(); ctx.arc(x, y, R0, 0, TAU); ctx.stroke();
-    ctx.save(); if (!cur) ctx.globalAlpha = .75;
-    drawHero(h, x, y + 2, cur ? 16 : 14.5, null); ctx.restore();
+    ctx.save(); if (!cur) ctx.globalAlpha = h.ko ? .35 : .75;
+    drawHero(h, x, y + 2, cur ? 16 : 14.5, null, h.ko ? { mood: 'hurt' } : {}); ctx.restore();
     const bx = x + R0 * .74, by = y + R0 * .7;
     ctx.fillStyle = '#15122a'; circ(bx, by, 8);
     ctx.strokeStyle = h.yarn; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(bx, by, 8, 0, TAU); ctx.stroke();
@@ -1804,8 +1879,10 @@ function drawHUD() {
     if (h.type === 'bounce') { ctx.moveTo(bx - 4, by - 3); ctx.lineTo(bx, by + 3); ctx.lineTo(bx + 4, by - 3); }
     else { ctx.moveTo(bx - 4.5, by); ctx.lineTo(bx + 4.5, by); ctx.moveTo(bx + 1.5, by - 3); ctx.lineTo(bx + 4.5, by); ctx.lineTo(bx + 1.5, by + 3); }
     ctx.stroke();
-    ctx.fillStyle = cur ? h.yarn : '#8f88b5'; ctx.font = `800 10px ${FB}`; ctx.textAlign = 'center';
-    ctx.fillText(h.name, x, y + 35);
+    if (h.ko) {
+      ctx.fillStyle = '#8f88b5'; ctx.font = `800 10px ${FB}`; ctx.textAlign = 'center';
+      ctx.fillText(`нокаут · ${h.ko}`, x, y + 35);
+    } else heartsRow(h, x, y + 35, 4);
   });
 
   const full = G.meter >= 100, B = BTN;
@@ -2055,7 +2132,7 @@ function drawEnd() {
   ctx.fillStyle = win ? '#ffc857' : '#ff6b85'; ctx.font = `900 34px ${FD}`;
   ctx.fillText(win ? `Рівень ${G.li + 1} пройдено!` : 'Пилососи перемогли', W / 2, 235);
   ctx.fillStyle = '#f4efe6'; ctx.font = `800 15px ${FB}`;
-  ctx.fillText(win ? `${G.turn} ходів · для 3 зірок треба ${G.lvl.par}` : `Хвиля ${G.wave + 1} з ${G.lvl.waves.length}. Спробуй ще раз`, W / 2, 272);
+  ctx.fillText(win ? `${G.turn} ходів · для 3 зірок треба ${G.lvl.par}` : (G.loseReason === 'ko' ? 'Усі герої в нокауті. Спробуй ще раз' : `Хвиля ${G.wave + 1} з ${G.lvl.waves.length}. Спробуй ще раз`), W / 2, 272);
   let y0 = 320;
   if (win) {
     for (let s = 0; s < 3; s++) {
@@ -2106,6 +2183,7 @@ function drawGame() {
   G.snacks.forEach(drawSnack);
   drawLaser();
   for (const e of G.enemies) if (e.alive) drawEnemy(e);
+  drawThreats();
   G.heroes.forEach((h, i) => {
     const cur = i === G.cur && (G.state === 'aim' || G.state === 'moving');
     ctx.fillStyle = 'rgba(0,0,0,.3)'; ctx.beginPath(); ctx.ellipse(h.x, h.y + h.r * .85, h.r * .9, h.r * .3, 0, 0, TAU); ctx.fill();
@@ -2126,6 +2204,18 @@ function drawGame() {
       if (best) look = [(best.x - h.x) / bd, (best.y - h.y) / bd];
     }
     const ho = { look };
+    if (h.ko) {
+      ctx.save(); ctx.globalAlpha = .55; ctx.translate(h.x, h.y); ctx.rotate(.5);
+      drawHero(h, 0, 0, h.r, null, { mood: 'hurt' }); ctx.restore();
+      for (let k = 0; k < 3; k++) {
+        const a = (RM ? 0 : T * 3) + k * TAU / 3;
+        star(h.x + Math.cos(a) * h.r * .9, h.y - h.r - 6 + Math.sin(a) * 5, 5, '#ffe066');
+      }
+      ctx.fillStyle = '#c9c2e6'; ctx.font = `900 11px ${FD}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText(`zZ ${h.ko}`, h.x, h.y + h.r + 12);
+      return;
+    }
+    if (!(G.shot && G.shot.hero === h)) heartsRow(h, h.x, h.y - h.r - 14, 3.6);
     if (sp > 60 && !RM) {
       // squash & stretch along the flight direction, with a soft glow in the hero's yarn colour
       const k = Math.min(.2, sp / 7000), ang = Math.atan2(h.vy, h.vx);
