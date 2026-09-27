@@ -3727,7 +3727,7 @@ function drawLang() {
 // ---------- shop: Second wind for Telegram Stars ----------
 // After a loss the player can buy one continue per run. The invoice comes from the worker,
 // Telegram shows its own payment sheet, and 'paid' resumes the level.
-const WIND_PRICE = 1; // must match ITEMS.continue in worker/src/index.js
+const WIND_PRICE = 10; // must match ITEMS.continue in worker/src/index.js
 const canPay = () => !!(TG && TG.initData && BOARD_URL && TG.openInvoice && tgv('6.1')) || (DEV && window.__fakePay === true);
 async function buySecondWind() {
   if (!G || G.buying) return;
