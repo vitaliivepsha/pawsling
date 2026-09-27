@@ -7,6 +7,7 @@ webapp/index.html   a tiny loader that fetches the game past Telegram's cache
 webapp/game.js      the whole game (canvas + synthesised sounds, no assets)
 webapp/game.css     page styles for the game
 bot/                a small bot that opens the game: /start and the "Грати" menu button
+worker/             the leaderboard: a Cloudflare Worker with a D1 database
 ```
 
 ## Gameplay
@@ -22,6 +23,10 @@ bot/                a small bot that opens the game: /start and the "Грати"
   touching them with a shot revives them. Enemies hit the closest standing hero.
 - Progress is saved in localStorage and, inside Telegram, in `CloudStorage`, so it syncs across devices.
 - Inside Telegram: vibration (`HapticFeedback`), the system Back button, the player's name on the map.
+- Languages: Ukrainian, English, Polish, German, Spanish. The player's choice (the button in the map's
+  corner) wins, then Telegram's `language_code`, then the browser; anything else gets English.
+  All text lives in the `I18N` dictionary in `game.js`.
+- Leaderboard (the cup on the map): best Night Shift and total stars, inside Telegram only.
 
 ## Local testing
 
@@ -62,6 +67,22 @@ The game runs without a permanently running server: the page is on GitHub Pages
 With the bot stopped, `/start` gets no reply. That is expected: players go in through the menu
 button or "Open App".
 
-When server logic appears (friends leaderboards, daily quests, invites), the bot is worth
-moving to webhooks on Cloudflare Workers (free, always on). Results should then be verified
-there against Telegram `initData` so scores cannot be faked.
+## Leaderboard server
+
+`worker/` is a Cloudflare Worker (free plan) with a D1 database. The game posts Telegram's `initData`
+with every request; the worker checks its signature with the bot token, so a result is always saved
+for the real Telegram account. Scores are capped (500 waves, 90 stars); a determined player could
+still send a fake result from their own account, which is the usual limit of a client-side game.
+
+Setup (Node 18+; with nvm: `nvm use 22`):
+
+```bash
+cd worker
+npx wrangler login                                   # opens the browser, once
+npx wrangler d1 create pawsling                      # put the printed database_id into wrangler.toml
+npx wrangler d1 execute pawsling --remote --file=schema.sql
+npx wrangler deploy                                  # prints https://pawsling-leaderboard.<account>.workers.dev
+npx wrangler secret put BOT_TOKEN                    # paste the bot token when asked
+```
+
+Then set `BOARD_URL` at the top of the leaderboard section in `webapp/game.js` to that address and push.

@@ -1,0 +1,12 @@
+name = "pawsling-leaderboard"
+main = "src/index.js"
+compatibility_date = "2025-09-01"
+
+[vars]
+ALLOWED_ORIGIN = "https://vitaliivepsha.github.io"
+
+# `npx wrangler d1 create pawsling` prints the id to put here
+[[d1_databases]]
+binding = "DB"
+database_name = "pawsling"
+database_id = "REPLACE_WITH_DATABASE_ID"

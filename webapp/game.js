@@ -34,7 +34,7 @@ if (TG) {
     if (tgv('6.1')) {
       TG.setHeaderColor('#15122a');
       TG.setBackgroundColor('#110e22');
-      TG.BackButton.onClick(() => { if (SCREEN === 'game') goMap(); else if (SCREEN === 'howto') closeHowto(); else if (SCREEN === 'lang') setScreen('map'); });
+      TG.BackButton.onClick(() => { if (SCREEN === 'game') goMap(); else if (SCREEN === 'howto') closeHowto(); else if (SCREEN === 'lang' || SCREEN === 'board') setScreen('map'); });
     }
     if (tgv('7.7')) TG.disableVerticalSwipes();
     TG.onEvent('viewportChanged', resize);
@@ -1285,6 +1285,13 @@ function iconBtn(x, y, kind, cb) {
   ctx.fillStyle = '#f4efe6'; ctx.strokeStyle = '#f4efe6'; ctx.lineWidth = 2.2; ctx.lineCap = 'round';
   if (kind === 'back') {
     ctx.beginPath(); ctx.moveTo(cx + 3, cy - 7); ctx.lineTo(cx - 4, cy); ctx.lineTo(cx + 3, cy + 7); ctx.stroke();
+  } else if (kind === 'trophy') {
+    ctx.fillStyle = '#ffc857'; ctx.strokeStyle = '#ffc857'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(cx - 7, cy - 8); ctx.lineTo(cx + 7, cy - 8);
+    ctx.quadraticCurveTo(cx + 7, cy + 3, cx, cy + 3); ctx.quadraticCurveTo(cx - 7, cy + 3, cx - 7, cy - 8); ctx.fill();
+    ctx.beginPath(); ctx.arc(cx - 7, cy - 4, 3.5, Math.PI * .5, Math.PI * 1.5); ctx.stroke();
+    ctx.beginPath(); ctx.arc(cx + 7, cy - 4, 3.5, -Math.PI * .5, Math.PI * .5); ctx.stroke();
+    ctx.fillRect(cx - 1.5, cy + 3, 3, 4); ctx.fillRect(cx - 6, cy + 7, 12, 2.5);
   } else {
     ctx.beginPath(); ctx.moveTo(cx - 9, cy - 3); ctx.lineTo(cx - 5, cy - 3); ctx.lineTo(cx, cy - 8); ctx.lineTo(cx, cy + 8); ctx.lineTo(cx - 5, cy + 3); ctx.lineTo(cx - 9, cy + 3); ctx.closePath(); ctx.fill();
     if (Snd.on) {
@@ -1381,7 +1388,7 @@ function genWave(n) {
 }
 function endEndless() {
   G.newBest = G.wave > (PROG.endless || 0);
-  if (G.newBest) { PROG.endless = G.wave; saveProg(); }
+  if (G.newBest) { PROG.endless = G.wave; saveProg(); submitScores(); }
 }
 
 function burst(x, y, col, n = 12, sp = 180, shape) {
@@ -1821,6 +1828,7 @@ function waveClear() {
     PROG.stars[key] = Math.max(PROG.stars[key] || 0, G.stars);
     PROG.unlocked = Math.min(LEVELS.length, Math.max(PROG.unlocked, G.li + 2));
     saveProg();
+    submitScores();
     for (let i = 0; i < (RM ? 0 : 110); i++) {
       const pal = G.ch.fx.concat('#ffc857');
       const up = G.ch.shape === 'bubble';
@@ -2946,6 +2954,83 @@ function drawNode(c, x, y, r, col, open) {
   ctx.restore();
 }
 
+
+// ---------- leaderboard ----------
+// The worker in /worker keeps each player's best Night Shift and total stars. It only answers
+// requests signed by Telegram, so the board works inside Telegram only.
+const BOARD_URL = ''; // the deployed worker, e.g. https://pawsling-leaderboard.<account>.workers.dev
+const BOARD = { tab: 'night', status: 'idle', data: {} };
+const boardAvailable = () => !!(TG && TG.initData && BOARD_URL);
+async function boardPost(extra) {
+  const r = await fetch(BOARD_URL + '/board', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ initData: TG.initData, night: PROG.endless || 0, stars: totalStars(), ...extra }),
+  });
+  if (!r.ok) throw new Error('HTTP ' + r.status);
+  return r.json();
+}
+function submitScores() { if (boardAvailable()) boardPost({}).catch(() => {}); }
+async function openBoard(tab) {
+  BOARD.tab = tab;
+  setScreen('board');
+  if (!boardAvailable()) { BOARD.status = TG && TG.initData ? 'error' : 'tgOnly'; return; }
+  BOARD.status = BOARD.data[tab] ? 'ok' : 'loading';
+  try {
+    const d = await boardPost({ board: tab });
+    BOARD.data[tab] = d;
+    if (BOARD.tab === tab) BOARD.status = 'ok';
+  } catch (e) { if (BOARD.tab === tab && !BOARD.data[tab]) BOARD.status = 'error'; }
+}
+const MEDALS = ['#ffd166', '#d6dee8', '#e0a06a'];
+function drawBoardRow(r, y) {
+  const x = 24, w = W - 48, h = 34, tab = BOARD.tab;
+  ctx.fillStyle = r.me ? 'rgba(255,200,87,.16)' : '#1d1938'; rr(x, y, w, h, 10); ctx.fill();
+  if (r.me) { ctx.strokeStyle = '#ffc857'; ctx.lineWidth = 1.5; rr(x, y, w, h, 10); ctx.stroke(); }
+  ctx.textBaseline = 'middle'; ctx.textAlign = 'center';
+  if (r.rank <= 3) {
+    ctx.fillStyle = MEDALS[r.rank - 1]; circ(x + 22, y + h / 2, 12);
+    ctx.fillStyle = '#15122a'; ctx.font = `900 13px ${FD}`; ctx.fillText(String(r.rank), x + 22, y + h / 2 + 1);
+  } else {
+    ctx.fillStyle = '#8f88b5'; fitFont(String(r.rank), 38, 13); ctx.fillText(String(r.rank), x + 22, y + h / 2 + 1);
+  }
+  ctx.textAlign = 'left'; ctx.fillStyle = r.me ? '#ffc857' : '#f4efe6';
+  fitFont(r.name, w - 170, 14, 800, FB); ctx.fillText(r.name, x + 46, y + h / 2 + 1);
+  ctx.textAlign = 'right'; ctx.fillStyle = '#f4efe6';
+  if (tab === 'stars') {
+    ctx.font = `900 15px ${FD}`; ctx.fillText(String(r.value), x + w - 30, y + h / 2 + 1);
+    star(x + w - 16, y + h / 2, 7, '#ffc857');
+  } else {
+    fitFont(wavesWord(r.value), 110, 14, 800, FB); ctx.fillText(wavesWord(r.value), x + w - 12, y + h / 2 + 1);
+  }
+}
+function drawBoard() {
+  ctx.fillStyle = '#110e22'; ctx.fillRect(0, 0, W, H);
+  const g = ctx.createRadialGradient(W / 2, 60, 10, W / 2, 60, 320);
+  g.addColorStop(0, 'rgba(255,200,87,.14)'); g.addColorStop(1, 'rgba(255,200,87,0)');
+  ctx.fillStyle = g; ctx.fillRect(0, 0, W, 400);
+  iconBtn(12, 13, 'back', () => setScreen('map'));
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillStyle = '#ffc857'; fitFont(tr('board'), W - 120, 30); ctx.fillText(tr('board'), W / 2, 32);
+  uiBtn(24, 72, 196, 44, tr('boardNight'), () => openBoard('night'), BOARD.tab === 'night');
+  uiBtn(230, 72, 196, 44, tr('boardStars'), () => openBoard('stars'), BOARD.tab === 'stars');
+  const d = BOARD.data[BOARD.tab];
+  const msg = t => { ctx.textAlign = 'center'; ctx.fillStyle = '#c9c2e6'; ctx.font = `800 15px ${FB}`; wrap(t, W / 2, 330, W - 90, 22); };
+  if (BOARD.status === 'tgOnly') { msg(tr('boardTgOnly')); return; }
+  if (!d) {
+    msg(tr(BOARD.status === 'error' ? 'boardError' : 'boardLoading'));
+    if (BOARD.status === 'error') uiBtn(75, 736, W - 150, 46, tr('boardRetry'), () => openBoard(BOARD.tab), false);
+    return;
+  }
+  if (!d.top.length) msg(tr('boardEmpty'));
+  const rows = d.top.slice(0, 13);
+  rows.forEach((r, i) => drawBoardRow(r, 140 + i * 40));
+  if (d.me && !rows.some(r => r.me)) {
+    ctx.fillStyle = '#4a4278'; for (let k = 0; k < 3; k++) circ(W / 2 - 12 + k * 12, 140 + 13 * 40 + 8, 2.2);
+    drawBoardRow({ rank: d.me.rank, name: tr('boardYou'), value: d.me.value, me: true }, 140 + 13 * 40 + 20);
+  }
+  uiBtn(75, 736, W - 150, 46, tr('boardRetry'), () => openBoard(BOARD.tab), false);
+}
+
 // ---------- map: chapters stack vertically and the map scrolls ----------
 const CH_LEVELS = CHAPTERS.map((_, c) => LEVELS.map((l, i) => (l.ch === c ? i : -1)).filter(i => i >= 0));
 const MAP = { y: 0, v: 0, maxY: 0, focus: true };
@@ -3065,6 +3150,7 @@ function drawMap() {
   uiBtn(154, 736, W - 170, 46, nightOpen ? (rec ? `${tr('night')} · ${rec}` : tr('night')) : tr('nightAfter'),
     () => { if (nightOpen) startEndless(); else { Snd.play('locked'); haptic('warning'); } }, nightOpen);
   iconBtn(W - 46, 13, 'sound', () => Snd.toggle());
+  iconBtn(W - 90, 13, 'trophy', () => openBoard('night'));
   langBtn();
 }
 function langBtn() {
@@ -3235,6 +3321,7 @@ function draw() {
   if (SCREEN === 'game' && G) drawGame();
   else if (SCREEN === 'howto') drawHowto();
   else if (SCREEN === 'lang') drawLang();
+  else if (SCREEN === 'board') drawBoard();
   else drawMap();
 }
 
@@ -3319,7 +3406,7 @@ setScreen(lsGet('pawsling-seen') || PROG.unlocked > 1 ? 'map' : 'howto');
 // #dev: timer-driven loop (keeps running in hidden tabs) plus a state hook for testing
 const DEV = location.hash === '#dev';
 const nextFrame = DEV ? cb => setTimeout(() => cb(performance.now()), 16) : requestAnimationFrame;
-if (DEV) window.__pawsling = { get G() { return G; }, get SCREEN() { return SCREEN; }, startLevel, startEndless, launch, PROG: () => PROG, MAP };
+if (DEV) window.__pawsling = { get G() { return G; }, get SCREEN() { return SCREEN; }, startLevel, startEndless, launch, PROG: () => PROG, MAP, BOARD, setScreen };
 let last = performance.now();
 // Slow devices: if frames keep taking longer than ~45 ms, drop the animated room lights.
 let LOWFX = false, slowMs = 0, failed = false;
