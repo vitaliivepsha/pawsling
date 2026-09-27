@@ -115,7 +115,7 @@ const Snd = {
       this.c = new C();
       this.m = this.c.createGain(); this.m.gain.value = .5; this.m.connect(this.c.destination);
     } catch (e) { this.c = null; }
-    if (this.c && SCREEN === 'game' && G) Amb.start(LEVELS[G.li].ch);
+    if (this.c && SCREEN === 'game' && G) Amb.start(G.lvl.ch);
   },
   resume() { if (this.c && this.c.state === 'suspended') this.c.resume().catch(() => {}); },
   out() { return this.dest || this.m; },
@@ -168,7 +168,7 @@ const Snd = {
   },
   toggle() {
     this.on = !this.on; lsSet('pawsling-sound', this.on ? 'on' : 'off');
-    if (this.on) { this.play('click'); if (SCREEN === 'game' && G) Amb.start(LEVELS[G.li].ch); }
+    if (this.on) { this.play('click'); if (SCREEN === 'game' && G) Amb.start(G.lvl.ch); }
     else Amb.stop();
   },
 };
@@ -412,6 +412,7 @@ function mergeProg(a, b) {
   for (const k in (b.stars || {})) r.stars[k] = Math.max(r.stars[k] || 0, b.stars[k]);
   for (const k in (b.best || {})) r.best[k] = r.best[k] ? Math.min(r.best[k], b.best[k]) : b.best[k];
   r.unlocked = Math.min(LEVELS.length, r.unlocked);
+  r.endless = Math.max(a.endless || 0, b.endless || 0);
   return r;
 }
 function loadProg() {
@@ -741,7 +742,7 @@ let SCREEN = 'map', G = null, drag = null, UI = [];
 function setScreen(s) {
   SCREEN = s; drag = null;
   if (TG && tgv('6.1')) { try { if (s === 'map') TG.BackButton.hide(); else TG.BackButton.show(); } catch (e) {} }
-  if (s === 'game' && G) Amb.start(LEVELS[G.li].ch); else Amb.stop();
+  if (s === 'game' && G) Amb.start(G.lvl.ch); else Amb.stop();
   const col = s === 'game' && G ? G.ch.hud : '#110e22';
   document.body.style.backgroundColor = col;
   if (TG && tgv('6.1')) { try { TG.setHeaderColor(col); TG.setBackgroundColor(col); } catch (e) {} }
@@ -829,6 +830,45 @@ function advanceHero() {
 }
 function startLevel(li) { newRun(li); setScreen('game'); setupWave(0); }
 
+// ---------- night shift: endless waves ----------
+const ENDLESS_UNLOCK = 5; // opens once level 4 (the first boss) is beaten
+const plural = (n, one, few, many) => {
+  const m10 = n % 10, m100 = n % 100;
+  return m10 === 1 && m100 !== 11 ? one : m10 >= 2 && m10 <= 4 && (m100 < 12 || m100 > 14) ? few : many;
+};
+const wavesWord = n => `${n} ${plural(n, 'хвиля', 'хвилі', 'хвиль')}`;
+function startEndless() {
+  newRun(0);
+  G.li = -1;
+  G.lvl = { ch: 0, endless: true, waves: [] };
+  G.ch = CHAPTERS[0];
+  setScreen('game');
+  setupWave(0);
+}
+// wave n: more and tougher enemies, a boss every 5th wave, a new room every 5 waves
+function genWave(n) {
+  if (n % 5 === 4) {
+    const minion = n >= 9 ? 'mop' : 'vac';
+    return [['boss', 225, 240], [minion, 85, 440], [minion, 365, 440]];
+  }
+  const types = ['vac'];
+  if (n >= 1) types.push('spray');
+  if (n >= 3) types.push('mop');
+  const count = Math.min(6, 2 + Math.floor(n / 2));
+  const out = [];
+  for (let k = 0; k < count; k++) {
+    let x, y, tries = 0;
+    do { x = rnd(60, W - 60); y = rnd(TOP + 80, 470); tries++; }
+    while (tries < 60 && out.some(o => dist(x, y, o[1], o[2]) < 85));
+    out.push([types[Math.floor(Math.random() * types.length)], Math.round(x), Math.round(y)]);
+  }
+  return out;
+}
+function endEndless() {
+  G.newBest = G.wave > (PROG.endless || 0);
+  if (G.newBest) { PROG.endless = G.wave; saveProg(); }
+}
+
 function burst(x, y, col, n = 12, sp = 180, shape) {
   for (let i = 0; i < n; i++) {
     const a = Math.random() * TAU, v = rnd(sp * .3, sp);
@@ -883,7 +923,7 @@ function placeLaser() {
 function pickBoxes(n) {
   if (G.lvl.noBoxes) return [];
   for (let k = 0; k < BOXSETS.length; k++) {
-    const set = BOXSETS[(G.li + n + k) % BOXSETS.length];
+    const set = BOXSETS[(Math.max(0, G.li) + n + k) % BOXSETS.length];
     const ok = set.every(([x, y]) =>
       G.enemies.every(e => dist(x, y, e.x, e.y) > e.r + 45) && START.every(([sx, sy]) => dist(x, y, sx, sy) > 55));
     if (ok) return set.map(([x, y]) => ({ x, y }));
@@ -893,11 +933,19 @@ function pickBoxes(n) {
 
 function setupWave(n) {
   G.wave = n;
+  const endless = G.lvl.endless;
+  if (endless) {
+    const c = Math.floor(n / 5) % CHAPTERS.length;
+    if (c !== G.lvl.ch) { G.lvl.ch = c; G.ch = CHAPTERS[c]; setScreen('game'); }
+  }
   const waves = G.lvl.waves, ch = G.ch;
-  G.enemies = waves[n].map(([type, x, y], i) => {
+  const list = endless ? genWave(n) : waves[n];
+  const hpMul = endless ? 1 + n * .1 : ch.hp, atkMul = endless ? 1 + n * .05 : ch.atk;
+  const bossMul = endless ? .5 : (G.lvl.boss || 1);
+  G.enemies = list.map(([type, x, y], i) => {
     const d = ENEMY[type];
-    const hp = Math.round(d.hp * ch.hp * (type === 'boss' ? (G.lvl.boss || 1) : 1) / 50) * 50;
-    return { type, x, y, r: d.r, hp, maxHp: hp, timer: d.timer + (i % 2), maxTimer: d.timer, atk: Math.round(d.atk * ch.atk / 50) * 50,
+    const hp = Math.round(d.hp * hpMul * (type === 'boss' ? bossMul : 1) / 50) * 50;
+    return { type, x, y, r: d.r, hp, maxHp: hp, timer: d.timer + (i % 2), maxTimer: d.timer, atk: Math.round(d.atk * atkMul / 50) * 50,
       alive: true, flash: 0, ph: Math.random() * 6, weak: Math.PI / 2, weakT: Math.PI / 2 };
   });
   G.boxes = pickBoxes(n);
@@ -908,8 +956,9 @@ function setupWave(n) {
   const boss = G.enemies.find(e => e.type === 'boss');
   if (boss) { startBossIntro(boss); return; }
   G.state = 'banner';
-  const sub = n === 0 && G.lvl.tip ? G.lvl.tip : `Хвиля ${n + 1} з ${waves.length}`;
-  G.banner = { title: `Рівень ${G.li + 1} · ${ch.name}`, sub, t: n === 0 && G.lvl.tip ? 2.2 : 1.5, max: n === 0 && G.lvl.tip ? 2.2 : 1.5, done: () => { G.state = 'aim'; announceHero(); } };
+  const sub = endless ? (n > 0 && n % 5 === 0 ? `Нова кімната: ${ch.name}` : `Рекорд: ${wavesWord(PROG.endless || 0)}`)
+    : n === 0 && G.lvl.tip ? G.lvl.tip : `Хвиля ${n + 1} з ${waves.length}`;
+  G.banner = { title: endless ? `Нічна зміна · хвиля ${n + 1}` : `Рівень ${G.li + 1} · ${ch.name}`, sub, t: n === 0 && G.lvl.tip ? 2.2 : 1.5, max: n === 0 && G.lvl.tip ? 2.2 : 1.5, done: () => { G.state = 'aim'; announceHero(); } };
   Snd.play('wave');
 }
 
@@ -1193,7 +1242,7 @@ function nextAttack() {
   e.timer = e.maxTimer;
   G.timer = .6;
   const allKo = G.heroes.every(h => h.ko);
-  if (G.hp <= 0 || allKo) { G.loseReason = allKo ? 'ko' : 'hp'; G.state = 'lose'; Amb.duck(.25); Snd.play('lose'); haptic('error'); }
+  if (G.hp <= 0 || allKo) { G.loseReason = allKo ? 'ko' : 'hp'; G.state = 'lose'; if (G.lvl.endless) endEndless(); Amb.duck(.25); Snd.play('lose'); haptic('error'); }
 }
 
 function nextTurn() {
@@ -1208,7 +1257,7 @@ function nextTurn() {
 }
 
 function waveClear() {
-  if (G.wave >= G.lvl.waves.length - 1) {
+  if (!G.lvl.endless && G.wave >= G.lvl.waves.length - 1) {
     G.state = 'win';
     const par = G.lvl.par;
     G.stars = G.turn <= par ? 3 : G.turn <= Math.round(par * 1.5) ? 2 : 1;
@@ -1225,7 +1274,7 @@ function waveClear() {
       G.confetti.push({ x: rnd(0, W), y: up ? rnd(H + 10, H + 420) : rnd(-420, -10), vx: rnd(-25, 25), vy: rnd(70, 170) * (up ? -1 : 1),
         rot: rnd(0, TAU), vr: rnd(-6, 6), col: pal[i % pal.length], size: rnd(3.5, 6.5), shape: G.ch.shape });
     }
-    Amb.duck(.25); playWin(LEVELS[G.li].ch, G.stars); haptic('success');
+    Amb.duck(.25); playWin(G.lvl.ch, G.stars); haptic('success');
     return;
   }
   const heal = Math.round(G.maxHp * .15);
@@ -1234,7 +1283,7 @@ function waveClear() {
   G.state = 'banner';
   G.banner = { title: 'Хвилю зачищено!', sub: `+${heal} до міцності квартири і +1 ♥ кожному`, t: 1.5, max: 1.5,
     done: () => { G.turn++; advanceHero(); setupWave(G.wave + 1); } };
-  playRound(LEVELS[G.li].ch);
+  playRound(G.lvl.ch);
 }
 
 // ---------- update ----------
@@ -1398,7 +1447,7 @@ function hazardBand(y, h, off) {
 function drawBossIntro() {
   const I = G.intro;
   if (!I || G.state !== 'bossintro') return;
-  const t = I.t, c = LEVELS[G.li].ch, ch = G.ch, e = I.boss;
+  const t = I.t, c = G.lvl.ch, ch = G.ch, e = I.boss;
   const fadeOut = Math.min(1, (INTRO_LEN - t) / .3), a = Math.min(1, t / .25, fadeOut);
   const ease = k => 1 - Math.pow(1 - Math.min(1, Math.max(0, k)), 3);
   ctx.save();
@@ -2058,11 +2107,11 @@ function drawHUD() {
   iconBtn(W - 46, 13, 'sound', () => Snd.toggle());
   ctx.textBaseline = 'middle';
   ctx.textAlign = 'left'; ctx.fillStyle = '#f4efe6'; ctx.font = `900 16px ${FD}`;
-  const pre = `${G.li + 1}. `, nm = G.ch.name;
+  const pre = G.lvl.endless ? '' : `${G.li + 1}. `, nm = G.lvl.endless ? 'Нічна зміна' : G.ch.name;
   ctx.fillText(pre, 56, 24);
   let tx = 56 + ctx.measureText(pre).width;
   ctx.fillStyle = G.ch.col; ctx.fillText(nm, tx, 24); tx += ctx.measureText(nm).width;
-  ctx.fillStyle = '#f4efe6'; ctx.fillText(` · ${G.wave + 1}/${G.lvl.waves.length}`, tx, 24);
+  ctx.fillStyle = '#f4efe6'; ctx.fillText(G.lvl.endless ? ` · хвиля ${G.wave + 1}` : ` · ${G.wave + 1}/${G.lvl.waves.length}`, tx, 24);
   ctx.textAlign = 'right'; ctx.font = `800 13px ${FB}`; ctx.fillStyle = '#c9c2e6';
   ctx.fillText(`Хід ${G.turn}`, W - 56, 24);
   const boss = G.enemies.find(e => e.type === 'boss' && e.alive);
@@ -2074,7 +2123,8 @@ function drawHUD() {
     ctx.fillText(`РОБО-БОС 9000 · ${boss.hp}`, W / 2, 43.5);
   } else {
     ctx.textAlign = 'left'; ctx.font = `700 11.5px ${FB}`; ctx.fillStyle = '#8f88b5';
-    ctx.fillText(G.li === 0 ? 'Тягни від героя назад і відпускай' : `3 зірки: пройти за ${G.lvl.par} ходів або швидше`, 56, 45);
+    ctx.fillText(G.lvl.endless ? `Рекорд: ${wavesWord(PROG.endless || 0)} · ${G.ch.name}`
+      : G.li === 0 ? 'Тягни від героя назад і відпускай' : `3 зірки: пройти за ${G.lvl.par} ходів або швидше`, 56, 45);
   }
 
   G.heroes.forEach((h, i) => {
@@ -2176,7 +2226,7 @@ function chTrim(c, x, y, w, col) {
 function drawBanner() {
   const b = G.banner;
   if (!b) return;
-  const c = LEVELS[G.li].ch, ch = G.ch;
+  const c = G.lvl.ch, ch = G.ch;
   const el = b.max - b.t, kin = Math.min(1, el / .4), kout = Math.min(1, b.t / .25);
   const a = Math.min(kin * 2, kout, 1), sc = RM ? 1 : .75 + .25 * easeOutBack(kin);
   ctx.globalAlpha = a * .35; ctx.fillStyle = '#000'; ctx.fillRect(0, TOP, W, BOT - TOP);
@@ -2329,13 +2379,17 @@ function drawMap() {
       } });
     });
   });
-  uiBtn(16, 736, W - 32, 46, 'Як грати', () => setScreen('howto'), false);
+  uiBtn(16, 736, 128, 46, 'Як грати', () => setScreen('howto'), false);
+  const nightOpen = PROG.unlocked >= ENDLESS_UNLOCK;
+  const rec = PROG.endless || 0;
+  uiBtn(154, 736, W - 170, 46, nightOpen ? (rec ? `Нічна зміна · ${rec}` : 'Нічна зміна') : 'Нічна зміна · після 4 рівня',
+    () => { if (nightOpen) startEndless(); else { Snd.play('locked'); haptic('warning'); } }, nightOpen);
 }
 
 function drawEnd() {
   const win = G.state === 'win';
   ctx.fillStyle = G.ch.shade; ctx.fillRect(0, 0, W, H);
-  const c = LEVELS[G.li].ch;
+  const c = G.lvl.ch;
   if (win) {
     ctx.save(); ctx.globalCompositeOperation = 'lighter';
     glowAt(W / 2, 322, 190, hexRgb(G.ch.col), .18 + .05 * Math.sin(T * 2)); ctx.restore();
@@ -2345,9 +2399,9 @@ function drawEnd() {
   G.heroes.forEach((h, i) => drawHero(h, 90 + i * 90, 150 + (win ? Math.abs(Math.sin(T * 5 + i)) * -14 : 6), 28, null, { mood: win ? 'happy' : 'sad', look: [0, 1] }));
   ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
   ctx.fillStyle = win ? '#ffc857' : '#ff6b85'; ctx.font = `900 34px ${FD}`;
-  ctx.fillText(win ? `Рівень ${G.li + 1} пройдено!` : 'Пилососи перемогли', W / 2, 235);
+  ctx.fillText(win ? `Рівень ${G.li + 1} пройдено!` : G.lvl.endless ? 'Зміну завершено' : 'Пилососи перемогли', W / 2, 235);
   ctx.fillStyle = '#f4efe6'; ctx.font = `800 15px ${FB}`;
-  ctx.fillText(win ? `${G.turn} ходів · для 3 зірок треба ${G.lvl.par}` : (G.loseReason === 'ko' ? 'Усі герої в нокауті. Спробуй ще раз' : `Хвиля ${G.wave + 1} з ${G.lvl.waves.length}. Спробуй ще раз`), W / 2, 272);
+  ctx.fillText(win ? `${G.turn} ходів · для 3 зірок треба ${G.lvl.par}` : G.lvl.endless ? `Протрималися: ${wavesWord(G.wave)}` : (G.loseReason === 'ko' ? 'Усі герої в нокауті. Спробуй ще раз' : `Хвиля ${G.wave + 1} з ${G.lvl.waves.length}. Спробуй ще раз`), W / 2, 272);
   let y0 = 320;
   if (win) {
     for (let s = 0; s < 3; s++) {
@@ -2368,6 +2422,14 @@ function drawEnd() {
     ctx.textAlign = 'center'; ctx.fillStyle = '#5ce1c6'; ctx.font = `800 14px ${FB}`;
     ctx.fillText('Новий рекорд для цього рівня!', W / 2, y0 + 150);
   }
+  if (G.lvl.endless) {
+    ctx.textAlign = 'center'; ctx.font = `800 14px ${FB}`;
+    ctx.fillStyle = G.newBest ? '#5ce1c6' : '#8f88b5';
+    ctx.fillText(G.newBest ? 'Новий рекорд нічної зміни!' : `Рекорд: ${wavesWord(PROG.endless || 0)}`, W / 2, y0 + 150);
+    uiBtn(75, 600, W - 150, 56, 'Ще раз', startEndless, true);
+    uiBtn(75, 670, W - 150, 46, 'Карта', goMap, false);
+    return;
+  }
   const hasNext = win && G.li < LEVELS.length - 1;
   const li = G.li;
   if (hasNext) uiBtn(75, 600, W - 150, 56, 'Далі', () => startLevel(li + 1), true);
@@ -2385,7 +2447,7 @@ function drawEnd() {
 }
 
 function drawGame() {
-  const c = LEVELS[G.li].ch;
+  const c = G.lvl.ch;
   ctx.drawImage(BGS[c], 0, 0, W, H);
   const sh = RM ? 0 : G.shake;
   ctx.save();
@@ -2516,7 +2578,7 @@ setScreen(lsGet('pawsling-seen') || PROG.unlocked > 1 ? 'map' : 'howto');
 // #dev: timer-driven loop (keeps running in hidden tabs) plus a state hook for testing
 const DEV = location.hash === '#dev';
 const nextFrame = DEV ? cb => setTimeout(() => cb(performance.now()), 16) : requestAnimationFrame;
-if (DEV) window.__pawsling = { get G() { return G; }, get SCREEN() { return SCREEN; }, startLevel, launch, PROG: () => PROG };
+if (DEV) window.__pawsling = { get G() { return G; }, get SCREEN() { return SCREEN; }, startLevel, startEndless, launch, PROG: () => PROG };
 let last = performance.now();
 // Slow devices: if frames keep taking longer than ~45 ms, drop the animated room lights.
 let LOWFX = false, slowMs = 0, failed = false;
