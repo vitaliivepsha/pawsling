@@ -82,6 +82,17 @@ The game runs without a permanently running server: the page is on GitHub Pages
   records paid purchases in the `purchases` table and answers /start in the player's language.
   Stars earned go to the bot's balance (withdrawal via Fragment, see @BotFather → Payments).
 
+## Depth
+
+- **Hero levels** (the paw button on the map): heroes earn XP for every win (more for more stars,
+  double in challenge mode) and for Night Shift waves; up to level 10, +4% damage per level and an
+  ability upgrade at levels 5 and 10. XP is part of the saved progress.
+- **Combo knots**: a knot tied across two different heroes' threads is special: cat + raccoon is a
+  fire knot (x1.5 damage), two cats a purring knot (wider), two raccoons a trash knot (also delays
+  enemy attacks by a turn).
+- **Challenge mode**: a won level can be replayed with enemies 40% tougher and a turn limit equal to
+  its 3-star par; winning gives double XP and a crown on the map node.
+
 ## Daily and social
 
 - **Daily** (button on the map): a login bonus with a 7-day streak (boosters, a party hat on day 7),

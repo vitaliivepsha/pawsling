@@ -34,7 +34,7 @@ if (TG) {
     if (tgv('6.1')) {
       TG.setHeaderColor('#15122a');
       TG.setBackgroundColor('#110e22');
-      TG.BackButton.onClick(() => { if (SCREEN === 'game') goMap(); else if (SCREEN === 'howto') closeHowto(); else if (['lang', 'board', 'shop', 'prep', 'daily'].includes(SCREEN)) setScreen('map'); });
+      TG.BackButton.onClick(() => { if (SCREEN === 'game') goMap(); else if (SCREEN === 'howto') closeHowto(); else if (['lang', 'board', 'shop', 'prep', 'daily', 'heroes'].includes(SCREEN)) setScreen('map'); });
     }
     if (tgv('7.7')) TG.disableVerticalSwipes();
     TG.onEvent('viewportChanged', resize);
@@ -606,6 +606,7 @@ const I18N = {
     'st.knots': 'Вузлів зав\'язано', 'st.lasers': 'Лазер спіймано', 'st.crits': 'Критів по сенсору', 'st.portals': 'Телепортів',
     newBestLevel: 'Новий рекорд для цього рівня!', newBestNight: 'Новий рекорд нічної зміни!', again: 'Ще раз', map: 'Карта', next: 'Далі',
     toMap: 'До карти', allDone: 'Квартиру врятовано! Усі рівні пройдено', lang: 'Мова',
+    heroes: 'Герої', lvl: n => `Рів. ${n}`, xpOf: (a, b) => `${a} / ${b} досвіду`, maxLvl: 'Максимальний рівень', perAll: 'Кожен рівень героя: +4% шкоди', xpGain: n => `+${n} досвіду кожному герою`, lvlUp: s => `новий рівень: ${s}`, 'knot.fire': 'Вогняний вузол!', 'knot.purr': 'Мурчальний вузол!', 'knot.trash': 'Сміттєвий вузол!', hardName: 'Випробування', hardDesc: n => `Вороги +40% міцності, лише ${n} ходів. Подвійний досвід і корона`, hardLeft: n => `Випробування: лишилось ${n} ходів`, hardTurns: 'Ходи скінчились. Спробуй ще раз', hardDone: n => `Випробування ${n} пройдено!`, 'perk.mochi.5': '+20% за кожен відскок', 'perk.mochi.10': '+25% за кожен відскок', 'perk.pixel.5': '+15% шкоди, пролітаючи наскрізь', 'perk.pixel.10': 'Лазерний погляд: 800 шкоди', 'perk.bandit.5': 'Нічний перекус лікує на 700', 'perk.bandit.10': 'Удар відкладає атаку на 2 ходи', 'perk.nugget.5': 'Більший радіус вибуху', 'perk.nugget.10': 'Вибухи б\'ють на 320', 'perk.spark.5': 'Блискавка б\'є на 70%', 'perk.spark.10': 'Блискавка б\'є двох ворогів',
     daily: 'Щодня', dailyBonus: 'Бонус за вхід', streak: n => `Серія: ${n} дн.`, dayShort: n => `Д${n}`, challenge: 'Завдання дня', 'ch.knots': n => `Пройди рівень і зав'яжи ${n} вузли`, 'ch.lasers': n => `Пройди рівень і спіймай лазер ${n} рази`, 'ch.noko': () => 'Пройди рівень без жодного нокауту', 'ch.par': n => `Пройди рівень за ${n} ходів або швидше`, 'ch.portals': n => `Пройди рівень і пролети крізь коробки ${n} рази`, reward: 'Нагорода', chDone: 'Виконано ✓', chWon: r => `Завдання дня виконано! +1 ${r}`, invite: 'Запроси друга', inviteDesc: 'Коли друг зайде в гру за твоїм посиланням, ви обидва отримаєте +1 серце і +1 швидкий старт', invited: n => `Запрошено: ${n}`, inviteBtn: 'Запросити', inviteText: 'Коти та єноти проти роботів-пилососів! Зіграй зі мною в Pawsling 🐾', giftedMsg: 'Тебе запросив друг: +1 серце і +1 швидкий старт!', dailyTgOnly: 'Бонуси й нагороди працюють, коли гра відкрита в Telegram', boardWeek: 'Тиждень', weekLeft: (d, h) => `До кінця: ${d} д ${h} год`, weekPrizes: 'топ-3 отримають призи в понеділок',
     shop: 'Магазин',
     shopTgOnly: 'Магазин працює, коли гра відкрита в Telegram',
@@ -679,6 +680,7 @@ const I18N = {
     'st.knots': 'Knots tied', 'st.lasers': 'Lasers caught', 'st.crits': 'Sensor crits', 'st.portals': 'Teleports',
     newBestLevel: 'New record for this level!', newBestNight: 'New Night Shift record!', again: 'Again', map: 'Map', next: 'Next',
     toMap: 'To the map', allDone: 'Home saved! All levels complete', lang: 'Language',
+    heroes: 'Heroes', lvl: n => `Lv ${n}`, xpOf: (a, b) => `${a} / ${b} XP`, maxLvl: 'Max level', perAll: 'Every hero level: +4% damage', xpGain: n => `+${n} XP for every hero`, lvlUp: s => `level up: ${s}`, 'knot.fire': 'Fire knot!', 'knot.purr': 'Purring knot!', 'knot.trash': 'Trash knot!', hardName: 'Challenge mode', hardDesc: n => `Enemies +40% tougher, only ${n} turns. Double XP and a crown`, hardLeft: n => `Challenge: ${n} turns left`, hardTurns: 'Out of turns. Try again', hardDone: n => `Challenge ${n} complete!`, 'perk.mochi.5': '+20% per wall bounce', 'perk.mochi.10': '+25% per wall bounce', 'perk.pixel.5': '+15% damage when piercing', 'perk.pixel.10': 'Laser Stare: 800 damage', 'perk.bandit.5': 'Midnight Snack heals 700', 'perk.bandit.10': 'Hits delay attacks by 2 turns', 'perk.nugget.5': 'Bigger blast radius', 'perk.nugget.10': 'Blasts deal 320', 'perk.spark.5': 'Lightning deals 70%', 'perk.spark.10': 'Lightning hits two enemies',
     daily: 'Daily', dailyBonus: 'Login bonus', streak: n => `Streak: ${n} days`, dayShort: n => `D${n}`, challenge: 'Daily challenge', 'ch.knots': n => `Win the level and tie ${n} knots`, 'ch.lasers': n => `Win the level and catch the laser ${n} times`, 'ch.noko': () => 'Win the level without a single knockout', 'ch.par': n => `Win the level in ${n} turns or fewer`, 'ch.portals': n => `Win the level and fly through boxes ${n} times`, reward: 'Reward', chDone: 'Done ✓', chWon: r => `Daily challenge done! +1 ${r}`, invite: 'Invite a friend', inviteDesc: 'When a friend joins through your link, you both get +1 heart and +1 quick start', invited: n => `Invited: ${n}`, inviteBtn: 'Invite', inviteText: 'Cats and raccoons vs robot vacuums! Play Pawsling with me 🐾', giftedMsg: 'A friend invited you: +1 heart and +1 quick start!', dailyTgOnly: 'Bonuses and rewards work when the game is opened in Telegram', boardWeek: 'Week', weekLeft: (d, h) => `Ends in ${d}d ${h}h`, weekPrizes: 'the top 3 get prizes on Monday',
     shop: 'Shop',
     shopTgOnly: 'The shop works when the game is opened in Telegram',
@@ -752,6 +754,7 @@ const I18N = {
     'st.knots': 'Zawiązane supły', 'st.lasers': 'Złapane lasery', 'st.crits': 'Kryty w czujnik', 'st.portals': 'Teleporty',
     newBestLevel: 'Nowy rekord tego poziomu!', newBestNight: 'Nowy rekord nocnej zmiany!', again: 'Jeszcze raz', map: 'Mapa', next: 'Dalej',
     toMap: 'Do mapy', allDone: 'Mieszkanie uratowane! Wszystkie poziomy ukończone', lang: 'Język',
+    heroes: 'Bohaterowie', lvl: n => `Poz. ${n}`, xpOf: (a, b) => `${a} / ${b} PD`, maxLvl: 'Maksymalny poziom', perAll: 'Każdy poziom bohatera: +4% obrażeń', xpGain: n => `+${n} PD dla każdego bohatera`, lvlUp: s => `awans: ${s}`, 'knot.fire': 'Ognisty supeł!', 'knot.purr': 'Mruczący supeł!', 'knot.trash': 'Śmieciowy supeł!', hardName: 'Wyzwanie', hardDesc: n => `Wrogowie +40% wytrzymalsi, tylko ${n} tur. Podwójne PD i korona`, hardLeft: n => `Wyzwanie: zostało ${n} tur`, hardTurns: 'Skończyły się tury. Spróbuj ponownie', hardDone: n => `Wyzwanie ${n} ukończone!`, 'perk.mochi.5': '+20% za każde odbicie', 'perk.mochi.10': '+25% za każde odbicie', 'perk.pixel.5': '+15% obrażeń przy przebiciu', 'perk.pixel.10': 'Laserowe spojrzenie: 800', 'perk.bandit.5': 'Nocna przekąska leczy 700', 'perk.bandit.10': 'Ciosy opóźniają atak o 2 tury', 'perk.nugget.5': 'Większy zasięg wybuchu', 'perk.nugget.10': 'Wybuchy zadają 320', 'perk.spark.5': 'Piorun zadaje 70%', 'perk.spark.10': 'Piorun trafia dwóch wrogów',
     daily: 'Codziennie', dailyBonus: 'Bonus za logowanie', streak: n => `Seria: ${n} dni`, dayShort: n => `D${n}`, challenge: 'Zadanie dnia', 'ch.knots': n => `Wygraj poziom i zawiąż ${n} supły`, 'ch.lasers': n => `Wygraj poziom i złap laser ${n} razy`, 'ch.noko': () => 'Wygraj poziom bez żadnego nokautu', 'ch.par': n => `Wygraj poziom w ${n} tur lub mniej`, 'ch.portals': n => `Wygraj poziom i przeleć przez pudełka ${n} razy`, reward: 'Nagroda', chDone: 'Zrobione ✓', chWon: r => `Zadanie dnia wykonane! +1 ${r}`, invite: 'Zaproś znajomego', inviteDesc: 'Gdy znajomy dołączy z twojego linku, oboje dostaniecie +1 serce i +1 szybki start', invited: n => `Zaproszono: ${n}`, inviteBtn: 'Zaproś', inviteText: 'Koty i szopy kontra roboty sprzątające! Zagraj ze mną w Pawsling 🐾', giftedMsg: 'Zaprosił cię znajomy: +1 serce i +1 szybki start!', dailyTgOnly: 'Bonusy i nagrody działają, gdy gra jest otwarta w Telegramie', boardWeek: 'Tydzień', weekLeft: (d, h) => `Koniec za ${d} d ${h} godz.`, weekPrizes: 'top 3 dostanie nagrody w poniedziałek',
     shop: 'Sklep',
     shopTgOnly: 'Sklep działa, gdy gra jest otwarta w Telegramie',
@@ -825,6 +828,7 @@ const I18N = {
     'st.knots': 'Geknüpfte Knoten', 'st.lasers': 'Laser gefangen', 'st.crits': 'Sensor-Krits', 'st.portals': 'Teleports',
     newBestLevel: 'Neuer Rekord für dieses Level!', newBestNight: 'Neuer Nachtschicht-Rekord!', again: 'Nochmal', map: 'Karte', next: 'Weiter',
     toMap: 'Zur Karte', allDone: 'Wohnung gerettet! Alle Level geschafft', lang: 'Sprache',
+    heroes: 'Helden', lvl: n => `Lv. ${n}`, xpOf: (a, b) => `${a} / ${b} EP`, maxLvl: 'Höchststufe', perAll: 'Jede Heldenstufe: +4 % Schaden', xpGain: n => `+${n} EP für jeden Helden`, lvlUp: s => `Aufstieg: ${s}`, 'knot.fire': 'Feuerknoten!', 'knot.purr': 'Schnurrknoten!', 'knot.trash': 'Müllknoten!', hardName: 'Herausforderung', hardDesc: n => `Gegner +40 % stärker, nur ${n} Züge. Doppelte EP und eine Krone`, hardLeft: n => `Herausforderung: noch ${n} Züge`, hardTurns: 'Keine Züge mehr. Versuch es nochmal', hardDone: n => `Herausforderung ${n} geschafft!`, 'perk.mochi.5': '+20 % pro Abprall', 'perk.mochi.10': '+25 % pro Abprall', 'perk.pixel.5': '+15 % Schaden beim Durchschlag', 'perk.pixel.10': 'Laserblick: 800 Schaden', 'perk.bandit.5': 'Mitternachtssnack heilt 700', 'perk.bandit.10': 'Treffer verzögern Angriffe um 2 Züge', 'perk.nugget.5': 'Größerer Explosionsradius', 'perk.nugget.10': 'Explosionen machen 320', 'perk.spark.5': 'Blitz macht 70 %', 'perk.spark.10': 'Blitz trifft zwei Gegner',
     daily: 'Täglich', dailyBonus: 'Login-Bonus', streak: n => `Serie: ${n} Tage`, dayShort: n => `T${n}`, challenge: 'Tagesaufgabe', 'ch.knots': n => `Gewinne das Level und knüpfe ${n} Knoten`, 'ch.lasers': n => `Gewinne das Level und fang den Laser ${n}-mal`, 'ch.noko': () => 'Gewinne das Level ohne ein einziges K.o.', 'ch.par': n => `Gewinne das Level in ${n} Zügen oder weniger`, 'ch.portals': n => `Gewinne das Level und flieg ${n}-mal durch Kartons`, reward: 'Belohnung', chDone: 'Erledigt ✓', chWon: r => `Tagesaufgabe geschafft! +1 ${r}`, invite: 'Freund einladen', inviteDesc: 'Kommt ein Freund über deinen Link, bekommt ihr beide +1 Herz und +1 Schnellstart', invited: n => `Eingeladen: ${n}`, inviteBtn: 'Einladen', inviteText: 'Katzen und Waschbären gegen Saugroboter! Spiel Pawsling mit mir 🐾', giftedMsg: 'Ein Freund hat dich eingeladen: +1 Herz und +1 Schnellstart!', dailyTgOnly: 'Boni und Belohnungen funktionieren, wenn das Spiel in Telegram geöffnet ist', boardWeek: 'Woche', weekLeft: (d, h) => `Endet in ${d} T ${h} Std.`, weekPrizes: 'die Top 3 bekommen am Montag Preise',
     shop: 'Shop',
     shopTgOnly: 'Der Shop funktioniert, wenn das Spiel in Telegram geöffnet ist',
@@ -898,6 +902,7 @@ const I18N = {
     'st.knots': 'Nudos atados', 'st.lasers': 'Láseres atrapados', 'st.crits': 'Críticos al sensor', 'st.portals': 'Teletransportes',
     newBestLevel: '¡Nuevo récord en este nivel!', newBestNight: '¡Nuevo récord del turno de noche!', again: 'Otra vez', map: 'Mapa', next: 'Siguiente',
     toMap: 'Al mapa', allDone: '¡Piso salvado! Todos los niveles completados', lang: 'Idioma',
+    heroes: 'Héroes', lvl: n => `Nv. ${n}`, xpOf: (a, b) => `${a} / ${b} XP`, maxLvl: 'Nivel máximo', perAll: 'Cada nivel de héroe: +4 % de daño', xpGain: n => `+${n} XP para cada héroe`, lvlUp: s => `sube de nivel: ${s}`, 'knot.fire': '¡Nudo de fuego!', 'knot.purr': '¡Nudo ronroneante!', 'knot.trash': '¡Nudo de basura!', hardName: 'Desafío', hardDesc: n => `Enemigos +40 % más duros, solo ${n} turnos. XP doble y una corona`, hardLeft: n => `Desafío: quedan ${n} turnos`, hardTurns: 'Sin turnos. Inténtalo de nuevo', hardDone: n => `¡Desafío ${n} completado!`, 'perk.mochi.5': '+20 % por rebote', 'perk.mochi.10': '+25 % por rebote', 'perk.pixel.5': '+15 % de daño al perforar', 'perk.pixel.10': 'Mirada láser: 800 de daño', 'perk.bandit.5': 'Tentempié nocturno cura 700', 'perk.bandit.10': 'Los golpes retrasan ataques 2 turnos', 'perk.nugget.5': 'Mayor radio de explosión', 'perk.nugget.10': 'Las explosiones hacen 320', 'perk.spark.5': 'El rayo hace 70 %', 'perk.spark.10': 'El rayo alcanza a dos enemigos',
     daily: 'Diario', dailyBonus: 'Bono diario', streak: n => `Racha: ${n} días`, dayShort: n => `D${n}`, challenge: 'Reto del día', 'ch.knots': n => `Gana el nivel y ata ${n} nudos`, 'ch.lasers': n => `Gana el nivel y atrapa el láser ${n} veces`, 'ch.noko': () => 'Gana el nivel sin ningún K.O.', 'ch.par': n => `Gana el nivel en ${n} turnos o menos`, 'ch.portals': n => `Gana el nivel y atraviesa cajas ${n} veces`, reward: 'Premio', chDone: 'Hecho ✓', chWon: r => `¡Reto del día cumplido! +1 ${r}`, invite: 'Invita a un amigo', inviteDesc: 'Cuando un amigo entre con tu enlace, los dos recibiréis +1 corazón y +1 inicio rápido', invited: n => `Invitados: ${n}`, inviteBtn: 'Invitar', inviteText: '¡Gatos y mapaches contra aspiradoras robot! Juega Pawsling conmigo 🐾', giftedMsg: '¡Te invitó un amigo: +1 corazón y +1 inicio rápido!', dailyTgOnly: 'Los bonos y premios funcionan cuando el juego se abre en Telegram', boardWeek: 'Semana', weekLeft: (d, h) => `Termina en ${d} d ${h} h`, weekPrizes: 'el top 3 recibe premios el lunes',
     shop: 'Tienda',
     shopTgOnly: 'La tienda funciona cuando el juego se abre en Telegram',
@@ -962,6 +967,9 @@ function mergeProg(a, b) {
   const wa = a.wk || '', wb = b.wk || '';
   r.wk = wa > wb ? wa : wb;
   r.wkBest = Math.max(wa === r.wk ? a.wkBest || 0 : 0, wb === r.wk ? b.wkBest || 0 : 0);
+  r.xp = { ...(a.xp || {}) };
+  for (const k in (b.xp || {})) r.xp[k] = Math.max(r.xp[k] || 0, b.xp[k]);
+  r.hard = { ...(a.hard || {}), ...(b.hard || {}) };
   return r;
 }
 function loadProg() {
@@ -1643,6 +1651,8 @@ function iconBtn(x, y, kind, cb) {
   ctx.fillStyle = '#f4efe6'; ctx.strokeStyle = '#f4efe6'; ctx.lineWidth = 2.2; ctx.lineCap = 'round';
   if (kind === 'back') {
     ctx.beginPath(); ctx.moveTo(cx + 3, cy - 7); ctx.lineTo(cx - 4, cy); ctx.lineTo(cx + 3, cy + 7); ctx.stroke();
+  } else if (kind === 'paw') {
+    paw(cx, cy + 3, 15, '#ffc857');
   } else if (kind === 'bag') {
     ctx.fillStyle = '#ff8fb1'; rr(cx - 8, cy - 3, 16, 12, 3); ctx.fill();
     ctx.strokeStyle = '#ff8fb1'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(cx, cy - 3, 5, Math.PI, 0); ctx.stroke();
@@ -1672,8 +1682,8 @@ function newRun(li) {
     li, lvl: LEVELS[li], ch: CHAPTERS[LEVELS[li].ch],
     state: 'banner', wave: 0, turn: 1, hp: 12000, maxHp: 12000, meter: 0, zoomArmed: false, cur: 0,
     heroes: HEROES.filter(d => d.id !== 'spark' || owns('hero_spark')).map((d, i, team) => {
-      const hearts = d.id === 'bandit' ? 4 : 3, [sx, sy] = startPos(i, team.length);
-      return { ...d, x: sx, y: sy, vx: 0, vy: 0, hearts, maxHearts: hearts, ko: 0 };
+      const hearts = d.id === 'bandit' ? 4 : 3, [sx, sy] = startPos(i, team.length), lvl = heroLevel(d.id).L;
+      return { ...d, x: sx, y: sy, vx: 0, vy: 0, hearts, maxHearts: hearts, ko: 0, lvl, dmg: Math.round(d.dmg * (1 + .04 * (lvl - 1))) };
     }),
     enemies: [], boxes: [], snacks: [], trails: [], parts: [], rings: [], texts: [], beams: [],
     laser: null, shot: null, attackQueue: [], timer: 0, shake: 0, banner: null, hitstop: 0, flash: null, confetti: [], hpLag: 12000,
@@ -1754,6 +1764,7 @@ function genWave(n) {
 function endEndless() {
   G.newBest = G.wave > (PROG.endless || 0);
   if (G.newBest) { PROG.endless = G.wave; saveProg(); }
+  gainXp(G.wave * 4);
   const wk = weekKey();
   if (PROG.wk !== wk) { PROG.wk = wk; PROG.wkBest = 0; }
   if (G.wave > PROG.wkBest) { PROG.wkBest = G.wave; saveProg(); }
@@ -1843,6 +1854,7 @@ function setupWave(n) {
   const waves = G.lvl.waves, ch = G.ch;
   const list = endless ? genWave(n) : waves[n];
   G.mul = { hp: endless ? 1 + n * .14 : ch.hp, atk: endless ? 1 + n * .07 : ch.atk, boss: endless ? .5 : (G.lvl.boss || 1) };
+  if (G.hard) G.mul.hp *= 1.4;
   G.enemies = list.map(([type, x, y], i) => makeEnemy(type, x, y, i));
   G.boxes = pickBoxes(n);
   G.heroes.forEach((h, i) => { [h.x, h.y] = startPos(i, G.heroes.length); h.vx = h.vy = 0; h.webbed = false; });
@@ -1922,7 +1934,8 @@ function damageEnemy(e, amt, crit) {
 function hitEnemy(e, nx, ny) {
   const s = G.shot, h = s.hero;
   let dmg = h.dmg * rnd(.9, 1.1);
-  if (h.id === 'mochi') dmg *= 1 + .15 * s.bounces;
+  if (h.id === 'mochi') dmg *= 1 + bounceBonus(h) * s.bounces;
+  if (h.id === 'pixel' && h.lvl >= 5) dmg *= 1.15;
   if (s.zoom) dmg *= 2;
   let crit = false;
   if (e.type === 'mop') {
@@ -1939,20 +1952,21 @@ function hitEnemy(e, nx, ny) {
   Snd.play(crit ? 'crit' : 'hit'); haptic(crit ? 'heavy' : 'light');
   damageEnemy(e, dmg, crit);
   if (h.id === 'bandit' && e.alive && !s.delayed.has(e)) {
-    s.delayed.add(e); e.timer++;
+    s.delayed.add(e); e.timer += h.lvl >= 10 ? 2 : 1;
     ftext(e.x + e.r, e.y + 4, tr('plusTurn'), '#5ce1c6', 14);
   }
   if (h.id === 'nugget') {
-    ring(e.x, e.y, 90, '#c9a86a');
-    for (const o of G.enemies) if (o !== e && o.alive && dist(e.x, e.y, o.x, o.y) < 90 + o.r) damageEnemy(o, 220 * (s.zoom ? 2 : 1));
+    const nr = h.lvl >= 5 ? 110 : 90, nd = h.lvl >= 10 ? 320 : 220;
+    ring(e.x, e.y, nr, '#c9a86a');
+    for (const o of G.enemies) if (o !== e && o.alive && dist(e.x, e.y, o.x, o.y) < nr + o.r) damageEnemy(o, nd * (s.zoom ? 2 : 1));
   }
   if (h.id === 'spark') {
-    let near = null, nd = 220;
-    for (const o of G.enemies) if (o !== e && o.alive) { const d = dist(e.x, e.y, o.x, o.y); if (d < nd) { nd = d; near = o; } }
-    if (near) {
-      G.beams.push({ x1: e.x, y1: e.y, x2: near.x, y2: near.y, life: .3, max: .3, col: '#ffe14d', w: 5 });
-      sparks(near.x, near.y, 8, '#ffe14d');
-      damageEnemy(near, dmg * .5);
+    const near = G.enemies.filter(o => o !== e && o.alive && dist(e.x, e.y, o.x, o.y) < 220)
+      .sort((a, b) => dist(e.x, e.y, a.x, a.y) - dist(e.x, e.y, b.x, b.y)).slice(0, h.lvl >= 10 ? 2 : 1);
+    for (const o of near) {
+      G.beams.push({ x1: e.x, y1: e.y, x2: o.x, y2: o.y, life: .3, max: .3, col: '#ffe14d', w: 5 });
+      sparks(o.x, o.y, 8, '#ffe14d');
+      damageEnemy(o, dmg * (h.lvl >= 5 ? .7 : .5));
     }
   }
 }
@@ -1970,10 +1984,10 @@ function triggerCombo(o) {
     for (const e of G.enemies) if (e.alive) { const d = dist(o.x, o.y, e.x, e.y); if (d < bd) { bd = d; best = e; } }
     if (best) {
       G.beams.push({ x1: o.x, y1: o.y, x2: best.x, y2: best.y, life: .35, max: .35, col: '#ffd23f', w: 7 });
-      damageEnemy(best, 550 * z);
+      damageEnemy(best, (o.lvl >= 10 ? 800 : 550) * z);
     }
   } else if (o.id === 'bandit') {
-    const v = 500 * z;
+    const v = (o.lvl >= 5 ? 700 : 500) * z;
     G.hp = Math.min(G.maxHp, G.hp + v);
     ftext(o.x, o.y - o.r - 32, '+' + v + ' HP', '#5ce1c6', 16);
     burst(o.x, o.y, '#5ce1c6', 12);
@@ -1992,19 +2006,28 @@ function triggerCombo(o) {
   }
 }
 
-function knot(p, gold) {
-  const dmg = gold ? 900 : 450;
+// a knot tied by two different heroes is special: cat + raccoon burns (x1.5), two cats purr wider,
+// two raccoons scatter trash that delays the enemies' attacks
+const KNOT_COL = { fire: '#ff7a3c', purr: '#b18cff', trash: '#9ee06a' };
+function knot(p, gold, h1, h2) {
+  const combo = !h1 || !h2 || h1 === h2 ? null : h1.kind !== h2.kind ? 'fire' : h1.kind === 'cat' ? 'purr' : 'trash';
+  const dmg = (gold ? 900 : 450) * (combo === 'fire' ? 1.5 : 1), R = combo === 'purr' ? 105 : 75;
+  const col = combo ? KNOT_COL[combo] : gold ? '#ffd166' : '#ff8fb1';
   G.stats.knots++;
-  ring(p[0], p[1], 75, gold ? '#ffd166' : '#ff8fb1');
+  ring(p[0], p[1], R, col);
   ring(p[0], p[1], 40, '#fff');
-  burst(p[0], p[1], gold ? '#ffd166' : '#ff8fb1', 14, 220);
+  burst(p[0], p[1], col, combo ? 22 : 14, 220);
   themeBurst(p[0], p[1], 10, 200);
-  flash(gold ? '#ffd166' : '#ff8fb1', .18);
-  ftext(p[0], p[1] - 16, tr('knot'), gold ? '#ffd166' : '#ff8fb1', 18);
+  flash(col, combo ? .28 : .18);
+  ftext(p[0], p[1] - 16, combo ? tr('knot.' + combo) : tr('knot'), col, combo ? 20 : 18);
   addMeter(10);
-  G.shake = Math.max(G.shake, 5);
+  G.shake = Math.max(G.shake, combo ? 8 : 5);
   Snd.play('knot'); haptic('heavy');
-  for (const e of G.enemies) if (e.alive && dist(p[0], p[1], e.x, e.y) < 75 + e.r) damageEnemy(e, dmg);
+  for (const e of G.enemies) {
+    if (!e.alive || dist(p[0], p[1], e.x, e.y) >= R + e.r) continue;
+    damageEnemy(e, dmg);
+    if (combo === 'trash' && e.alive) { e.timer++; ftext(e.x + e.r, e.y + 4, tr('plusTurn'), '#9ee06a', 13); }
+  }
 }
 
 function checkKnots(a, b) {
@@ -2019,7 +2042,7 @@ function checkKnots(a, b) {
       t.used.add(i);
       if (s.knots < (s.zoom ? 4 : 2) && (!s.lastKnot || dist(pt[0], pt[1], s.lastKnot[0], s.lastKnot[1]) > 30)) {
         s.lastKnot = pt; s.knots++;
-        knot(pt, t.gold || s.zoom);
+        knot(pt, t.gold || s.zoom, s.hero, t.shot && t.shot.hero);
       }
     }
   }
@@ -2069,7 +2092,7 @@ function stepShot(dt) {
       burst(h.x, h.y, h.yarn, 4, 90);
       burst(h.x, h.y, G.ch.fx[s.bounces % G.ch.fx.length], 3, 110, G.ch.shape);
       Snd.play('wall');
-      if (h.id === 'mochi') ftext(h.x, h.y - 26, '+15%', h.yarn, 12);
+      if (h.id === 'mochi') ftext(h.x, h.y - 26, '+' + Math.round(bounceBonus(h) * 100) + '%', h.yarn, 12);
     }
 
     for (const e of G.enemies) {
@@ -2235,6 +2258,7 @@ function nextAttack() {
 
 function nextTurn() {
   G.turn++;
+  if (G.hard && G.turn > G.lvl.par) { G.loseReason = 'turns'; G.state = 'lose'; Amb.duck(.25); Snd.play('lose'); haptic('error'); return; }
   advanceHero();
   G.trails = G.trails.filter(t => t.turn >= G.turn - 2);
   driveCars();
@@ -2257,6 +2281,8 @@ function waveClear() {
     PROG.stars[key] = Math.max(PROG.stars[key] || 0, G.stars);
     PROG.unlocked = Math.min(LEVELS.length, Math.max(PROG.unlocked, G.li + 2));
     checkChallenge();
+    if (G.hard) PROG.hard = { ...(PROG.hard || {}), [String(G.li + 1)]: 1 };
+    gainXp((20 + 5 * G.lvl.ch + 5 * G.stars) * (G.hard ? 2 : 1));
     saveProg();
     submitScores();
     for (let i = 0; i < (RM ? 0 : 110); i++) {
@@ -3606,7 +3632,7 @@ function drawHUD() {
   } else {
     ctx.textAlign = 'left'; ctx.font = `700 11.5px ${FB}`; ctx.fillStyle = '#8f88b5';
     ctx.fillText(G.lvl.endless ? `${tr('record', wavesWord(PROG.endless || 0))} · ${G.ch.name}`
-      : G.li === 0 ? tr('pullHint') : tr('par3', G.lvl.par), 56, 45);
+      : G.hard ? tr('hardLeft', Math.max(0, G.lvl.par - G.turn + 1)) : G.li === 0 ? tr('pullHint') : tr('par3', G.lvl.par), 56, 45);
   }
 
   G.heroes.forEach((h, i) => {
@@ -3957,7 +3983,7 @@ function drawMap() {
   ctx.fillStyle = g; ctx.fillRect(0, 0, W, 400);
   ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
   ctx.shadowColor = '#ffc857'; ctx.shadowBlur = RM ? 10 : 14 + 6 * Math.sin(T * 2);
-  ctx.fillStyle = '#ffc857'; ctx.font = `900 40px ${FD}`; ctx.fillText('Pawsling', W / 2, 62);
+  ctx.fillStyle = '#ffc857'; ctx.font = `900 34px ${FD}`; ctx.fillText('Pawsling', W / 2, 62);
   ctx.shadowBlur = 0;
   ctx.fillStyle = '#c9c2e6'; ctx.font = `800 14px ${FB}`;
   ctx.fillText(TG_NAME ? tr('hello', TG_NAME) : tr('pickLevel'), W / 2, 100);
@@ -4008,6 +4034,7 @@ function drawMap() {
       }
       const got = PROG.stars[String(n)] || 0;
       for (let s = 0; s < 3; s++) star(x - 16 + s * 16, y + r + 12, 7, s < got ? '#ffc857' : '#2f2a52', s < got ? null : '#3b3563');
+      if (PROG.hard && PROG.hard[String(n)]) { ctx.save(); ctx.translate(x + r * .75, y - r * .45 + bob); ctx.rotate(.3); drawHat('crown', 16); ctx.restore(); }
       const sy = y - r - 6 - MAP.y;
       if (sy < MAP_VIEW && sy + r * 2 + 30 > 0) UI.push({ x: x - r - 6, y: sy, w: r * 2 + 12, h: r * 2 + 30, cb: () => {
         if (open) prepLevel(li); else { Snd.play('locked'); haptic('warning'); }
@@ -4035,6 +4062,7 @@ function drawMap() {
     () => { if (nightOpen) prepLevel(-1); else { Snd.play('locked'); haptic('warning'); } }, nightOpen);
   iconBtn(W - 46, 13, 'sound', () => Snd.toggle());
   iconBtn(W - 90, 13, 'trophy', () => openBoard('week'));
+  iconBtn(W - 134, 13, 'paw', () => setScreen('heroes'));
   iconBtn(62, 13, 'bag', () => { SHOP.msg = null; setScreen('shop'); refreshInv(); });
   langBtn();
 }
@@ -4101,7 +4129,7 @@ function secondWind(run) {
   nextTurn();
 }
 function drawSecondWind() {
-  if (G.usedWind || !canPay()) return false;
+  if (G.usedWind || G.loseReason === 'turns' || !canPay()) return false;
   const note = G.payMsg || tr('secondWindSub');
   ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillStyle = G.payMsg ? '#ff8fb1' : '#c9c2e6';
   fitFont(note, W - 60, 13, 800, FB); ctx.fillText(note, W / 2, 510);
@@ -4168,13 +4196,16 @@ function useBooster(k) {
 // before a level: switch on boosters the player owns
 let PREP = null;
 function prepLevel(li) { // li = -1 for Night Shift
-  if (!owns('heart') && !owns('meter')) { if (li < 0) startEndless(); else startLevel(li); return; }
-  PREP = { li, heart: false, meter: false };
+  const hardOk = li >= 0 && (PROG.stars[String(li + 1)] || 0) > 0;
+  if (!owns('heart') && !owns('meter') && !hardOk) { if (li < 0) startEndless(); else startLevel(li); return; }
+  PREP = { li, heart: false, meter: false, hard: false, hardOk };
   setScreen('prep');
 }
 function startPrepared() {
   const pr = PREP; PREP = null;
-  if (pr.li < 0) startEndless(); else startLevel(pr.li);
+  if (pr.li < 0) startEndless();
+  else if (pr.hard) { newRun(pr.li); G.hard = true; setScreen('game'); setupWave(0); }
+  else startLevel(pr.li);
   if (pr.heart && owns('heart')) { useBooster('heart'); for (const h of G.heroes) { h.maxHearts++; h.hearts++; } }
   if (pr.meter && owns('meter')) { useBooster('meter'); G.meter = Math.max(G.meter, 50); }
 }
@@ -4198,8 +4229,20 @@ function drawPrep() {
   };
   row(268, 'heart', tr('boostHeart'), tr('boostHeartD'));
   row(352, 'meter', tr('boostMeter'), tr('boostMeterD'));
-  uiBtn(75, 460, W - 150, 56, tr('startLvl'), startPrepared, true);
-  uiBtn(75, 530, W - 150, 46, tr('cancel'), () => { PREP = null; setScreen('map'); }, false);
+  if (PREP.hardOk) {
+    const y = 436, on = PREP.hard;
+    UI.push({ x: 40, y, w: W - 80, h: 70, cb: () => { PREP.hard = !PREP.hard; } });
+    ctx.fillStyle = on ? 'rgba(255,93,122,.16)' : '#1d1938'; rr(40, y, W - 80, 70, 14); ctx.fill();
+    ctx.strokeStyle = on ? '#ff5d7a' : '#3b3563'; ctx.lineWidth = 2; rr(40, y, W - 80, 70, 14); ctx.stroke();
+    ctx.strokeStyle = on ? '#ff5d7a' : '#8f88b5'; ctx.lineWidth = 2.5; rr(58, y + 23, 24, 24, 6); ctx.stroke();
+    if (on) { ctx.beginPath(); ctx.moveTo(63, y + 35); ctx.lineTo(68, y + 41); ctx.lineTo(77, y + 28); ctx.stroke(); }
+    ctx.textAlign = 'left'; ctx.fillStyle = '#f4efe6'; fitFont(tr('hardName'), W - 220, 16); ctx.fillText(tr('hardName'), 96, y + 24);
+    const hd = tr('hardDesc', LEVELS[PREP.li].par);
+    ctx.fillStyle = '#b9b2da'; fitFont(hd, W - 150, 12, 700, FB); ctx.fillText(hd, 96, y + 48);
+    if (PROG.hard && PROG.hard[String(PREP.li + 1)]) { ctx.save(); ctx.translate(W - 70, y + 36); drawHat('crown', 20); ctx.restore(); }
+  }
+  uiBtn(75, 530, W - 150, 56, tr('startLvl'), startPrepared, true);
+  uiBtn(75, 600, W - 150, 46, tr('cancel'), () => { PREP = null; setScreen('map'); }, false);
 }
 
 function drawShopIcon(id, x, y) {
@@ -4356,6 +4399,58 @@ function drawDaily() {
   if (note) { ctx.textAlign = 'center'; ctx.fillStyle = DAILY.msg ? '#5ce1c6' : '#8f88b5'; ctx.font = `800 13px ${FB}`; wrap(note, W / 2, 648, W - 60, 18); }
 }
 
+
+// ---------- heroes: XP, levels, perks ----------
+const HERO_MAX = 10;
+const xpNeed = L => 60 * L; // XP from level L to L+1
+function heroLevel(id) {
+  let xp = (PROG.xp && PROG.xp[id]) || 0, L = 1;
+  while (L < HERO_MAX && xp >= xpNeed(L)) { xp -= xpNeed(L); L++; }
+  return { L, xp, need: xpNeed(L) };
+}
+const bounceBonus = h => (h.lvl >= 10 ? .25 : h.lvl >= 5 ? .2 : .15);
+function gainXp(n) {
+  PROG.xp = PROG.xp || {};
+  G.xpGain = n; G.levelUps = [];
+  for (const h of G.heroes) {
+    const before = heroLevel(h.id).L;
+    PROG.xp[h.id] = (PROG.xp[h.id] || 0) + n;
+    const after = heroLevel(h.id).L;
+    if (after > before) G.levelUps.push(`${h.name} ${after}`);
+  }
+  if (G.levelUps.length) { Snd.play('zoom'); haptic('success'); }
+  saveProg();
+}
+function drawHeroes() {
+  ctx.fillStyle = '#110e22'; ctx.fillRect(0, 0, W, H);
+  const g = ctx.createRadialGradient(W / 2, 60, 10, W / 2, 60, 320);
+  g.addColorStop(0, 'rgba(255,200,87,.14)'); g.addColorStop(1, 'rgba(255,200,87,0)');
+  ctx.fillStyle = g; ctx.fillRect(0, 0, W, 400);
+  iconBtn(12, 13, 'back', () => setScreen('map'));
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillStyle = '#ffc857'; fitFont(tr('heroes'), W - 120, 30); ctx.fillText(tr('heroes'), W / 2, 32);
+  ctx.fillStyle = '#8f88b5'; ctx.font = `800 12px ${FB}`; ctx.fillText(tr('perAll'), W / 2, 62);
+  HEROES.filter(d => d.id !== 'spark' || owns('hero_spark')).forEach((h, i) => {
+    const y = 78 + i * 122, lv = heroLevel(h.id), max = lv.L >= HERO_MAX;
+    ctx.fillStyle = '#1d1938'; rr(16, y, W - 32, 112, 14); ctx.fill();
+    ctx.strokeStyle = '#3b3563'; ctx.lineWidth = 1.5; rr(16, y, W - 32, 112, 14); ctx.stroke();
+    drawHero(h, 58, y + 54, 26, null, { look: [0, .5] });
+    ctx.textAlign = 'left'; ctx.fillStyle = h.yarn; fitFont(h.name, 160, 17); ctx.fillText(h.name, 100, y + 20);
+    ctx.textAlign = 'right'; ctx.fillStyle = '#ffc857'; ctx.font = `900 16px ${FD}`; ctx.fillText(tr('lvl', lv.L), W - 32, y + 20);
+    ctx.fillStyle = '#0d0b1d'; rr(100, y + 34, W - 132, 10, 5); ctx.fill();
+    ctx.fillStyle = h.yarn; rr(100, y + 34, Math.max(10, (W - 132) * (max ? 1 : lv.xp / lv.need)), 10, 5); ctx.fill();
+    ctx.textAlign = 'right'; ctx.fillStyle = '#8f88b5'; ctx.font = `800 10px ${FB}`;
+    ctx.fillText(max ? tr('maxLvl') : tr('xpOf', lv.xp, lv.need), W - 32, y + 54);
+    [5, 10].forEach((at, k) => {
+      const open = lv.L >= at, py = y + 74 + k * 22, txt = `${tr('lvl', at)}: ${tr(`perk.${h.id}.${at}`)}`;
+      ctx.textAlign = 'left'; ctx.fillStyle = open ? '#5ce1c6' : '#6f6893';
+      if (open) { ctx.strokeStyle = '#5ce1c6'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(102, py); ctx.lineTo(106, py + 4); ctx.lineTo(113, py - 4); ctx.stroke(); }
+      else { ctx.fillRect(103, py - 2, 9, 7); ctx.strokeStyle = '#6f6893'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(107.5, py - 2, 3, Math.PI, 0); ctx.stroke(); }
+      fitFont(txt, W - 170, 12, 800, FB); ctx.fillText(txt, 122, py + 1);
+    });
+  });
+}
+
 function drawEnd() {
   const win = G.state === 'win';
   ctx.fillStyle = G.ch.shade; ctx.fillRect(0, 0, W, H);
@@ -4369,10 +4464,10 @@ function drawEnd() {
   G.heroes.forEach((h, i) => drawHero(h, W / 2 + (i - (G.heroes.length - 1) / 2) * (G.heroes.length > 4 ? 80 : 90), 150 + (win ? Math.abs(Math.sin(T * 5 + i)) * -14 : 6), 28, null, { mood: win ? 'happy' : 'sad', look: [0, 1] }));
   ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
   ctx.fillStyle = win ? '#ffc857' : '#ff6b85'; ctx.font = `900 34px ${FD}`;
-  const endTitle = win ? tr('levelDone', G.li + 1) : G.lvl.endless ? tr('shiftOver') : tr('vacWon');
+  const endTitle = win ? (G.hard ? tr('hardDone', G.li + 1) : tr('levelDone', G.li + 1)) : G.lvl.endless ? tr('shiftOver') : tr('vacWon');
   fitFont(endTitle, W - 40, 34); ctx.fillText(endTitle, W / 2, 235);
   ctx.fillStyle = '#f4efe6'; ctx.font = `800 15px ${FB}`;
-  ctx.fillText(win ? tr('winSub', G.turn, G.lvl.par) : G.lvl.endless ? tr('survived', wavesWord(G.wave)) : (G.loseReason === 'ko' ? tr('allKo') : tr('waveTry', G.wave + 1, G.lvl.waves.length)), W / 2, 272);
+  ctx.fillText(win ? tr('winSub', G.turn, G.lvl.par) : G.lvl.endless ? tr('survived', wavesWord(G.wave)) : (G.loseReason === 'turns' ? tr('hardTurns') : G.loseReason === 'ko' ? tr('allKo') : tr('waveTry', G.wave + 1, G.lvl.waves.length)), W / 2, 272);
   let y0 = 320;
   if (win) {
     for (let s = 0; s < 3; s++) {
@@ -4380,6 +4475,11 @@ function drawEnd() {
       star(W / 2 - 60 + s * 60, 322, 24 * pop, s < G.stars ? '#ffc857' : '#2f2a52', s < G.stars ? null : '#3b3563');
     }
     y0 = 382;
+  }
+  if (G.xpGain) {
+    const up = G.levelUps && G.levelUps.length ? ' · ' + tr('lvlUp', G.levelUps.join(', ')) : '';
+    ctx.textAlign = 'center'; ctx.fillStyle = up ? '#5ce1c6' : '#b9b2da';
+    fitFont(tr('xpGain', G.xpGain) + up, W - 40, 13, 800, FB); ctx.fillText(tr('xpGain', G.xpGain) + up, W / 2, (win ? 382 : 320) + 132);
   }
   const st = G.stats;
   const rows = [[tr('st.knots'), st.knots], [tr('st.lasers'), st.lasers], [tr('st.crits'), st.crits], [tr('st.portals'), st.portals]];
@@ -4515,6 +4615,7 @@ function draw() {
   else if (SCREEN === 'shop') drawShop();
   else if (SCREEN === 'prep') drawPrep();
   else if (SCREEN === 'daily') drawDaily();
+  else if (SCREEN === 'heroes') drawHeroes();
   else drawMap();
 }
 
