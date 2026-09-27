@@ -4637,50 +4637,162 @@ function rewardIcon(g, x, y) {
   else { ctx.fillStyle = '#231e44'; rr(x - 11, y - 5, 22, 10, 5); ctx.fill(); ctx.fillStyle = '#ff8fb1'; rr(x - 11, y - 5, 11, 10, 5); ctx.fill(); }
   if (n > 1) { ctx.fillStyle = '#fff'; ctx.font = `900 11px ${FD}`; ctx.textAlign = 'left'; ctx.fillText('×' + n, x + 12, y + 1); }
 }
+// a coloured button for places where the yellow primary would compete with another one
+function colorBtn(x, y, w, h, label, cb, c1, c2, ink) {
+  UI.push({ x, y, w, h, cb });
+  ctx.fillStyle = 'rgba(0,0,0,.35)'; rr(x, y + 4, w, h, 14); ctx.fill();
+  const g = ctx.createLinearGradient(0, y, 0, y + h);
+  g.addColorStop(0, c1); g.addColorStop(1, c2);
+  ctx.fillStyle = g; rr(x, y, w, h, 14); ctx.fill();
+  ctx.fillStyle = 'rgba(255,255,255,.18)'; rr(x + 6, y + 4, w - 12, h * .32, 10); ctx.fill();
+  ctx.fillStyle = ink; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  fitFont(label, w - 20, h > 48 ? 20 : 17); ctx.fillText(label, x + w / 2, y + h / 2 + 1);
+}
+function flameIcon(x, y, s) {
+  ctx.fillStyle = '#ff8f3d';
+  ctx.beginPath(); ctx.moveTo(x, y - s); ctx.quadraticCurveTo(x + s * .9, y - s * .1, x + s * .55, y + s * .6);
+  ctx.quadraticCurveTo(x, y + s, x - s * .55, y + s * .6); ctx.quadraticCurveTo(x - s * .8, y - s * .05, x - s * .15, y - s * .35);
+  ctx.quadraticCurveTo(x + s * .05, y - s * .6, x, y - s); ctx.fill();
+  ctx.fillStyle = '#ffd166'; ctx.beginPath(); ctx.ellipse(x, y + s * .35, s * .28, s * .4, 0, 0, TAU); ctx.fill();
+}
 function drawDaily() {
   ctx.fillStyle = '#110e22'; ctx.fillRect(0, 0, W, H);
   const g = ctx.createRadialGradient(W / 2, 60, 10, W / 2, 60, 320);
-  g.addColorStop(0, 'rgba(255,200,87,.14)'); g.addColorStop(1, 'rgba(255,200,87,0)');
+  g.addColorStop(0, 'rgba(255,200,87,.16)'); g.addColorStop(1, 'rgba(255,200,87,0)');
   ctx.fillStyle = g; ctx.fillRect(0, 0, W, 400);
   iconBtn(12, 13, 'back', () => setScreen('map'));
   ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-  ctx.fillStyle = '#ffc857'; fitFont(tr('daily'), W - 120, 30); ctx.fillText(tr('daily'), W / 2, 32);
-  const card = (y, h) => { ctx.fillStyle = '#1d1938'; rr(16, y, W - 32, h, 16); ctx.fill(); ctx.strokeStyle = '#3b3563'; ctx.lineWidth = 1.5; rr(16, y, W - 32, h, 16); ctx.stroke(); };
-  // login bonus: seven days
-  card(66, 150);
-  ctx.textAlign = 'left'; ctx.fillStyle = '#f4efe6'; ctx.font = `900 16px ${FD}`; ctx.fillText(tr('dailyBonus'), 32, 88);
-  ctx.textAlign = 'right'; ctx.fillStyle = '#ffc857'; ctx.font = `800 13px ${FB}`; ctx.fillText(tr('streak', DAILY.streak), W - 32, 88);
-  DAILY_REWARDS.forEach((rw, i) => {
-    const x = 28 + i * 57, y = 106, got = i < DAILY.streak, cur = i === DAILY.streak - 1;
-    ctx.fillStyle = got ? 'rgba(255,200,87,.16)' : '#15122a'; rr(x, y, 51, 78, 10); ctx.fill();
-    ctx.strokeStyle = cur ? '#ffc857' : got ? 'rgba(255,200,87,.4)' : '#3b3563'; ctx.lineWidth = cur ? 2.5 : 1.5; rr(x, y, 51, 78, 10); ctx.stroke();
-    ctx.textAlign = 'center'; ctx.fillStyle = got ? '#ffc857' : '#8f88b5'; ctx.font = `900 12px ${FD}`; ctx.fillText(tr('dayShort', i + 1), x + 25, y + 14);
-    rewardIcon(rw, x + 20, y + 42);
-    if (got) { ctx.strokeStyle = '#5ce1c6'; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.moveTo(x + 18, y + 64); ctx.lineTo(x + 24, y + 70); ctx.lineTo(x + 34, y + 58); ctx.stroke(); }
-  });
-  // challenge of the day
-  const ch = todayChallenge(), done = challengeDone();
-  card(230, 196);
-  ctx.textAlign = 'left'; ctx.fillStyle = '#f4efe6'; ctx.font = `900 16px ${FD}`; ctx.fillText(tr('challenge'), 32, 254);
-  ctx.fillStyle = CHAPTERS[LEVELS[ch.li].ch].col; fitFont(tr('levelRoom', ch.li + 1, CHAPTERS[LEVELS[ch.li].ch].name), W - 70, 15);
-  ctx.fillText(tr('levelRoom', ch.li + 1, CHAPTERS[LEVELS[ch.li].ch].name), 32, 284);
-  ctx.fillStyle = '#c9c2e6'; ctx.font = `800 14px ${FB}`; wrap(tr('ch.' + ch.type, ch.n), 32, 312, W - 70, 19);
-  ctx.fillStyle = '#8f88b5'; ctx.font = `800 13px ${FB}`; ctx.fillText(tr('reward'), 32, 356);
-  rewardIcon({ [ch.reward]: 1 }, 118, 356);
-  ctx.fillStyle = '#f4efe6'; ctx.font = `800 13px ${FB}`; ctx.textAlign = 'left';
-  ctx.fillText(tr(ch.reward === 'heart' ? 'boostHeart' : 'boostMeter'), 136, 357);
-  if (done) { ctx.textAlign = 'center'; ctx.fillStyle = '#5ce1c6'; ctx.font = `900 18px ${FD}`; ctx.fillText(tr('chDone'), W / 2, 398); }
-  else uiBtn(75, 374, W - 150, 44, tr('play'), startChallenge, true);
-  // invite a friend
-  card(440, 176);
-  ctx.textAlign = 'left'; ctx.fillStyle = '#f4efe6'; ctx.font = `900 16px ${FD}`; ctx.fillText(tr('invite'), 32, 464);
-  ctx.textAlign = 'right'; ctx.fillStyle = '#ffc857'; ctx.font = `800 13px ${FB}`; ctx.fillText(tr('invited', DAILY.invited), W - 32, 464);
-  ctx.textAlign = 'left'; ctx.fillStyle = '#c9c2e6'; ctx.font = `800 13px ${FB}`; wrap(tr('inviteDesc'), 32, 492, W - 70, 18);
-  uiBtn(75, 556, W - 150, 46, tr('inviteBtn'), inviteFriend, false);
-  const note = DAILY.msg || (serverOn() ? '' : tr('dailyTgOnly'));
-  if (note) { ctx.textAlign = 'center'; ctx.fillStyle = DAILY.msg ? '#5ce1c6' : '#8f88b5'; ctx.font = `800 13px ${FB}`; wrap(note, W / 2, 648, W - 60, 18); }
-}
+  ctx.save(); ctx.shadowColor = '#ffc857'; ctx.shadowBlur = RM ? 8 : 12 + 5 * Math.sin(T * 2);
+  ctx.fillStyle = '#ffc857'; fitFont(tr('daily'), W - 120, 30); ctx.fillText(tr('daily'), W / 2, 32); ctx.restore();
+  const card = (y, h, edge) => {
+    ctx.fillStyle = 'rgba(0,0,0,.3)'; rr(16, y + 4, W - 32, h, 18); ctx.fill();
+    const cg = ctx.createLinearGradient(0, y, 0, y + h);
+    cg.addColorStop(0, '#231e44'); cg.addColorStop(1, '#1a1633');
+    ctx.fillStyle = cg; rr(16, y, W - 32, h, 18); ctx.fill();
+    ctx.strokeStyle = edge || '#3b3563'; ctx.lineWidth = 1.5; rr(16, y, W - 32, h, 18); ctx.stroke();
+  };
+  const heading = (text, y) => { ctx.textAlign = 'left'; ctx.fillStyle = '#f4efe6'; fitFont(text, W - 190, 17); ctx.fillText(text, 32, y); };
 
+  // ---- login bonus: seven days with a streak track ----
+  const Y1 = 64;
+  card(Y1, 186);
+  heading(tr('dailyBonus'), Y1 + 24);
+  const stxt = tr('streak', DAILY.streak);
+  ctx.font = `900 13px ${FB}`; const sw = ctx.measureText(stxt).width + 40;
+  ctx.fillStyle = 'rgba(255,143,61,.16)'; rr(W - 32 - sw, Y1 + 11, sw, 26, 13); ctx.fill();
+  ctx.strokeStyle = 'rgba(255,143,61,.6)'; ctx.lineWidth = 1.5; rr(W - 32 - sw, Y1 + 11, sw, 26, 13); ctx.stroke();
+  flameIcon(W - 32 - sw + 15, Y1 + 23, 8);
+  ctx.textAlign = 'left'; ctx.fillStyle = '#ffb070'; ctx.fillText(stxt, W - 32 - sw + 27, Y1 + 25);
+  const tw = 54, gap = 5, x0 = (W - (tw * 7 + gap * 6)) / 2, ty = Y1 + 50, th = 96;
+  DAILY_REWARDS.forEach((rw, i) => {
+    const x = x0 + i * (tw + gap), got = i < DAILY.streak, cur = i === DAILY.streak - 1, next = i === DAILY.streak, big = i === 6;
+    ctx.save();
+    if (cur && !RM) { ctx.shadowColor = '#ffc857'; ctx.shadowBlur = 14 + 6 * Math.sin(T * 4); }
+    const tg = ctx.createLinearGradient(0, ty, 0, ty + th);
+    if (big) { tg.addColorStop(0, got ? '#6b4a14' : '#4a3512'); tg.addColorStop(1, '#2a1d0a'); }
+    else if (got) { tg.addColorStop(0, '#3a3066'); tg.addColorStop(1, '#282050'); }
+    else { tg.addColorStop(0, '#1d1938'); tg.addColorStop(1, '#15122a'); }
+    ctx.fillStyle = tg; rr(x, ty, tw, th, 12); ctx.fill();
+    ctx.restore();
+    ctx.strokeStyle = cur ? '#ffc857' : big ? 'rgba(255,200,87,.7)' : got ? 'rgba(255,200,87,.35)' : '#3b3563';
+    ctx.lineWidth = cur ? 2.5 : 1.5;
+    if (next && !big) ctx.setLineDash([4, 4]);
+    rr(x, ty, tw, th, 12); ctx.stroke(); ctx.setLineDash([]);
+    ctx.textAlign = 'center'; ctx.fillStyle = got || big ? '#ffc857' : '#8f88b5'; ctx.font = `900 12px ${FD}`;
+    ctx.fillText(tr('dayShort', i + 1), x + tw / 2, ty + 15);
+    // the reward, drawn big
+    ctx.save(); ctx.globalAlpha = got && !cur ? .55 : 1;
+    const cx = x + tw / 2, cy = ty + 50, n = rw.heart || rw.meter || 1;
+    if (rw.hat_party) {
+      if (!RM) { ctx.save(); ctx.globalCompositeOperation = 'lighter'; glowAt(cx, cy, 30, '255,200,87', .35 + .1 * Math.sin(T * 3)); ctx.restore(); }
+      ctx.save(); ctx.translate(cx, cy + 20); drawHat('party', 24); ctx.restore();
+      star(cx + 16, cy - 8, 4.5, '#fff3c4'); star(cx - 17, cy + 2, 3.5, '#fff3c4');
+    } else if (rw.heart) heart(cx, cy + 2, 12, '#ff5d7a');
+    else {
+      ctx.fillStyle = '#15122a'; rr(cx - 16, cy - 7, 32, 14, 7); ctx.fill();
+      ctx.fillStyle = '#ff8fb1'; rr(cx - 16, cy - 7, 17, 14, 7); ctx.fill();
+      ctx.strokeStyle = '#ffd166'; ctx.lineWidth = 1.5; rr(cx - 16, cy - 7, 32, 14, 7); ctx.stroke();
+    }
+    ctx.restore();
+    if (n > 1 && !rw.hat_party) {
+      ctx.fillStyle = '#ffc857'; rr(x + tw - 24, ty + th - 30, 20, 16, 8); ctx.fill();
+      ctx.fillStyle = '#15122a'; ctx.font = `900 11px ${FD}`; ctx.fillText('×' + n, x + tw - 14, ty + th - 21.5);
+    }
+    if (got) {
+      ctx.fillStyle = '#5ce1c6'; circ(x + tw - 7, ty + 7, 9);
+      ctx.strokeStyle = '#15122a'; ctx.lineWidth = 2.2; ctx.lineCap = 'round';
+      ctx.beginPath(); ctx.moveTo(x + tw - 11, ty + 7); ctx.lineTo(x + tw - 8, ty + 10); ctx.lineTo(x + tw - 3, ty + 4); ctx.stroke();
+    }
+  });
+  // streak track
+  const ly = ty + th + 18, lx0 = x0 + tw / 2, lx1 = x0 + 6 * (tw + gap) + tw / 2;
+  ctx.strokeStyle = '#2a2548'; ctx.lineWidth = 6; ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.moveTo(lx0, ly); ctx.lineTo(lx1, ly); ctx.stroke();
+  const done7 = Math.min(7, DAILY.streak);
+  if (done7 > 0) {
+    const tg = ctx.createLinearGradient(lx0, 0, lx1, 0);
+    tg.addColorStop(0, '#ff8f3d'); tg.addColorStop(1, '#ffc857');
+    ctx.strokeStyle = tg; ctx.beginPath(); ctx.moveTo(lx0, ly); ctx.lineTo(lx0 + (lx1 - lx0) * (done7 - 1) / 6, ly); ctx.stroke();
+  }
+  for (let i = 0; i < 7; i++) {
+    const x = x0 + i * (tw + gap) + tw / 2;
+    ctx.fillStyle = i < done7 ? '#ffc857' : '#3b3563'; circ(x, ly, i === done7 - 1 ? 6 : 4);
+  }
+
+  // ---- challenge of the day ----
+  const ch = todayChallenge(), done = challengeDone(), c = LEVELS[ch.li].ch, room = CHAPTERS[c];
+  const Y2 = Y1 + 204;
+  card(Y2, 196, done ? 'rgba(92,225,198,.6)' : hexA(room.col, .45));
+  heading(tr('challenge'), Y2 + 24);
+  // a little window onto the room
+  const rx = 32, ry = Y2 + 44, rs = 76;
+  ctx.save(); rr(rx, ry, rs, rs, 16); ctx.clip();
+  ctx.drawImage(BGS[c], 150 * 2, 300 * 2, 150 * 2, 150 * 2, rx, ry, rs, rs);
+  ctx.fillStyle = 'rgba(12,10,26,.45)'; ctx.fillRect(rx, ry, rs, rs);
+  ctx.restore();
+  ctx.strokeStyle = room.col; ctx.lineWidth = 2; rr(rx, ry, rs, rs, 16); ctx.stroke();
+  chIcon(c, rx + rs / 2, ry + rs / 2, 34, room.col);
+  const tx = rx + rs + 16, twid = W - 32 - tx - 12;
+  ctx.textAlign = 'left'; ctx.fillStyle = room.col;
+  fitFont(tr('levelRoom', ch.li + 1, room.name), twid, 17); ctx.fillText(tr('levelRoom', ch.li + 1, room.name), tx, ry + 12);
+  ctx.fillStyle = '#c9c2e6'; ctx.font = `800 14px ${FB}`;
+  splitLines(tr('ch.' + ch.type, ch.n), twid).slice(0, 3).forEach((ln, i) => ctx.fillText(ln, tx, ry + 38 + i * 19));
+  // reward pill and the play button
+  const by = Y2 + 138;
+  const rtxt = tr(ch.reward === 'heart' ? 'boostHeart' : 'boostMeter');
+  ctx.font = `800 13px ${FB}`;
+  const rw = Math.min(180, ctx.measureText(rtxt).width + 58);
+  ctx.fillStyle = '#15122a'; rr(32, by, rw, 40, 20); ctx.fill();
+  ctx.strokeStyle = '#3b3563'; ctx.lineWidth = 1.5; rr(32, by, rw, 40, 20); ctx.stroke();
+  if (ch.reward === 'heart') heart(54, by + 21, 9, '#ff5d7a');
+  else { ctx.fillStyle = '#231e44'; rr(42, by + 14, 24, 12, 6); ctx.fill(); ctx.fillStyle = '#ff8fb1'; rr(42, by + 14, 13, 12, 6); ctx.fill(); }
+  ctx.fillStyle = '#f4efe6'; fitFont(rtxt, rw - 58, 13, 800, FB); ctx.fillText(rtxt, 74, by + 21);
+  const bx = 32 + rw + 12, bw = W - 32 - bx;
+  if (done) {
+    ctx.fillStyle = 'rgba(92,225,198,.14)'; rr(bx, by, bw, 40, 20); ctx.fill();
+    ctx.strokeStyle = '#5ce1c6'; ctx.lineWidth = 1.5; rr(bx, by, bw, 40, 20); ctx.stroke();
+    ctx.textAlign = 'center'; ctx.fillStyle = '#5ce1c6'; fitFont(tr('chDone'), bw - 20, 16); ctx.fillText(tr('chDone'), bx + bw / 2, by + 21);
+  } else uiBtn(bx, by - 2, bw, 44, tr('play'), startChallenge, true);
+
+  // ---- invite a friend ----
+  const Y3 = Y2 + 212;
+  card(Y3, 196);
+  heading(tr('invite'), Y3 + 24);
+  const itxt = tr('invited', DAILY.invited);
+  ctx.font = `900 13px ${FB}`; const iw = ctx.measureText(itxt).width + 24;
+  ctx.fillStyle = 'rgba(92,225,198,.14)'; rr(W - 32 - iw, Y3 + 11, iw, 26, 13); ctx.fill();
+  ctx.textAlign = 'center'; ctx.fillStyle = '#5ce1c6'; ctx.fillText(itxt, W - 32 - iw / 2, Y3 + 25);
+  // two friends with a heart between them
+  const hx = 72, hy = Y3 + 92, bob = RM ? 0 : Math.sin(T * 3) * 3;
+  drawHero(HEROES.find(h => h.id === 'mochi'), hx - 18, hy + 6, 22, null, { mood: 'happy' });
+  drawHero(HEROES.find(h => h.id === 'bandit'), hx + 30, hy + 10, 21, null, { mood: 'happy' });
+  heart(hx + 6, hy - 34 + bob, 9, '#ff5d7a');
+  ctx.textAlign = 'left'; ctx.fillStyle = '#c9c2e6'; ctx.font = `800 13px ${FB}`;
+  splitLines(tr('inviteDesc'), W - 32 - 140 - 12).slice(0, 4).forEach((ln, i) => ctx.fillText(ln, 140, Y3 + 56 + i * 18));
+  colorBtn(32, Y3 + 138, W - 64, 44, tr('inviteBtn'), inviteFriend, '#7ff0d6', '#2fb39a', '#0d2b27');
+  const note = DAILY.msg || (serverOn() ? '' : tr('dailyTgOnly'));
+  if (note) { ctx.textAlign = 'center'; ctx.fillStyle = DAILY.msg ? '#5ce1c6' : '#8f88b5'; ctx.font = `800 13px ${FB}`; wrap(note, W / 2, Y3 + 226, W - 60, 18); }
+}
 
 // ---------- heroes: XP, levels, perks ----------
 const HERO_MAX = 10;
@@ -5247,7 +5359,7 @@ loadDaily();
 // #dev: timer-driven loop (keeps running in hidden tabs) plus a state hook for testing
 const DEV = location.hash === '#dev';
 const nextFrame = DEV ? cb => setTimeout(() => cb(performance.now()), 16) : requestAnimationFrame;
-if (DEV) window.__pawsling = { get G() { return G; }, get SCREEN() { return SCREEN; }, startLevel, startEndless, launch, PROG: () => PROG, MAP, BOARD, setScreen, secondWind, setInv, get INV() { return INV; }, prepLevel, setupWave };
+if (DEV) window.__pawsling = { get G() { return G; }, get SCREEN() { return SCREEN; }, get DAILY() { return DAILY; }, startLevel, startEndless, launch, PROG: () => PROG, MAP, BOARD, setScreen, secondWind, setInv, get INV() { return INV; }, prepLevel, setupWave };
 let last = performance.now();
 // Slow devices: if frames keep taking longer than ~45 ms, drop the animated room lights.
 let LOWFX = false, slowMs = 0, failed = false;
