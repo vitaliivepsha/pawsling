@@ -64,7 +64,7 @@
   var q = new URLSearchParams(location.search), preset = null;
   if (q.has('run')) {
     preset = { rooms: true, lighter: true, shadow: true, grad: true, dpr: true, auto: true, preset: location.search };
-    ['css', 'boot', 'webgl', 'raf', 'hud'].forEach(function (k) { preset[k === 'css' ? 'cssfirst' : k] = q.get(k) === '1'; });
+    ['css', 'boot', 'webgl', 'raf', 'hud', 'op', 'ovl'].forEach(function (k) { preset[k === 'css' ? 'cssfirst' : k] = q.get(k) === '1'; });
   }
   var gl = 'не перевірялось';
   if (!preset || preset.webgl) try {
@@ -120,6 +120,14 @@
       if (flags.hud !== false) hud.textContent = run.alive + ' с · ' + run.frames + ' кадрів · ' + cv.width + '×' + cv.height;
     }, 500);
     document.getElementById('panel').remove();
+    // op=1: canvas slightly translucent; ovl=1: a nearly invisible layer over the whole page.
+    // Both keep Chrome from handing the canvas straight to the GPU display overlay.
+    if (flags.op) document.getElementById('game').style.opacity = '.995';
+    if (flags.ovl) {
+      var ov = document.createElement('div');
+      ov.style.cssText = 'position:fixed;top:0;left:0;right:0;bottom:0;z-index:7;pointer-events:none;background:rgba(0,0,0,.01)';
+      document.body.appendChild(ov);
+    }
     if (flags.boot) {
       // the same full-screen "Завантаження…" layer and error hooks as in index.html
       var boot = document.createElement('div');
