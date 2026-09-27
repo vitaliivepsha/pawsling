@@ -227,6 +227,12 @@ const SOUNDS = {
   lose: s => [392, 330, 262, 196].forEach((f, i) => s.tone(f, .35, 'triangle', .12, null, i * .16)),
   wave: s => { s.tone(440, .12, 'triangle', .1); s.tone(660, .18, 'triangle', .1, null, .1); },
   locked: s => s.tone(160, .12, 'square', .05),
+  splat: s => { s.noise(.25, .2, 600, 200, 0, 'lowpass'); s.tone(180, .2, 'sine', .12, 90); },
+  tvad: s => [72, 76, 79, 84].forEach((n, i) => s.tone(midi(n), .1, 'square', .05, null, i * .08, 2000)),
+  bells: s => { for (let i = 0; i < 8; i++) s.tone(i % 2 ? 2350 : 2100, .08, 'square', .04, null, i * .06, 5000); },
+  foam: s => { for (let i = 0; i < 5; i++) s.tone(600 + Math.random() * 900, .06, 'sine', .06, 1400, i * .04); },
+  gust: s => s.noise(.7, .25, 500, 3000, 0, 'bandpass'),
+  boo: s => { s.tone(300, .6, 'sine', .09, 180); s.tone(310, .6, 'triangle', .05, 190, .05); },
 };
 
 // Victory music. ROUND_TUNES play when a wave is cleared, WIN_TUNES when the level is won.
@@ -548,6 +554,13 @@ const I18N = {
     bossTitles: [['Гроза крихт', 'Жодної крихти на підлозі!'], ['Володар пульта', 'Цей диван тепер мій!'], ['Нічний жах', 'Час спати... назавжди!'],
       ['Мильний барон', 'Змию вас у каналізацію!'], ['Буревій', 'Вас здує з балкона!'], ['Горищний привид', 'Тут ніхто не живе... крім мене!'],
       ['Залізний механік', 'Розберу вас на гвинтики!']],
+    bossNames: ['БЛЕНДЕР «МЕГАМІКС»', 'ТЕЛЕБОС 3000', 'БУДИЛЬНИК-ДЗВОНАР', 'ПРАЛЬКА «БАРАБАН»', 'ПОВІТРОДУВ «ШКВАЛ»', 'ПИЛОСОС-ПРИВИД', 'РОБО-БОС 9000'],
+    bossSkills: [['Смузі-калюжі', 'Після атаки лишає липку калюжу: герої в ній гальмують'], ['Реклама', 'Кожна атака викликає міні-пилосос (до двох одразу)'],
+      ['Дзвін', 'Б\'є всіх героїв на ногах одразу, по 1 ♥ кожному'], ['Мильна піна', 'Піна повністю гасить перший удар. Після атаки відростає'],
+      ['Шквал', 'Атака відкидає всіх героїв подалі від нього'], ['Хованки', 'Після атаки зникає й з\'являється в іншому місці'],
+      ['Друга фаза', 'На половині міцності лагодить себе й атакує частіше']],
+    bossCries: ['ВЖИК-ВЖИК!', 'НЕ ПЕРЕМИКАЙТЕ!', 'ДЗЕЛЕНЬ-ДЗЕЛЕНЬ!', 'ВІДЖИМ!', 'ФУУУХ!', 'У-у-у-у!', 'ТУРБО-ВСМОКТУВАННЯ!'],
+    bossFx: ['Липко!', 'Реклама!', 'Дзвін!', 'Піна!', 'Шквал!', 'Бу!', 'Друга фаза!'], skillLabel: 'Уміння',
     bossWarn: 'УВАГА · БОС НАБЛИЖАЄТЬСЯ', bossName: 'РОБО-БОС 9000', 'stat.hp': 'Міцність', 'stat.atk': 'Удар', 'stat.every': 'Атакує',
     'stat.everyN': n => `кожні ${n} ходи`, bossHint: 'Бий у жовтий сенсор: потрійна шкода', tapToStart: 'Торкнись, щоб почати',
     turn: n => `Хід ${n}`, hudWave: n => ` · хвиля ${n}`, pullHint: 'Тягни від героя назад і відпускай', par3: n => `3 зірки: пройти за ${n} ходів або швидше`,
@@ -592,6 +605,13 @@ const I18N = {
     bossTitles: [['Crumb Terror', 'Not a single crumb on the floor!'], ['Remote Overlord', 'This couch is mine now!'], ['Night Terror', 'Time to sleep... forever!'],
       ['Soap Baron', 'Down the drain you go!'], ['Stormbringer', 'I\'ll blow you off the balcony!'], ['Attic Phantom', 'Nobody lives up here... but me!'],
       ['Iron Mechanic', 'I\'ll take you apart, bolt by bolt!']],
+    bossNames: ['MEGAMIX BLENDER', 'TELEBOSS 3000', 'BELLRINGER ALARM', 'DRUM WASHER', 'GALE BLOWER', 'GHOST VACUUM', 'ROBO-BOSS 9000'],
+    bossSkills: [['Smoothie puddles', 'After attacking it leaves a sticky puddle that slows heroes down'], ['Commercial break', 'Every attack summons a mini vacuum (up to two at once)'],
+      ['Ring!', 'Hits every standing hero at once, 1 ♥ each'], ['Soap foam', 'Foam fully soaks up the first hit. It grows back after an attack'],
+      ['Gale', 'Its attack blows all heroes away from it'], ['Hide and seek', 'After attacking it vanishes and reappears elsewhere'],
+      ['Second phase', 'At half toughness it repairs itself and attacks more often']],
+    bossCries: ['WHIRR-WHIRR!', 'DON\'T TOUCH THAT DIAL!', 'RING-A-LING!', 'SPIN CYCLE!', 'FWOOOSH!', 'Boooo!', 'TURBO SUCK!'],
+    bossFx: ['Sticky!', 'Ad break!', 'Ring!', 'Foam!', 'Gale!', 'Boo!', 'Second phase!'], skillLabel: 'Ability',
     bossWarn: 'WARNING · BOSS INCOMING', bossName: 'ROBO-BOSS 9000', 'stat.hp': 'Toughness', 'stat.atk': 'Hit', 'stat.every': 'Attacks',
     'stat.everyN': n => `every ${n} turns`, bossHint: 'Hit the yellow sensor: triple damage', tapToStart: 'Tap to start',
     turn: n => `Turn ${n}`, hudWave: n => ` · wave ${n}`, pullHint: 'Pull back from a hero and let go', par3: n => `3 stars: finish in ${n} turns or fewer`,
@@ -636,6 +656,13 @@ const I18N = {
     bossTitles: [['Postrach okruszków', 'Ani okruszka na podłodze!'], ['Władca pilota', 'Ta kanapa jest teraz moja!'], ['Nocny koszmar', 'Czas spać... na zawsze!'],
       ['Mydlany baron', 'Spłuczę was do kanalizacji!'], ['Wichrowy', 'Zdmuchnę was z balkonu!'], ['Upiór ze strychu', 'Nikt tu nie mieszka... oprócz mnie!'],
       ['Żelazny mechanik', 'Rozkręcę was na śrubki!']],
+    bossNames: ['BLENDER MEGAMIX', 'TELEBOSS 3000', 'BUDZIK-DZWONNIK', 'PRALKA «BĘBEN»', 'DMUCHAWA «WICHER»', 'ODKURZACZ-DUCH', 'ROBO-BOSS 9000'],
+    bossSkills: [['Kałuże smoothie', 'Po ataku zostawia lepką kałużę, która spowalnia bohaterów'], ['Reklama', 'Każdy atak przywołuje mini-odkurzacz (maks. dwa naraz)'],
+      ['Dzwonek', 'Trafia wszystkich stojących bohaterów naraz, po 1 ♥'], ['Piana', 'Piana całkowicie pochłania pierwszy cios. Odrasta po ataku'],
+      ['Wicher', 'Jego atak odrzuca wszystkich bohaterów'], ['Chowany', 'Po ataku znika i pojawia się w innym miejscu'],
+      ['Druga faza', 'Przy połowie wytrzymałości naprawia się i atakuje częściej']],
+    bossCries: ['WZIUU-WZIUU!', 'NIE PRZEŁĄCZAJ!', 'DRRRYŃ!', 'WIROWANIE!', 'FIUUUCH!', 'Uuuuu!', 'TURBO-SSANIE!'],
+    bossFx: ['Lepko!', 'Reklama!', 'Dzwonek!', 'Piana!', 'Wicher!', 'Buu!', 'Druga faza!'], skillLabel: 'Umiejętność',
     bossWarn: 'UWAGA · NADCHODZI BOSS', bossName: 'ROBO-BOSS 9000', 'stat.hp': 'Wytrzymałość', 'stat.atk': 'Cios', 'stat.every': 'Atakuje',
     'stat.everyN': n => `co ${n} tury`, bossHint: 'Trafiaj w żółty czujnik: potrójne obrażenia', tapToStart: 'Dotknij, aby zacząć',
     turn: n => `Tura ${n}`, hudWave: n => ` · fala ${n}`, pullHint: 'Ciągnij od bohatera do tyłu i puszczaj', par3: n => `3 gwiazdki: ukończ w ${n} tur lub mniej`,
@@ -680,6 +707,13 @@ const I18N = {
     bossTitles: [['Krümelschreck', 'Kein Krümel auf dem Boden!'], ['Fernbedienungsfürst', 'Das Sofa gehört jetzt mir!'], ['Nachtmahr', 'Schlafenszeit... für immer!'],
       ['Seifenbaron', 'Ab in den Abfluss mit euch!'], ['Sturmbringer', 'Ich puste euch vom Balkon!'], ['Dachbodengeist', 'Hier wohnt niemand... außer mir!'],
       ['Eiserner Mechaniker', 'Ich schraub euch auseinander!']],
+    bossNames: ['MIXER MEGAMIX', 'TELEBOSS 3000', 'WECKER-BIMMLER', 'WASCHTROMMEL', 'STURMBLÄSER', 'GEISTERSAUGER', 'ROBO-BOSS 9000'],
+    bossSkills: [['Smoothie-Pfützen', 'Hinterlässt nach dem Angriff eine klebrige Pfütze, die Helden bremst'], ['Werbepause', 'Jeder Angriff ruft einen Mini-Sauger (höchstens zwei)'],
+      ['Klingeln', 'Trifft alle stehenden Helden gleichzeitig, je 1 ♥'], ['Seifenschaum', 'Schaum schluckt den ersten Treffer ganz. Wächst nach einem Angriff nach'],
+      ['Sturm', 'Sein Angriff bläst alle Helden von ihm weg'], ['Versteckspiel', 'Verschwindet nach dem Angriff und taucht woanders auf'],
+      ['Zweite Phase', 'Bei halber Stärke repariert er sich und greift öfter an']],
+    bossCries: ['WIRR-WIRR!', 'NICHT UMSCHALTEN!', 'RRRRING!', 'SCHLEUDERGANG!', 'FUUUSCH!', 'Huuuu!', 'TURBO-SAUGEN!'],
+    bossFx: ['Klebrig!', 'Werbung!', 'Klingeling!', 'Schaum!', 'Sturm!', 'Buh!', 'Zweite Phase!'], skillLabel: 'Fähigkeit',
     bossWarn: 'ACHTUNG · BOSS NAHT', bossName: 'ROBO-BOSS 9000', 'stat.hp': 'Stärke', 'stat.atk': 'Schlag', 'stat.every': 'Angriff',
     'stat.everyN': n => `alle ${n} Züge`, bossHint: 'Triff den gelben Sensor: dreifacher Schaden', tapToStart: 'Tippen zum Starten',
     turn: n => `Zug ${n}`, hudWave: n => ` · Welle ${n}`, pullHint: 'Vom Helden zurückziehen und loslassen', par3: n => `3 Sterne: in ${n} Zügen oder weniger`,
@@ -724,6 +758,13 @@ const I18N = {
     bossTitles: [['Terror de las migas', '¡Ni una miga en el suelo!'], ['Señor del mando', '¡Este sofá ahora es mío!'], ['Pesadilla nocturna', 'Hora de dormir... ¡para siempre!'],
       ['Barón del jabón', '¡Os mando por el desagüe!'], ['Tormentoso', '¡Os soplaré del balcón!'], ['Fantasma del desván', 'Aquí no vive nadie... ¡salvo yo!'],
       ['Mecánico de hierro', '¡Os desmonto tornillo a tornillo!']],
+    bossNames: ['BATIDORA MEGAMIX', 'TELEJEFE 3000', 'DESPERTADOR CAMPANERO', 'LAVADORA TAMBOR', 'SOPLADOR VENDAVAL', 'ASPIRADORA FANTASMA', 'ROBO-JEFE 9000'],
+    bossSkills: [['Charcos de batido', 'Tras atacar deja un charco pegajoso que frena a los héroes'], ['Anuncios', 'Cada ataque invoca una mini aspiradora (hasta dos a la vez)'],
+      ['¡Ring!', 'Golpea a todos los héroes en pie a la vez, 1 ♥ a cada uno'], ['Espuma', 'La espuma absorbe del todo el primer golpe. Vuelve a crecer tras atacar'],
+      ['Vendaval', 'Su ataque aleja de un soplido a todos los héroes'], ['Escondite', 'Tras atacar desaparece y reaparece en otro sitio'],
+      ['Segunda fase', 'A media vida se repara y ataca más a menudo']],
+    bossCries: ['¡BRRR-BRRR!', '¡NO CAMBIES DE CANAL!', '¡RIIING!', '¡CENTRIFUGADO!', '¡FUUUSH!', '¡Buuuu!', '¡TURBOASPIRADO!'],
+    bossFx: ['¡Pegajoso!', '¡Anuncio!', '¡Ring!', '¡Espuma!', '¡Vendaval!', '¡Bu!', '¡Segunda fase!'], skillLabel: 'Habilidad',
     bossWarn: 'ATENCIÓN · LLEGA EL JEFE', bossName: 'ROBO-JEFE 9000', 'stat.hp': 'Vida', 'stat.atk': 'Golpe', 'stat.every': 'Ataca',
     'stat.everyN': n => `cada ${n} turnos`, bossHint: 'Golpea el sensor amarillo: daño triple', tapToStart: 'Toca para empezar',
     turn: n => `Turno ${n}`, hudWave: n => ` · oleada ${n}`, pullHint: 'Tira hacia atrás desde un héroe y suelta', par3: n => `3 estrellas: termina en ${n} turnos o menos`,
@@ -1569,9 +1610,12 @@ function pickBoxes(n) {
 
 function makeEnemy(type, x, y, i) {
   const d = ENEMY[type], m = G.mul;
-  const hp = Math.round(d.hp * m.hp * (type === 'boss' ? m.boss : 1) / 50) * 50;
-  return { type, x, y, r: d.r, hp, maxHp: hp, timer: d.timer + (i % 2), maxTimer: d.timer, atk: Math.round(d.atk * m.atk / 50) * 50,
-    alive: true, flash: 0, ph: Math.random() * 6, weak: Math.PI / 2, weakT: Math.PI / 2 };
+  // a boss belongs to its room: G.lvl.ch picks which of the seven it is
+  const kind = type === 'boss' ? G.lvl.ch % BOSS_COUNT : undefined;
+  const bossHp = kind === 1 ? .85 : 1, bossAtk = kind === 2 ? .8 : 1;
+  const hp = Math.round(d.hp * m.hp * (type === 'boss' ? m.boss * bossHp : 1) / 50) * 50;
+  return { type, kind, x, y, r: d.r, hp, maxHp: hp, timer: d.timer + (i % 2), maxTimer: d.timer, atk: Math.round(d.atk * m.atk * bossAtk / 50) * 50,
+    alive: true, flash: 0, ph: Math.random() * 6, weak: Math.PI / 2, weakT: Math.PI / 2, foam: kind === 3, fade: 0 };
 }
 const shieldedBy = e => G.enemies.find(o => o.alive && o.type === 'shield' && o !== e && dist(o.x, o.y, e.x, e.y) < SHIELD_R + e.r);
 
@@ -1588,7 +1632,7 @@ function setupWave(n) {
   G.enemies = list.map(([type, x, y], i) => makeEnemy(type, x, y, i));
   G.boxes = pickBoxes(n);
   G.heroes.forEach((h, i) => { h.x = START[i][0]; h.y = START[i][1]; h.vx = h.vy = 0; });
-  G.trails = []; G.snacks = [];
+  G.trails = []; G.snacks = []; G.puddles = [];
   for (let i = 0; i < 3; i++) spawnSnack();
   placeLaser();
   const boss = G.enemies.find(e => e.type === 'boss');
@@ -1619,10 +1663,26 @@ function launch(dx, dy) {
 
 function damageEnemy(e, amt, crit) {
   if (!e.alive) return;
+  if (e.foam) {
+    e.foam = false; e.flash = .12;
+    burst(e.x, e.y, '#ffffff', 18, 220, 'bubble');
+    ftext(e.x, e.y - e.r - 10, tr('bossFx')[3], '#bfe9ff', 18);
+    Snd.play('foam');
+    return;
+  }
   if (shieldedBy(e)) { amt *= .35; ftext(e.x, e.y - e.r - 28, tr('shielded'), '#6ec3ff', 12); }
   amt = Math.round(amt);
   e.hp -= amt; e.flash = .12;
   ftext(e.x + rnd(-12, 12), e.y - e.r - 6, crit ? amt + '!' : amt, crit ? '#ffe066' : '#fff', crit ? 24 : 16);
+  if (e.type === 'boss' && e.kind === 6 && !e.phase2 && e.hp > 0 && e.hp <= e.maxHp / 2) {
+    e.phase2 = true;
+    e.hp = Math.min(e.maxHp, e.hp + Math.round(e.maxHp * .25));
+    e.maxTimer = 2; e.timer = Math.min(e.timer, 2);
+    ftext(e.x, e.y - e.r - 36, tr('bossFx')[6], '#ff4d6d', 22);
+    ring(e.x, e.y, e.r * 2.4, '#ff4d6d'); flash('#ff3b5c', .4);
+    G.shake = Math.max(G.shake, 12);
+    Snd.play('boss');
+  }
   if (e.hp <= 0) {
     e.alive = false; e.hp = 0;
     burst(e.x, e.y, '#c9ced6', 18, 260);
@@ -1840,6 +1900,13 @@ function stepShot(dt) {
       trail.pts.push(np);
     }
 
+    for (const pd of G.puddles || []) {
+      if (dist(h.x, h.y, pd.x, pd.y) > pd.r) continue;
+      const k = Math.exp(-3.2 * sd); h.vx *= k; h.vy *= k;
+      if (!s.stuck) { s.stuck = true; ftext(pd.x, pd.y - 22, tr('bossFx')[0], '#ff8fb1', 15); Snd.play('splat'); }
+      if (Math.random() < .25) burst(h.x, h.y + h.r * .6, '#ff8fb1', 1, 60, 'bubble');
+    }
+
     const sp = Math.hypot(h.vx, h.vy);
     const kf = s.zoom ? .45 : .75, lin = s.zoom ? 60 : 95;
     const ns = Math.max(0, sp * Math.exp(-kf * sd) - lin * sd);
@@ -1903,26 +1970,32 @@ function nextAttack() {
   if (!e.alive) { G.timer = 0; return; }
   const t = targetOf(e);
   if (!t) { G.timer = 0; return; }
-  t.hurt = .7;
-  G.beams.push({ x1: e.x, y1: e.y, x2: t.x, y2: t.y, life: .45, max: .45, col: e.type === 'spray' ? '#6ec3ff' : '#ff3b5c', w: e.type === 'boss' ? 12 : 6 });
+  const boss = e.type === 'boss', ringAll = boss && e.kind === 2;
+  const targets = ringAll ? G.heroes.filter(h => !h.ko) : [t];
   G.hp = Math.max(0, G.hp - e.atk);
   ftext(t.x, t.y - 30, '-' + e.atk, '#ff6b85', 20);
-  const cry = tr('cry.' + e.type);
+  const cry = boss ? tr('bossCries')[e.kind] : tr('cry.' + e.type);
   ftext(e.x, e.y - e.r - 22, cry, '#ffc857', 14);
-  burst(t.x, t.y, '#ff6b85', 14);
-  G.shake = e.type === 'boss' ? 14 : 7;
-  flash('#ff3b5c', e.type === 'boss' ? .55 : .35);
-  Snd.play(e.type === 'boss' ? 'boss' : 'attack'); haptic('error');
-  const loss = e.type === 'boss' ? 2 : 1;
-  t.hearts = Math.max(0, t.hearts - loss);
-  ftext(t.x, t.y - 52, '-' + loss + ' ♥', '#ff5d7a', 16);
-  if (t.hearts === 0) {
-    t.ko = KO_TURNS;
-    ftext(t.x, t.y + t.r + 18, tr('ko'), '#ffc857', 18);
-    if (!G.koTaught) { G.koTaught = true; ftext(W / 2, BOT - 40, tr('koHint'), '#5ce1c6', 15); }
-    haptic('heavy');
+  G.shake = boss ? 14 : 7;
+  flash('#ff3b5c', boss ? .55 : .35);
+  Snd.play(boss ? 'boss' : 'attack'); haptic('error');
+  if (ringAll) { Snd.play('bells'); ring(e.x, e.y, 260, '#ffc857'); ftext(e.x, e.y - e.r - 44, tr('bossFx')[2], '#ffc857', 18); }
+  const loss = boss && !ringAll ? 2 : 1;
+  for (const h of targets) {
+    h.hurt = .7;
+    G.beams.push({ x1: e.x, y1: e.y, x2: h.x, y2: h.y, life: .45, max: .45, col: e.type === 'spray' ? '#6ec3ff' : ringAll ? '#ffc857' : '#ff3b5c', w: boss ? 12 : 6 });
+    burst(h.x, h.y, '#ff6b85', 14);
+    h.hearts = Math.max(0, h.hearts - loss);
+    ftext(h.x, h.y - 52, '-' + loss + ' ♥', '#ff5d7a', 16);
+    if (h.hearts === 0) {
+      h.ko = KO_TURNS;
+      ftext(h.x, h.y + h.r + 18, tr('ko'), '#ffc857', 18);
+      if (!G.koTaught) { G.koTaught = true; ftext(W / 2, BOT - 40, tr('koHint'), '#5ce1c6', 15); }
+      haptic('heavy');
+    }
   }
   e.timer = e.maxTimer;
+  if (boss) bossAfterAttack(e, t);
   G.timer = .6;
   const allKo = G.heroes.every(h => h.ko);
   if (G.hp <= 0 || allKo) { G.loseReason = allKo ? 'ko' : 'hp'; G.state = 'lose'; if (G.lvl.endless) endEndless(); Amb.duck(.25); Snd.play('lose'); haptic('error'); }
@@ -2006,6 +2079,7 @@ function update(dt) {
   G.hpLag = G.hpLag > G.hp ? G.hpLag + (G.hp - G.hpLag) * Math.min(1, dt * 2.5) : G.hp;
   for (const e of G.enemies) {
     if (e.flash > 0) e.flash -= dt;
+    if (e.fade > 0) e.fade = Math.max(0, e.fade - dt * 1.8);
     if (e.type === 'boss') e.weak += (e.weakT - e.weak) * Math.min(1, dt * 4);
     if (e.tx != null) {
       const k = Math.min(1, dt * 4);
@@ -2083,6 +2157,98 @@ function heroEyes(h, r, o, mood) {
   if (mood === 'sad') { ctx.fillStyle = '#7ec8e3'; ctx.beginPath(); ctx.moveTo(r * .42, r * .08); ctx.quadraticCurveTo(r * .52, r * .26, r * .42, r * .3); ctx.quadraticCurveTo(r * .32, r * .26, r * .42, r * .08); ctx.fill(); }
 }
 
+// ---------- the seven bosses ----------
+// One per room, in room order: blender, TV, alarm clock, washing machine, leaf blower, ghost vacuum
+// and the Robo-Boss 9000 in the garage. Each keeps the yellow sensor and adds its own ability.
+const BOSS_COUNT = 7;
+const BOSS_COL = ['#ff8fb1', '#6ec3ff', '#ffc857', '#bfe9ff', '#9ee06a', '#c9b8ff', '#ff4d6d'];
+const bossName = e => (tr('bossNames') || [])[e.kind] || tr('bossName');
+function heroFreeSpot(x, y, e) {
+  for (const o of G.enemies) {
+    if (!o.alive) continue;
+    const d = dist(x, y, o.x, o.y) || 1, m = o.r + 26;
+    if (d < m) { x = o.x + (x - o.x) / d * m; y = o.y + (y - o.y) / d * m; }
+  }
+  return [Math.max(26, Math.min(W - 26, x)), Math.max(TOP + 26, Math.min(BOT - 26, y))];
+}
+function bossAfterAttack(e, t) {
+  const fx = tr('bossFx')[e.kind], col = BOSS_COL[e.kind];
+  if (e.kind === 0) {
+    // a sticky smoothie puddle between the blender and the hero it hit
+    const u = rnd(.45, .7);
+    const x = Math.max(56, Math.min(W - 56, e.x + (t.x - e.x) * u + rnd(-30, 30)));
+    const y = Math.max(TOP + 70, Math.min(BOT - 100, e.y + (t.y - e.y) * u + rnd(-20, 20)));
+    G.puddles.push({ x, y, r: 46, ph: Math.random() * 6 });
+    if (G.puddles.length > 3) G.puddles.shift();
+    burst(x, y, col, 14, 160, 'bubble'); ftext(x, y - 30, fx, col, 16); Snd.play('splat');
+  } else if (e.kind === 1) {
+    // a commercial break: a small vacuum drives out of the screen
+    if (G.enemies.filter(o => o.alive && o.minion).length >= 2) return;
+    let p = null;
+    for (let k = 0; k < 30 && !p; k++) {
+      const ang = rnd(0, TAU), d = rnd(e.r + 40, e.r + 90), x = e.x + Math.cos(ang) * d, y = e.y + Math.sin(ang) * d;
+      if (x < 40 || x > W - 40 || y < TOP + 40 || y > BOT - 170) continue;
+      if (G.enemies.some(o => o.alive && dist(x, y, o.x, o.y) < o.r + 34)) continue;
+      if (G.heroes.some(h => dist(x, y, h.x, h.y) < h.r + 40)) continue;
+      p = [x, y];
+    }
+    if (!p) return;
+    const m = makeEnemy('vac', p[0], p[1], 0);
+    m.minion = true; m.timer = m.maxTimer + 1;
+    m.hp = m.maxHp = Math.round(m.maxHp * .6 / 50) * 50;
+    G.enemies.push(m);
+    G.beams.push({ x1: e.x, y1: e.y, x2: m.x, y2: m.y, life: .4, max: .4, col, w: 6 });
+    ring(m.x, m.y, 50, col); burst(m.x, m.y, col, 12, 160);
+    ftext(m.x, m.y - 36, fx, col, 16); Snd.play('tvad');
+  } else if (e.kind === 3) {
+    if (!e.foam) { e.foam = true; burst(e.x, e.y, '#ffffff', 16, 180, 'bubble'); Snd.play('foam'); }
+  } else if (e.kind === 4) {
+    // a gale pushes every hero away from the blower
+    for (const h of G.heroes) {
+      const d = dist(h.x, h.y, e.x, e.y) || 1, push = 90;
+      const nx = (h.x - e.x) / d, ny = (h.y - e.y) / d;
+      for (let i = 0; i < 6; i++) G.parts.push({ x: h.x - nx * rnd(10, 60), y: h.y - ny * rnd(10, 60), vx: nx * rnd(260, 420), vy: ny * rnd(260, 420), life: .35, max: .35, col: '#e8fff0', size: 2, shape: 'spark' });
+      [h.x, h.y] = heroFreeSpot(h.x + nx * push, h.y + ny * push);
+    }
+    ftext(e.x, e.y - e.r - 44, fx, col, 18); G.shake = Math.max(G.shake, 8); Snd.play('gust');
+  } else if (e.kind === 5) {
+    // hide and seek: vanish in a puff of dust and appear somewhere else
+    let p = null;
+    for (let k = 0; k < 40 && !p; k++) {
+      const x = rnd(80, W - 80), y = rnd(TOP + 90, TOP + 330);
+      if (dist(x, y, e.x, e.y) < 120) continue;
+      if (G.enemies.some(o => o !== e && o.alive && dist(x, y, o.x, o.y) < o.r + e.r + 20)) continue;
+      if (G.heroes.some(h => dist(x, y, h.x, h.y) < h.r + e.r + 20)) continue;
+      p = [x, y];
+    }
+    if (!p) return;
+    burst(e.x, e.y, '#c9b8ff', 22, 220); burst(e.x, e.y, '#8f88b5', 14, 160);
+    e.x = p[0]; e.y = p[1]; e.fade = 1;
+    ring(e.x, e.y, e.r * 1.8, col); ftext(e.x, e.y - e.r - 30, fx, col, 18); Snd.play('boo');
+  }
+}
+function drawPuddles() {
+  for (const pd of G.puddles || []) {
+    const t = RM ? 0 : T;
+    ctx.save(); ctx.translate(pd.x, pd.y);
+    ctx.fillStyle = 'rgba(0,0,0,.18)'; ctx.beginPath(); ctx.ellipse(3, 5, pd.r, pd.r * .62, 0, 0, TAU); ctx.fill();
+    ctx.fillStyle = '#e8588a'; ctx.beginPath();
+    for (let i = 0; i <= 24; i++) {
+      const a = i / 24 * TAU, w = 1 + .1 * Math.sin(a * 3 + pd.ph) + .04 * Math.sin(t * 2 + a * 5);
+      ctx.lineTo(Math.cos(a) * pd.r * w, Math.sin(a) * pd.r * .62 * w);
+    }
+    ctx.closePath(); ctx.fill();
+    ctx.fillStyle = '#ff8fb1'; ctx.beginPath(); ctx.ellipse(-4, -3, pd.r * .72, pd.r * .4, 0, 0, TAU); ctx.fill();
+    ctx.fillStyle = 'rgba(255,255,255,.55)'; ctx.beginPath(); ctx.ellipse(-pd.r * .35, -pd.r * .2, pd.r * .18, pd.r * .07, -.3, 0, TAU); ctx.fill();
+    for (let k = 0; k < 3; k++) {
+      const ph = frac(t * .5 + k / 3 + pd.ph);
+      ctx.strokeStyle = `rgba(255,220,235,${.7 * (1 - ph)})`; ctx.lineWidth = 1.2;
+      ctx.beginPath(); ctx.arc(Math.cos(k * 2 + pd.ph) * pd.r * .4, Math.sin(k * 2) * pd.r * .2, 2 + ph * 5, 0, TAU); ctx.stroke();
+    }
+    ctx.restore();
+  }
+}
+
 // ---------- boss intro ----------
 // Before a boss wave: warning stripes, the boss drops in with a thud, then its name, a room-specific
 // nickname and catchphrase, its stats and the sensor hint. A tap skips it after a moment.
@@ -2148,10 +2314,10 @@ function drawBossIntro() {
     fitFont(tr('bossWarn'), W - 40, 16); ctx.fillText(tr('bossWarn'), W / 2, 138);
   }
   // the boss drops in and lands with a shockwave
-  const by = 280, R = 104;
+  const by = 258, R = 94, bc = BOSS_COL[e.kind == null ? 6 : e.kind];
   const k = RM ? 1 : Math.min(1, t / INTRO_LAND), y = RM ? by : -R + (by + R) * k * k;
   ctx.save(); ctx.globalCompositeOperation = 'lighter';
-  glowAt(W / 2, by, 210, '255,59,92', (I.landed ? .35 + .1 * Math.sin(T * 5) : .15) * a);
+  glowAt(W / 2, by, 210, hexRgb(bc), (I.landed ? .3 + .1 * Math.sin(T * 5) : .12) * a);
   ctx.restore();
   if (I.landed && !RM) {
     const s = t - INTRO_LAND;
@@ -2160,51 +2326,65 @@ function drawBossIntro() {
       ctx.beginPath(); ctx.ellipse(W / 2, by + R * .85, R * (1 + s * 3), R * (.3 + s), 0, 0, TAU); ctx.stroke();
     }
   }
-  ctx.fillStyle = 'rgba(0,0,0,.45)'; ctx.beginPath(); ctx.ellipse(W / 2, by + R * .9, R * (.5 + .45 * k), R * .22 * k, 0, 0, TAU); ctx.fill();
+  ctx.fillStyle = 'rgba(0,0,0,.45)'; ctx.beginPath(); ctx.ellipse(W / 2, by + R * 1.0, R * (.5 + .45 * k), R * .22 * k, 0, 0, TAU); ctx.fill();
   ctx.save(); ctx.translate(W / 2, y); drawBoss(e, R, RM ? 0 : T); ctx.restore();
   // name, nickname and catchphrase
   const nameK = ease((t - 1.05) / .35);
   if (nameK > 0) {
     ctx.globalAlpha = a * nameK;
-    ctx.save(); ctx.translate(W / 2, 432); ctx.scale(.7 + .3 * nameK, .7 + .3 * nameK);
-    ctx.shadowColor = '#ff3b5c'; ctx.shadowBlur = 18;
-    ctx.fillStyle = '#ff4d6d'; fitFont(tr('bossName'), W - 60, 36); ctx.fillText(tr('bossName'), 0, 0);
+    ctx.save(); ctx.translate(W / 2, 404); ctx.scale(.7 + .3 * nameK, .7 + .3 * nameK);
+    ctx.shadowColor = bc; ctx.shadowBlur = 18;
+    ctx.fillStyle = bc; fitFont(bossName(e), W - 50, 32); ctx.fillText(bossName(e), 0, 0);
     ctx.restore();
     const [title, quote] = tr('bossTitles')[c % tr('bossTitles').length];
-    ctx.fillStyle = ch.col; ctx.font = `900 19px ${FD}`; ctx.fillText(`«${title}»`, W / 2, 470);
-    ctx.fillStyle = '#c9c2e6'; ctx.font = `italic 800 14px ${FB}`; ctx.fillText(`„${quote}“`, W / 2, 498);
+    ctx.fillStyle = ch.col; fitFont(`«${title}»`, W - 60, 18); ctx.fillText(`«${title}»`, W / 2, 438);
+    ctx.fillStyle = '#c9c2e6'; ctx.font = `italic 800 14px ${FB}`; fitFont(`„${quote}“`, W - 60, 14, 'italic 800', FB); ctx.fillText(`„${quote}“`, W / 2, 463);
   }
   // stats chips
-  const statK = ease((t - 1.45) / .3);
+  const statK = ease((t - 1.4) / .3);
   if (statK > 0) {
     ctx.globalAlpha = a * statK;
     const chips = [[tr('stat.hp'), e.maxHp], [tr('stat.atk'), e.atk], [tr('stat.every'), tr('stat.everyN', e.maxTimer)]];
     const cw = 128, gap = 10, x0 = W / 2 - (cw * 3 + gap * 2) / 2;
     chips.forEach(([label, val], i) => {
-      const x = x0 + i * (cw + gap), yy = 530 + (1 - statK) * 14;
-      ctx.fillStyle = '#231e44'; rr(x, yy, cw, 50, 12); ctx.fill();
-      ctx.strokeStyle = '#3b3563'; ctx.lineWidth = 1.5; rr(x, yy, cw, 50, 12); ctx.stroke();
-      ctx.fillStyle = '#8f88b5'; ctx.font = `800 11px ${FB}`; ctx.fillText(label, x + cw / 2, yy + 15);
-      ctx.fillStyle = '#f4efe6'; ctx.font = `900 ${typeof val === 'number' ? 18 : 13}px ${FD}`; ctx.fillText(String(val), x + cw / 2, yy + 34);
+      const x = x0 + i * (cw + gap), yy = 488 + (1 - statK) * 14;
+      ctx.fillStyle = '#231e44'; rr(x, yy, cw, 46, 12); ctx.fill();
+      ctx.strokeStyle = '#3b3563'; ctx.lineWidth = 1.5; rr(x, yy, cw, 46, 12); ctx.stroke();
+      ctx.fillStyle = '#8f88b5'; ctx.font = `800 11px ${FB}`; ctx.fillText(label, x + cw / 2, yy + 14);
+      ctx.fillStyle = '#f4efe6'; fitFont(String(val), cw - 12, typeof val === 'number' ? 18 : 13); ctx.fillText(String(val), x + cw / 2, yy + 32);
     });
   }
-  // how to beat it
-  const hintK = ease((t - 1.8) / .3);
-  if (hintK > 0) {
-    ctx.globalAlpha = a * hintK;
-    const hy = 604;
-    ctx.fillStyle = 'rgba(255,224,102,.12)'; rr(40, hy, W - 80, 44, 14); ctx.fill();
-    ctx.strokeStyle = '#ffe066'; ctx.lineWidth = 1.5; rr(40, hy, W - 80, 44, 14); ctx.stroke();
-    const p = 1 + Math.sin(T * 6) * .15;
-    ctx.fillStyle = 'rgba(255,224,102,.35)'; circ(66, hy + 22, 13 * p);
-    ctx.fillStyle = '#ffe066'; circ(66, hy + 22, 8); ctx.fillStyle = '#fff'; circ(66, hy + 22, 3);
-    ctx.textAlign = 'left'; ctx.fillStyle = '#ffe066'; ctx.font = `900 14px ${FB}`;
-    fitFont(tr('bossHint'), W - 140, 14, 900, FB); ctx.fillText(tr('bossHint'), 88, hy + 23);
+  // its ability
+  const skK = ease((t - 1.7) / .3);
+  if (skK > 0) {
+    ctx.globalAlpha = a * skK;
+    const [sName, sDesc] = tr('bossSkills')[e.kind == null ? 6 : e.kind], sy = 546;
+    ctx.fillStyle = 'rgba(35,30,68,.95)'; rr(30, sy, W - 60, 58, 14); ctx.fill();
+    ctx.strokeStyle = bc; ctx.lineWidth = 2; rr(30, sy, W - 60, 58, 14); ctx.stroke();
+    ctx.textAlign = 'left';
+    ctx.fillStyle = '#8f88b5'; ctx.font = `800 11px ${FB}`; ctx.fillText(tr('skillLabel').toUpperCase(), 46, sy + 16);
+    const lw = ctx.measureText(tr('skillLabel').toUpperCase()).width;
+    ctx.fillStyle = bc; fitFont(sName, W - 120 - lw, 15); ctx.fillText(sName, 54 + lw, sy + 16);
+    ctx.fillStyle = '#f4efe6'; fitFont(sDesc, W - 92, 13, 800, FB); ctx.fillText(sDesc, 46, sy + 40);
     ctx.textAlign = 'center';
   }
-  if (t > 2.3) {
+  // how to beat it
+  const hintK = ease((t - 2.0) / .3);
+  if (hintK > 0) {
+    ctx.globalAlpha = a * hintK;
+    const hy = 614;
+    ctx.fillStyle = 'rgba(255,224,102,.12)'; rr(30, hy, W - 60, 40, 14); ctx.fill();
+    ctx.strokeStyle = '#ffe066'; ctx.lineWidth = 1.5; rr(30, hy, W - 60, 40, 14); ctx.stroke();
+    const p = 1 + Math.sin(T * 6) * .15;
+    ctx.fillStyle = 'rgba(255,224,102,.35)'; circ(56, hy + 20, 12 * p);
+    ctx.fillStyle = '#ffe066'; circ(56, hy + 20, 7); ctx.fillStyle = '#fff'; circ(56, hy + 20, 3);
+    ctx.textAlign = 'left'; ctx.fillStyle = '#ffe066';
+    fitFont(tr('bossHint'), W - 120, 14, 900, FB); ctx.fillText(tr('bossHint'), 76, hy + 21);
+    ctx.textAlign = 'center';
+  }
+  if (t > 2.4) {
     ctx.globalAlpha = a * (.55 + .45 * Math.sin(T * 4));
-    ctx.fillStyle = '#c9c2e6'; ctx.font = `800 13px ${FB}`; ctx.fillText(tr('tapToStart'), W / 2, 676);
+    ctx.fillStyle = '#c9c2e6'; ctx.font = `800 13px ${FB}`; ctx.fillText(tr('tapToStart'), W / 2, 682);
   }
   ctx.restore();
 }
@@ -2601,6 +2781,188 @@ function drawMop(e, r, t) {
 }
 
 function drawBoss(e, r, t) {
+  [drawBlender, drawTvBoss, drawClockBoss, drawWasher, drawBlower, drawGhostVac, drawRoboBoss][e.kind == null ? 6 : e.kind](e, r, t);
+  drawSensor(e, r);
+}
+function drawSensor(e, r) {
+  const wx = Math.cos(e.weak) * r, wy = Math.sin(e.weak) * r, p = 1 + Math.sin(T * 6) * .15;
+  ctx.fillStyle = 'rgba(255,224,102,.35)'; circ(wx, wy, 18 * p);
+  ctx.fillStyle = '#ffe066'; circ(wx, wy, 10);
+  ctx.fillStyle = '#fff'; circ(wx, wy, 4);
+}
+function drawBlender(e, r, t) {
+  ctx.fillStyle = '#3a3f4d'; rr(-r * .78, r * .38, r * 1.56, r * .62, r * .16); ctx.fill();
+  ctx.fillStyle = '#23262f'; rr(-r * .6, r * .5, r * 1.2, r * .36, r * .1); ctx.fill();
+  angryEyes(0, r * .68, r * .62, '#ff3b5c');
+  ctx.fillStyle = e.timer <= 1 ? (Math.sin(T * 12) > 0 ? '#ff3b5c' : '#5a1020') : '#3dd68c'; circ(r * .66, r * .9, r * .06);
+  const jar = () => { ctx.beginPath(); ctx.moveTo(-r * .72, -r * .82); ctx.lineTo(r * .72, -r * .82); ctx.lineTo(r * .56, r * .4); ctx.lineTo(-r * .56, r * .4); ctx.closePath(); };
+  ctx.save(); jar(); ctx.clip();
+  ctx.fillStyle = 'rgba(200,230,255,.22)'; ctx.fillRect(-r, -r, 2 * r, 2 * r);
+  const lv = -r * .28 + Math.sin(t * 3) * r * .05;
+  ctx.fillStyle = '#ff6f9a'; ctx.beginPath(); ctx.moveTo(-r, r); ctx.lineTo(-r, lv);
+  for (let x = -r; x <= r; x += r * .2) ctx.lineTo(x, lv + Math.sin(x * .12 + t * 8) * r * .04);
+  ctx.lineTo(r, r); ctx.closePath(); ctx.fill();
+  ctx.strokeStyle = 'rgba(255,220,235,.6)'; ctx.lineWidth = r * .05;
+  for (let k = 0; k < 3; k++) { ctx.beginPath(); ctx.arc(0, r * .1, r * (.14 + .13 * k), t * 6 + k * 2, t * 6 + k * 2 + 2); ctx.stroke(); }
+  ctx.fillStyle = '#ffd166'; circ(Math.cos(t * 5) * r * .3, r * .05 + Math.sin(t * 5) * r * .12, r * .07);
+  ctx.fillStyle = '#9ee06a'; circ(Math.cos(t * 5 + 2) * r * .28, r * .12 + Math.sin(t * 5 + 2) * r * .1, r * .06);
+  ctx.save(); ctx.translate(0, r * .3); ctx.scale(1, .35); ctx.rotate(t * 20);
+  ctx.strokeStyle = '#dfe7f0'; ctx.lineWidth = r * .08;
+  ctx.beginPath(); ctx.moveTo(-r * .4, 0); ctx.lineTo(r * .4, 0); ctx.moveTo(0, -r * .4); ctx.lineTo(0, r * .4); ctx.stroke();
+  ctx.restore();
+  ctx.fillStyle = 'rgba(255,255,255,.25)'; ctx.fillRect(-r * .56, -r * .8, r * .12, r * 1.1);
+  ctx.restore();
+  jar(); ctx.strokeStyle = '#cfe3f5'; ctx.lineWidth = 3; ctx.stroke();
+  ctx.strokeStyle = '#cfe3f5'; ctx.lineWidth = r * .1; ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.moveTo(r * .68, -r * .6); ctx.quadraticCurveTo(r * 1.05, -r * .3, r * .6, r * .1); ctx.stroke();
+  ctx.fillStyle = '#3a3f4d'; rr(-r * .82, -r * 1.02, r * 1.64, r * .26, r * .1); ctx.fill();
+  ctx.fillStyle = '#ff6f9a'; rr(-r * .16, -r * 1.16, r * .32, r * .18, r * .06); ctx.fill();
+}
+function drawTvBoss(e, r, t) {
+  ctx.strokeStyle = '#8a91a1'; ctx.lineWidth = r * .05; ctx.lineCap = 'round';
+  for (const sd of [-1, 1]) {
+    const tx = sd * r * .55, ty = -r * 1.2 + Math.sin(t * 3 + sd) * r * .05;
+    ctx.beginPath(); ctx.moveTo(sd * r * .1, -r * .74); ctx.lineTo(tx, ty); ctx.stroke();
+    ctx.fillStyle = '#ff4d6d'; circ(tx, ty, r * .08);
+  }
+  ctx.fillStyle = '#2a2233'; ctx.fillRect(-r * .66, r * .7, r * .14, r * .26); ctx.fillRect(r * .52, r * .7, r * .14, r * .26);
+  const g = ctx.createLinearGradient(0, -r * .78, 0, r * .76);
+  g.addColorStop(0, '#7a5642'); g.addColorStop(1, '#4a3226');
+  ctx.fillStyle = g; rr(-r, -r * .78, r * 2, r * 1.52, r * .22); ctx.fill();
+  ctx.strokeStyle = '#2f2019'; ctx.lineWidth = 2.5; rr(-r, -r * .78, r * 2, r * 1.52, r * .22); ctx.stroke();
+  ctx.save(); rr(-r * .82, -r * .6, r * 1.28, r * 1.16, r * .26); ctx.clip();
+  const sg = ctx.createRadialGradient(-r * .2, -r * .05, r * .1, -r * .2, 0, r);
+  sg.addColorStop(0, '#2a5a86'); sg.addColorStop(1, '#0b1624');
+  ctx.fillStyle = sg; ctx.fillRect(-r, -r, r * 2, r * 2);
+  ctx.fillStyle = 'rgba(110,195,255,.1)';
+  for (let y = -r + ((t * 40) % 6); y < r; y += 6) ctx.fillRect(-r, y, r * 2, 2);
+  const noisy = e.timer <= 1 ? 60 : 18;
+  ctx.fillStyle = 'rgba(255,255,255,.35)';
+  for (let i = 0; i < noisy; i++) ctx.fillRect(-r * .82 + Math.random() * r * 1.28, -r * .6 + Math.random() * r * 1.16, 2, 1.5);
+  angryEyes(-r * .18, -r * .14, r * .62, '#6ec3ff');
+  ctx.strokeStyle = '#6ec3ff'; ctx.lineWidth = r * .05; ctx.beginPath();
+  for (let i = 0; i <= 6; i++) ctx.lineTo(-r * .5 + i * r * .11, r * .24 + (i % 2 ? -r * .06 : r * .04));
+  ctx.stroke();
+  ctx.restore();
+  ctx.fillStyle = '#2a2233'; rr(r * .54, -r * .6, r * .34, r * 1.16, r * .08); ctx.fill();
+  for (const [ky, k] of [[-r * .36, 0], [-r * .04, 1]]) {
+    ctx.fillStyle = '#c9b27a'; circ(r * .71, ky, r * .1);
+    ctx.strokeStyle = '#2a2233'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(r * .71, ky); ctx.lineTo(r * .71 + Math.cos(t * (k ? -1 : 1.5)) * r * .09, ky + Math.sin(t * (k ? -1 : 1.5)) * r * .09); ctx.stroke();
+  }
+  ctx.fillStyle = '#4a3f55'; for (let i = 0; i < 3; i++) for (let j = 0; j < 2; j++) circ(r * .64 + j * r * .14, r * .24 + i * r * .1, r * .03);
+}
+function drawClockBoss(e, r, t) {
+  const shaking = e.timer <= 1;
+  ctx.save(); if (shaking && !RM) ctx.rotate(Math.sin(T * 40) * .06);
+  ctx.strokeStyle = '#8a2230'; ctx.lineWidth = r * .1; ctx.lineCap = 'round';
+  for (const sd of [-1, 1]) { ctx.beginPath(); ctx.moveTo(sd * r * .45, r * .66); ctx.lineTo(sd * r * .64, r * 1.0); ctx.stroke(); }
+  for (const sd of [-1, 1]) {
+    ctx.fillStyle = '#ffc857'; ctx.beginPath(); ctx.arc(sd * r * .55, -r * .7, r * .34, Math.PI, 0); ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = '#c9962e'; ctx.lineWidth = 2; ctx.stroke();
+    ctx.fillStyle = '#c9962e'; circ(sd * r * .55, -r * 1.06, r * .06);
+  }
+  ctx.save(); ctx.translate(0, -r * .78); ctx.rotate(Math.sin(t * (shaking ? 40 : 4)) * .45);
+  ctx.strokeStyle = '#8a91a1'; ctx.lineWidth = r * .06; ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(0, -r * .34); ctx.stroke();
+  ctx.fillStyle = '#c9ced6'; circ(0, -r * .36, r * .08);
+  ctx.restore();
+  const g = ctx.createRadialGradient(-r * .25, -r * .3, r * .1, 0, 0, r * .85);
+  g.addColorStop(0, '#ff7b7b'); g.addColorStop(1, '#c92a3a');
+  ctx.fillStyle = g; circ(0, 0, r * .84);
+  ctx.strokeStyle = '#8a2230'; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(0, 0, r * .84, 0, TAU); ctx.stroke();
+  ctx.fillStyle = '#fff5e6'; circ(0, 0, r * .66);
+  ctx.strokeStyle = '#5a4a40'; ctx.lineWidth = 2;
+  for (let i = 0; i < 12; i++) { const a = i * TAU / 12; ctx.beginPath(); ctx.moveTo(Math.cos(a) * r * .56, Math.sin(a) * r * .56); ctx.lineTo(Math.cos(a) * r * (i % 3 ? .6 : .52), Math.sin(a) * r * (i % 3 ? .6 : .52)); ctx.stroke(); }
+  ctx.strokeStyle = '#2a2233'; ctx.lineCap = 'round';
+  ctx.lineWidth = r * .06; ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(Math.cos(t * .6 - 1.5) * r * .3, Math.sin(t * .6 - 1.5) * r * .3); ctx.stroke();
+  ctx.lineWidth = r * .04; ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(Math.cos(t * 6 - 1.5) * r * .46, Math.sin(t * 6 - 1.5) * r * .46); ctx.stroke();
+  ctx.fillStyle = '#2a2233'; circ(0, 0, r * .06);
+  angryEyes(0, -r * .24, r * .52, '#e03050');
+  ctx.restore();
+}
+function drawWasher(e, r, t) {
+  ctx.fillStyle = '#eef2f7'; rr(-r * .86, -r * .9, r * 1.72, r * 1.8, r * .18); ctx.fill();
+  ctx.strokeStyle = '#9aa6b8'; ctx.lineWidth = 2.5; rr(-r * .86, -r * .9, r * 1.72, r * 1.8, r * .18); ctx.stroke();
+  ctx.fillStyle = '#cfd8e3'; rr(-r * .86, -r * .9, r * 1.72, r * .34, r * .16); ctx.fill();
+  ctx.fillStyle = '#6ec3ff'; circ(-r * .56, -r * .73, r * .1);
+  ctx.fillStyle = '#1d3b5a'; rr(-r * .3, -r * .82, r * .56, r * .18, r * .04); ctx.fill();
+  ctx.fillStyle = '#5ce1c6'; ctx.font = `900 ${Math.round(r * .14)}px ${FD}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillText(e.timer <= 1 ? 'SPIN' : '0:0' + Math.max(0, e.timer), -r * .02, -r * .72);
+  ctx.fillStyle = '#9aa6b8'; circ(r * .5, -r * .73, r * .06); circ(r * .66, -r * .73, r * .06);
+  ctx.fillStyle = '#8a96a8'; circ(0, r * .14, r * .58);
+  ctx.save(); ctx.beginPath(); ctx.arc(0, r * .14, r * .47, 0, TAU); ctx.clip();
+  ctx.fillStyle = '#3a7fc4'; ctx.fillRect(-r, -r, r * 2, r * 2);
+  const spin = t * (e.timer <= 1 ? 9 : 3);
+  for (const [col, off] of [['#ff8fb1', 0], ['#ffd166', 2.1], ['#9ee06a', 4.2]]) {
+    ctx.save(); ctx.translate(0, r * .14); ctx.rotate(spin + off);
+    ctx.fillStyle = col; ctx.beginPath(); ctx.ellipse(r * .26, 0, r * .14, r * .07, .5, 0, TAU); ctx.fill();
+    ctx.restore();
+  }
+  ctx.fillStyle = 'rgba(255,255,255,.75)';
+  for (let i = 0; i < 6; i++) circ(Math.cos(i + spin * .3) * r * .35, r * .14 + r * .3 + Math.sin(i * 2) * r * .06, r * .07);
+  angryEyes(0, r * .06, r * .52, '#ff3b5c');
+  ctx.fillStyle = 'rgba(255,255,255,.25)'; ctx.beginPath(); ctx.ellipse(-r * .2, -r * .08, r * .12, r * .06, -.6, 0, TAU); ctx.fill();
+  ctx.restore();
+  ctx.strokeStyle = '#6b7689'; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(0, r * .14, r * .52, 0, TAU); ctx.stroke();
+  if (e.foam) {
+    for (let i = 0; i < 16; i++) {
+      const a = i / 16 * TAU, rad = r * (1.02 + .06 * Math.sin(i * 3 + t * 2)), br = r * (.13 + .05 * Math.sin(i * 1.7));
+      ctx.fillStyle = 'rgba(255,255,255,.88)'; circ(Math.cos(a) * rad, Math.sin(a) * rad, br);
+      ctx.strokeStyle = 'rgba(160,205,240,.9)'; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.arc(Math.cos(a) * rad, Math.sin(a) * rad, br, 0, TAU); ctx.stroke();
+    }
+  }
+}
+function drawBlower(e, r, t) {
+  ctx.fillStyle = '#3d5a2c'; rr(-r * .15, r * .35, r * .3, r * .95, r * .1); ctx.fill();
+  ctx.fillStyle = '#2b4020'; rr(-r * .2, r * 1.2, r * .4, r * .14, r * .05); ctx.fill();
+  ctx.strokeStyle = '#e8fff0'; ctx.lineCap = 'round';
+  for (let k = 0; k < 6; k++) {
+    const ph = frac(t * 1.6 + k / 6), y = r * 1.35 + ph * r * .9, xo = (k % 3 - 1) * r * .18 * (1 + ph);
+    ctx.save(); ctx.globalAlpha *= 1 - ph; ctx.lineWidth = 2.5;
+    ctx.beginPath(); ctx.moveTo(xo, y); ctx.lineTo(xo, y + r * .22); ctx.stroke();
+    ctx.restore();
+  }
+  const g = ctx.createRadialGradient(-r * .3, -r * .35, r * .1, 0, -r * .05, r * .85);
+  g.addColorStop(0, '#c4f58c'); g.addColorStop(1, '#4f9a2c');
+  ctx.fillStyle = g; circ(0, -r * .05, r * .82);
+  ctx.strokeStyle = '#2f5a1c'; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(0, -r * .05, r * .82, 0, TAU); ctx.stroke();
+  ctx.strokeStyle = '#2f5a1c'; ctx.lineWidth = r * .1;
+  ctx.beginPath(); ctx.arc(0, -r * .82, r * .3, Math.PI * 1.1, Math.PI * 1.9); ctx.stroke();
+  ctx.fillStyle = '#233a17'; circ(0, r * .18, r * .42);
+  ctx.save(); ctx.translate(0, r * .18); ctx.rotate(t * 25);
+  ctx.fillStyle = '#9ee06a';
+  for (let i = 0; i < 5; i++) { ctx.rotate(TAU / 5); ctx.beginPath(); ctx.ellipse(r * .2, 0, r * .18, r * .07, .4, 0, TAU); ctx.fill(); }
+  ctx.restore();
+  ctx.fillStyle = '#c9ced6'; circ(0, r * .18, r * .07);
+  angryEyes(0, -r * .5, r * .5, '#ff3b5c');
+}
+function drawGhostVac(e, r, t) {
+  ctx.save();
+  ctx.globalAlpha *= (.8 + .15 * Math.sin(t * 3)) * (1 - e.fade * .9);
+  ctx.translate(0, Math.sin(t * 2) * r * .06);
+  const g = ctx.createLinearGradient(0, -r, 0, r);
+  g.addColorStop(0, '#f5f1ff'); g.addColorStop(1, '#a998dc');
+  ctx.fillStyle = g; ctx.beginPath();
+  ctx.arc(0, -r * .1, r * .82, Math.PI, 0);
+  ctx.lineTo(r * .82, r * .7);
+  for (let i = 0; i < 5; i++) {
+    const x0 = r * .82 - i * r * .328, wob = Math.sin(t * 4 + i) * r * .06;
+    ctx.quadraticCurveTo(x0 - r * .164, r * (i % 2 ? .72 : 1.0) + wob, x0 - r * .328, r * .75);
+  }
+  ctx.closePath(); ctx.fill();
+  ctx.strokeStyle = 'rgba(120,100,180,.6)'; ctx.lineWidth = 2; ctx.stroke();
+  ctx.strokeStyle = '#8f7fc2'; ctx.lineWidth = r * .16; ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.moveTo(0, r * .25); ctx.quadraticCurveTo(r * .1, r * .75, r * .7 + Math.sin(t * 2) * r * .05, r * .9); ctx.stroke();
+  ctx.fillStyle = '#5a4a8a'; rr(r * .6, r * .82, r * .3, r * .16, r * .05); ctx.fill();
+  for (const sd of [-1, 1]) {
+    ctx.fillStyle = '#2a1f45'; ctx.beginPath(); ctx.ellipse(sd * r * .3, -r * .2, r * .17, r * .22, 0, 0, TAU); ctx.fill();
+  }
+  angryEyes(0, -r * .2, r * .62, '#ff5d7a');
+  ctx.fillStyle = '#2a1f45'; ctx.beginPath(); ctx.ellipse(0, r * .15, r * .1, r * .13, 0, 0, TAU); ctx.fill();
+  ctx.fillStyle = 'rgba(200,190,230,.6)';
+  for (let i = 0; i < 6; i++) { const ph = frac(t * .4 + i / 6); circ(Math.cos(i * 2.1) * r * (.9 + ph * .4), -r * .2 + Math.sin(i * 1.3) * r * .5 - ph * r * .4, 2); }
+  ctx.restore();
+}
+function drawRoboBoss(e, r, t) {
   ctx.strokeStyle = '#596178'; ctx.lineWidth = 2;
   for (let i = 0; i < 30; i++) { const a = i * TAU / 30 + t * 2; ctx.beginPath(); ctx.moveTo(Math.cos(a) * r * .95, Math.sin(a) * r * .95); ctx.lineTo(Math.cos(a + .08) * r * 1.09, Math.sin(a + .08) * r * 1.09); ctx.stroke(); }
   ctx.shadowColor = '#ff3b5c'; ctx.shadowBlur = 22;
@@ -2628,10 +2990,7 @@ function drawBoss(e, r, t) {
   ctx.fillStyle = '#ffc857'; rr(-r * .3, r * .32, r * .6, r * .24, r * .06); ctx.fill();
   ctx.fillStyle = '#15122a'; ctx.font = `900 ${Math.round(r * .2)}px ${FD}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
   ctx.fillText('9000', 0, r * .45);
-  const wx = Math.cos(e.weak) * r, wy = Math.sin(e.weak) * r, p = 1 + Math.sin(T * 6) * .15;
-  ctx.fillStyle = 'rgba(255,224,102,.35)'; circ(wx, wy, 18 * p);
-  ctx.fillStyle = '#ffe066'; circ(wx, wy, 10);
-  ctx.fillStyle = '#fff'; circ(wx, wy, 4);
+  if (e.phase2) { ctx.strokeStyle = `rgba(255,77,109,${.5 + .5 * Math.sin(T * 10)})`; ctx.lineWidth = 4; ctx.beginPath(); ctx.arc(0, 0, r * 1.12, 0, TAU); ctx.stroke(); }
 }
 
 function drawEnemy(e) {
@@ -2917,7 +3276,7 @@ function drawHUD() {
     ctx.fillStyle = '#2a2548'; rr(bx, 37, bw, 12, 6); ctx.fill();
     ctx.fillStyle = '#ff4d6d'; rr(bx, 37, Math.max(12, bw * boss.hp / boss.maxHp), 12, 6); ctx.fill();
     ctx.fillStyle = '#fff'; ctx.font = `900 9.5px ${FB}`; ctx.textAlign = 'center';
-    ctx.fillText(`${tr('bossName')} · ${boss.hp}`, W / 2, 43.5);
+    ctx.fillText(`${bossName(boss)} · ${boss.hp}`, W / 2, 43.5);
   } else {
     ctx.textAlign = 'left'; ctx.font = `700 11.5px ${FB}`; ctx.fillStyle = '#8f88b5';
     ctx.fillText(G.lvl.endless ? `${tr('record', wavesWord(PROG.endless || 0))} · ${G.ch.name}`
@@ -3479,6 +3838,7 @@ function drawGame() {
   ctx.save();
   ctx.beginPath(); ctx.rect(0, TOP, W, BOT - TOP); ctx.clip();
   drawRoomUnder(c);
+  drawPuddles();
   drawTrails();
   G.boxes.forEach(drawBox);
   G.snacks.forEach(drawSnack);
