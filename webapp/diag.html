@@ -164,6 +164,14 @@
   // "auto" repeats the real launch: the settings are saved, the page reloads and the game starts at once
   var AUTO = 'pawsling-diag-auto', pending = null;
   try { pending = JSON.parse(localStorage.getItem(AUTO) || 'null'); localStorage.removeItem(AUTO); } catch (e) {}
+  // wait=N: start only after the page has fully loaded and N ms have passed
+  var wait = q.get('wait');
+  if (preset && wait != null) {
+    preset.wait = +wait;
+    var later = function () { setTimeout(function () { go(preset); }, +wait || 0); };
+    if (document.readyState === 'complete') later(); else window.addEventListener('load', later);
+    return;
+  }
   if (preset) { go(preset); return; }
   if (pending) { go(pending); return; }
   document.getElementById('go').onclick = function () {
