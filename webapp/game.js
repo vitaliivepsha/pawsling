@@ -480,15 +480,18 @@ const BTN = { x: 276, y: 688, w: 158, h: 50 };
 // ---------- languages ----------
 // Language: the player's choice, else Telegram's language_code, else the browser's, else English.
 const LANGS = { uk: 'Українська', en: 'English', pl: 'Polski', de: 'Deutsch', es: 'Español' };
-function detectLang() {
-  const saved = lsGet('pawsling-lang');
-  if (saved && LANGS[saved]) return saved;
+// what "Automatic" picks: Telegram's interface language, then the device's languages
+function autoLang() {
   const tgCode = TG && TG.initDataUnsafe && TG.initDataUnsafe.user && TG.initDataUnsafe.user.language_code;
   for (const c of [tgCode, ...(navigator.languages || [navigator.language])]) {
     const k = (c || '').toLowerCase().slice(0, 2);
     if (LANGS[k]) return k;
   }
   return 'en';
+}
+function detectLang() {
+  const saved = lsGet('pawsling-lang');
+  return saved && LANGS[saved] ? saved : autoLang();
 }
 let LANG = detectLang();
 const one = (n, a, b) => (n === 1 ? a : b);
@@ -529,7 +532,7 @@ const I18N = {
     allKo: 'Усі герої в нокауті. Спробуй ще раз', waveTry: (a, b) => `Хвиля ${a} з ${b}. Спробуй ще раз`,
     'st.knots': 'Вузлів зав\'язано', 'st.lasers': 'Лазер спіймано', 'st.crits': 'Критів по сенсору', 'st.portals': 'Телепортів',
     newBestLevel: 'Новий рекорд для цього рівня!', newBestNight: 'Новий рекорд нічної зміни!', again: 'Ще раз', map: 'Карта', next: 'Далі',
-    toMap: 'До карти', allDone: 'Квартиру врятовано! Усі рівні пройдено', lang: 'Мова',
+    toMap: 'До карти', allDone: 'Квартиру врятовано! Усі рівні пройдено', lang: 'Мова', langAuto: 'Автоматично',
     aria: 'Гра Pawsling. Потягни від героя назад і відпусти, щоб запустити його, як з рогатки.',
     board: 'Рейтинг', boardNight: 'Нічна зміна', boardStars: 'Зірки', boardYou: 'ти', boardEmpty: 'Поки що нікого. Будь першим!',
     boardLoading: 'Завантаження…', boardError: 'Не вдалося завантажити рейтинг. Перевір інтернет і спробуй ще.',
@@ -571,7 +574,7 @@ const I18N = {
     allKo: 'All heroes knocked out. Try again', waveTry: (a, b) => `Wave ${a} of ${b}. Try again`,
     'st.knots': 'Knots tied', 'st.lasers': 'Lasers caught', 'st.crits': 'Sensor crits', 'st.portals': 'Teleports',
     newBestLevel: 'New record for this level!', newBestNight: 'New Night Shift record!', again: 'Again', map: 'Map', next: 'Next',
-    toMap: 'To the map', allDone: 'Home saved! All levels complete', lang: 'Language',
+    toMap: 'To the map', allDone: 'Home saved! All levels complete', lang: 'Language', langAuto: 'Automatic',
     aria: 'Pawsling. Pull back from a hero and let go to launch it like a slingshot.',
     board: 'Leaderboard', boardNight: 'Night Shift', boardStars: 'Stars', boardYou: 'you', boardEmpty: 'Nobody here yet. Be the first!',
     boardLoading: 'Loading…', boardError: 'Could not load the leaderboard. Check your connection and try again.',
@@ -613,7 +616,7 @@ const I18N = {
     allKo: 'Wszyscy bohaterowie znokautowani. Spróbuj jeszcze raz', waveTry: (a, b) => `Fala ${a} z ${b}. Spróbuj jeszcze raz`,
     'st.knots': 'Zawiązane supły', 'st.lasers': 'Złapane lasery', 'st.crits': 'Kryty w czujnik', 'st.portals': 'Teleporty',
     newBestLevel: 'Nowy rekord tego poziomu!', newBestNight: 'Nowy rekord nocnej zmiany!', again: 'Jeszcze raz', map: 'Mapa', next: 'Dalej',
-    toMap: 'Do mapy', allDone: 'Mieszkanie uratowane! Wszystkie poziomy ukończone', lang: 'Język',
+    toMap: 'Do mapy', allDone: 'Mieszkanie uratowane! Wszystkie poziomy ukończone', lang: 'Język', langAuto: 'Automatycznie',
     aria: 'Pawsling. Pociągnij od bohatera do tyłu i puść, żeby wystrzelić go jak z procy.',
     board: 'Ranking', boardNight: 'Nocna zmiana', boardStars: 'Gwiazdki', boardYou: 'ty', boardEmpty: 'Jeszcze nikogo tu nie ma. Bądź pierwszy!',
     boardLoading: 'Ładowanie…', boardError: 'Nie udało się wczytać rankingu. Sprawdź internet i spróbuj ponownie.',
@@ -655,7 +658,7 @@ const I18N = {
     allKo: 'Alle Helden k.o. Versuch es nochmal', waveTry: (a, b) => `Welle ${a} von ${b}. Versuch es nochmal`,
     'st.knots': 'Geknüpfte Knoten', 'st.lasers': 'Laser gefangen', 'st.crits': 'Sensor-Krits', 'st.portals': 'Teleports',
     newBestLevel: 'Neuer Rekord für dieses Level!', newBestNight: 'Neuer Nachtschicht-Rekord!', again: 'Nochmal', map: 'Karte', next: 'Weiter',
-    toMap: 'Zur Karte', allDone: 'Wohnung gerettet! Alle Level geschafft', lang: 'Sprache',
+    toMap: 'Zur Karte', allDone: 'Wohnung gerettet! Alle Level geschafft', lang: 'Sprache', langAuto: 'Automatisch',
     aria: 'Pawsling. Zieh vom Helden zurück und lass los, um ihn wie mit einer Schleuder abzufeuern.',
     board: 'Rangliste', boardNight: 'Nachtschicht', boardStars: 'Sterne', boardYou: 'du', boardEmpty: 'Noch niemand hier. Sei der Erste!',
     boardLoading: 'Wird geladen…', boardError: 'Rangliste konnte nicht geladen werden. Prüfe die Verbindung und versuch es nochmal.',
@@ -697,7 +700,7 @@ const I18N = {
     allKo: 'Todos los héroes K.O. Inténtalo de nuevo', waveTry: (a, b) => `Oleada ${a} de ${b}. Inténtalo de nuevo`,
     'st.knots': 'Nudos atados', 'st.lasers': 'Láseres atrapados', 'st.crits': 'Críticos al sensor', 'st.portals': 'Teletransportes',
     newBestLevel: '¡Nuevo récord en este nivel!', newBestNight: '¡Nuevo récord del turno de noche!', again: 'Otra vez', map: 'Mapa', next: 'Siguiente',
-    toMap: 'Al mapa', allDone: '¡Piso salvado! Todos los niveles completados', lang: 'Idioma',
+    toMap: 'Al mapa', allDone: '¡Piso salvado! Todos los niveles completados', lang: 'Idioma', langAuto: 'Automático',
     aria: 'Pawsling. Tira hacia atrás desde un héroe y suelta para lanzarlo como con un tirachinas.',
     board: 'Clasificación', boardNight: 'Turno de noche', boardStars: 'Estrellas', boardYou: 'tú', boardEmpty: 'Aún no hay nadie. ¡Sé el primero!',
     boardLoading: 'Cargando…', boardError: 'No se pudo cargar la clasificación. Revisa la conexión e inténtalo de nuevo.',
@@ -3168,12 +3171,18 @@ function drawLang() {
   drawMap(); UI = [];
   ctx.fillStyle = 'rgba(12,10,26,.9)'; ctx.fillRect(0, 0, W, H);
   ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-  ctx.fillStyle = '#ffc857'; ctx.font = `900 28px ${FD}`; ctx.fillText(tr('lang'), W / 2, 200);
-  Object.entries(LANGS).forEach(([k, name], i) => uiBtn(75, 240 + i * 68, W - 150, 54, name, () => {
-    LANG = k; lsSet('pawsling-lang', k);
-    cv.setAttribute('aria-label', tr('aria')); document.documentElement.lang = k;
+  ctx.fillStyle = '#ffc857'; ctx.font = `900 28px ${FD}`; ctx.fillText(tr('lang'), W / 2, 130);
+  // "Automatic" first, then the languages alphabetically by their own names
+  const saved = lsGet('pawsling-lang'), auto = !(saved && LANGS[saved]);
+  const pick = k => {
+    if (k) lsSet('pawsling-lang', k); else lsSet('pawsling-lang', '');
+    LANG = k || autoLang();
+    cv.setAttribute('aria-label', tr('aria')); document.documentElement.lang = LANG;
     setScreen('map');
-  }, k === LANG));
+  };
+  const list = Object.entries(LANGS).sort((a, b) => a[1].localeCompare(b[1], 'en'));
+  uiBtn(75, 170, W - 150, 54, `${tr('langAuto')} · ${LANGS[autoLang()]}`, () => pick(null), auto);
+  list.forEach(([k, name], i) => uiBtn(75, 240 + i * 68, W - 150, 54, name, () => pick(k), !auto && k === LANG));
 }
 
 function drawEnd() {
