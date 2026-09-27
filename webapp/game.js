@@ -626,6 +626,9 @@ const I18N = {
     'st.knots': 'Вузлів зав\'язано', 'st.lasers': 'Лазер спіймано', 'st.crits': 'Критів по сенсору', 'st.portals': 'Телепортів',
     newBestLevel: 'Новий рекорд для цього рівня!', newBestNight: 'Новий рекорд нічної зміни!', again: 'Ще раз', map: 'Карта', next: 'Далі',
     toMap: 'До карти', allDone: 'Квартиру врятовано! Усі рівні пройдено', lang: 'Мова',
+    'ev.halloween': 'Хелловін', 'ev.newyear': 'Новий рік', evSub: (d, n) => `Подія: ${d}/${n} рівнів · нагорода — капелюх`, evLevel: (e, n) => `${e} · ${n}/3`,
+    evDone: 'Рівень події пройдено!', evHat: 'Новий капелюх для команди!',
+    'item.hat_pumpkin': 'Гарбузовий капелюх', 'itemd.hat_pumpkin': 'Нагорода Хелловіну', 'item.hat_santa': 'Новорічна шапка', 'itemd.hat_santa': 'Нагорода Нового року',
     'hero.rex.name': 'Рекс', 'hero.rex.skill': 'зачеплені друзі отримують +1 серце', 'hero.rex.combo': 'Рятувальна місія',
     'hero.homa.name': 'Хома', 'hero.homa.skill': 'що довше котиться, то сильніше б\'є', 'hero.homa.combo': 'Горіховий дощ',
     'perk.rex.5': 'Дає +2 серця замість +1', 'perk.rex.10': 'Комбо ще й лікує квартиру на 800', 'perk.homa.5': 'Множник до ×3', 'perk.homa.10': '+20% швидкості',
@@ -705,6 +708,9 @@ const I18N = {
     'st.knots': 'Knots tied', 'st.lasers': 'Lasers caught', 'st.crits': 'Sensor crits', 'st.portals': 'Teleports',
     newBestLevel: 'New record for this level!', newBestNight: 'New Night Shift record!', again: 'Again', map: 'Map', next: 'Next',
     toMap: 'To the map', allDone: 'Home saved! All levels complete', lang: 'Language',
+    'ev.halloween': 'Halloween', 'ev.newyear': 'New Year', evSub: (d, n) => `Event: ${d}/${n} levels · reward: a hat`, evLevel: (e, n) => `${e} · ${n}/3`,
+    evDone: 'Event level complete!', evHat: 'A new hat for the team!',
+    'item.hat_pumpkin': 'Pumpkin hat', 'itemd.hat_pumpkin': 'Halloween reward', 'item.hat_santa': 'Santa hat', 'itemd.hat_santa': 'New Year reward',
     'hero.rex.name': 'Rex', 'hero.rex.skill': 'allies he touches get +1 heart', 'hero.rex.combo': 'Rescue mission',
     'hero.homa.name': 'Hammy', 'hero.homa.skill': 'the longer he rolls, the harder he hits', 'hero.homa.combo': 'Nut shower',
     'perk.rex.5': '+2 hearts instead of +1', 'perk.rex.10': 'His combo also heals the home by 800', 'perk.homa.5': 'Multiplier up to ×3', 'perk.homa.10': '+20% speed',
@@ -784,6 +790,9 @@ const I18N = {
     'st.knots': 'Zawiązane supły', 'st.lasers': 'Złapane lasery', 'st.crits': 'Kryty w czujnik', 'st.portals': 'Teleporty',
     newBestLevel: 'Nowy rekord tego poziomu!', newBestNight: 'Nowy rekord nocnej zmiany!', again: 'Jeszcze raz', map: 'Mapa', next: 'Dalej',
     toMap: 'Do mapy', allDone: 'Mieszkanie uratowane! Wszystkie poziomy ukończone', lang: 'Język',
+    'ev.halloween': 'Halloween', 'ev.newyear': 'Nowy Rok', evSub: (d, n) => `Wydarzenie: ${d}/${n} poziomów · nagroda: czapka`, evLevel: (e, n) => `${e} · ${n}/3`,
+    evDone: 'Poziom wydarzenia ukończony!', evHat: 'Nowa czapka dla drużyny!',
+    'item.hat_pumpkin': 'Dyniowa czapka', 'itemd.hat_pumpkin': 'Nagroda z Halloween', 'item.hat_santa': 'Czapka Mikołaja', 'itemd.hat_santa': 'Nagroda noworoczna',
     'hero.rex.name': 'Reks', 'hero.rex.skill': 'dotknięci przyjaciele dostają +1 serce', 'hero.rex.combo': 'Misja ratunkowa',
     'hero.homa.name': 'Tomek', 'hero.homa.skill': 'im dłużej się toczy, tym mocniej bije', 'hero.homa.combo': 'Orzechowy deszcz',
     'perk.rex.5': '+2 serca zamiast +1', 'perk.rex.10': 'Jego kombo leczy też mieszkanie o 800', 'perk.homa.5': 'Mnożnik do ×3', 'perk.homa.10': '+20% szybkości',
@@ -863,6 +872,9 @@ const I18N = {
     'st.knots': 'Geknüpfte Knoten', 'st.lasers': 'Laser gefangen', 'st.crits': 'Sensor-Krits', 'st.portals': 'Teleports',
     newBestLevel: 'Neuer Rekord für dieses Level!', newBestNight: 'Neuer Nachtschicht-Rekord!', again: 'Nochmal', map: 'Karte', next: 'Weiter',
     toMap: 'Zur Karte', allDone: 'Wohnung gerettet! Alle Level geschafft', lang: 'Sprache',
+    'ev.halloween': 'Halloween', 'ev.newyear': 'Neujahr', evSub: (d, n) => `Event: ${d}/${n} Level · Preis: ein Hut`, evLevel: (e, n) => `${e} · ${n}/3`,
+    evDone: 'Event-Level geschafft!', evHat: 'Ein neuer Hut fürs Team!',
+    'item.hat_pumpkin': 'Kürbishut', 'itemd.hat_pumpkin': 'Halloween-Preis', 'item.hat_santa': 'Weihnachtsmütze', 'itemd.hat_santa': 'Neujahrspreis',
     'hero.rex.name': 'Rex', 'hero.rex.skill': 'berührte Freunde bekommen +1 Herz', 'hero.rex.combo': 'Rettungseinsatz',
     'hero.homa.name': 'Hamsti', 'hero.homa.skill': 'je länger er rollt, desto härter trifft er', 'hero.homa.combo': 'Nussregen',
     'perk.rex.5': '+2 Herzen statt +1', 'perk.rex.10': 'Sein Kombo heilt auch die Wohnung um 800', 'perk.homa.5': 'Multiplikator bis ×3', 'perk.homa.10': '+20 % Tempo',
@@ -942,6 +954,9 @@ const I18N = {
     'st.knots': 'Nudos atados', 'st.lasers': 'Láseres atrapados', 'st.crits': 'Críticos al sensor', 'st.portals': 'Teletransportes',
     newBestLevel: '¡Nuevo récord en este nivel!', newBestNight: '¡Nuevo récord del turno de noche!', again: 'Otra vez', map: 'Mapa', next: 'Siguiente',
     toMap: 'Al mapa', allDone: '¡Piso salvado! Todos los niveles completados', lang: 'Idioma',
+    'ev.halloween': 'Halloween', 'ev.newyear': 'Año Nuevo', evSub: (d, n) => `Evento: ${d}/${n} niveles · premio: un sombrero`, evLevel: (e, n) => `${e} · ${n}/3`,
+    evDone: '¡Nivel del evento completado!', evHat: '¡Un sombrero nuevo para el equipo!',
+    'item.hat_pumpkin': 'Sombrero de calabaza', 'itemd.hat_pumpkin': 'Premio de Halloween', 'item.hat_santa': 'Gorro de Papá Noel', 'itemd.hat_santa': 'Premio de Año Nuevo',
     'hero.rex.name': 'Rex', 'hero.rex.skill': 'los aliados que toca reciben +1 corazón', 'hero.rex.combo': 'Misión de rescate',
     'hero.homa.name': 'Hamy', 'hero.homa.skill': 'cuanto más rueda, más fuerte golpea', 'hero.homa.combo': 'Lluvia de nueces',
     'perk.rex.5': '+2 corazones en vez de +1', 'perk.rex.10': 'Su combo también cura el piso 800', 'perk.homa.5': 'Multiplicador hasta ×3', 'perk.homa.10': '+20 % de velocidad',
@@ -1016,6 +1031,9 @@ function mergeProg(a, b) {
   for (const k in (b.xp || {})) r.xp[k] = Math.max(r.xp[k] || 0, b.xp[k]);
   r.hard = { ...(a.hard || {}), ...(b.hard || {}) };
   r.team = a.team || b.team;
+  r.ev = { ...(a.ev || {}) };
+  for (const k in (b.ev || {})) r.ev[k] = Math.max(r.ev[k] || 0, b.ev[k]);
+  r.hats = { ...(a.hats || {}), ...(b.hats || {}) };
   return r;
 }
 function loadProg() {
@@ -1899,7 +1917,7 @@ function setupWave(n) {
   }
   const waves = G.lvl.waves, ch = G.ch;
   const list = endless ? genWave(n) : waves[n];
-  G.mul = { hp: endless ? 1 + n * .14 : ch.hp, atk: endless ? 1 + n * .07 : ch.atk, boss: endless ? .5 : (G.lvl.boss || 1) };
+  G.mul = { hp: endless ? 1 + n * .14 : G.lvl.hpMul || ch.hp, atk: endless ? 1 + n * .07 : G.lvl.atkMul || ch.atk, boss: endless ? .5 : (G.lvl.boss || 1) };
   if (G.hard) G.mul.hp *= 1.4;
   G.enemies = list.map(([type, x, y], i) => makeEnemy(type, x, y, i));
   G.boxes = pickBoxes(n);
@@ -1912,7 +1930,7 @@ function setupWave(n) {
   G.state = 'banner';
   const sub = endless ? (n > 0 && n % 5 === 0 ? tr('newRoom', ch.name) : tr('record', wavesWord(PROG.endless || 0)))
     : n === 0 && G.lvl.tip ? G.lvl.tip : tr('waveOf', n + 1, waves.length);
-  G.banner = { title: endless ? tr('nightWave', n + 1) : tr('levelRoom', G.li + 1, ch.name), sub, t: n === 0 && G.lvl.tip ? 2.2 : 1.5, max: n === 0 && G.lvl.tip ? 2.2 : 1.5, done: () => { G.state = 'aim'; announceHero(); } };
+  G.banner = { title: endless ? tr('nightWave', n + 1) : G.lvl.event ? tr('evLevel', tr('ev.' + G.lvl.event.id), G.lvl.evIdx + 1) : tr('levelRoom', G.li + 1, ch.name), sub, t: n === 0 && G.lvl.tip ? 2.2 : 1.5, max: n === 0 && G.lvl.tip ? 2.2 : 1.5, done: () => { G.state = 'aim'; announceHero(); } };
   Snd.play('wave');
 }
 
@@ -2341,6 +2359,8 @@ function waveClear() {
     G.state = 'win';
     const par = G.lvl.par;
     G.stars = G.turn <= par ? 3 : G.turn <= Math.round(par * 1.5) ? 2 : 1;
+    if (G.lvl.event) eventWin();
+    else {
     const key = String(G.li + 1);
     const prevBest = PROG.best[key];
     G.newBest = !prevBest || G.turn < prevBest;
@@ -2352,6 +2372,7 @@ function waveClear() {
     gainXp((20 + 5 * G.lvl.ch + 5 * G.stars) * (G.hard ? 2 : 1));
     saveProg();
     submitScores();
+    }
     for (let i = 0; i < (RM ? 0 : 110); i++) {
       const pal = G.ch.fx.concat('#ffc857');
       const up = G.ch.shape === 'bubble';
@@ -2786,6 +2807,17 @@ function drawHat(kind, r) {
     ctx.lineTo(r * .25, -r * .08); ctx.lineTo(r * .5, -r * .3); ctx.lineTo(r * .5, r * .12); ctx.closePath(); ctx.fill(); ctx.stroke();
     ctx.fillStyle = '#e5484d'; circ(0, -r * .02, r * .08);
     ctx.fillStyle = '#4fc3f7'; circ(-r * .3, r * .02, r * .06); circ(r * .3, r * .02, r * .06);
+  } else if (kind === 'pumpkin') {
+    ctx.translate(0, -r * .92);
+    ctx.fillStyle = '#ff8a3c'; ctx.strokeStyle = '#b8521a';
+    ctx.beginPath(); ctx.ellipse(0, 0, r * .5, r * .32, 0, 0, TAU); ctx.fill(); ctx.stroke();
+    ctx.beginPath(); ctx.ellipse(0, 0, r * .2, r * .32, 0, 0, TAU); ctx.stroke();
+    ctx.fillStyle = '#3f8a3c'; ctx.fillRect(-r * .05, -r * .5, r * .1, r * .2);
+    ctx.beginPath(); ctx.ellipse(r * .14, -r * .42, r * .12, r * .06, -.5, 0, TAU); ctx.fill();
+  } else if (kind === 'santa') {
+    ctx.translate(-r * .05, -r * .8); ctx.rotate(-.15);
+    ctx.fillStyle = '#e5484d'; ctx.beginPath(); ctx.moveTo(-r * .45, 0); ctx.quadraticCurveTo(-r * .1, -r * .95, r * .58, -r * .55); ctx.lineTo(r * .42, 0); ctx.closePath(); ctx.fill();
+    ctx.fillStyle = '#fff'; rr(-r * .5, -r * .08, r * .98, r * .2, r * .1); ctx.fill(); circ(r * .6, -r * .55, r * .13);
   } else {
     ctx.translate(-r * .55, -r * .8); ctx.rotate(-.3);
     ctx.fillStyle = '#ff5d8f'; ctx.strokeStyle = '#b8325e';
@@ -3466,6 +3498,7 @@ function drawEnemy(e) {
     glowAt(0, 0, r * 2, '255,59,92', .22 + .12 * Math.sin(T * 10)); ctx.restore();
   }
   ({ vac: drawVac, spray: drawSpray, mop: drawMop, boss: drawBoss, brush: drawBrush, fan: drawFan, rc: drawRc, shield: drawShield, split: drawSplit, mini: drawVac })[e.type](e, r, t);
+  if (G && G.lvl && G.lvl.event) drawHat(G.lvl.event.costume, r * .9);
   if (e.flash > 0) { ctx.fillStyle = `rgba(255,255,255,${Math.min(.8, e.flash * 7)})`; circ(0, 0, r); }
   ctx.restore();
 
@@ -3737,7 +3770,7 @@ function drawHUD() {
   iconBtn(W - 46, 13, 'sound', () => Snd.toggle());
   ctx.textBaseline = 'middle';
   ctx.textAlign = 'left'; ctx.fillStyle = '#f4efe6'; ctx.font = `900 16px ${FD}`;
-  const pre = G.lvl.endless ? '' : `${G.li + 1}. `, nm = G.lvl.endless ? tr('night') : G.ch.name;
+  const pre = G.lvl.endless || G.lvl.event ? '' : `${G.li + 1}. `, nm = G.lvl.endless ? tr('night') : G.lvl.event ? tr('ev.' + G.lvl.event.id) : G.ch.name;
   ctx.fillText(pre, 56, 24);
   let tx = 56 + ctx.measureText(pre).width;
   ctx.fillStyle = G.ch.col; ctx.fillText(nm, tx, 24); tx += ctx.measureText(nm).width;
@@ -4067,7 +4100,7 @@ const MAP = { y: 0, v: 0, maxY: 0, focus: true };
 const MAP_VIEW = H - 92;
 let mapDrag = null;
 function mapLayout() {
-  let y0 = 172;
+  let y0 = 172 + (activeEvent() ? 100 : 0);
   const cards = CHAPTERS.map((ch, c) => {
     const ids = CH_LEVELS[c], two = ids.length > 4, bh = two ? 262 : 170;
     // up to 4 levels in one row; 6 levels snake over two rows
@@ -4113,6 +4146,8 @@ function drawMap() {
   star(W / 2 - 34, 126, 9, '#ffc857');
   ctx.fillStyle = '#f4efe6'; ctx.font = `900 16px ${FD}`; ctx.textAlign = 'left';
   ctx.fillText(`${ts} / ${LEVELS.length * 3}`, W / 2 - 20, 127);
+  const evNow = activeEvent();
+  if (evNow) drawEventCard(evNow, 150);
 
   for (const k of L.cards) {
     if (k.by - MAP.y > MAP_VIEW || k.by + k.bh - MAP.y < 0) continue;
@@ -4271,7 +4306,7 @@ const PENDING = {}; // bought here but not yet confirmed by the server
 const COS = { hat: lsGet('pawsling-hat') || '', rainbow: lsGet('pawsling-rainbow') !== 'off' };
 const SHOP = { busy: null, msg: null };
 const owns = k => (INV[k] || 0) > 0;
-const activeHat = () => (COS.hat && owns('hat_' + COS.hat) ? COS.hat : null);
+const activeHat = () => (COS.hat && (owns('hat_' + COS.hat) || (PROG.hats && PROG.hats[COS.hat])) ? COS.hat : null);
 const rainbowOn = () => COS.rainbow && owns('rainbow');
 const serverOn = () => !!(TG && TG.initData && BOARD_URL);
 function setHat(h) { COS.hat = h; lsSet('pawsling-hat', h); }
@@ -4387,10 +4422,12 @@ function drawShop() {
   iconBtn(12, 13, 'back', () => setScreen('map'));
   ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
   ctx.fillStyle = '#ffc857'; fitFont(tr('shop'), W - 120, 30); ctx.fillText(tr('shop'), W / 2, 32);
-  SHOP_LIST.forEach((id, i) => {
-    const y = 76 + i * 76, perm = !GRANTS[id].heart && !GRANTS[id].meter, key = Object.keys(GRANTS[id])[0], have = INV[key] || 0;
-    ctx.fillStyle = '#1d1938'; rr(16, y, W - 32, 68, 14); ctx.fill();
-    ctx.strokeStyle = perm && have ? 'rgba(92,225,198,.5)' : '#3b3563'; ctx.lineWidth = 1.5; rr(16, y, W - 32, 68, 14); ctx.stroke();
+  const list = SHOP_LIST.concat(EVENTS.filter(e => PROG.hats && PROG.hats[e.hat]).map(e => 'hat_' + e.hat)), step = list.length > 8 ? 64 : 76;
+  list.forEach((id, i) => {
+    const g0 = GRANTS[id] || { [id]: 1 }, y = 76 + i * step, perm = !g0.heart && !g0.meter, key = Object.keys(g0)[0];
+    const have = (INV[key] || 0) + (PROG.hats && PROG.hats[id.slice(4)] ? 1 : 0);
+    ctx.fillStyle = '#1d1938'; rr(16, y, W - 32, step - 8, 14); ctx.fill();
+    ctx.strokeStyle = perm && have ? 'rgba(92,225,198,.5)' : '#3b3563'; ctx.lineWidth = 1.5; rr(16, y, W - 32, step - 8, 14); ctx.stroke();
     drawShopIcon(id, 52, y + 32);
     ctx.textAlign = 'left'; ctx.textBaseline = 'middle'; ctx.fillStyle = '#f4efe6';
     fitFont(tr('item.' + id), W - 250, 15); ctx.fillText(tr('item.' + id), 88, y + 22);
@@ -4589,6 +4626,110 @@ function drawHeroes() {
   });
 }
 
+
+// ---------- seasonal events: a few themed levels and a hat, only while the event runs ----------
+const EVENTS = [
+  { id: 'halloween', from: '10-15', to: '11-05', ch: 5, hat: 'pumpkin', col: '#ff8a3c', costume: 'pumpkin', bg: '#2a160c' },
+  { id: 'newyear', from: '12-15', to: '01-10', ch: 2, hat: 'santa', col: '#e5484d', costume: 'santa', bg: '#0e1a2a' },
+];
+const EVENT_LEVELS = {
+  halloween: [
+    { par: 10, hpMul: 1.3, atkMul: 1.15, waves: [[['vac', 110, 200], ['rc', 340, 200], ['vac', 225, 360]], [['spray', 100, 180], ['brush', 225, 260], ['spray', 350, 180]]] },
+    { par: 12, hpMul: 1.3, atkMul: 1.15, waves: [[['mop', 225, 200], ['rc', 100, 320], ['rc', 350, 320]], [['fan', 225, 240], ['split', 110, 380], ['split', 340, 380]]] },
+    { par: 14, hpMul: 1.3, atkMul: 1.15, boss: .6, waves: [[['shield', 110, 300], ['rc', 225, 180], ['shield', 340, 300]], [['boss', 225, 240], ['vac', 85, 430], ['vac', 365, 430]]] },
+  ],
+  newyear: [
+    { par: 10, hpMul: 1.3, atkMul: 1.15, waves: [[['vac', 90, 170], ['vac', 360, 170], ['spray', 225, 300]], [['mop', 225, 200], ['brush', 110, 340], ['brush', 340, 340]]] },
+    { par: 12, hpMul: 1.3, atkMul: 1.15, waves: [[['fan', 110, 220], ['fan', 340, 220], ['vac', 225, 380]], [['split', 225, 200], ['shield', 110, 330], ['rc', 340, 330]]] },
+    { par: 14, hpMul: 1.3, atkMul: 1.15, boss: .6, waves: [[['brush', 110, 300], ['split', 225, 180], ['brush', 340, 300]], [['boss', 225, 240], ['mop', 85, 430], ['mop', 365, 430]]] },
+  ],
+};
+function activeEvent(ts = Date.now()) {
+  if (DEV && window.__event) return EVENTS.find(e => e.id === window.__event) || null;
+  const md = new Date(ts).toISOString().slice(5, 10);
+  return EVENTS.find(e => (e.from <= e.to ? md >= e.from && md <= e.to : md >= e.from || md <= e.to)) || null;
+}
+// progress is kept per year, so next year's event starts fresh (its hat stays)
+function evKey(ev, ts = Date.now()) {
+  const d = new Date(ts), md = d.toISOString().slice(5, 10);
+  return `${ev.id}-${ev.from > ev.to && md <= ev.to ? d.getUTCFullYear() - 1 : d.getUTCFullYear()}`;
+}
+const evDone = ev => Math.min(EVENT_LEVELS[ev.id].length, (PROG.ev && PROG.ev[evKey(ev)]) || 0);
+function startEventLevel(i) {
+  const ev = activeEvent();
+  if (!ev) { goMap(); return; }
+  newRun(0);
+  G.li = -2;
+  G.lvl = { ...EVENT_LEVELS[ev.id][i], ch: ev.ch, event: ev, evIdx: i };
+  G.ch = CHAPTERS[ev.ch];
+  setScreen('game');
+  setupWave(0);
+}
+function eventWin() {
+  const ev = G.lvl.event, k = evKey(ev), n = EVENT_LEVELS[ev.id].length;
+  PROG.ev = { ...(PROG.ev || {}) };
+  const before = PROG.ev[k] || 0;
+  PROG.ev[k] = Math.max(before, G.lvl.evIdx + 1);
+  if (PROG.ev[k] >= n && !(PROG.hats && PROG.hats[ev.hat])) {
+    PROG.hats = { ...(PROG.hats || {}), [ev.hat]: 1 };
+    setHat(ev.hat); G.evHat = true;
+  }
+  gainXp(30 + 5 * G.stars);
+}
+function drawEventIcon(id, x, y, s) {
+  if (id === 'halloween') {
+    ctx.fillStyle = '#ff8a3c'; ctx.strokeStyle = '#b8521a'; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.ellipse(x, y, s, s * .78, 0, 0, TAU); ctx.fill(); ctx.stroke();
+    ctx.beginPath(); ctx.ellipse(x, y, s * .45, s * .78, 0, 0, TAU); ctx.stroke();
+    ctx.fillStyle = '#3f8a3c'; ctx.fillRect(x - s * .1, y - s * 1.05, s * .2, s * .32);
+    ctx.fillStyle = '#2a160c';
+    for (const sd of [-1, 1]) { ctx.beginPath(); ctx.moveTo(x + sd * s * .45, y - s * .25); ctx.lineTo(x + sd * s * .2, y - s * .05); ctx.lineTo(x + sd * s * .5, y); ctx.closePath(); ctx.fill(); }
+    ctx.beginPath(); ctx.moveTo(x - s * .5, y + s * .2); ctx.quadraticCurveTo(x, y + s * .6, x + s * .5, y + s * .2); ctx.quadraticCurveTo(x, y + s * .38, x - s * .5, y + s * .2); ctx.fill();
+  } else {
+    ctx.strokeStyle = '#e8f4ff'; ctx.lineWidth = 3; ctx.lineCap = 'round';
+    for (let k = 0; k < 6; k++) {
+      const a = k * Math.PI / 3, cx = Math.cos(a), cy = Math.sin(a);
+      ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + cx * s, y + cy * s); ctx.stroke();
+      for (const sd of [-1, 1]) { const b = a + sd * .6; ctx.beginPath(); ctx.moveTo(x + cx * s * .6, y + cy * s * .6); ctx.lineTo(x + cx * s * .6 + Math.cos(b) * s * .3, y + cy * s * .6 + Math.sin(b) * s * .3); ctx.stroke(); }
+    }
+  }
+}
+function drawEventCard(ev, y) {
+  const n = EVENT_LEVELS[ev.id].length, done = evDone(ev);
+  const g = ctx.createLinearGradient(12, y, W - 12, y + 88);
+  g.addColorStop(0, ev.bg); g.addColorStop(1, '#15122a');
+  ctx.fillStyle = g; rr(12, y, W - 24, 88, 18); ctx.fill();
+  ctx.strokeStyle = ev.col; ctx.lineWidth = 2.5; rr(12, y, W - 24, 88, 18); ctx.stroke();
+  drawEventIcon(ev.id, 54, y + 46, 22);
+  ctx.textAlign = 'left'; ctx.textBaseline = 'middle'; ctx.fillStyle = ev.col; fitFont(tr('ev.' + ev.id), W - 200, 20); ctx.fillText(tr('ev.' + ev.id), 90, y + 30);
+  ctx.fillStyle = '#c9c2e6'; fitFont(tr('evSub', done, n), W - 200, 12, 800, FB); ctx.fillText(tr('evSub', done, n), 90, y + 58);
+  ctx.save(); ctx.translate(W - 58, y + 60); drawHat(ev.hat, 30); ctx.restore();
+  if (done >= n) { ctx.strokeStyle = '#5ce1c6'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(W - 46, y + 66); ctx.lineTo(W - 40, y + 72); ctx.lineTo(W - 28, y + 58); ctx.stroke(); }
+  const sy = y - MAP.y;
+  if (sy + 88 > 0 && sy < MAP_VIEW) UI.push({ x: 12, y: sy, w: W - 24, h: 88, cb: () => startEventLevel(Math.min(done, n - 1)) });
+}
+function drawEventFx(id) {
+  if (LOWFX) return;
+  const t = RM ? 0 : T;
+  if (id === 'newyear') {
+    ctx.fillStyle = 'rgba(255,255,255,.8)';
+    for (let k = 0; k < 40; k++) {
+      const x = frac(k * .618 + Math.sin(t * .3 + k) * .02) * W, y = TOP + frac(k * .37 + t * .05 * (1 + k % 3 * .3)) * (BOT - TOP);
+      circ(x, y, 1.2 + k % 3 * .6);
+    }
+  } else {
+    ctx.save(); ctx.globalCompositeOperation = 'lighter';
+    for (let k = 0; k < 5; k++) glowAt(60 + k * 85, BOT - 40 - (k % 2) * 20, 50, '255,140,60', .12 + .06 * Math.sin(t * 3 + k));
+    ctx.restore();
+    ctx.fillStyle = 'rgba(20,10,30,.85)';
+    for (let k = 0; k < 4; k++) {
+      const ph = frac(t * .07 + k * .25), x = ph * (W + 80) - 40, y = TOP + 60 + k * 70 + Math.sin(t * 3 + k) * 12, f = Math.sin(t * 16 + k) * 5;
+      ctx.beginPath(); ctx.moveTo(x, y); ctx.quadraticCurveTo(x - 8, y - 6 - f, x - 16, y + f); ctx.quadraticCurveTo(x - 8, y - 2, x, y + 3);
+      ctx.quadraticCurveTo(x + 8, y - 2, x + 16, y + f); ctx.quadraticCurveTo(x + 8, y - 6 - f, x, y); ctx.fill();
+    }
+  }
+}
+
 function drawEnd() {
   const win = G.state === 'win';
   ctx.fillStyle = G.ch.shade; ctx.fillRect(0, 0, W, H);
@@ -4602,7 +4743,7 @@ function drawEnd() {
   G.heroes.forEach((h, i) => drawHero(h, W / 2 + (i - (G.heroes.length - 1) / 2) * (G.heroes.length > 4 ? 80 : 90), 150 + (win ? Math.abs(Math.sin(T * 5 + i)) * -14 : 6), 28, null, { mood: win ? 'happy' : 'sad', look: [0, 1] }));
   ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
   ctx.fillStyle = win ? '#ffc857' : '#ff6b85'; ctx.font = `900 34px ${FD}`;
-  const endTitle = win ? (G.hard ? tr('hardDone', G.li + 1) : tr('levelDone', G.li + 1)) : G.lvl.endless ? tr('shiftOver') : tr('vacWon');
+  const endTitle = win ? (G.lvl.event ? tr('evDone') : G.hard ? tr('hardDone', G.li + 1) : tr('levelDone', G.li + 1)) : G.lvl.endless ? tr('shiftOver') : tr('vacWon');
   fitFont(endTitle, W - 40, 34); ctx.fillText(endTitle, W / 2, 235);
   ctx.fillStyle = '#f4efe6'; ctx.font = `800 15px ${FB}`;
   ctx.fillText(win ? tr('winSub', G.turn, G.lvl.par) : G.lvl.endless ? tr('survived', wavesWord(G.wave)) : (G.loseReason === 'turns' ? tr('hardTurns') : G.loseReason === 'ko' ? tr('allKo') : tr('waveTry', G.wave + 1, G.lvl.waves.length)), W / 2, 272);
@@ -4643,6 +4784,16 @@ function drawEnd() {
     const wind = drawSecondWind();
     uiBtn(75, 600, W - 150, wind ? 50 : 56, tr('again'), startEndless, !wind);
     uiBtn(75, 670, W - 150, 46, tr('map'), goMap, false);
+    return;
+  }
+  if (G.lvl.event) {
+    const i = G.lvl.evIdx, more = win && i < EVENT_LEVELS[G.lvl.event.id].length - 1;
+    if (win && G.evHat) { ctx.textAlign = 'center'; ctx.fillStyle = '#ffc857'; fitFont(tr('evHat'), W - 40, 16); ctx.fillText(tr('evHat'), W / 2, 572); }
+    const wind = !win && drawSecondWind();
+    if (more) uiBtn(75, 600, W - 150, 56, tr('next'), () => startEventLevel(i + 1), true);
+    else uiBtn(75, 600, W - 150, wind ? 50 : 56, win ? tr('toMap') : tr('again'), win ? goMap : () => startEventLevel(i), !wind);
+    if (more || win) uiBtn(75, 670, W - 150, 46, more ? tr('map') : tr('again'), more ? goMap : () => startEventLevel(i), false);
+    else uiBtn(75, 670, W - 150, 46, tr('map'), goMap, false);
     return;
   }
   const hasNext = win && G.li < LEVELS.length - 1;
@@ -4723,6 +4874,7 @@ function drawGame() {
   });
   drawFx();
   drawRoomOver(c);
+  if (G.lvl.event) drawEventFx(G.lvl.event.id);
   drawAim();
   drawTypeTag();
   ctx.restore();
