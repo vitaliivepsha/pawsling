@@ -82,6 +82,18 @@ The game runs without a permanently running server: the page is on GitHub Pages
   records paid purchases in the `purchases` table and answers /start in the player's language.
   Stars earned go to the bot's balance (withdrawal via Fragment, see @BotFather → Payments).
 
+## Daily and social
+
+- **Daily** (button on the map): a login bonus with a 7-day streak (boosters, a party hat on day 7),
+  the challenge of the day (a level plus a condition such as "tie 4 knots" or "no knockouts",
+  rewarded once a day) and invites.
+- **Invites**: the share link is `t.me/<bot>?startapp=ref_<id>`. A brand-new player who opens it
+  gets +1 heart and +1 quick start, so does the inviter, and the bot messages the inviter. This needs
+  the bot's Main Mini App set up in @BotFather (Bot Settings → Configure Mini App).
+- **Weekly Night Shift tournament**: the Week tab of the leaderboard. A cron on Monday 00:05 UTC gives
+  the top 3 boosters and a message from the bot.
+- All of it is decided by the worker (`/daily`, `/challenge`, the `weekly` table), never by the page.
+
 ## Leaderboard
 
 `worker/` is a Cloudflare Worker (free plan) with a D1 database. The game posts Telegram's `initData`

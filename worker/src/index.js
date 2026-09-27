@@ -9,6 +9,10 @@
 //   a Telegram Stars invoice for an in-game item, opened in the game with WebApp.openInvoice.
 // POST /inventory { initData }  ->  { items }   what the player owns (boosters, hats, heroes)
 // POST /use       { initData, item }  ->  { ok, items }   spends one booster
+// POST /daily     { initData }  ->  today's login bonus (once a day), streak, invite count, bot name;
+//   a first visit through a friend's link (start_param ref_<id>) gifts both players
+// POST /challenge { initData, reward }  ->  the daily challenge reward, once a day
+// cron (Monday 00:05 UTC): the week's top 3 in Night Shift get prizes and a message from the bot
 // POST /tg       the bot's webhook (set automatically on the first game request):
 //   approves pre-checkout queries, records successful payments, answers /start.
 
@@ -28,20 +32,41 @@ const ITEMS = {
   hero_spark: { stars: 50, grant: { hero_spark: 1 } },
 };
 const BOOSTERS = ['heart', 'meter']; // the only items that get used up
+// login bonus by day of the streak (the 7th day restarts the cycle)
+const DAILY = [{ meter: 1 }, { heart: 1 }, { meter: 1 }, { heart: 1 }, { meter: 2 }, { heart: 2 }, { hat_party: 1, heart: 1, meter: 1 }];
+const REF_GIFT = { heart: 1, meter: 1 }; // for both the inviter and the new player
+const WEEK_PRIZES = [{ heart: 3, meter: 3 }, { heart: 2, meter: 2 }, { heart: 1, meter: 1 }];
+const DAY = 86400000;
+const utcDay = (ts = Date.now()) => new Date(ts).toISOString().slice(0, 10);
+function weekStart(ts = Date.now()) { // Monday 00:00 UTC of the week containing ts
+  const d = new Date(ts), back = (d.getUTCDay() + 6) % 7;
+  return Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate() - back);
+}
+const weekKey = (ts = Date.now()) => utcDay(weekStart(ts));
 const TEXT = {
-  uk: { items: { heart3: ['Серце+ ×3', '+1 серце кожному героєві на 3 рівні.'], meter3: ['Швидкий старт ×3', 'Пів шкали «Бешкету» на старті 3 рівнів.'], hat_party: ['Святковий ковпак', 'Капелюшок для всієї команди, назавжди.'], hat_crown: ['Корона', 'Корона для всієї команди, назавжди.'], hat_bow: ['Бантик', 'Бантик для всієї команди, назавжди.'], rainbow: ['Райдужна нитка', 'Нитки героїв переливаються веселкою, назавжди.'], hero_spark: ['Іскра', 'Нова героїня: її удар перескакує блискавкою на найближчого ворога.'] },
+  uk: { refJoined: n => `${n} прийшов у гру за твоїм запрошенням! Вам обом: +1 серце і +1 швидкий старт.`,
+    weekWin: (place, w) => `Тиждень «Нічної зміни» завершено: ти на ${place} місці (${w} хвиль)! Приз уже в магазині.`,
+    items: { heart3: ['Серце+ ×3', '+1 серце кожному героєві на 3 рівні.'], meter3: ['Швидкий старт ×3', 'Пів шкали «Бешкету» на старті 3 рівнів.'], hat_party: ['Святковий ковпак', 'Капелюшок для всієї команди, назавжди.'], hat_crown: ['Корона', 'Корона для всієї команди, назавжди.'], hat_bow: ['Бантик', 'Бантик для всієї команди, назавжди.'], rainbow: ['Райдужна нитка', 'Нитки героїв переливаються веселкою, назавжди.'], hero_spark: ['Іскра', 'Нова героїня: її удар перескакує блискавкою на найближчого ворога.'] },
     title: 'Друге дихання', desc: 'Продовж рівень: повна міцність квартири й усі герої знову на ногах.',
     start: n => `Привіт, ${n}! Роботи-пилососи захопили квартиру. Запускай котів і єнотів, як з рогатки!`, play: '🐾 Грати' },
-  en: { items: { heart3: ['Heart+ ×3', '+1 heart for every hero, for 3 levels.'], meter3: ['Quick start ×3', 'Half a Mischief meter at the start of 3 levels.'], hat_party: ['Party hat', 'A hat for the whole team, forever.'], hat_crown: ['Crown', 'A crown for the whole team, forever.'], hat_bow: ['Bow', 'A bow for the whole team, forever.'], rainbow: ['Rainbow yarn', 'Hero threads shimmer in rainbow colors, forever.'], hero_spark: ['Sparky', 'A new hero: her hits arc like lightning to the nearest enemy.'] },
+  en: { refJoined: n => `${n} joined the game with your invite! You both get +1 heart and +1 quick start.`,
+    weekWin: (place, w) => `The Night Shift week is over: you finished #${place} (${w} waves)! Your prize is in the shop.`,
+    items: { heart3: ['Heart+ ×3', '+1 heart for every hero, for 3 levels.'], meter3: ['Quick start ×3', 'Half a Mischief meter at the start of 3 levels.'], hat_party: ['Party hat', 'A hat for the whole team, forever.'], hat_crown: ['Crown', 'A crown for the whole team, forever.'], hat_bow: ['Bow', 'A bow for the whole team, forever.'], rainbow: ['Rainbow yarn', 'Hero threads shimmer in rainbow colors, forever.'], hero_spark: ['Sparky', 'A new hero: her hits arc like lightning to the nearest enemy.'] },
     title: 'Second wind', desc: 'Continue the level: full home strength and every hero back on their feet.',
     start: n => `Hi, ${n}! Robot vacuums have taken over the flat. Launch the cats and raccoons like a slingshot!`, play: '🐾 Play' },
-  pl: { items: { heart3: ['Serce+ ×3', '+1 serce dla każdego bohatera na 3 poziomy.'], meter3: ['Szybki start ×3', 'Pół paska psot na starcie 3 poziomów.'], hat_party: ['Czapeczka imprezowa', 'Czapka dla całej drużyny, na zawsze.'], hat_crown: ['Korona', 'Korona dla całej drużyny, na zawsze.'], hat_bow: ['Kokardka', 'Kokardka dla całej drużyny, na zawsze.'], rainbow: ['Tęczowa włóczka', 'Nitki bohaterów mienią się tęczą, na zawsze.'], hero_spark: ['Iskra', 'Nowa bohaterka: jej ciosy przeskakują piorunem na najbliższego wroga.'] },
+  pl: { refJoined: n => `${n} dołączył(a) do gry z twojego zaproszenia! Oboje dostajecie +1 serce i +1 szybki start.`,
+    weekWin: (place, w) => `Tydzień nocnej zmiany zakończony: zajmujesz ${place}. miejsce (${w} fal)! Nagroda czeka w sklepie.`,
+    items: { heart3: ['Serce+ ×3', '+1 serce dla każdego bohatera na 3 poziomy.'], meter3: ['Szybki start ×3', 'Pół paska psot na starcie 3 poziomów.'], hat_party: ['Czapeczka imprezowa', 'Czapka dla całej drużyny, na zawsze.'], hat_crown: ['Korona', 'Korona dla całej drużyny, na zawsze.'], hat_bow: ['Kokardka', 'Kokardka dla całej drużyny, na zawsze.'], rainbow: ['Tęczowa włóczka', 'Nitki bohaterów mienią się tęczą, na zawsze.'], hero_spark: ['Iskra', 'Nowa bohaterka: jej ciosy przeskakują piorunem na najbliższego wroga.'] },
     title: 'Drugi oddech', desc: 'Kontynuuj poziom: pełna wytrzymałość mieszkania i wszyscy bohaterowie znów na nogach.',
     start: n => `Cześć, ${n}! Roboty sprzątające przejęły mieszkanie. Wystrzel koty i szopy jak z procy!`, play: '🐾 Graj' },
-  de: { items: { heart3: ['Herz+ ×3', '+1 Herz für jeden Helden, für 3 Level.'], meter3: ['Schnellstart ×3', 'Halbe Unfug-Leiste zu Beginn von 3 Leveln.'], hat_party: ['Partyhut', 'Ein Hut für das ganze Team, für immer.'], hat_crown: ['Krone', 'Eine Krone für das ganze Team, für immer.'], hat_bow: ['Schleife', 'Eine Schleife für das ganze Team, für immer.'], rainbow: ['Regenbogenwolle', 'Die Fäden der Helden schimmern in Regenbogenfarben, für immer.'], hero_spark: ['Funke', 'Eine neue Heldin: ihre Treffer springen als Blitz zum nächsten Gegner.'] },
+  de: { refJoined: n => `${n} ist über deine Einladung ins Spiel gekommen! Ihr bekommt beide +1 Herz und +1 Schnellstart.`,
+    weekWin: (place, w) => `Die Nachtschicht-Woche ist vorbei: Platz ${place} (${w} Wellen)! Dein Preis liegt im Shop.`,
+    items: { heart3: ['Herz+ ×3', '+1 Herz für jeden Helden, für 3 Level.'], meter3: ['Schnellstart ×3', 'Halbe Unfug-Leiste zu Beginn von 3 Leveln.'], hat_party: ['Partyhut', 'Ein Hut für das ganze Team, für immer.'], hat_crown: ['Krone', 'Eine Krone für das ganze Team, für immer.'], hat_bow: ['Schleife', 'Eine Schleife für das ganze Team, für immer.'], rainbow: ['Regenbogenwolle', 'Die Fäden der Helden schimmern in Regenbogenfarben, für immer.'], hero_spark: ['Funke', 'Eine neue Heldin: ihre Treffer springen als Blitz zum nächsten Gegner.'] },
     title: 'Zweite Luft', desc: 'Spiel weiter: volle Wohnungsstärke und alle Helden wieder auf den Beinen.',
     start: n => `Hallo, ${n}! Saugroboter haben die Wohnung übernommen. Schieß Katzen und Waschbären wie mit einer Schleuder!`, play: '🐾 Spielen' },
-  es: { items: { heart3: ['Corazón+ ×3', '+1 corazón para cada héroe durante 3 niveles.'], meter3: ['Inicio rápido ×3', 'Media barra de travesura al empezar 3 niveles.'], hat_party: ['Gorro de fiesta', 'Un gorro para todo el equipo, para siempre.'], hat_crown: ['Corona', 'Una corona para todo el equipo, para siempre.'], hat_bow: ['Lazo', 'Un lazo para todo el equipo, para siempre.'], rainbow: ['Hilo arcoíris', 'Los hilos de los héroes brillan con los colores del arcoíris, para siempre.'], hero_spark: ['Chispa', 'Una nueva heroína: sus golpes saltan como un rayo al enemigo más cercano.'] },
+  es: { refJoined: n => `¡${n} se unió al juego con tu invitación! Los dos recibís +1 corazón y +1 inicio rápido.`,
+    weekWin: (place, w) => `Terminó la semana del turno de noche: quedaste en el puesto ${place} (${w} oleadas). ¡Tu premio está en la tienda!`,
+    items: { heart3: ['Corazón+ ×3', '+1 corazón para cada héroe durante 3 niveles.'], meter3: ['Inicio rápido ×3', 'Media barra de travesura al empezar 3 niveles.'], hat_party: ['Gorro de fiesta', 'Un gorro para todo el equipo, para siempre.'], hat_crown: ['Corona', 'Una corona para todo el equipo, para siempre.'], hat_bow: ['Lazo', 'Un lazo para todo el equipo, para siempre.'], rainbow: ['Hilo arcoíris', 'Los hilos de los héroes brillan con los colores del arcoíris, para siempre.'], hero_spark: ['Chispa', 'Una nueva heroína: sus golpes saltan como un rayo al enemigo más cercano.'] },
     title: 'Segundo aliento', desc: 'Continúa el nivel: resistencia completa y todos los héroes de nuevo en pie.',
     start: n => `¡Hola, ${n}! Las aspiradoras robot han tomado el piso. ¡Lanza a los gatos y mapaches como con un tirachinas!`, play: '🐾 Jugar' },
 };
@@ -58,7 +83,7 @@ export default {
     const json = (body, status = 200) => new Response(JSON.stringify(body), { status, headers: { ...cors, 'Content-Type': 'application/json' } });
     if (req.method === 'OPTIONS') return new Response(null, { headers: cors });
     const url = new URL(req.url), path = url.pathname;
-    if (req.method !== 'POST' || !['/board', '/invoice', '/inventory', '/use', '/tg'].includes(path)) return json({ error: 'not found' }, 404);
+    if (req.method !== 'POST' || !['/board', '/invoice', '/inventory', '/use', '/daily', '/challenge', '/tg'].includes(path)) return json({ error: 'not found' }, 404);
 
     if (path === '/tg') {
       // only Telegram knows the secret we gave it in setWebhook
@@ -95,13 +120,102 @@ export default {
       return json({ ok: r.meta.changes > 0, items: await inventory(env.DB, user.id) });
     }
 
-    const night = clampInt(body.night, LIMITS.night), stars = clampInt(body.stars, LIMITS.stars);
-    if (night || stars) await save(env.DB, user, night, stars);
+    if (path === '/daily') return json(await daily(env, user));
+    if (path === '/challenge') {
+      if (!BOOSTERS.includes(body.reward)) return json({ error: 'bad reward' }, 400);
+      await ensureTables(env.DB);
+      const today = utcDay();
+      const r = await env.DB.prepare(`UPDATE daily SET challenge_day = ?2 WHERE user_id = ?1 AND (challenge_day IS NULL OR challenge_day <> ?2)`)
+        .bind(user.id, today).run();
+      if (r.meta.changes > 0) await grant(env.DB, user.id, { [body.reward]: 1 });
+      return json({ ok: r.meta.changes > 0, items: await inventory(env.DB, user.id) });
+    }
 
+    await ensureTables(env.DB);
+    const night = clampInt(body.night, LIMITS.night), stars = clampInt(body.stars, LIMITS.stars), week = clampInt(body.week, LIMITS.night);
+    if (night || stars) await save(env.DB, user, night, stars);
+    if (week) await saveWeek(env.DB, user, week);
+
+    if (body.board === 'week') return json(await weekBoard(env.DB, user.id));
     if (body.board !== 'night' && body.board !== 'stars') return json({ ok: true });
     return json(await board(env.DB, body.board, user.id));
   },
+
+  async scheduled(event, env, ctx) { ctx.waitUntil(awardWeek(env)); },
 };
+
+// ---------- daily bonus, challenge, invites ----------
+let botName = null;
+async function daily(env, user) {
+  const db = env.DB;
+  await ensureTables(db);
+  const today = utcDay(), yesterday = utcDay(Date.now() - DAY);
+  const row = await db.prepare('SELECT last_day, streak, challenge_day FROM daily WHERE user_id = ?1').bind(user.id).first();
+  const known = row || await db.prepare('SELECT 1 AS x FROM players WHERE id = ?1').bind(user.id).first();
+  let claimed = false, streak = row ? row.streak : 0, reward = null, gifted = false;
+  if (!row || row.last_day !== today) {
+    streak = row && row.last_day === yesterday ? row.streak % DAILY.length + 1 : 1;
+    reward = DAILY[streak - 1];
+    await db.prepare(`INSERT INTO daily (user_id, last_day, streak, lang) VALUES (?1, ?2, ?3, ?4)
+      ON CONFLICT(user_id) DO UPDATE SET last_day = excluded.last_day, streak = excluded.streak, lang = excluded.lang`)
+      .bind(user.id, today, streak, user.language_code || '').run();
+    await grant(db, user.id, reward);
+    claimed = true;
+  }
+  // a brand-new player who came through a friend's link
+  const m = /^ref_(\d+)$/.exec(user.start || '');
+  if (!known && m && Number(m[1]) !== user.id) {
+    const inviter = Number(m[1]);
+    const r = await db.prepare('INSERT OR IGNORE INTO referrals (user_id, ref_by, at) VALUES (?1, ?2, ?3)').bind(user.id, inviter, Math.floor(Date.now() / 1000)).run();
+    if (r.meta.changes > 0) {
+      await grant(db, user.id, REF_GIFT); await grant(db, inviter, REF_GIFT); gifted = true;
+      const il = await db.prepare('SELECT lang FROM daily WHERE user_id = ?1').bind(inviter).first();
+      await tg(env, 'sendMessage', { chat_id: inviter, text: text(il && il.lang).refJoined(displayName(user)) });
+    }
+  }
+  const inv = await db.prepare('SELECT COUNT(*) AS n FROM referrals WHERE ref_by = ?1').bind(user.id).first();
+  if (!botName) { const me = await tg(env, 'getMe', {}); botName = me.ok ? me.result.username : null; }
+  return { claimed, streak, reward, gifted, challengeDone: !!row && row.challenge_day === today, invited: inv.n, bot: botName,
+    items: await inventory(db, user.id), today, weekEnds: weekStart() + 7 * DAY };
+}
+async function grant(db, id, g) {
+  await db.batch(Object.entries(g).map(([k, n]) => db.prepare(
+    'INSERT INTO inventory (user_id, item, count) VALUES (?1, ?2, ?3) ON CONFLICT(user_id, item) DO UPDATE SET count = count + excluded.count',
+  ).bind(id, k, n)));
+}
+
+// ---------- weekly Night Shift tournament ----------
+async function saveWeek(db, user, night) {
+  await db.prepare(`INSERT INTO weekly (week, user_id, name, lang, night, at) VALUES (?1, ?2, ?3, ?4, ?5, ?6)
+    ON CONFLICT(week, user_id) DO UPDATE SET name = excluded.name, lang = excluded.lang,
+      at = CASE WHEN excluded.night > weekly.night THEN excluded.at ELSE weekly.at END,
+      night = MAX(weekly.night, excluded.night)`)
+    .bind(weekKey(), user.id, displayName(user), user.language_code || '', night, Math.floor(Date.now() / 1000)).run();
+}
+async function weekBoard(db, id) {
+  const wk = weekKey();
+  const top = await db.prepare(`SELECT user_id AS id, name, night AS value FROM weekly WHERE week = ?1 AND night > 0 ORDER BY night DESC, at ASC LIMIT ${TOP}`).bind(wk).all();
+  const me = await db.prepare('SELECT night AS value, at FROM weekly WHERE week = ?1 AND user_id = ?2').bind(wk, id).first();
+  let mine = null;
+  if (me && me.value > 0) {
+    const ahead = await db.prepare('SELECT COUNT(*) AS n FROM weekly WHERE week = ?1 AND (night > ?2 OR (night = ?2 AND at < ?3))').bind(wk, me.value, me.at).first();
+    mine = { rank: ahead.n + 1, value: me.value };
+  }
+  return { board: 'week', top: top.results.map((r, i) => ({ rank: i + 1, name: r.name, value: r.value, me: r.id === id })), me: mine,
+    endsAt: weekStart() + 7 * DAY };
+}
+async function awardWeek(env) {
+  const db = env.DB;
+  await ensureTables(db);
+  const wk = weekKey(Date.now() - 3 * DAY); // the cron runs early on Monday: award the week that just ended
+  const done = await db.prepare('INSERT OR IGNORE INTO week_awards (week, at) VALUES (?1, ?2)').bind(wk, Math.floor(Date.now() / 1000)).run();
+  if (done.meta.changes === 0) return;
+  const top = await db.prepare('SELECT user_id, lang, night FROM weekly WHERE week = ?1 AND night > 0 ORDER BY night DESC, at ASC LIMIT 3').bind(wk).all();
+  for (const [i, r] of top.results.entries()) {
+    await grant(db, r.user_id, WEEK_PRIZES[i]);
+    try { await tg(env, 'sendMessage', { chat_id: r.user_id, text: text(r.lang).weekWin(i + 1, r.night) }); } catch {}
+  }
+}
 
 // ---------- Telegram Bot API ----------
 async function tg(env, method, body) {
@@ -133,6 +247,13 @@ async function ensureTables(db) {
       item TEXT NOT NULL, stars INTEGER NOT NULL, at INTEGER NOT NULL)`),
     db.prepare(`CREATE TABLE IF NOT EXISTS inventory (user_id INTEGER NOT NULL, item TEXT NOT NULL,
       count INTEGER NOT NULL DEFAULT 0, PRIMARY KEY (user_id, item))`),
+    db.prepare(`CREATE TABLE IF NOT EXISTS daily (user_id INTEGER PRIMARY KEY, last_day TEXT, streak INTEGER NOT NULL DEFAULT 0,
+      challenge_day TEXT, lang TEXT)`),
+    db.prepare('CREATE TABLE IF NOT EXISTS referrals (user_id INTEGER PRIMARY KEY, ref_by INTEGER NOT NULL, at INTEGER NOT NULL)'),
+    db.prepare(`CREATE TABLE IF NOT EXISTS weekly (week TEXT NOT NULL, user_id INTEGER NOT NULL, name TEXT NOT NULL, lang TEXT,
+      night INTEGER NOT NULL DEFAULT 0, at INTEGER NOT NULL, PRIMARY KEY (week, user_id))`),
+    db.prepare('CREATE INDEX IF NOT EXISTS idx_weekly ON weekly (week, night DESC, at ASC)'),
+    db.prepare('CREATE TABLE IF NOT EXISTS week_awards (week TEXT PRIMARY KEY, at INTEGER NOT NULL)'),
   ]);
   tablesReady = true;
 }
@@ -160,12 +281,8 @@ async function onUpdate(env, u) {
     await ensureTables(env.DB);
     const ins = await env.DB.prepare('INSERT OR IGNORE INTO purchases (charge_id, user_id, item, stars, at) VALUES (?1, ?2, ?3, ?4, ?5)')
       .bind(p.telegram_payment_charge_id, m.from.id, item, p.total_amount, Math.floor(Date.now() / 1000)).run();
-    const grant = ITEMS[item] && ITEMS[item].grant;
-    if (grant && ins.meta.changes > 0) {
-      await env.DB.batch(Object.entries(grant).map(([k, n]) => env.DB.prepare(
-        'INSERT INTO inventory (user_id, item, count) VALUES (?1, ?2, ?3) ON CONFLICT(user_id, item) DO UPDATE SET count = count + excluded.count',
-      ).bind(m.from.id, k, n)));
-    }
+    const g = ITEMS[item] && ITEMS[item].grant;
+    if (g && ins.meta.changes > 0) await grant(env.DB, m.from.id, g);
     return;
   }
   if (typeof m.text === 'string' && /^\/(start|play)\b/.test(m.text) && env.WEBAPP_URL) {
@@ -249,5 +366,5 @@ async function verify(initData, token) {
   if (!sameString(hex(await hmac(secret, check)), hash)) return null;
   const age = Date.now() / 1000 - Number(p.get('auth_date'));
   if (!(age >= -60 && age < MAX_AGE)) return null;
-  try { return JSON.parse(p.get('user')); } catch { return null; }
+  try { const u = JSON.parse(p.get('user')); u.start = p.get('start_param') || ''; return u; } catch { return null; }
 }

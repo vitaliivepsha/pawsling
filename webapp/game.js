@@ -34,7 +34,7 @@ if (TG) {
     if (tgv('6.1')) {
       TG.setHeaderColor('#15122a');
       TG.setBackgroundColor('#110e22');
-      TG.BackButton.onClick(() => { if (SCREEN === 'game') goMap(); else if (SCREEN === 'howto') closeHowto(); else if (['lang', 'board', 'shop', 'prep'].includes(SCREEN)) setScreen('map'); });
+      TG.BackButton.onClick(() => { if (SCREEN === 'game') goMap(); else if (SCREEN === 'howto') closeHowto(); else if (['lang', 'board', 'shop', 'prep', 'daily'].includes(SCREEN)) setScreen('map'); });
     }
     if (tgv('7.7')) TG.disableVerticalSwipes();
     TG.onEvent('viewportChanged', resize);
@@ -606,6 +606,7 @@ const I18N = {
     'st.knots': 'Вузлів зав\'язано', 'st.lasers': 'Лазер спіймано', 'st.crits': 'Критів по сенсору', 'st.portals': 'Телепортів',
     newBestLevel: 'Новий рекорд для цього рівня!', newBestNight: 'Новий рекорд нічної зміни!', again: 'Ще раз', map: 'Карта', next: 'Далі',
     toMap: 'До карти', allDone: 'Квартиру врятовано! Усі рівні пройдено', lang: 'Мова',
+    daily: 'Щодня', dailyBonus: 'Бонус за вхід', streak: n => `Серія: ${n} дн.`, dayShort: n => `Д${n}`, challenge: 'Завдання дня', 'ch.knots': n => `Пройди рівень і зав'яжи ${n} вузли`, 'ch.lasers': n => `Пройди рівень і спіймай лазер ${n} рази`, 'ch.noko': () => 'Пройди рівень без жодного нокауту', 'ch.par': n => `Пройди рівень за ${n} ходів або швидше`, 'ch.portals': n => `Пройди рівень і пролети крізь коробки ${n} рази`, reward: 'Нагорода', chDone: 'Виконано ✓', chWon: r => `Завдання дня виконано! +1 ${r}`, invite: 'Запроси друга', inviteDesc: 'Коли друг зайде в гру за твоїм посиланням, ви обидва отримаєте +1 серце і +1 швидкий старт', invited: n => `Запрошено: ${n}`, inviteBtn: 'Запросити', inviteText: 'Коти та єноти проти роботів-пилососів! Зіграй зі мною в Pawsling 🐾', giftedMsg: 'Тебе запросив друг: +1 серце і +1 швидкий старт!', dailyTgOnly: 'Бонуси й нагороди працюють, коли гра відкрита в Telegram', boardWeek: 'Тиждень', weekLeft: (d, h) => `До кінця: ${d} д ${h} год`, weekPrizes: 'топ-3 отримають призи в понеділок',
     shop: 'Магазин',
     shopTgOnly: 'Магазин працює, коли гра відкрита в Telegram',
     equip: 'Вдягнути',
@@ -678,6 +679,7 @@ const I18N = {
     'st.knots': 'Knots tied', 'st.lasers': 'Lasers caught', 'st.crits': 'Sensor crits', 'st.portals': 'Teleports',
     newBestLevel: 'New record for this level!', newBestNight: 'New Night Shift record!', again: 'Again', map: 'Map', next: 'Next',
     toMap: 'To the map', allDone: 'Home saved! All levels complete', lang: 'Language',
+    daily: 'Daily', dailyBonus: 'Login bonus', streak: n => `Streak: ${n} days`, dayShort: n => `D${n}`, challenge: 'Daily challenge', 'ch.knots': n => `Win the level and tie ${n} knots`, 'ch.lasers': n => `Win the level and catch the laser ${n} times`, 'ch.noko': () => 'Win the level without a single knockout', 'ch.par': n => `Win the level in ${n} turns or fewer`, 'ch.portals': n => `Win the level and fly through boxes ${n} times`, reward: 'Reward', chDone: 'Done ✓', chWon: r => `Daily challenge done! +1 ${r}`, invite: 'Invite a friend', inviteDesc: 'When a friend joins through your link, you both get +1 heart and +1 quick start', invited: n => `Invited: ${n}`, inviteBtn: 'Invite', inviteText: 'Cats and raccoons vs robot vacuums! Play Pawsling with me 🐾', giftedMsg: 'A friend invited you: +1 heart and +1 quick start!', dailyTgOnly: 'Bonuses and rewards work when the game is opened in Telegram', boardWeek: 'Week', weekLeft: (d, h) => `Ends in ${d}d ${h}h`, weekPrizes: 'the top 3 get prizes on Monday',
     shop: 'Shop',
     shopTgOnly: 'The shop works when the game is opened in Telegram',
     equip: 'Wear',
@@ -750,6 +752,7 @@ const I18N = {
     'st.knots': 'Zawiązane supły', 'st.lasers': 'Złapane lasery', 'st.crits': 'Kryty w czujnik', 'st.portals': 'Teleporty',
     newBestLevel: 'Nowy rekord tego poziomu!', newBestNight: 'Nowy rekord nocnej zmiany!', again: 'Jeszcze raz', map: 'Mapa', next: 'Dalej',
     toMap: 'Do mapy', allDone: 'Mieszkanie uratowane! Wszystkie poziomy ukończone', lang: 'Język',
+    daily: 'Codziennie', dailyBonus: 'Bonus za logowanie', streak: n => `Seria: ${n} dni`, dayShort: n => `D${n}`, challenge: 'Zadanie dnia', 'ch.knots': n => `Wygraj poziom i zawiąż ${n} supły`, 'ch.lasers': n => `Wygraj poziom i złap laser ${n} razy`, 'ch.noko': () => 'Wygraj poziom bez żadnego nokautu', 'ch.par': n => `Wygraj poziom w ${n} tur lub mniej`, 'ch.portals': n => `Wygraj poziom i przeleć przez pudełka ${n} razy`, reward: 'Nagroda', chDone: 'Zrobione ✓', chWon: r => `Zadanie dnia wykonane! +1 ${r}`, invite: 'Zaproś znajomego', inviteDesc: 'Gdy znajomy dołączy z twojego linku, oboje dostaniecie +1 serce i +1 szybki start', invited: n => `Zaproszono: ${n}`, inviteBtn: 'Zaproś', inviteText: 'Koty i szopy kontra roboty sprzątające! Zagraj ze mną w Pawsling 🐾', giftedMsg: 'Zaprosił cię znajomy: +1 serce i +1 szybki start!', dailyTgOnly: 'Bonusy i nagrody działają, gdy gra jest otwarta w Telegramie', boardWeek: 'Tydzień', weekLeft: (d, h) => `Koniec za ${d} d ${h} godz.`, weekPrizes: 'top 3 dostanie nagrody w poniedziałek',
     shop: 'Sklep',
     shopTgOnly: 'Sklep działa, gdy gra jest otwarta w Telegramie',
     equip: 'Załóż',
@@ -822,6 +825,7 @@ const I18N = {
     'st.knots': 'Geknüpfte Knoten', 'st.lasers': 'Laser gefangen', 'st.crits': 'Sensor-Krits', 'st.portals': 'Teleports',
     newBestLevel: 'Neuer Rekord für dieses Level!', newBestNight: 'Neuer Nachtschicht-Rekord!', again: 'Nochmal', map: 'Karte', next: 'Weiter',
     toMap: 'Zur Karte', allDone: 'Wohnung gerettet! Alle Level geschafft', lang: 'Sprache',
+    daily: 'Täglich', dailyBonus: 'Login-Bonus', streak: n => `Serie: ${n} Tage`, dayShort: n => `T${n}`, challenge: 'Tagesaufgabe', 'ch.knots': n => `Gewinne das Level und knüpfe ${n} Knoten`, 'ch.lasers': n => `Gewinne das Level und fang den Laser ${n}-mal`, 'ch.noko': () => 'Gewinne das Level ohne ein einziges K.o.', 'ch.par': n => `Gewinne das Level in ${n} Zügen oder weniger`, 'ch.portals': n => `Gewinne das Level und flieg ${n}-mal durch Kartons`, reward: 'Belohnung', chDone: 'Erledigt ✓', chWon: r => `Tagesaufgabe geschafft! +1 ${r}`, invite: 'Freund einladen', inviteDesc: 'Kommt ein Freund über deinen Link, bekommt ihr beide +1 Herz und +1 Schnellstart', invited: n => `Eingeladen: ${n}`, inviteBtn: 'Einladen', inviteText: 'Katzen und Waschbären gegen Saugroboter! Spiel Pawsling mit mir 🐾', giftedMsg: 'Ein Freund hat dich eingeladen: +1 Herz und +1 Schnellstart!', dailyTgOnly: 'Boni und Belohnungen funktionieren, wenn das Spiel in Telegram geöffnet ist', boardWeek: 'Woche', weekLeft: (d, h) => `Endet in ${d} T ${h} Std.`, weekPrizes: 'die Top 3 bekommen am Montag Preise',
     shop: 'Shop',
     shopTgOnly: 'Der Shop funktioniert, wenn das Spiel in Telegram geöffnet ist',
     equip: 'Anziehen',
@@ -894,6 +898,7 @@ const I18N = {
     'st.knots': 'Nudos atados', 'st.lasers': 'Láseres atrapados', 'st.crits': 'Críticos al sensor', 'st.portals': 'Teletransportes',
     newBestLevel: '¡Nuevo récord en este nivel!', newBestNight: '¡Nuevo récord del turno de noche!', again: 'Otra vez', map: 'Mapa', next: 'Siguiente',
     toMap: 'Al mapa', allDone: '¡Piso salvado! Todos los niveles completados', lang: 'Idioma',
+    daily: 'Diario', dailyBonus: 'Bono diario', streak: n => `Racha: ${n} días`, dayShort: n => `D${n}`, challenge: 'Reto del día', 'ch.knots': n => `Gana el nivel y ata ${n} nudos`, 'ch.lasers': n => `Gana el nivel y atrapa el láser ${n} veces`, 'ch.noko': () => 'Gana el nivel sin ningún K.O.', 'ch.par': n => `Gana el nivel en ${n} turnos o menos`, 'ch.portals': n => `Gana el nivel y atraviesa cajas ${n} veces`, reward: 'Premio', chDone: 'Hecho ✓', chWon: r => `¡Reto del día cumplido! +1 ${r}`, invite: 'Invita a un amigo', inviteDesc: 'Cuando un amigo entre con tu enlace, los dos recibiréis +1 corazón y +1 inicio rápido', invited: n => `Invitados: ${n}`, inviteBtn: 'Invitar', inviteText: '¡Gatos y mapaches contra aspiradoras robot! Juega Pawsling conmigo 🐾', giftedMsg: '¡Te invitó un amigo: +1 corazón y +1 inicio rápido!', dailyTgOnly: 'Los bonos y premios funcionan cuando el juego se abre en Telegram', boardWeek: 'Semana', weekLeft: (d, h) => `Termina en ${d} d ${h} h`, weekPrizes: 'el top 3 recibe premios el lunes',
     shop: 'Tienda',
     shopTgOnly: 'La tienda funciona cuando el juego se abre en Telegram',
     equip: 'Poner',
@@ -953,6 +958,10 @@ function mergeProg(a, b) {
   if (done.length) r.unlocked = Math.max(r.unlocked, Math.max(...done) + 1);
   r.unlocked = Math.min(LEVELS.length, r.unlocked);
   r.endless = Math.max(a.endless || 0, b.endless || 0);
+  // this week's best Night Shift (the weekly tournament); an older week's best is dropped
+  const wa = a.wk || '', wb = b.wk || '';
+  r.wk = wa > wb ? wa : wb;
+  r.wkBest = Math.max(wa === r.wk ? a.wkBest || 0 : 0, wb === r.wk ? b.wkBest || 0 : 0);
   return r;
 }
 function loadProg() {
@@ -1744,7 +1753,11 @@ function genWave(n) {
 }
 function endEndless() {
   G.newBest = G.wave > (PROG.endless || 0);
-  if (G.newBest) { PROG.endless = G.wave; saveProg(); submitScores(); }
+  if (G.newBest) { PROG.endless = G.wave; saveProg(); }
+  const wk = weekKey();
+  if (PROG.wk !== wk) { PROG.wk = wk; PROG.wkBest = 0; }
+  if (G.wave > PROG.wkBest) { PROG.wkBest = G.wave; saveProg(); }
+  submitScores();
 }
 
 function burst(x, y, col, n = 12, sp = 180, shape) {
@@ -2206,6 +2219,7 @@ function nextAttack() {
     h.hearts = Math.max(0, h.hearts - loss);
     ftext(h.x, h.y - 52, '-' + loss + ' ♥', '#ff5d7a', 16);
     if (h.hearts === 0) {
+      G.everKo = true;
       h.ko = KO_TURNS;
       ftext(h.x, h.y + h.r + 18, tr('ko'), '#ffc857', 18);
       if (!G.koTaught) { G.koTaught = true; ftext(W / 2, BOT - 40, tr('koHint'), '#5ce1c6', 15); }
@@ -2242,6 +2256,7 @@ function waveClear() {
     PROG.best[key] = prevBest ? Math.min(prevBest, G.turn) : G.turn;
     PROG.stars[key] = Math.max(PROG.stars[key] || 0, G.stars);
     PROG.unlocked = Math.min(LEVELS.length, Math.max(PROG.unlocked, G.li + 2));
+    checkChallenge();
     saveProg();
     submitScores();
     for (let i = 0; i < (RM ? 0 : 110); i++) {
@@ -3819,12 +3834,12 @@ function drawNode(c, x, y, r, col, open) {
 // The worker in /worker keeps each player's best Night Shift and total stars. It only answers
 // requests signed by Telegram, so the board works inside Telegram only.
 const BOARD_URL = 'https://pawsling-leaderboard.pawsling-leaderboard.workers.dev'; // worker/ deployed with wrangler
-const BOARD = { tab: 'night', status: 'idle', data: {} };
+const BOARD = { tab: 'week', status: 'idle', data: {} };
 const boardAvailable = () => !!(TG && TG.initData && BOARD_URL);
 async function boardPost(extra) {
   const r = await fetch(BOARD_URL + '/board', {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({ initData: TG.initData, night: PROG.endless || 0, stars: totalStars(), ...extra }),
+    body: JSON.stringify({ initData: TG.initData, night: PROG.endless || 0, stars: totalStars(), week: PROG.wk === weekKey() ? PROG.wkBest || 0 : 0, ...extra }),
   });
   if (!r.ok) throw new Error('HTTP ' + r.status);
   return r.json();
@@ -3871,8 +3886,9 @@ function drawBoard() {
   iconBtn(12, 13, 'back', () => setScreen('map'));
   ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
   ctx.fillStyle = '#ffc857'; fitFont(tr('board'), W - 120, 30); ctx.fillText(tr('board'), W / 2, 32);
-  uiBtn(24, 72, 196, 44, tr('boardNight'), () => openBoard('night'), BOARD.tab === 'night');
-  uiBtn(230, 72, 196, 44, tr('boardStars'), () => openBoard('stars'), BOARD.tab === 'stars');
+  uiBtn(16, 72, 132, 44, tr('boardWeek'), () => openBoard('week'), BOARD.tab === 'week');
+  uiBtn(159, 72, 132, 44, tr('boardNight'), () => openBoard('night'), BOARD.tab === 'night');
+  uiBtn(302, 72, 132, 44, tr('boardStars'), () => openBoard('stars'), BOARD.tab === 'stars');
   const d = BOARD.data[BOARD.tab];
   const msg = t => { ctx.textAlign = 'center'; ctx.fillStyle = '#c9c2e6'; ctx.font = `800 15px ${FB}`; wrap(t, W / 2, 330, W - 90, 22); };
   if (BOARD.status === 'tgOnly') { msg(tr('boardTgOnly')); return; }
@@ -3882,11 +3898,17 @@ function drawBoard() {
     return;
   }
   if (!d.top.length) msg(tr('boardEmpty'));
-  const rows = d.top.slice(0, 13);
-  rows.forEach((r, i) => drawBoardRow(r, 140 + i * 40));
+  const wk = BOARD.tab === 'week', y0 = wk ? 170 : 140, nRows = wk ? 12 : 13;
+  if (wk && d.endsAt) {
+    const left = Math.max(0, d.endsAt - Date.now()), dd = Math.floor(left / 86400000), hh = Math.floor(left % 86400000 / 3600000);
+    ctx.textAlign = 'center'; ctx.fillStyle = '#ffc857'; fitFont(`${tr('weekLeft', dd, hh)} · ${tr('weekPrizes')}`, W - 40, 13, 800, FB);
+    ctx.fillText(`${tr('weekLeft', dd, hh)} · ${tr('weekPrizes')}`, W / 2, 140);
+  }
+  const rows = d.top.slice(0, nRows);
+  rows.forEach((r, i) => drawBoardRow(r, y0 + i * 40));
   if (d.me && !rows.some(r => r.me)) {
-    ctx.fillStyle = '#4a4278'; for (let k = 0; k < 3; k++) circ(W / 2 - 12 + k * 12, 140 + 13 * 40 + 8, 2.2);
-    drawBoardRow({ rank: d.me.rank, name: tr('boardYou'), value: d.me.value, me: true }, 140 + 13 * 40 + 20);
+    ctx.fillStyle = '#4a4278'; for (let k = 0; k < 3; k++) circ(W / 2 - 12 + k * 12, y0 + nRows * 40 + 8, 2.2);
+    drawBoardRow({ rank: d.me.rank, name: tr('boardYou'), value: d.me.value, me: true }, y0 + nRows * 40 + 20);
   }
   uiBtn(75, 736, W - 150, 46, tr('boardRetry'), () => openBoard(BOARD.tab), false);
 }
@@ -4004,13 +4026,15 @@ function drawMap() {
   fade.addColorStop(0, 'rgba(17,14,34,0)'); fade.addColorStop(1, '#110e22');
   ctx.fillStyle = fade; ctx.fillRect(0, MAP_VIEW - 26, W, 34);
   ctx.fillStyle = '#110e22'; ctx.fillRect(0, MAP_VIEW + 8, W, H - MAP_VIEW - 8);
-  uiBtn(16, 736, 128, 46, tr('howto'), () => setScreen('howto'), false);
+  uiBtn(16, 736, 46, 46, '?', () => setScreen('howto'), false);
+  uiBtn(70, 736, 170, 46, tr('daily'), () => { DAILY.msg = null; setScreen('daily'); }, false);
+  if (!challengeDone()) { ctx.fillStyle = '#ff5d7a'; circ(232, 740, 6); ctx.strokeStyle = '#110e22'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(232, 740, 6, 0, TAU); ctx.stroke(); }
   const nightOpen = PROG.unlocked >= ENDLESS_UNLOCK;
   const rec = PROG.endless || 0;
-  uiBtn(154, 736, W - 170, 46, nightOpen ? (rec ? `${tr('night')} · ${rec}` : tr('night')) : tr('nightAfter'),
+  uiBtn(248, 736, W - 264, 46, nightOpen ? (rec ? `${tr('night')} · ${rec}` : tr('night')) : tr('nightAfter'),
     () => { if (nightOpen) prepLevel(-1); else { Snd.play('locked'); haptic('warning'); } }, nightOpen);
   iconBtn(W - 46, 13, 'sound', () => Snd.toggle());
-  iconBtn(W - 90, 13, 'trophy', () => openBoard('night'));
+  iconBtn(W - 90, 13, 'trophy', () => openBoard('week'));
   iconBtn(62, 13, 'bag', () => { SHOP.msg = null; setScreen('shop'); refreshInv(); });
   langBtn();
 }
@@ -4221,6 +4245,117 @@ function drawShop() {
   if (note) { ctx.textAlign = 'center'; ctx.fillStyle = SHOP.msg ? '#ff8fb1' : '#8f88b5'; ctx.font = `800 13px ${FB}`; wrap(note, W / 2, 628, W - 60, 18); }
 }
 
+
+// ---------- daily: login bonus, challenge of the day, inviting friends ----------
+// The worker hands out the login bonus and challenge rewards (once a day) and gifts invites.
+const DAY_MS = 86400000;
+const utcDay = (ts = Date.now()) => new Date(ts).toISOString().slice(0, 10);
+function weekKey(ts = Date.now()) {
+  const d = new Date(ts), back = (d.getUTCDay() + 6) % 7;
+  return utcDay(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate() - back));
+}
+const DAILY_REWARDS = [{ meter: 1 }, { heart: 1 }, { meter: 1 }, { heart: 1 }, { meter: 2 }, { heart: 2 }, { hat_party: 1, heart: 1, meter: 1 }]; // = DAILY in the worker
+const DAILY = { loaded: false, streak: 0, claimed: false, challengeDone: false, invited: 0, bot: null, today: null, msg: null, shown: false };
+// what "win the level" also has to include; picked by date, same for everyone at the same progress
+const CHALLENGES = {
+  knots: { n: 4, ok: g => g.stats.knots >= 4 },
+  lasers: { n: 2, ok: g => g.stats.lasers >= 2 },
+  noko: { n: 0, ok: g => !g.everKo },
+  par: { n: 0, ok: g => g.turn <= g.lvl.par },
+  portals: { n: 2, ok: g => g.stats.portals >= 2 },
+};
+function todayChallenge() {
+  const today = DAILY.today || utcDay(), dn = Math.floor(Date.parse(today) / DAY_MS);
+  const count = Math.max(1, Math.min(PROG.unlocked, LEVELS.length)), lo = Math.max(0, count - 6);
+  const li = lo + dn % (count - lo);
+  let type = Object.keys(CHALLENGES)[dn % 5];
+  if (type === 'portals' && LEVELS[li].noBoxes) type = 'knots';
+  const n = type === 'par' ? LEVELS[li].par : CHALLENGES[type].n;
+  return { li, type, n, reward: dn % 2 ? 'heart' : 'meter', today };
+}
+const challengeDone = () => DAILY.challengeDone || lsGet('pawsling-ch') === (DAILY.today || utcDay());
+async function loadDaily() {
+  if (!serverOn()) return;
+  try {
+    const d = await api('/daily', {});
+    Object.assign(DAILY, { loaded: true, streak: d.streak, claimed: d.claimed, challengeDone: d.challengeDone, invited: d.invited, bot: d.bot, today: d.today });
+    if (d.items) setInv(d.items);
+    if (d.gifted) DAILY.msg = tr('giftedMsg');
+    // open the daily screen once when today's bonus has just been given
+    if ((d.claimed || d.gifted) && SCREEN === 'map' && !DAILY.shown) { DAILY.shown = true; setScreen('daily'); }
+  } catch (e) {}
+}
+function startChallenge() {
+  const ch = todayChallenge();
+  startLevel(ch.li);
+  G.challenge = ch;
+}
+function checkChallenge() {
+  const ch = G.challenge;
+  if (!ch || challengeDone() || !CHALLENGES[ch.type].ok(G)) return;
+  G.challengeWon = ch.reward;
+  DAILY.challengeDone = true; lsSet('pawsling-ch', ch.today);
+  if (serverOn()) api('/challenge', { reward: ch.reward }).then(r => r.items && setInv(r.items)).catch(() => {});
+}
+function inviteFriend() {
+  const uid = TG && TG.initDataUnsafe && TG.initDataUnsafe.user && TG.initDataUnsafe.user.id;
+  if (!serverOn() || !DAILY.bot || !uid) { DAILY.msg = tr('dailyTgOnly'); return; }
+  const link = `https://t.me/${DAILY.bot}?startapp=ref_${uid}`;
+  try { TG.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent(tr('inviteText'))}`); }
+  catch (e) { DAILY.msg = tr('dailyTgOnly'); }
+}
+function rewardIcon(g, x, y) {
+  const keys = Object.keys(g);
+  if (g.hat_party) { ctx.save(); ctx.translate(x + 4, y + 22); drawHat('party', 15); ctx.restore(); return; }
+  const k = keys[0], n = g[k];
+  if (k === 'heart') heart(x, y, 8, '#ff5d7a');
+  else { ctx.fillStyle = '#231e44'; rr(x - 11, y - 5, 22, 10, 5); ctx.fill(); ctx.fillStyle = '#ff8fb1'; rr(x - 11, y - 5, 11, 10, 5); ctx.fill(); }
+  if (n > 1) { ctx.fillStyle = '#fff'; ctx.font = `900 11px ${FD}`; ctx.textAlign = 'left'; ctx.fillText('×' + n, x + 12, y + 1); }
+}
+function drawDaily() {
+  ctx.fillStyle = '#110e22'; ctx.fillRect(0, 0, W, H);
+  const g = ctx.createRadialGradient(W / 2, 60, 10, W / 2, 60, 320);
+  g.addColorStop(0, 'rgba(255,200,87,.14)'); g.addColorStop(1, 'rgba(255,200,87,0)');
+  ctx.fillStyle = g; ctx.fillRect(0, 0, W, 400);
+  iconBtn(12, 13, 'back', () => setScreen('map'));
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillStyle = '#ffc857'; fitFont(tr('daily'), W - 120, 30); ctx.fillText(tr('daily'), W / 2, 32);
+  const card = (y, h) => { ctx.fillStyle = '#1d1938'; rr(16, y, W - 32, h, 16); ctx.fill(); ctx.strokeStyle = '#3b3563'; ctx.lineWidth = 1.5; rr(16, y, W - 32, h, 16); ctx.stroke(); };
+  // login bonus: seven days
+  card(66, 150);
+  ctx.textAlign = 'left'; ctx.fillStyle = '#f4efe6'; ctx.font = `900 16px ${FD}`; ctx.fillText(tr('dailyBonus'), 32, 88);
+  ctx.textAlign = 'right'; ctx.fillStyle = '#ffc857'; ctx.font = `800 13px ${FB}`; ctx.fillText(tr('streak', DAILY.streak), W - 32, 88);
+  DAILY_REWARDS.forEach((rw, i) => {
+    const x = 28 + i * 57, y = 106, got = i < DAILY.streak, cur = i === DAILY.streak - 1;
+    ctx.fillStyle = got ? 'rgba(255,200,87,.16)' : '#15122a'; rr(x, y, 51, 78, 10); ctx.fill();
+    ctx.strokeStyle = cur ? '#ffc857' : got ? 'rgba(255,200,87,.4)' : '#3b3563'; ctx.lineWidth = cur ? 2.5 : 1.5; rr(x, y, 51, 78, 10); ctx.stroke();
+    ctx.textAlign = 'center'; ctx.fillStyle = got ? '#ffc857' : '#8f88b5'; ctx.font = `900 12px ${FD}`; ctx.fillText(tr('dayShort', i + 1), x + 25, y + 14);
+    rewardIcon(rw, x + 20, y + 42);
+    if (got) { ctx.strokeStyle = '#5ce1c6'; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.moveTo(x + 18, y + 64); ctx.lineTo(x + 24, y + 70); ctx.lineTo(x + 34, y + 58); ctx.stroke(); }
+  });
+  // challenge of the day
+  const ch = todayChallenge(), done = challengeDone();
+  card(230, 196);
+  ctx.textAlign = 'left'; ctx.fillStyle = '#f4efe6'; ctx.font = `900 16px ${FD}`; ctx.fillText(tr('challenge'), 32, 254);
+  ctx.fillStyle = CHAPTERS[LEVELS[ch.li].ch].col; fitFont(tr('levelRoom', ch.li + 1, CHAPTERS[LEVELS[ch.li].ch].name), W - 70, 15);
+  ctx.fillText(tr('levelRoom', ch.li + 1, CHAPTERS[LEVELS[ch.li].ch].name), 32, 284);
+  ctx.fillStyle = '#c9c2e6'; ctx.font = `800 14px ${FB}`; wrap(tr('ch.' + ch.type, ch.n), 32, 312, W - 70, 19);
+  ctx.fillStyle = '#8f88b5'; ctx.font = `800 13px ${FB}`; ctx.fillText(tr('reward'), 32, 356);
+  rewardIcon({ [ch.reward]: 1 }, 118, 356);
+  ctx.fillStyle = '#f4efe6'; ctx.font = `800 13px ${FB}`; ctx.textAlign = 'left';
+  ctx.fillText(tr(ch.reward === 'heart' ? 'boostHeart' : 'boostMeter'), 136, 357);
+  if (done) { ctx.textAlign = 'center'; ctx.fillStyle = '#5ce1c6'; ctx.font = `900 18px ${FD}`; ctx.fillText(tr('chDone'), W / 2, 398); }
+  else uiBtn(75, 374, W - 150, 44, tr('play'), startChallenge, true);
+  // invite a friend
+  card(440, 176);
+  ctx.textAlign = 'left'; ctx.fillStyle = '#f4efe6'; ctx.font = `900 16px ${FD}`; ctx.fillText(tr('invite'), 32, 464);
+  ctx.textAlign = 'right'; ctx.fillStyle = '#ffc857'; ctx.font = `800 13px ${FB}`; ctx.fillText(tr('invited', DAILY.invited), W - 32, 464);
+  ctx.textAlign = 'left'; ctx.fillStyle = '#c9c2e6'; ctx.font = `800 13px ${FB}`; wrap(tr('inviteDesc'), 32, 492, W - 70, 18);
+  uiBtn(75, 556, W - 150, 46, tr('inviteBtn'), inviteFriend, false);
+  const note = DAILY.msg || (serverOn() ? '' : tr('dailyTgOnly'));
+  if (note) { ctx.textAlign = 'center'; ctx.fillStyle = DAILY.msg ? '#5ce1c6' : '#8f88b5'; ctx.font = `800 13px ${FB}`; wrap(note, W / 2, 648, W - 60, 18); }
+}
+
 function drawEnd() {
   const win = G.state === 'win';
   ctx.fillStyle = G.ch.shade; ctx.fillRect(0, 0, W, H);
@@ -4254,6 +4389,11 @@ function drawEnd() {
     ctx.textAlign = 'left'; ctx.fillStyle = '#c9c2e6'; ctx.font = `700 13px ${FB}`; ctx.fillText(k, 96, y);
     ctx.textAlign = 'right'; ctx.fillStyle = '#fff'; ctx.font = `900 16px ${FD}`; ctx.fillText(v, W - 96, y);
   });
+  if (win && G.challengeWon) {
+    ctx.textAlign = 'center'; ctx.fillStyle = '#ffc857';
+    const cw = tr('chWon', tr(G.challengeWon === 'heart' ? 'boostHeart' : 'boostMeter'));
+    fitFont(cw, W - 40, 15, 900, FD); ctx.fillText(cw, W / 2, 570);
+  }
   if (win && G.newBest) {
     ctx.textAlign = 'center'; ctx.fillStyle = '#5ce1c6'; ctx.font = `800 14px ${FB}`;
     ctx.fillText(tr('newBestLevel'), W / 2, y0 + 150);
@@ -4374,6 +4514,7 @@ function draw() {
   else if (SCREEN === 'board') drawBoard();
   else if (SCREEN === 'shop') drawShop();
   else if (SCREEN === 'prep') drawPrep();
+  else if (SCREEN === 'daily') drawDaily();
   else drawMap();
 }
 
@@ -4456,6 +4597,7 @@ cv.addEventListener('keydown', ev => {
 loadProg();
 refreshInv();
 setScreen(lsGet('pawsling-seen') || PROG.unlocked > 1 ? 'map' : 'howto');
+loadDaily();
 // #dev: timer-driven loop (keeps running in hidden tabs) plus a state hook for testing
 const DEV = location.hash === '#dev';
 const nextFrame = DEV ? cb => setTimeout(() => cb(performance.now()), 16) : requestAnimationFrame;
