@@ -12,10 +12,12 @@ worker/             the leaderboard: a Cloudflare Worker with a D1 database
 
 ## Gameplay
 
-- 30 levels in 6 rooms, each room ends with a boss: Kitchen, Living room, Bedroom (4 levels each),
-  Bathroom, Balcony, Attic (6 levels each). The map scrolls.
-- The new rooms bring new enemies: a toothbrush heals enemies nearby, a fan blows heroes off course,
-  an RC car drives to a new spot every turn.
+- 36 levels in 7 rooms, each room ends with a boss: Kitchen, Living room, Bedroom (4 levels each),
+  Bathroom, Balcony, Attic, Garage (6 levels each). The map scrolls.
+- Later rooms bring new enemies: a toothbrush heals enemies nearby, a fan blows heroes off course,
+  an RC car drives to a new spot every turn; in the garage a shield bot cuts damage to its neighbors
+  to 35% and twins split into two minis when destroyed.
+- Each room is tougher than the last (enemy toughness ×1 in the kitchen up to ×2.7 in the garage).
 - Stars: 3 for finishing within the par turn count, 2 for up to 1.5×par, 1 otherwise.
 - Night Shift (unlocks after level 4): endless generated waves, a boss every 5th wave, the room changes
   every 5 waves; the record is the number of waves survived.

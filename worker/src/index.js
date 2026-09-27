@@ -7,7 +7,7 @@
 //   and when `board` is "night" or "stars" returns the top of that board and the player's rank.
 
 const MAX_AGE = 7 * 24 * 3600; // initData older than this is refused
-const LIMITS = { night: 500, stars: 90 }; // anything above is not a real result
+const LIMITS = { night: 500, stars: 300 }; // anything above is not a real result
 const TOP = 20;
 
 export default {

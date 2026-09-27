@@ -204,6 +204,8 @@ const ROOM_SFX = [
     kill: s => [2093, 2349, 2794].forEach((f, i) => INST.bell(s, f, .25, i * .06, .6)) },
   { wall: s => { s.tone(110, .12, 'sine', .12, 60); s.noise(.08, .05, 300, null, 0, 'lowpass'); },
     kill: s => { s.noise(.35, .09, 900, 300, 0, 'lowpass'); s.tone(260, .2, 'triangle', .06, 520); } },
+  { wall: s => { s.tone(620, .12, 'square', .025, null, 0, 2400); s.tone(930, .1, 'square', .018, null, 0, 2400); },
+    kill: s => { INST.clang(s, 900, .3, 0, 1.2); s.noise(.25, .08, 2500, 800, 0, 'bandpass'); } },
 ];
 const SOUNDS = {
   click: s => s.tone(700, .05, 'triangle', .08),
@@ -309,7 +311,12 @@ const Amb = {
     } else if (room === 2) { const w = bed('lowpass', 350, .5, .035); lfo(.12, .022, w.gg.gain); }
     else if (room === 3) { const w = bed('bandpass', 600, .8, .012); lfo(.2, .006, w.gg.gain); }
     else if (room === 4) { const w = bed('lowpass', 500, .5, .03); lfo(.09, .02, w.gg.gain); }
-    else { const w = bed('highpass', 3000, .5, .02); lfo(.3, .008, w.gg.gain); }
+    else if (room === 5) { const w = bed('highpass', 3000, .5, .02); lfo(.3, .008, w.gg.gain); }
+    else {
+      bed('lowpass', 200, .7, .03);
+      const hum = c.createOscillator(), hg = c.createGain(); hum.type = 'triangle'; hum.frequency.value = 100; hg.gain.value = .004;
+      hum.connect(hg); hg.connect(g); hum.start(); this.srcs.push(hum);
+    }
     this.next = c.currentTime + .6; this.tick2 = 0;
     this.iv = setInterval(() => this.tick(), 150);
   },
@@ -341,6 +348,10 @@ const Amb = {
           if (r < .5) s.tone(900 + Math.random() * 500, .04, 'sine', .02, 500, d);
           else if (r < .75) s.tone(180, .35, 'sawtooth', .012, 140, d, 700);
           this.next += .7 + Math.random() * 1.3;
+        } else if (this.room === 6) {
+          if (r < .4) s.tone(1500 + Math.random() * 900, .07, 'square', .008, null, d, 3000);
+          else if (r < .6) s.tone(900 + Math.random() * 400, .05, 'sine', .02, 500, d);
+          this.next += .8 + Math.random() * 1.4;
         } else {
           if (r < .6) for (let k = 0; k < 3; k++) s.tone(4400 + Math.random() * 200, .03, 'sine', .01, null, d + k * .06);
           else if (r < .85) INST.bell(s, midi([77, 79, 81, 84, 86, 89][Math.floor(Math.random() * 6)]), .5, d, .2);
@@ -386,8 +397,11 @@ const ENEMY = {
   brush: { r: 22, hp: 1400,  timer: 3, atk: 900 },   // heals enemies around it
   fan:   { r: 25, hp: 1800,  timer: 3, atk: 1100 },  // blows heroes away
   rc:    { r: 23, hp: 1500,  timer: 2, atk: 1000 },  // drives to a new spot every turn
+  shield: { r: 24, hp: 1800, timer: 4, atk: 800 },   // enemies near it take a third of the damage
+  split: { r: 27, hp: 2000,  timer: 3, atk: 1300 },  // breaks into two minis when destroyed
+  mini:  { r: 16, hp: 700,   timer: 2, atk: 700 },
 };
-const HEAL_R = 150, FAN_R = 125;
+const HEAL_R = 150, FAN_R = 125, SHIELD_R = 140;
 // Each chapter is a room with its own palette, particle shape and window light (A, B along the wall, D across the floor).
 const CHAPTERS = [
   { name: 'Кухня', key: 'kitchen', col: '#ff9f43', hp: 1, atk: 1,
@@ -408,6 +422,9 @@ const CHAPTERS = [
   { name: 'Горище', key: 'attic', col: '#ffb070', hp: 2.3, atk: 1.55,
     hud: '#1a120c', line: '#5a3b24', shade: 'rgba(18,12,8,.92)', fx: ['#ffb070', '#e8d2b0', '#c9a27a', '#fff1d6'], shape: 'dust',
     beam: [[170, 60], [290, 60], [110, 470]], beamCol: '255,225,180' },
+  { name: 'Гараж', key: 'garage', col: '#a9c1d9', hp: 2.7, atk: 1.7,
+    hud: '#121317', line: '#4a4d57', shade: 'rgba(10,10,14,.92)', fx: ['#ffd166', '#c9d3dd', '#ff9f43', '#8a96a3'], shape: 'confetti',
+    beam: [[300, 60], [440, 60], [200, 540]], beamCol: '230,240,255' },
 ];
 const LEVELS = [
   { ch: 0, par: 5, noBoxes: true, tip: 'Потягни від героя назад і відпусти',
@@ -473,6 +490,19 @@ const LEVELS = [
     waves: [[['rc', 100, 200], ['rc', 225, 300], ['rc', 350, 200]], [['mop', 90, 170], ['brush', 225, 220], ['mop', 360, 170], ['fan', 225, 420]], [['rc', 80, 180], ['rc', 370, 180], ['mop', 225, 260], ['brush', 120, 430], ['fan', 330, 430]]] },
   { ch: 5, par: 24, boss: .85,
     waves: [[['rc', 110, 200], ['brush', 225, 300], ['rc', 340, 200]], [['fan', 100, 300], ['mop', 225, 200], ['fan', 350, 300]], [['boss', 225, 240], ['rc', 85, 440], ['rc', 365, 440]]] },
+  // garage: shield bots protect their neighbors, twins split in two
+  { ch: 6, par: 8, tip: 'shield',
+    waves: [[['shield', 225, 200], ['vac', 120, 280], ['vac', 330, 280], ['spray', 225, 400]]] },
+  { ch: 6, par: 13, tip: 'split',
+    waves: [[['split', 150, 220], ['split', 300, 220], ['spray', 225, 380]], [['shield', 225, 170], ['mop', 110, 280], ['mop', 340, 280], ['split', 225, 420]]] },
+  { ch: 6, par: 10,
+    waves: [[['shield', 110, 190], ['shield', 340, 190], ['split', 225, 260], ['vac', 90, 420], ['vac', 360, 420]]] },
+  { ch: 6, par: 15,
+    waves: [[['fan', 225, 300], ['split', 110, 190], ['split', 340, 190]], [['shield', 225, 210], ['brush', 110, 330], ['brush', 340, 330], ['rc', 225, 450]]] },
+  { ch: 6, par: 21,
+    waves: [[['split', 100, 200], ['split', 225, 300], ['split', 350, 200]], [['shield', 90, 170], ['mop', 225, 230], ['shield', 360, 170], ['fan', 225, 420]], [['shield', 225, 170], ['split', 100, 300], ['split', 350, 300], ['brush', 225, 430], ['rc', 90, 460]]] },
+  { ch: 6, par: 25, boss: .8,
+    waves: [[['shield', 110, 300], ['split', 225, 180], ['shield', 340, 300]], [['split', 100, 220], ['fan', 225, 330], ['split', 350, 220]], [['boss', 225, 240], ['shield', 120, 380], ['shield', 330, 380]]] },
 ];
 const BOXSETS = [[[55, 470], [395, 120]], [[60, 130], [390, 470]], [[50, 560], [400, 560]], [[395, 470], [55, 120]], [[40, 330], [410, 330]]];
 const BTN = { x: 276, y: 688, w: 158, h: 50 };
@@ -501,7 +531,8 @@ const I18N = {
     'hero.pixel.name': 'Піксель', 'hero.pixel.skill': 'пролітає крізь ворогів наскрізь', 'hero.pixel.combo': 'Лазерний погляд',
     'hero.bandit.name': 'Бандит', 'hero.bandit.skill': 'кожен удар відкладає атаку ворога на хід', 'hero.bandit.combo': 'Нічний перекус',
     'hero.nugget.name': 'Наґет', 'hero.nugget.skill': 'кожен удар вибухає по сусідніх ворогах', 'hero.nugget.combo': 'Скарб зі смітника',
-    'room.kitchen': 'Кухня', 'room.living': 'Вітальня', 'room.bedroom': 'Спальня', 'room.bath': 'Ванна', 'room.balcony': 'Балкон', 'room.attic': 'Горище',
+    'room.kitchen': 'Кухня', 'room.living': 'Вітальня', 'room.bedroom': 'Спальня', 'room.bath': 'Ванна', 'room.balcony': 'Балкон', 'room.attic': 'Горище', 'room.garage': 'Гараж',
+    'tip.shield': 'Щитоботи захищають сусідів: спершу збий щитобота', 'tip.split': 'Двійнята після знищення розпадаються на двох малюків', shielded: 'щит', 'cry.shield': 'Дзинь!', 'cry.split': 'Бульк!', 'cry.mini': 'Пі-пі!',
     'tip.0': 'Потягни від героя назад і відпусти', 'tip.1': 'Перетни стару нитку, і вузол вибухне', 'tip.2': 'Коти женуться за червоною лазерною точкою',
     'tip.3': 'Бий у жовтий сенсор: потрійна шкода', 'tip.4': 'Швабри в броні: Піксель і Наґет б\'ють їх удвічі сильніше',
     'tip.12': 'Зубні щітки лікують ворогів поруч, бий їх першими', 'tip.18': 'Вентилятори здувають героїв убік, цілься з запасом',
@@ -515,7 +546,8 @@ const I18N = {
     ko: 'Нокаут!', koHint: 'Зачепи друга пострілом, щоб підняти', waveClear: 'Хвилю зачищено!', waveClearSub: h => `+${h} до міцності квартири і +1 ♥ кожному`,
     'tag.bounce': ['ВІДСКОК', 'відбивається від ворогів'], 'tag.pierce': ['ПРОШИВАННЯ', 'пролітає ворогів наскрізь'],
     bossTitles: [['Гроза крихт', 'Жодної крихти на підлозі!'], ['Володар пульта', 'Цей диван тепер мій!'], ['Нічний жах', 'Час спати... назавжди!'],
-      ['Мильний барон', 'Змию вас у каналізацію!'], ['Буревій', 'Вас здує з балкона!'], ['Горищний привид', 'Тут ніхто не живе... крім мене!']],
+      ['Мильний барон', 'Змию вас у каналізацію!'], ['Буревій', 'Вас здує з балкона!'], ['Горищний привид', 'Тут ніхто не живе... крім мене!'],
+      ['Залізний механік', 'Розберу вас на гвинтики!']],
     bossWarn: 'УВАГА · БОС НАБЛИЖАЄТЬСЯ', bossName: 'РОБО-БОС 9000', 'stat.hp': 'Міцність', 'stat.atk': 'Удар', 'stat.every': 'Атакує',
     'stat.everyN': n => `кожні ${n} ходи`, bossHint: 'Бий у жовтий сенсор: потрійна шкода', tapToStart: 'Торкнись, щоб почати',
     turn: n => `Хід ${n}`, hudWave: n => ` · хвиля ${n}`, pullHint: 'Тягни від героя назад і відпускай', par3: n => `3 зірки: пройти за ${n} ходів або швидше`,
@@ -543,7 +575,8 @@ const I18N = {
     'hero.pixel.name': 'Pixel', 'hero.pixel.skill': 'flies straight through enemies', 'hero.pixel.combo': 'Laser Stare',
     'hero.bandit.name': 'Bandit', 'hero.bandit.skill': 'each hit delays the enemy attack by a turn', 'hero.bandit.combo': 'Midnight Snack',
     'hero.nugget.name': 'Nugget', 'hero.nugget.skill': 'each hit blasts nearby enemies', 'hero.nugget.combo': 'Trash Treasure',
-    'room.kitchen': 'Kitchen', 'room.living': 'Living room', 'room.bedroom': 'Bedroom', 'room.bath': 'Bathroom', 'room.balcony': 'Balcony', 'room.attic': 'Attic',
+    'room.kitchen': 'Kitchen', 'room.living': 'Living room', 'room.bedroom': 'Bedroom', 'room.bath': 'Bathroom', 'room.balcony': 'Balcony', 'room.attic': 'Attic', 'room.garage': 'Garage',
+    'tip.shield': 'Shield bots protect their neighbors: take the shield bot out first', 'tip.split': 'Twins split into two little ones when destroyed', shielded: 'shield', 'cry.shield': 'Clang!', 'cry.split': 'Blorp!', 'cry.mini': 'Meep!',
     'tip.0': 'Pull back from a hero and let go', 'tip.1': 'Cross an old thread and the knot explodes', 'tip.2': 'Cats chase the red laser dot',
     'tip.3': 'Hit the yellow sensor: triple damage', 'tip.4': 'Mops are armored: Pixel and Nugget hit them twice as hard',
     'tip.12': 'Toothbrushes heal nearby enemies, hit them first', 'tip.18': 'Fans blow heroes aside, aim with a margin',
@@ -557,7 +590,8 @@ const I18N = {
     ko: 'Knocked out!', koHint: 'Hit a friend with a shot to revive them', waveClear: 'Wave cleared!', waveClearSub: h => `+${h} home strength and +1 ♥ each`,
     'tag.bounce': ['BOUNCE', 'rebounds off enemies'], 'tag.pierce': ['PIERCE', 'flies through enemies'],
     bossTitles: [['Crumb Terror', 'Not a single crumb on the floor!'], ['Remote Overlord', 'This couch is mine now!'], ['Night Terror', 'Time to sleep... forever!'],
-      ['Soap Baron', 'Down the drain you go!'], ['Stormbringer', 'I\'ll blow you off the balcony!'], ['Attic Phantom', 'Nobody lives up here... but me!']],
+      ['Soap Baron', 'Down the drain you go!'], ['Stormbringer', 'I\'ll blow you off the balcony!'], ['Attic Phantom', 'Nobody lives up here... but me!'],
+      ['Iron Mechanic', 'I\'ll take you apart, bolt by bolt!']],
     bossWarn: 'WARNING · BOSS INCOMING', bossName: 'ROBO-BOSS 9000', 'stat.hp': 'Toughness', 'stat.atk': 'Hit', 'stat.every': 'Attacks',
     'stat.everyN': n => `every ${n} turns`, bossHint: 'Hit the yellow sensor: triple damage', tapToStart: 'Tap to start',
     turn: n => `Turn ${n}`, hudWave: n => ` · wave ${n}`, pullHint: 'Pull back from a hero and let go', par3: n => `3 stars: finish in ${n} turns or fewer`,
@@ -585,7 +619,8 @@ const I18N = {
     'hero.pixel.name': 'Pixel', 'hero.pixel.skill': 'przelatuje przez wrogów na wylot', 'hero.pixel.combo': 'Laserowe spojrzenie',
     'hero.bandit.name': 'Bandyta', 'hero.bandit.skill': 'każde trafienie opóźnia atak wroga o turę', 'hero.bandit.combo': 'Nocna przekąska',
     'hero.nugget.name': 'Nugget', 'hero.nugget.skill': 'każde trafienie wybucha na pobliskich wrogach', 'hero.nugget.combo': 'Skarb ze śmietnika',
-    'room.kitchen': 'Kuchnia', 'room.living': 'Salon', 'room.bedroom': 'Sypialnia', 'room.bath': 'Łazienka', 'room.balcony': 'Balkon', 'room.attic': 'Strych',
+    'room.kitchen': 'Kuchnia', 'room.living': 'Salon', 'room.bedroom': 'Sypialnia', 'room.bath': 'Łazienka', 'room.balcony': 'Balkon', 'room.attic': 'Strych', 'room.garage': 'Garaż',
+    'tip.shield': 'Tarczoboty chronią sąsiadów: najpierw zbij tarczobota', 'tip.split': 'Bliźniaki po zniszczeniu rozpadają się na dwa maluchy', shielded: 'tarcza', 'cry.shield': 'Brzdęk!', 'cry.split': 'Bulk!', 'cry.mini': 'Pip!',
     'tip.0': 'Pociągnij od bohatera do tyłu i puść', 'tip.1': 'Przetnij starą nitkę, a supeł wybuchnie', 'tip.2': 'Koty gonią czerwoną kropkę lasera',
     'tip.3': 'Trafiaj w żółty czujnik: potrójne obrażenia', 'tip.4': 'Mopy mają pancerz: Pixel i Nugget biją je dwa razy mocniej',
     'tip.12': 'Szczoteczki leczą pobliskich wrogów, bij je najpierw', 'tip.18': 'Wiatraki zdmuchują bohaterów, celuj z zapasem',
@@ -599,7 +634,8 @@ const I18N = {
     ko: 'Nokaut!', koHint: 'Traf przyjaciela strzałem, żeby go podnieść', waveClear: 'Fala pokonana!', waveClearSub: h => `+${h} wytrzymałości mieszkania i +1 ♥ dla każdego`,
     'tag.bounce': ['ODBICIE', 'odbija się od wrogów'], 'tag.pierce': ['PRZEBICIE', 'przelatuje przez wrogów'],
     bossTitles: [['Postrach okruszków', 'Ani okruszka na podłodze!'], ['Władca pilota', 'Ta kanapa jest teraz moja!'], ['Nocny koszmar', 'Czas spać... na zawsze!'],
-      ['Mydlany baron', 'Spłuczę was do kanalizacji!'], ['Wichrowy', 'Zdmuchnę was z balkonu!'], ['Upiór ze strychu', 'Nikt tu nie mieszka... oprócz mnie!']],
+      ['Mydlany baron', 'Spłuczę was do kanalizacji!'], ['Wichrowy', 'Zdmuchnę was z balkonu!'], ['Upiór ze strychu', 'Nikt tu nie mieszka... oprócz mnie!'],
+      ['Żelazny mechanik', 'Rozkręcę was na śrubki!']],
     bossWarn: 'UWAGA · NADCHODZI BOSS', bossName: 'ROBO-BOSS 9000', 'stat.hp': 'Wytrzymałość', 'stat.atk': 'Cios', 'stat.every': 'Atakuje',
     'stat.everyN': n => `co ${n} tury`, bossHint: 'Trafiaj w żółty czujnik: potrójne obrażenia', tapToStart: 'Dotknij, aby zacząć',
     turn: n => `Tura ${n}`, hudWave: n => ` · fala ${n}`, pullHint: 'Ciągnij od bohatera do tyłu i puszczaj', par3: n => `3 gwiazdki: ukończ w ${n} tur lub mniej`,
@@ -627,7 +663,8 @@ const I18N = {
     'hero.pixel.name': 'Pixel', 'hero.pixel.skill': 'fliegt glatt durch Gegner hindurch', 'hero.pixel.combo': 'Laserblick',
     'hero.bandit.name': 'Bandit', 'hero.bandit.skill': 'jeder Treffer verzögert den Gegnerangriff um einen Zug', 'hero.bandit.combo': 'Mitternachtssnack',
     'hero.nugget.name': 'Nugget', 'hero.nugget.skill': 'jeder Treffer explodiert bei nahen Gegnern', 'hero.nugget.combo': 'Mülltonnenschatz',
-    'room.kitchen': 'Küche', 'room.living': 'Wohnzimmer', 'room.bedroom': 'Schlafzimmer', 'room.bath': 'Badezimmer', 'room.balcony': 'Balkon', 'room.attic': 'Dachboden',
+    'room.kitchen': 'Küche', 'room.living': 'Wohnzimmer', 'room.bedroom': 'Schlafzimmer', 'room.bath': 'Badezimmer', 'room.balcony': 'Balkon', 'room.attic': 'Dachboden', 'room.garage': 'Garage',
+    'tip.shield': 'Schildbots schützen ihre Nachbarn: schalte zuerst den Schildbot aus', 'tip.split': 'Zwillinge zerfallen beim Zerstören in zwei Kleine', shielded: 'Schild', 'cry.shield': 'Kling!', 'cry.split': 'Blubb!', 'cry.mini': 'Piep!',
     'tip.0': 'Vom Helden nach hinten ziehen und loslassen', 'tip.1': 'Kreuze einen alten Faden und der Knoten explodiert', 'tip.2': 'Katzen jagen den roten Laserpunkt',
     'tip.3': 'Triff den gelben Sensor: dreifacher Schaden', 'tip.4': 'Wischmopps sind gepanzert: Pixel und Nugget treffen sie doppelt',
     'tip.12': 'Zahnbürsten heilen Gegner in der Nähe, schalte sie zuerst aus', 'tip.18': 'Ventilatoren pusten Helden zur Seite, ziele mit Abstand',
@@ -641,7 +678,8 @@ const I18N = {
     ko: 'K.o.!', koHint: 'Triff einen Freund mit einem Schuss, um ihn aufzuwecken', waveClear: 'Welle geschafft!', waveClearSub: h => `+${h} Wohnungsstärke und +1 ♥ für alle`,
     'tag.bounce': ['ABPRALL', 'prallt von Gegnern ab'], 'tag.pierce': ['DURCHSCHLAG', 'fliegt durch Gegner'],
     bossTitles: [['Krümelschreck', 'Kein Krümel auf dem Boden!'], ['Fernbedienungsfürst', 'Das Sofa gehört jetzt mir!'], ['Nachtmahr', 'Schlafenszeit... für immer!'],
-      ['Seifenbaron', 'Ab in den Abfluss mit euch!'], ['Sturmbringer', 'Ich puste euch vom Balkon!'], ['Dachbodengeist', 'Hier wohnt niemand... außer mir!']],
+      ['Seifenbaron', 'Ab in den Abfluss mit euch!'], ['Sturmbringer', 'Ich puste euch vom Balkon!'], ['Dachbodengeist', 'Hier wohnt niemand... außer mir!'],
+      ['Eiserner Mechaniker', 'Ich schraub euch auseinander!']],
     bossWarn: 'ACHTUNG · BOSS NAHT', bossName: 'ROBO-BOSS 9000', 'stat.hp': 'Stärke', 'stat.atk': 'Schlag', 'stat.every': 'Angriff',
     'stat.everyN': n => `alle ${n} Züge`, bossHint: 'Triff den gelben Sensor: dreifacher Schaden', tapToStart: 'Tippen zum Starten',
     turn: n => `Zug ${n}`, hudWave: n => ` · Welle ${n}`, pullHint: 'Vom Helden zurückziehen und loslassen', par3: n => `3 Sterne: in ${n} Zügen oder weniger`,
@@ -669,7 +707,8 @@ const I18N = {
     'hero.pixel.name': 'Pixel', 'hero.pixel.skill': 'atraviesa a los enemigos', 'hero.pixel.combo': 'Mirada láser',
     'hero.bandit.name': 'Bandido', 'hero.bandit.skill': 'cada golpe retrasa el ataque enemigo un turno', 'hero.bandit.combo': 'Tentempié nocturno',
     'hero.nugget.name': 'Nugget', 'hero.nugget.skill': 'cada golpe explota sobre los enemigos cercanos', 'hero.nugget.combo': 'Tesoro de la basura',
-    'room.kitchen': 'Cocina', 'room.living': 'Salón', 'room.bedroom': 'Dormitorio', 'room.bath': 'Baño', 'room.balcony': 'Balcón', 'room.attic': 'Desván',
+    'room.kitchen': 'Cocina', 'room.living': 'Salón', 'room.bedroom': 'Dormitorio', 'room.bath': 'Baño', 'room.balcony': 'Balcón', 'room.attic': 'Desván', 'room.garage': 'Garaje',
+    'tip.shield': 'Los escudobots protegen a sus vecinos: elimina primero al escudobot', 'tip.split': 'Los gemelos se parten en dos pequeños al destruirlos', shielded: 'escudo', 'cry.shield': '¡Clang!', 'cry.split': '¡Blop!', 'cry.mini': '¡Pip!',
     'tip.0': 'Tira hacia atrás desde un héroe y suelta', 'tip.1': 'Cruza un hilo viejo y el nudo explotará', 'tip.2': 'Los gatos persiguen el punto láser rojo',
     'tip.3': 'Golpea el sensor amarillo: daño triple', 'tip.4': 'Las fregonas tienen armadura: Pixel y Nugget les pegan el doble',
     'tip.12': 'Los cepillos curan a los enemigos cercanos, golpéalos primero', 'tip.18': 'Los ventiladores desvían a los héroes, apunta con margen',
@@ -683,7 +722,8 @@ const I18N = {
     ko: '¡K.O.!', koHint: 'Golpea a un amigo con un disparo para levantarlo', waveClear: '¡Oleada superada!', waveClearSub: h => `+${h} de resistencia y +1 ♥ para todos`,
     'tag.bounce': ['REBOTE', 'rebota en los enemigos'], 'tag.pierce': ['PERFORAR', 'atraviesa a los enemigos'],
     bossTitles: [['Terror de las migas', '¡Ni una miga en el suelo!'], ['Señor del mando', '¡Este sofá ahora es mío!'], ['Pesadilla nocturna', 'Hora de dormir... ¡para siempre!'],
-      ['Barón del jabón', '¡Os mando por el desagüe!'], ['Tormentoso', '¡Os soplaré del balcón!'], ['Fantasma del desván', 'Aquí no vive nadie... ¡salvo yo!']],
+      ['Barón del jabón', '¡Os mando por el desagüe!'], ['Tormentoso', '¡Os soplaré del balcón!'], ['Fantasma del desván', 'Aquí no vive nadie... ¡salvo yo!'],
+      ['Mecánico de hierro', '¡Os desmonto tornillo a tornillo!']],
     bossWarn: 'ATENCIÓN · LLEGA EL JEFE', bossName: 'ROBO-JEFE 9000', 'stat.hp': 'Vida', 'stat.atk': 'Golpe', 'stat.every': 'Ataca',
     'stat.everyN': n => `cada ${n} turnos`, bossHint: 'Golpea el sensor amarillo: daño triple', tapToStart: 'Toca para empezar',
     turn: n => `Turno ${n}`, hudWave: n => ` · oleada ${n}`, pullHint: 'Tira hacia atrás desde un héroe y suelta', par3: n => `3 estrellas: termina en ${n} turnos o menos`,
@@ -720,7 +760,11 @@ function fitFont(text, maxW, size, weight = 900, fam = FD) {
 // game data reads its text through the dictionary
 for (const h of HEROES) for (const f of ['name', 'skill', 'combo']) Object.defineProperty(h, f, { get: () => tr(`hero.${h.id}.${f}`), enumerable: true, configurable: true });
 for (const ch of CHAPTERS) Object.defineProperty(ch, 'name', { get: () => tr('room.' + ch.key), enumerable: true, configurable: true });
-LEVELS.forEach((l, i) => { if (l.tip) Object.defineProperty(l, 'tip', { get: () => tr('tip.' + i), enumerable: true, configurable: true }); });
+LEVELS.forEach((l, i) => {
+  if (!l.tip) return;
+  const key = typeof l.tip === 'string' && /^[a-z]+$/.test(l.tip) ? 'tip.' + l.tip : 'tip.' + i;
+  Object.defineProperty(l, 'tip', { get: () => tr(key), enumerable: true, configurable: true });
+});
 cv.setAttribute('aria-label', tr('aria'));
 document.documentElement.lang = LANG;
 
@@ -1116,7 +1160,64 @@ function roomAttic(b, ch) {
     for (let y = 6; y < H; y += 14) for (let x = (y / 14 % 2) * 20; x < W; x += 40) c.fillRect(x, y, 26, 3);
   });
 }
-const ROOMS = [roomKitchen, roomLiving, roomBedroom, roomBath, roomBalcony, roomAttic];
+function roomGarage(b, ch) {
+  const R = seeded(67);
+  b.fillStyle = '#2a2d33'; b.fillRect(0, TOP, W, BOT - TOP);
+  for (let i = 0; i < 2500; i++) { b.fillStyle = `rgba(${R() < .5 ? '255,255,255' : '0,0,0'},${.03 + R() * .05})`; b.fillRect(R() * W, TOP + R() * (BOT - TOP), 2, 2); }
+  b.fillStyle = 'rgba(0,0,0,.35)';
+  for (let y = TOP + 150; y < BOT; y += 150) b.fillRect(0, y, W, 2);
+  b.fillRect(W / 2 - 1, TOP + 50, 2, BOT - TOP - 50);
+  // parking bay
+  b.fillStyle = 'rgba(255,209,102,.5)';
+  b.fillRect(58, 170, 8, 380); b.fillRect(W - 66, 170, 8, 380);
+  for (let x = 66; x < W - 66; x += 34) b.fillRect(x, 546, 20, 6);
+  // oil stains
+  for (const [x, y, rx, ry] of [[180, 330, 52, 30], [272, 420, 34, 22], [150, 470, 22, 14], [320, 250, 18, 12]]) {
+    const g = b.createRadialGradient(x, y, 2, x, y, rx);
+    g.addColorStop(0, 'rgba(8,8,12,.6)'); g.addColorStop(1, 'rgba(8,8,12,0)');
+    b.fillStyle = g; b.beginPath(); b.ellipse(x, y, rx, ry, .3, 0, TAU); b.fill();
+  }
+  windowLight(b, ch, .05);
+  // workbench with tools along the top wall
+  const ty = TOP;
+  b.fillStyle = 'rgba(0,0,0,.35)'; b.fillRect(0, ty + 42, W, 7);
+  b.fillStyle = '#6b4a30'; b.fillRect(0, ty, W, 42);
+  b.fillStyle = '#7d5838'; b.fillRect(0, ty + 36, W, 6);
+  b.fillStyle = 'rgba(0,0,0,.15)'; for (let i = 0; i < 5; i++) b.fillRect(0, ty + 5 + i * 7, W, 1);
+  b.strokeStyle = '#b9c3cf'; b.lineWidth = 5; b.lineCap = 'round';
+  b.beginPath(); b.moveTo(52, ty + 12); b.lineTo(104, ty + 27); b.stroke();
+  b.lineWidth = 3; b.beginPath(); b.arc(46, ty + 10, 7, .6, 5.6); b.stroke();
+  b.fillStyle = '#c99a62'; b.save(); b.translate(150, ty + 20); b.rotate(-.3); b.fillRect(-4, -2, 44, 5); b.fillStyle = '#8a96a3'; b.fillRect(36, -8, 9, 17); b.restore();
+  b.fillStyle = '#d9423f'; rr(300, ty + 6, 76, 28, 4, b); b.fill();
+  b.fillStyle = '#a82e2b'; b.fillRect(300, ty + 16, 76, 3);
+  b.strokeStyle = '#2a2d33'; b.lineWidth = 3; b.beginPath(); b.moveTo(326, ty + 6); b.lineTo(326, ty + 1); b.lineTo(350, ty + 1); b.lineTo(350, ty + 6); b.stroke();
+  b.fillStyle = '#b9c3cf'; for (const [x, y] of [[220, 14], [232, 22], [245, 12], [258, 26]]) { b.beginPath(); b.arc(x, ty + y, 2.2, 0, TAU); b.fill(); }
+  // stacked tyres and a jerry can
+  for (let k = 0; k < 3; k++) {
+    const x = W - 42 + k * 2, y = BOT - 46 - k * 5;
+    b.fillStyle = 'rgba(0,0,0,.35)'; b.beginPath(); b.arc(x + 3, y + 5, 30, 0, TAU); b.fill();
+    b.fillStyle = '#1b1b1f'; b.beginPath(); b.arc(x, y, 30, 0, TAU); b.fill();
+    b.strokeStyle = '#2e2e35'; b.lineWidth = 3; b.beginPath(); b.arc(x, y, 24, 0, TAU); b.stroke();
+    b.fillStyle = '#8a96a3'; b.beginPath(); b.arc(x, y, 12, 0, TAU); b.fill();
+    b.fillStyle = '#5a6470'; b.beginPath(); b.arc(x, y, 5, 0, TAU); b.fill();
+  }
+  b.fillStyle = 'rgba(0,0,0,.35)'; rr(24, BOT - 76, 38, 50, 6, b); b.fill();
+  b.fillStyle = '#c0392b'; rr(20, BOT - 80, 38, 50, 6, b); b.fill();
+  b.strokeStyle = '#8e2a20'; b.lineWidth = 2; b.beginPath(); b.moveTo(24, BOT - 76); b.lineTo(54, BOT - 34); b.moveTo(54, BOT - 76); b.lineTo(24, BOT - 34); b.stroke();
+  b.fillStyle = '#e8e8e8'; b.fillRect(44, BOT - 88, 8, 9);
+  // hazard stripe along the door
+  b.save(); b.beginPath(); b.rect(0, BOT - 10, W, 10); b.clip();
+  b.fillStyle = '#ffc857'; b.fillRect(0, BOT - 10, W, 10);
+  b.fillStyle = '#15122a';
+  for (let x = -20; x < W + 20; x += 20) { b.beginPath(); b.moveTo(x, BOT); b.lineTo(x + 10, BOT); b.lineTo(x + 20, BOT - 10); b.lineTo(x + 10, BOT - 10); b.closePath(); b.fill(); }
+  b.restore();
+  vignette(b, '6,6,10', .6);
+  hudBars(b, ch, c => {
+    c.fillStyle = 'rgba(255,209,102,.05)';
+    for (let x = -60; x < W + 60; x += 28) { c.beginPath(); c.moveTo(x, 0); c.lineTo(x + 12, 0); c.lineTo(x + 12 + H * .3, H); c.lineTo(x + H * .3, H); c.fill(); }
+  });
+}
+const ROOMS = [roomKitchen, roomLiving, roomBedroom, roomBath, roomBalcony, roomAttic, roomGarage];
 const BGS = CHAPTERS.map((ch, i) => layer(b => { b.fillStyle = ch.hud; b.fillRect(0, 0, W, H); ROOMS[i](b, ch); }));
 freeze(BGS);
 
@@ -1168,6 +1269,10 @@ function drawRoomUnder(c) {
   } else if (c === 5) {
     const f = .8 + .2 * flick(t * .5);
     glowAt(225, TOP + 150, 200, '255,200,130', .12 * f);
+  } else if (c === 6) {
+    const off = frac(t * .13) > .96 && Math.sin(t * 60) > 0;
+    if (!off) glowAt(225, TOP + 70, 260, '220,235,255', .11);
+    ctx.fillStyle = off ? 'rgba(200,210,220,.25)' : 'rgba(235,245,255,.8)'; ctx.fillRect(165, TOP + 46, 120, 4);
   } else {
     glowAt(22, BOT - 22, 60 + 6 * Math.sin(t * 1.5), '255,220,140', .22);
     for (let k = 0; k < 10; k++) {
@@ -1242,11 +1347,15 @@ function chIcon(c, x, y, s, col) {
   } else if (c === 4) {
     for (let k = 0; k < 5; k++) { const a = k * TAU / 5 - Math.PI / 2; circ(x + Math.cos(a) * s * .3, y - s * .08 + Math.sin(a) * s * .3, s * .18); }
     ctx.lineWidth = s * .09; ctx.beginPath(); ctx.moveTo(x, y + s * .15); ctx.lineTo(x, y + s * .62); ctx.stroke();
-  } else {
+  } else if (c === 5) {
     ctx.lineWidth = s * .11;
     ctx.beginPath(); ctx.moveTo(x - s * .6, y + s * .1); ctx.lineTo(x, y - s * .5); ctx.lineTo(x + s * .6, y + s * .1); ctx.stroke();
     ctx.beginPath(); ctx.moveTo(x - s * .4, y - s * .05); ctx.lineTo(x - s * .4, y + s * .5); ctx.lineTo(x + s * .4, y + s * .5); ctx.lineTo(x + s * .4, y - s * .05); ctx.stroke();
     ctx.fillRect(x - s * .12, y + s * .08, s * .24, s * .24);
+  } else {
+    ctx.lineWidth = s * .17;
+    ctx.beginPath(); ctx.moveTo(x - s * .45, y + s * .45); ctx.lineTo(x + s * .12, y - s * .12); ctx.stroke();
+    ctx.lineWidth = s * .14; ctx.beginPath(); ctx.arc(x + s * .28, y - s * .28, s * .24, .9, 5.5); ctx.stroke();
   }
   ctx.restore();
 }
@@ -1379,6 +1488,8 @@ function genWave(n) {
   if (n >= 5) types.push('brush');
   if (n >= 7) types.push('fan');
   if (n >= 9) types.push('rc');
+  if (n >= 11) types.push('shield');
+  if (n >= 12) types.push('split');
   const count = Math.min(6, 2 + Math.floor(n / 2));
   const out = [];
   for (let k = 0; k < count; k++) {
@@ -1456,6 +1567,14 @@ function pickBoxes(n) {
   return [];
 }
 
+function makeEnemy(type, x, y, i) {
+  const d = ENEMY[type], m = G.mul;
+  const hp = Math.round(d.hp * m.hp * (type === 'boss' ? m.boss : 1) / 50) * 50;
+  return { type, x, y, r: d.r, hp, maxHp: hp, timer: d.timer + (i % 2), maxTimer: d.timer, atk: Math.round(d.atk * m.atk / 50) * 50,
+    alive: true, flash: 0, ph: Math.random() * 6, weak: Math.PI / 2, weakT: Math.PI / 2 };
+}
+const shieldedBy = e => G.enemies.find(o => o.alive && o.type === 'shield' && o !== e && dist(o.x, o.y, e.x, e.y) < SHIELD_R + e.r);
+
 function setupWave(n) {
   G.wave = n;
   const endless = G.lvl.endless;
@@ -1465,14 +1584,8 @@ function setupWave(n) {
   }
   const waves = G.lvl.waves, ch = G.ch;
   const list = endless ? genWave(n) : waves[n];
-  const hpMul = endless ? 1 + n * .14 : ch.hp, atkMul = endless ? 1 + n * .07 : ch.atk;
-  const bossMul = endless ? .5 : (G.lvl.boss || 1);
-  G.enemies = list.map(([type, x, y], i) => {
-    const d = ENEMY[type];
-    const hp = Math.round(d.hp * hpMul * (type === 'boss' ? bossMul : 1) / 50) * 50;
-    return { type, x, y, r: d.r, hp, maxHp: hp, timer: d.timer + (i % 2), maxTimer: d.timer, atk: Math.round(d.atk * atkMul / 50) * 50,
-      alive: true, flash: 0, ph: Math.random() * 6, weak: Math.PI / 2, weakT: Math.PI / 2 };
-  });
+  G.mul = { hp: endless ? 1 + n * .14 : ch.hp, atk: endless ? 1 + n * .07 : ch.atk, boss: endless ? .5 : (G.lvl.boss || 1) };
+  G.enemies = list.map(([type, x, y], i) => makeEnemy(type, x, y, i));
   G.boxes = pickBoxes(n);
   G.heroes.forEach((h, i) => { h.x = START[i][0]; h.y = START[i][1]; h.vx = h.vy = 0; });
   G.trails = []; G.snacks = [];
@@ -1506,6 +1619,7 @@ function launch(dx, dy) {
 
 function damageEnemy(e, amt, crit) {
   if (!e.alive) return;
+  if (shieldedBy(e)) { amt *= .35; ftext(e.x, e.y - e.r - 28, tr('shielded'), '#6ec3ff', 12); }
   amt = Math.round(amt);
   e.hp -= amt; e.flash = .12;
   ftext(e.x + rnd(-12, 12), e.y - e.r - 6, crit ? amt + '!' : amt, crit ? '#ffe066' : '#fff', crit ? 24 : 16);
@@ -1520,6 +1634,13 @@ function damageEnemy(e, amt, crit) {
     G.hitstop = Math.max(G.hitstop, e.type === 'boss' ? .14 : .05);
     if (e.type === 'boss') flash('#fff', .7);
     if (e.type !== 'boss') addMeter(6);
+    if (e.type === 'split') {
+      for (const sd of [-1, 1]) {
+        const m = makeEnemy('mini', Math.max(30, Math.min(W - 30, e.x + sd * 32)), e.y, 0);
+        m.timer = 2; G.enemies.push(m); burst(m.x, m.y, '#ffd9a8', 8, 160);
+      }
+      ftext(e.x, e.y - 34, tr('cry.split'), '#ffd166', 16);
+    }
     Snd.play('kill'); haptic(e.type === 'boss' ? 'heavy' : 'rigid');
   }
 }
@@ -2049,7 +2170,7 @@ function drawBossIntro() {
     ctx.shadowColor = '#ff3b5c'; ctx.shadowBlur = 18;
     ctx.fillStyle = '#ff4d6d'; fitFont(tr('bossName'), W - 60, 36); ctx.fillText(tr('bossName'), 0, 0);
     ctx.restore();
-    const [title, quote] = tr('bossTitles')[c % 6];
+    const [title, quote] = tr('bossTitles')[c % tr('bossTitles').length];
     ctx.fillStyle = ch.col; ctx.font = `900 19px ${FD}`; ctx.fillText(`«${title}»`, W / 2, 470);
     ctx.fillStyle = '#c9c2e6'; ctx.font = `italic 800 14px ${FB}`; ctx.fillText(`„${quote}“`, W / 2, 498);
   }
@@ -2400,6 +2521,57 @@ function drawRc(e, r, t) {
   ctx.fillStyle = Math.sin(t * 10 + e.ph) > 0 ? '#ff3b5c' : '#5a1020'; circ(r * .55, -r * 1.15, 2.5);
 }
 
+function drawShield(e, r, t) {
+  ctx.save(); ctx.globalCompositeOperation = 'lighter';
+  glowAt(0, 0, r * 2, '110,195,255', .15 + .05 * Math.sin(t * 3 + e.ph)); ctx.restore();
+  const g = ctx.createRadialGradient(-r * .3, -r * .35, r * .1, 0, 0, r);
+  g.addColorStop(0, '#e6f0fa'); g.addColorStop(1, '#7d8ea3');
+  ctx.fillStyle = g; circ(0, 0, r);
+  ctx.strokeStyle = '#4a5a70'; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.arc(0, 0, r, 0, TAU); ctx.stroke();
+  ctx.fillStyle = '#6ec3ff'; ctx.beginPath(); ctx.arc(0, -r * .5, r * .34, Math.PI, 0); ctx.fill();
+  ctx.strokeStyle = '#bfe6ff'; ctx.lineWidth = 1.5;
+  for (let k = 0; k < 2; k++) {
+    const ph = frac(t * .9 + k * .5);
+    ctx.globalAlpha = 1 - ph; ctx.beginPath(); ctx.arc(0, -r * .5, r * .34 + ph * r * .9, Math.PI * 1.1, Math.PI * 1.9); ctx.stroke();
+  }
+  ctx.globalAlpha = 1;
+  ctx.fillStyle = '#1b1e27'; rr(-r * .56, -r * .08, r * 1.12, r * .38, r * .19); ctx.fill();
+  angryEyes(0, r * .11, r * .62, '#6ec3ff');
+}
+
+function drawSplit(e, r, t) {
+  const wob = RM ? 0 : Math.sin(t * 4 + e.ph) * 1.5;
+  for (const sd of [-1, 1]) {
+    const cx = sd * (r * .32 + wob * .3);
+    const g = ctx.createRadialGradient(cx - r * .25, -r * .3, r * .1, cx, 0, r * .75);
+    g.addColorStop(0, '#ffe0b0'); g.addColorStop(1, '#d98f3d');
+    ctx.fillStyle = g; circ(cx, 0, r * .72);
+    ctx.strokeStyle = '#8a5a20'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(cx, 0, r * .72, 0, TAU); ctx.stroke();
+  }
+  ctx.strokeStyle = '#5a3a10'; ctx.lineWidth = 2; ctx.setLineDash([3, 3]);
+  ctx.beginPath(); ctx.moveTo(0, -r * .62); ctx.lineTo(0, r * .62); ctx.stroke(); ctx.setLineDash([]);
+  for (const sd of [-1, 1]) angryEyes(sd * r * .36, -r * .08, r * .42, '#ff3b5c');
+}
+
+// shield bots: a faint range and a link to every enemy they protect
+function drawShields() {
+  for (const sb of G.enemies) {
+    if (!sb.alive || sb.type !== 'shield') continue;
+    ctx.save();
+    ctx.strokeStyle = 'rgba(110,195,255,.12)'; ctx.lineWidth = 1.5; ctx.setLineDash([3, 7]);
+    ctx.beginPath(); ctx.arc(sb.x, sb.y, SHIELD_R, 0, TAU); ctx.stroke();
+    ctx.lineDashOffset = RM ? 0 : -T * 25; ctx.setLineDash([5, 6]);
+    for (const e of G.enemies) {
+      if (!e.alive || e === sb || dist(sb.x, sb.y, e.x, e.y) >= SHIELD_R + e.r) continue;
+      ctx.strokeStyle = 'rgba(110,195,255,.5)'; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(sb.x, sb.y); ctx.lineTo(e.x, e.y); ctx.stroke();
+      ctx.strokeStyle = `rgba(110,195,255,${.45 + .2 * Math.sin(T * 4 + e.ph)})`; ctx.lineWidth = 2.5; ctx.setLineDash([]);
+      ctx.beginPath(); ctx.arc(e.x, e.y, e.r + 7, 0, TAU); ctx.stroke(); ctx.setLineDash([5, 6]);
+    }
+    ctx.restore();
+  }
+}
+
 function drawMop(e, r, t) {
   ctx.strokeStyle = '#9fb3c8'; ctx.lineWidth = 5; ctx.globalAlpha = .7 + .3 * Math.sin(T * 4);
   ctx.beginPath(); ctx.arc(0, 0, r + 1, 0, TAU); ctx.stroke(); ctx.globalAlpha = 1;
@@ -2470,7 +2642,7 @@ function drawEnemy(e) {
     ctx.save(); ctx.globalCompositeOperation = 'lighter';
     glowAt(0, 0, r * 2, '255,59,92', .22 + .12 * Math.sin(T * 10)); ctx.restore();
   }
-  ({ vac: drawVac, spray: drawSpray, mop: drawMop, boss: drawBoss, brush: drawBrush, fan: drawFan, rc: drawRc })[e.type](e, r, t);
+  ({ vac: drawVac, spray: drawSpray, mop: drawMop, boss: drawBoss, brush: drawBrush, fan: drawFan, rc: drawRc, shield: drawShield, split: drawSplit, mini: drawVac })[e.type](e, r, t);
   if (e.flash > 0) { ctx.fillStyle = `rgba(255,255,255,${Math.min(.8, e.flash * 7)})`; circ(0, 0, r); }
   ctx.restore();
 
@@ -2847,7 +3019,8 @@ function chTrim(c, x, y, w, col) {
   else if (c === 2) { for (let px = x + 8; px < x + w; px += 16) star(px, y + 5, (px / 16 | 0) % 2 ? 3.5 : 2.2, col); }
   else if (c === 3) { ctx.strokeStyle = col; ctx.lineWidth = 1.2; for (let px = x + 6; px < x + w; px += 11) { ctx.beginPath(); ctx.arc(px, y + 5, (px / 11 | 0) % 2 ? 3.2 : 2, 0, TAU); ctx.stroke(); } }
   else if (c === 4) { for (let px = x + 8; px < x + w; px += 14) { ctx.save(); ctx.translate(px, y + 5); ctx.rotate((px / 14 | 0) % 2 ? .6 : -.6); ctx.beginPath(); ctx.ellipse(0, 0, 4.5, 2, 0, 0, TAU); ctx.fill(); ctx.restore(); } }
-  else { for (let px = x + 2; px < x + w; px += 16) ctx.fillRect(px, y + 3.5, 10, 3); }
+  else if (c === 5) { for (let px = x + 2; px < x + w; px += 16) ctx.fillRect(px, y + 3.5, 10, 3); }
+  else { for (let px = x - 10; px < x + w; px += 14) { ctx.beginPath(); ctx.moveTo(px, y + 9); ctx.lineTo(px + 6, y + 9); ctx.lineTo(px + 12, y + 1); ctx.lineTo(px + 6, y + 1); ctx.fill(); } }
   ctx.restore();
 }
 
@@ -2945,6 +3118,13 @@ function drawNode(c, x, y, r, col, open) {
     ctx.strokeStyle = '#8a5a30'; ctx.lineWidth = 3; ctx.strokeRect(-s / 2, -s / 2, s, s);
     ctx.lineWidth = 2; ctx.globalAlpha = .25; ctx.beginPath(); ctx.moveTo(-s / 2, -s / 2); ctx.lineTo(s / 2, s / 2); ctx.moveTo(s / 2, -s / 2); ctx.lineTo(-s / 2, s / 2); ctx.stroke(); ctx.globalAlpha = 1;
     ctx.rotate(-.05); ctx.translate(-x, -y);
+  } else if (c === 6) {
+    // a hex nut
+    ctx.fillStyle = col; ctx.beginPath();
+    for (let k = 0; k < 6; k++) { const a = k * TAU / 6 + Math.PI / 6; ctx.lineTo(x + Math.cos(a) * r, y + Math.sin(a) * r); }
+    ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = '#5a6a7c'; ctx.lineWidth = 2.5; ctx.stroke();
+    ctx.fillStyle = 'rgba(255,255,255,.35)'; ctx.beginPath(); ctx.ellipse(x - r * .45, y - r * .5, r * .18, r * .08, -.6, 0, TAU); ctx.fill();
   } else {
     // a glowing moon
     ctx.shadowColor = col; ctx.shadowBlur = 18;
@@ -3259,6 +3439,7 @@ function drawGame() {
   G.boxes.forEach(drawBox);
   G.snacks.forEach(drawSnack);
   drawLaser();
+  drawShields();
   for (const e of G.enemies) if (e.alive) drawEnemy(e);
   drawThreats();
   G.heroes.forEach((h, i) => {
