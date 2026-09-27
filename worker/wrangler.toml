@@ -9,4 +9,4 @@ ALLOWED_ORIGIN = "https://vitaliivepsha.github.io"
 [[d1_databases]]
 binding = "DB"
 database_name = "pawsling"
-database_id = "REPLACE_WITH_DATABASE_ID"
+database_id = "99e9edcc-af34-4d5a-a001-f4699750094d"

@@ -2958,7 +2958,7 @@ function drawNode(c, x, y, r, col, open) {
 // ---------- leaderboard ----------
 // The worker in /worker keeps each player's best Night Shift and total stars. It only answers
 // requests signed by Telegram, so the board works inside Telegram only.
-const BOARD_URL = ''; // the deployed worker, e.g. https://pawsling-leaderboard.<account>.workers.dev
+const BOARD_URL = 'https://pawsling-leaderboard.pawsling-leaderboard.workers.dev'; // worker/ deployed with wrangler
 const BOARD = { tab: 'night', status: 'idle', data: {} };
 const boardAvailable = () => !!(TG && TG.initData && BOARD_URL);
 async function boardPost(extra) {
