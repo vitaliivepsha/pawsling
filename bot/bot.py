@@ -11,6 +11,7 @@ BOT_TOKEN = os.environ["BOT_TOKEN"]
 WEBAPP_URL = os.environ["WEBAPP_URL"]
 
 logging.basicConfig(format="%(asctime)s %(levelname)s %(name)s: %(message)s", level=logging.INFO)
+logging.getLogger("httpx").setLevel(logging.WARNING)  # its request logs include the bot token in the URL
 log = logging.getLogger("pawsling")
 
 

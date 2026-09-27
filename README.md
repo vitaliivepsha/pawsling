@@ -25,17 +25,29 @@ and exposes `window.__pawsling` for automated checks.
 
 ## Launching in Telegram
 
-1. **Hosting.** A Mini App needs a public HTTPS address. The simplest option is GitHub Pages:
-   put `webapp/index.html` into a repository and enable Pages. The address will look like
-   `https://<user>.github.io/pawsling/`.
-2. **Bot.** In @BotFather, run `/newbot` to get a token.
-3. **Start the bot:**
+The game runs without a permanently running server: the page is on GitHub Pages
+(https://vitaliivepsha.github.io/pawsling/webapp/), and everything else is configured in Telegram.
+
+1. **Hosting.** GitHub Pages from the `main` branch, `/ (root)` folder. Every push to `main`
+   updates the game within a minute or two.
+2. **Menu button "Грати".** `bot/bot.py` sets it via `setChatMenuButton`. **One run is enough**:
+   Telegram remembers the button, and it stays after the bot is stopped. Rerun only if the game
+   address changes.
    ```bash
    cd bot
    cp .env.example .env      # fill in BOT_TOKEN and WEBAPP_URL
    pip install -r requirements.txt
-   python bot.py
+   python bot.py             # wait for "Menu button set", then Ctrl+C
    ```
-   Or with Docker: `docker build -t pawsling-bot bot && docker run --env-file bot/.env pawsling-bot`.
-4. Optional: in @BotFather → Bot Settings → Configure Mini App, set the same URL. The game will then
-   open from the bot's profile and via the `t.me/<bot>?startapp` link.
+3. **@BotFather** (one time):
+   - Bot Settings → Configure Mini App → Enable Mini App, with the same URL. The "Open App" button
+     then appears in the bot's profile, and the game opens via `t.me/<bot>?startapp`.
+   - Edit Bot → Edit Description: the greeting shown before pressing Start.
+   - Edit Bot → Edit About: a short description in the profile.
+
+With the bot stopped, `/start` gets no reply. That is expected: players go in through the menu
+button or "Open App".
+
+When server logic appears (friends leaderboards, daily quests, invites), the bot is worth
+moving to webhooks on Cloudflare Workers (free, always on). Results should then be verified
+there against Telegram `initData` so scores cannot be faked.
