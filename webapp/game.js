@@ -34,7 +34,7 @@ if (TG) {
     if (tgv('6.1')) {
       TG.setHeaderColor('#15122a');
       TG.setBackgroundColor('#110e22');
-      TG.BackButton.onClick(() => { if (SCREEN === 'game') goMap(); else if (SCREEN === 'howto') closeHowto(); });
+      TG.BackButton.onClick(() => { if (SCREEN === 'game') goMap(); else if (SCREEN === 'howto') closeHowto(); else if (SCREEN === 'lang') setScreen('map'); });
     }
     if (tgv('7.7')) TG.disableVerticalSwipes();
     TG.onEvent('viewportChanged', resize);
@@ -476,6 +476,250 @@ const LEVELS = [
 ];
 const BOXSETS = [[[55, 470], [395, 120]], [[60, 130], [390, 470]], [[50, 560], [400, 560]], [[395, 470], [55, 120]], [[40, 330], [410, 330]]];
 const BTN = { x: 276, y: 688, w: 158, h: 50 };
+
+// ---------- languages ----------
+// Language: the player's choice, else Telegram's language_code, else the browser's, else English.
+const LANGS = { uk: 'Українська', en: 'English', pl: 'Polski', de: 'Deutsch', es: 'Español' };
+function detectLang() {
+  const saved = lsGet('pawsling-lang');
+  if (saved && LANGS[saved]) return saved;
+  const tgCode = TG && TG.initDataUnsafe && TG.initDataUnsafe.user && TG.initDataUnsafe.user.language_code;
+  for (const c of [tgCode, ...(navigator.languages || [navigator.language])]) {
+    const k = (c || '').toLowerCase().slice(0, 2);
+    if (LANGS[k]) return k;
+  }
+  return 'en';
+}
+let LANG = detectLang();
+const one = (n, a, b) => (n === 1 ? a : b);
+const I18N = {
+  uk: {
+    'hero.mochi.name': 'Мочі', 'hero.mochi.skill': '+15% шкоди за кожен відскок від стіни', 'hero.mochi.combo': 'Хвиля мурчання',
+    'hero.pixel.name': 'Піксель', 'hero.pixel.skill': 'пролітає крізь ворогів наскрізь', 'hero.pixel.combo': 'Лазерний погляд',
+    'hero.bandit.name': 'Бандит', 'hero.bandit.skill': 'кожен удар відкладає атаку ворога на хід', 'hero.bandit.combo': 'Нічний перекус',
+    'hero.nugget.name': 'Наґет', 'hero.nugget.skill': 'кожен удар вибухає по сусідніх ворогах', 'hero.nugget.combo': 'Скарб зі смітника',
+    'room.kitchen': 'Кухня', 'room.living': 'Вітальня', 'room.bedroom': 'Спальня', 'room.bath': 'Ванна', 'room.balcony': 'Балкон', 'room.attic': 'Горище',
+    'tip.0': 'Потягни від героя назад і відпусти', 'tip.1': 'Перетни стару нитку, і вузол вибухне', 'tip.2': 'Коти женуться за червоною лазерною точкою',
+    'tip.3': 'Бий у жовтий сенсор: потрійна шкода', 'tip.4': 'Швабри в броні: Піксель і Наґет б\'ють їх удвічі сильніше',
+    'tip.12': 'Зубні щітки лікують ворогів поруч, бий їх першими', 'tip.18': 'Вентилятори здувають героїв убік, цілься з запасом',
+    'tip.24': 'Радіомашинки щоходу переїжджають на нове місце',
+    woke: 'Прокинувся!', revived: 'Підняли!', waves: n => `${n} ${plural(n, 'хвиля', 'хвилі', 'хвиль')}`,
+    newRoom: r => `Нова кімната: ${r}`, record: v => `Рекорд: ${v}`, waveOf: (a, b) => `Хвиля ${a} з ${b}`,
+    night: 'Нічна зміна', nightWave: n => `Нічна зміна · хвиля ${n}`, levelRoom: (n, r) => `Рівень ${n} · ${r}`,
+    zoomies: 'ТИГИДИК!', armor: 'броня', crit: 'КРИТ!', plusTurn: '+1 хід', plusMischief: v => `+${v} бешкету`, knot: 'Вузол!', caught: 'Спіймав!',
+    whoosh: 'Шусть!', whooshFast: 'Шусть! +швидкість', vroom: 'Вррум!',
+    'cry.boss': 'ТУРБО-ВСМОКТУВАННЯ!', 'cry.spray': 'Пшшш!', 'cry.mop': 'Шльоп!', 'cry.vac': 'Вжжжух!', 'cry.brush': 'Дзззз!', 'cry.fan': 'Фшшух!', 'cry.rc': 'Бі-біп!',
+    ko: 'Нокаут!', koHint: 'Зачепи друга пострілом, щоб підняти', waveClear: 'Хвилю зачищено!', waveClearSub: h => `+${h} до міцності квартири і +1 ♥ кожному`,
+    'tag.bounce': ['ВІДСКОК', 'відбивається від ворогів'], 'tag.pierce': ['ПРОШИВАННЯ', 'пролітає ворогів наскрізь'],
+    bossTitles: [['Гроза крихт', 'Жодної крихти на підлозі!'], ['Володар пульта', 'Цей диван тепер мій!'], ['Нічний жах', 'Час спати... назавжди!'],
+      ['Мильний барон', 'Змию вас у каналізацію!'], ['Буревій', 'Вас здує з балкона!'], ['Горищний привид', 'Тут ніхто не живе... крім мене!']],
+    bossWarn: 'УВАГА · БОС НАБЛИЖАЄТЬСЯ', bossName: 'РОБО-БОС 9000', 'stat.hp': 'Міцність', 'stat.atk': 'Удар', 'stat.every': 'Атакує',
+    'stat.everyN': n => `кожні ${n} ходи`, bossHint: 'Бий у жовтий сенсор: потрійна шкода', tapToStart: 'Торкнись, щоб почати',
+    turn: n => `Хід ${n}`, hudWave: n => ` · хвиля ${n}`, pullHint: 'Тягни від героя назад і відпускай', par3: n => `3 зірки: пройти за ${n} ходів або швидше`,
+    koCount: n => `нокаут · ${n}`, zoomReady: 'готово · стріляй', zoomTap: 'торкнись: x2 сила', mischief: 'Бешкет',
+    homeHp: (a, b) => `Міцність квартири ${a} / ${b}`, typeBounce: 'відскок', typePierce: 'прошивання',
+    features: [['Клубки', 'Кожен герой лишає нитку. Перетни стару нитку, і вузол вибухне по ворогах поруч. До 2 вузлів за постріл.'],
+      ['Лазерна указка', 'Коти звертають до червоної точки. Спіймали — прискорення і бешкет.'], ['Коробки', 'Залетів у коробку A — вилетів з коробки B.'],
+      ['Бешкет → Тигидик', 'Збирай рибу й піцу. Повна шкала дає постріл з подвійною силою.'], ['Єноти', 'Бандит відкладає атаки ворогів, Наґет влаштовує сміттєві вибухи.']],
+    tagline: 'Коти та єноти проти повстання пилососів',
+    howtoIntro: 'Тягни від героя назад і відпускай, як рогатку. Цифра над ворогом — скільки ходів до його атаки.',
+    play: 'Грати', hello: n => `Привіт, ${n}! Обери рівень`, pickLevel: 'Обери рівень', chStars: (a, b) => `${a} / ${b} зірок`, boss: 'БОС',
+    howto: 'Як грати', nightAfter: 'Нічна зміна · після 4 рівня', levelDone: n => `Рівень ${n} пройдено!`, shiftOver: 'Зміну завершено',
+    vacWon: 'Пилососи перемогли', winSub: (t, p) => `${t} ходів · для 3 зірок треба ${p}`, survived: w => `Протрималися: ${w}`,
+    allKo: 'Усі герої в нокауті. Спробуй ще раз', waveTry: (a, b) => `Хвиля ${a} з ${b}. Спробуй ще раз`,
+    'st.knots': 'Вузлів зав\'язано', 'st.lasers': 'Лазер спіймано', 'st.crits': 'Критів по сенсору', 'st.portals': 'Телепортів',
+    newBestLevel: 'Новий рекорд для цього рівня!', newBestNight: 'Новий рекорд нічної зміни!', again: 'Ще раз', map: 'Карта', next: 'Далі',
+    toMap: 'До карти', allDone: 'Квартиру врятовано! Усі рівні пройдено', lang: 'Мова',
+    aria: 'Гра Pawsling. Потягни від героя назад і відпусти, щоб запустити його, як з рогатки.',
+    board: 'Рейтинг', boardNight: 'Нічна зміна', boardStars: 'Зірки', boardYou: 'ти', boardEmpty: 'Поки що нікого. Будь першим!',
+    boardLoading: 'Завантаження…', boardError: 'Не вдалося завантажити рейтинг. Перевір інтернет і спробуй ще.',
+    boardTgOnly: 'Рейтинг працює, коли гра відкрита в Telegram.', boardRetry: 'Оновити', boardPlayer: 'Гравець',
+  },
+  en: {
+    'hero.mochi.name': 'Mochi', 'hero.mochi.skill': '+15% damage for every wall bounce', 'hero.mochi.combo': 'Purr Wave',
+    'hero.pixel.name': 'Pixel', 'hero.pixel.skill': 'flies straight through enemies', 'hero.pixel.combo': 'Laser Stare',
+    'hero.bandit.name': 'Bandit', 'hero.bandit.skill': 'each hit delays the enemy attack by a turn', 'hero.bandit.combo': 'Midnight Snack',
+    'hero.nugget.name': 'Nugget', 'hero.nugget.skill': 'each hit blasts nearby enemies', 'hero.nugget.combo': 'Trash Treasure',
+    'room.kitchen': 'Kitchen', 'room.living': 'Living room', 'room.bedroom': 'Bedroom', 'room.bath': 'Bathroom', 'room.balcony': 'Balcony', 'room.attic': 'Attic',
+    'tip.0': 'Pull back from a hero and let go', 'tip.1': 'Cross an old thread and the knot explodes', 'tip.2': 'Cats chase the red laser dot',
+    'tip.3': 'Hit the yellow sensor: triple damage', 'tip.4': 'Mops are armored: Pixel and Nugget hit them twice as hard',
+    'tip.12': 'Toothbrushes heal nearby enemies, hit them first', 'tip.18': 'Fans blow heroes aside, aim with a margin',
+    'tip.24': 'RC cars drive to a new spot every turn',
+    woke: 'Awake!', revived: 'Back up!', waves: n => `${n} ${one(n, 'wave', 'waves')}`,
+    newRoom: r => `New room: ${r}`, record: v => `Record: ${v}`, waveOf: (a, b) => `Wave ${a} of ${b}`,
+    night: 'Night Shift', nightWave: n => `Night Shift · wave ${n}`, levelRoom: (n, r) => `Level ${n} · ${r}`,
+    zoomies: 'ZOOMIES!', armor: 'armor', crit: 'CRIT!', plusTurn: '+1 turn', plusMischief: v => `+${v} mischief`, knot: 'Knot!', caught: 'Caught it!',
+    whoosh: 'Whoosh!', whooshFast: 'Whoosh! +speed', vroom: 'Vroom!',
+    'cry.boss': 'TURBO SUCK!', 'cry.spray': 'Pssst!', 'cry.mop': 'Splat!', 'cry.vac': 'Vrrrm!', 'cry.brush': 'Bzzzz!', 'cry.fan': 'Fwoosh!', 'cry.rc': 'Beep-beep!',
+    ko: 'Knocked out!', koHint: 'Hit a friend with a shot to revive them', waveClear: 'Wave cleared!', waveClearSub: h => `+${h} home strength and +1 ♥ each`,
+    'tag.bounce': ['BOUNCE', 'rebounds off enemies'], 'tag.pierce': ['PIERCE', 'flies through enemies'],
+    bossTitles: [['Crumb Terror', 'Not a single crumb on the floor!'], ['Remote Overlord', 'This couch is mine now!'], ['Night Terror', 'Time to sleep... forever!'],
+      ['Soap Baron', 'Down the drain you go!'], ['Stormbringer', 'I\'ll blow you off the balcony!'], ['Attic Phantom', 'Nobody lives up here... but me!']],
+    bossWarn: 'WARNING · BOSS INCOMING', bossName: 'ROBO-BOSS 9000', 'stat.hp': 'Toughness', 'stat.atk': 'Hit', 'stat.every': 'Attacks',
+    'stat.everyN': n => `every ${n} turns`, bossHint: 'Hit the yellow sensor: triple damage', tapToStart: 'Tap to start',
+    turn: n => `Turn ${n}`, hudWave: n => ` · wave ${n}`, pullHint: 'Pull back from a hero and let go', par3: n => `3 stars: finish in ${n} turns or fewer`,
+    koCount: n => `out · ${n}`, zoomReady: 'ready · shoot', zoomTap: 'tap: x2 power', mischief: 'Mischief',
+    homeHp: (a, b) => `Home strength ${a} / ${b}`, typeBounce: 'bounce', typePierce: 'pierce',
+    features: [['Yarn', 'Every hero leaves a thread. Cross an old thread and the knot explodes on nearby enemies. Up to 2 knots per shot.'],
+      ['Laser pointer', 'Cats swerve toward the red dot. Catch it for a speed boost and mischief.'], ['Boxes', 'Fly into box A, pop out of box B.'],
+      ['Mischief → Zoomies', 'Collect fish and pizza. A full meter gives a shot with double power.'], ['Raccoons', 'Bandit delays enemy attacks, Nugget sets off trash explosions.']],
+    tagline: 'Cats and raccoons vs. the robot vacuum uprising',
+    howtoIntro: 'Pull back from a hero and let go, like a slingshot. The number above an enemy is how many turns until it attacks.',
+    play: 'Play', hello: n => `Hi, ${n}! Pick a level`, pickLevel: 'Pick a level', chStars: (a, b) => `${a} / ${b} stars`, boss: 'BOSS',
+    howto: 'How to play', nightAfter: 'Night Shift · after level 4', levelDone: n => `Level ${n} complete!`, shiftOver: 'Shift over',
+    vacWon: 'The vacuums won', winSub: (t, p) => `${t} turns · 3 stars need ${p}`, survived: w => `Survived: ${w}`,
+    allKo: 'All heroes knocked out. Try again', waveTry: (a, b) => `Wave ${a} of ${b}. Try again`,
+    'st.knots': 'Knots tied', 'st.lasers': 'Lasers caught', 'st.crits': 'Sensor crits', 'st.portals': 'Teleports',
+    newBestLevel: 'New record for this level!', newBestNight: 'New Night Shift record!', again: 'Again', map: 'Map', next: 'Next',
+    toMap: 'To the map', allDone: 'Home saved! All levels complete', lang: 'Language',
+    aria: 'Pawsling. Pull back from a hero and let go to launch it like a slingshot.',
+    board: 'Leaderboard', boardNight: 'Night Shift', boardStars: 'Stars', boardYou: 'you', boardEmpty: 'Nobody here yet. Be the first!',
+    boardLoading: 'Loading…', boardError: 'Could not load the leaderboard. Check your connection and try again.',
+    boardTgOnly: 'The leaderboard works when the game is opened in Telegram.', boardRetry: 'Refresh', boardPlayer: 'Player',
+  },
+  pl: {
+    'hero.mochi.name': 'Mochi', 'hero.mochi.skill': '+15% obrażeń za każde odbicie od ściany', 'hero.mochi.combo': 'Fala mruczenia',
+    'hero.pixel.name': 'Pixel', 'hero.pixel.skill': 'przelatuje przez wrogów na wylot', 'hero.pixel.combo': 'Laserowe spojrzenie',
+    'hero.bandit.name': 'Bandyta', 'hero.bandit.skill': 'każde trafienie opóźnia atak wroga o turę', 'hero.bandit.combo': 'Nocna przekąska',
+    'hero.nugget.name': 'Nugget', 'hero.nugget.skill': 'każde trafienie wybucha na pobliskich wrogach', 'hero.nugget.combo': 'Skarb ze śmietnika',
+    'room.kitchen': 'Kuchnia', 'room.living': 'Salon', 'room.bedroom': 'Sypialnia', 'room.bath': 'Łazienka', 'room.balcony': 'Balkon', 'room.attic': 'Strych',
+    'tip.0': 'Pociągnij od bohatera do tyłu i puść', 'tip.1': 'Przetnij starą nitkę, a supeł wybuchnie', 'tip.2': 'Koty gonią czerwoną kropkę lasera',
+    'tip.3': 'Trafiaj w żółty czujnik: potrójne obrażenia', 'tip.4': 'Mopy mają pancerz: Pixel i Nugget biją je dwa razy mocniej',
+    'tip.12': 'Szczoteczki leczą pobliskich wrogów, bij je najpierw', 'tip.18': 'Wiatraki zdmuchują bohaterów, celuj z zapasem',
+    'tip.24': 'Autka RC co turę zmieniają miejsce',
+    woke: 'Obudził się!', revived: 'Wstał!', waves: n => `${n} ${plural(n, 'fala', 'fale', 'fal')}`,
+    newRoom: r => `Nowy pokój: ${r}`, record: v => `Rekord: ${v}`, waveOf: (a, b) => `Fala ${a} z ${b}`,
+    night: 'Nocna zmiana', nightWave: n => `Nocna zmiana · fala ${n}`, levelRoom: (n, r) => `Poziom ${n} · ${r}`,
+    zoomies: 'SZAŁ!', armor: 'pancerz', crit: 'KRYT!', plusTurn: '+1 tura', plusMischief: v => `+${v} psot`, knot: 'Supeł!', caught: 'Złapany!',
+    whoosh: 'Szast!', whooshFast: 'Szast! +szybkość', vroom: 'Wrrum!',
+    'cry.boss': 'TURBO-SSANIE!', 'cry.spray': 'Psssik!', 'cry.mop': 'Plask!', 'cry.vac': 'Wrrrum!', 'cry.brush': 'Bzzzz!', 'cry.fan': 'Fiuuu!', 'cry.rc': 'Bip-bip!',
+    ko: 'Nokaut!', koHint: 'Traf przyjaciela strzałem, żeby go podnieść', waveClear: 'Fala pokonana!', waveClearSub: h => `+${h} wytrzymałości mieszkania i +1 ♥ dla każdego`,
+    'tag.bounce': ['ODBICIE', 'odbija się od wrogów'], 'tag.pierce': ['PRZEBICIE', 'przelatuje przez wrogów'],
+    bossTitles: [['Postrach okruszków', 'Ani okruszka na podłodze!'], ['Władca pilota', 'Ta kanapa jest teraz moja!'], ['Nocny koszmar', 'Czas spać... na zawsze!'],
+      ['Mydlany baron', 'Spłuczę was do kanalizacji!'], ['Wichrowy', 'Zdmuchnę was z balkonu!'], ['Upiór ze strychu', 'Nikt tu nie mieszka... oprócz mnie!']],
+    bossWarn: 'UWAGA · NADCHODZI BOSS', bossName: 'ROBO-BOSS 9000', 'stat.hp': 'Wytrzymałość', 'stat.atk': 'Cios', 'stat.every': 'Atakuje',
+    'stat.everyN': n => `co ${n} tury`, bossHint: 'Trafiaj w żółty czujnik: potrójne obrażenia', tapToStart: 'Dotknij, aby zacząć',
+    turn: n => `Tura ${n}`, hudWave: n => ` · fala ${n}`, pullHint: 'Ciągnij od bohatera do tyłu i puszczaj', par3: n => `3 gwiazdki: ukończ w ${n} tur lub mniej`,
+    koCount: n => `nokaut · ${n}`, zoomReady: 'gotowe · strzelaj', zoomTap: 'dotknij: x2 siła', mischief: 'Psoty',
+    homeHp: (a, b) => `Wytrzymałość mieszkania ${a} / ${b}`, typeBounce: 'odbicie', typePierce: 'przebicie',
+    features: [['Włóczka', 'Każdy bohater zostawia nitkę. Przetnij starą nitkę, a supeł wybuchnie na pobliskich wrogach. Do 2 supłów na strzał.'],
+      ['Wskaźnik laserowy', 'Koty skręcają do czerwonej kropki. Złap ją, by przyspieszyć i zdobyć psoty.'], ['Pudełka', 'Wleć do pudełka A, wyleć z pudełka B.'],
+      ['Psoty → Szał', 'Zbieraj ryby i pizzę. Pełny pasek daje strzał z podwójną siłą.'], ['Szopy', 'Bandyta opóźnia ataki wrogów, Nugget urządza śmieciowe wybuchy.']],
+    tagline: 'Koty i szopy kontra bunt robotów sprzątających',
+    howtoIntro: 'Pociągnij od bohatera do tyłu i puść jak procę. Liczba nad wrogiem to liczba tur do jego ataku.',
+    play: 'Graj', hello: n => `Cześć, ${n}! Wybierz poziom`, pickLevel: 'Wybierz poziom', chStars: (a, b) => `${a} / ${b} gwiazdek`, boss: 'BOSS',
+    howto: 'Jak grać', nightAfter: 'Nocna zmiana · po poziomie 4', levelDone: n => `Poziom ${n} ukończony!`, shiftOver: 'Koniec zmiany',
+    vacWon: 'Odkurzacze wygrały', winSub: (t, p) => `${t} tur · na 3 gwiazdki: ${p}`, survived: w => `Przetrwane: ${w}`,
+    allKo: 'Wszyscy bohaterowie znokautowani. Spróbuj jeszcze raz', waveTry: (a, b) => `Fala ${a} z ${b}. Spróbuj jeszcze raz`,
+    'st.knots': 'Zawiązane supły', 'st.lasers': 'Złapane lasery', 'st.crits': 'Kryty w czujnik', 'st.portals': 'Teleporty',
+    newBestLevel: 'Nowy rekord tego poziomu!', newBestNight: 'Nowy rekord nocnej zmiany!', again: 'Jeszcze raz', map: 'Mapa', next: 'Dalej',
+    toMap: 'Do mapy', allDone: 'Mieszkanie uratowane! Wszystkie poziomy ukończone', lang: 'Język',
+    aria: 'Pawsling. Pociągnij od bohatera do tyłu i puść, żeby wystrzelić go jak z procy.',
+    board: 'Ranking', boardNight: 'Nocna zmiana', boardStars: 'Gwiazdki', boardYou: 'ty', boardEmpty: 'Jeszcze nikogo tu nie ma. Bądź pierwszy!',
+    boardLoading: 'Ładowanie…', boardError: 'Nie udało się wczytać rankingu. Sprawdź internet i spróbuj ponownie.',
+    boardTgOnly: 'Ranking działa, gdy gra jest otwarta w Telegramie.', boardRetry: 'Odśwież', boardPlayer: 'Gracz',
+  },
+  de: {
+    'hero.mochi.name': 'Mochi', 'hero.mochi.skill': '+15 % Schaden pro Abprall an der Wand', 'hero.mochi.combo': 'Schnurrwelle',
+    'hero.pixel.name': 'Pixel', 'hero.pixel.skill': 'fliegt glatt durch Gegner hindurch', 'hero.pixel.combo': 'Laserblick',
+    'hero.bandit.name': 'Bandit', 'hero.bandit.skill': 'jeder Treffer verzögert den Gegnerangriff um einen Zug', 'hero.bandit.combo': 'Mitternachtssnack',
+    'hero.nugget.name': 'Nugget', 'hero.nugget.skill': 'jeder Treffer explodiert bei nahen Gegnern', 'hero.nugget.combo': 'Mülltonnenschatz',
+    'room.kitchen': 'Küche', 'room.living': 'Wohnzimmer', 'room.bedroom': 'Schlafzimmer', 'room.bath': 'Badezimmer', 'room.balcony': 'Balkon', 'room.attic': 'Dachboden',
+    'tip.0': 'Vom Helden nach hinten ziehen und loslassen', 'tip.1': 'Kreuze einen alten Faden und der Knoten explodiert', 'tip.2': 'Katzen jagen den roten Laserpunkt',
+    'tip.3': 'Triff den gelben Sensor: dreifacher Schaden', 'tip.4': 'Wischmopps sind gepanzert: Pixel und Nugget treffen sie doppelt',
+    'tip.12': 'Zahnbürsten heilen Gegner in der Nähe, schalte sie zuerst aus', 'tip.18': 'Ventilatoren pusten Helden zur Seite, ziele mit Abstand',
+    'tip.24': 'RC-Autos fahren jeden Zug an einen neuen Platz',
+    woke: 'Wach!', revived: 'Wieder da!', waves: n => `${n} ${one(n, 'Welle', 'Wellen')}`,
+    newRoom: r => `Neuer Raum: ${r}`, record: v => `Rekord: ${v}`, waveOf: (a, b) => `Welle ${a} von ${b}`,
+    night: 'Nachtschicht', nightWave: n => `Nachtschicht · Welle ${n}`, levelRoom: (n, r) => `Level ${n} · ${r}`,
+    zoomies: 'FLITZEN!', armor: 'Panzer', crit: 'KRIT!', plusTurn: '+1 Zug', plusMischief: v => `+${v} Unfug`, knot: 'Knoten!', caught: 'Erwischt!',
+    whoosh: 'Wusch!', whooshFast: 'Wusch! +Tempo', vroom: 'Brumm!',
+    'cry.boss': 'TURBO-SAUGEN!', 'cry.spray': 'Pschhh!', 'cry.mop': 'Platsch!', 'cry.vac': 'Wrrrumm!', 'cry.brush': 'Bzzzz!', 'cry.fan': 'Fwuusch!', 'cry.rc': 'Piep-piep!',
+    ko: 'K.o.!', koHint: 'Triff einen Freund mit einem Schuss, um ihn aufzuwecken', waveClear: 'Welle geschafft!', waveClearSub: h => `+${h} Wohnungsstärke und +1 ♥ für alle`,
+    'tag.bounce': ['ABPRALL', 'prallt von Gegnern ab'], 'tag.pierce': ['DURCHSCHLAG', 'fliegt durch Gegner'],
+    bossTitles: [['Krümelschreck', 'Kein Krümel auf dem Boden!'], ['Fernbedienungsfürst', 'Das Sofa gehört jetzt mir!'], ['Nachtmahr', 'Schlafenszeit... für immer!'],
+      ['Seifenbaron', 'Ab in den Abfluss mit euch!'], ['Sturmbringer', 'Ich puste euch vom Balkon!'], ['Dachbodengeist', 'Hier wohnt niemand... außer mir!']],
+    bossWarn: 'ACHTUNG · BOSS NAHT', bossName: 'ROBO-BOSS 9000', 'stat.hp': 'Stärke', 'stat.atk': 'Schlag', 'stat.every': 'Angriff',
+    'stat.everyN': n => `alle ${n} Züge`, bossHint: 'Triff den gelben Sensor: dreifacher Schaden', tapToStart: 'Tippen zum Starten',
+    turn: n => `Zug ${n}`, hudWave: n => ` · Welle ${n}`, pullHint: 'Vom Helden zurückziehen und loslassen', par3: n => `3 Sterne: in ${n} Zügen oder weniger`,
+    koCount: n => `k.o. · ${n}`, zoomReady: 'bereit · schieß', zoomTap: 'tippen: x2 Kraft', mischief: 'Unfug',
+    homeHp: (a, b) => `Wohnungsstärke ${a} / ${b}`, typeBounce: 'Abprall', typePierce: 'Durchschlag',
+    features: [['Wolle', 'Jeder Held zieht einen Faden. Kreuze einen alten Faden und der Knoten explodiert bei nahen Gegnern. Bis zu 2 Knoten pro Schuss.'],
+      ['Laserpointer', 'Katzen lenken zum roten Punkt. Fang ihn für mehr Tempo und Unfug.'], ['Kartons', 'Rein in Karton A, raus aus Karton B.'],
+      ['Unfug → Flitzen', 'Sammle Fisch und Pizza. Eine volle Leiste gibt einen Schuss mit doppelter Kraft.'], ['Waschbären', 'Bandit verzögert Gegnerangriffe, Nugget sorgt für Müllexplosionen.']],
+    tagline: 'Katzen und Waschbären gegen den Saugroboter-Aufstand',
+    howtoIntro: 'Zieh vom Helden zurück und lass los wie eine Schleuder. Die Zahl über einem Gegner zeigt die Züge bis zu seinem Angriff.',
+    play: 'Spielen', hello: n => `Hallo, ${n}! Wähle ein Level`, pickLevel: 'Wähle ein Level', chStars: (a, b) => `${a} / ${b} Sterne`, boss: 'BOSS',
+    howto: 'Anleitung', nightAfter: 'Nachtschicht · nach Level 4', levelDone: n => `Level ${n} geschafft!`, shiftOver: 'Schicht vorbei',
+    vacWon: 'Die Sauger haben gewonnen', winSub: (t, p) => `${t} Züge · 3 Sterne bei ${p}`, survived: w => `Überstanden: ${w}`,
+    allKo: 'Alle Helden k.o. Versuch es nochmal', waveTry: (a, b) => `Welle ${a} von ${b}. Versuch es nochmal`,
+    'st.knots': 'Geknüpfte Knoten', 'st.lasers': 'Laser gefangen', 'st.crits': 'Sensor-Krits', 'st.portals': 'Teleports',
+    newBestLevel: 'Neuer Rekord für dieses Level!', newBestNight: 'Neuer Nachtschicht-Rekord!', again: 'Nochmal', map: 'Karte', next: 'Weiter',
+    toMap: 'Zur Karte', allDone: 'Wohnung gerettet! Alle Level geschafft', lang: 'Sprache',
+    aria: 'Pawsling. Zieh vom Helden zurück und lass los, um ihn wie mit einer Schleuder abzufeuern.',
+    board: 'Rangliste', boardNight: 'Nachtschicht', boardStars: 'Sterne', boardYou: 'du', boardEmpty: 'Noch niemand hier. Sei der Erste!',
+    boardLoading: 'Wird geladen…', boardError: 'Rangliste konnte nicht geladen werden. Prüfe die Verbindung und versuch es nochmal.',
+    boardTgOnly: 'Die Rangliste funktioniert, wenn das Spiel in Telegram geöffnet ist.', boardRetry: 'Aktualisieren', boardPlayer: 'Spieler',
+  },
+  es: {
+    'hero.mochi.name': 'Mochi', 'hero.mochi.skill': '+15 % de daño por cada rebote en la pared', 'hero.mochi.combo': 'Onda de ronroneo',
+    'hero.pixel.name': 'Pixel', 'hero.pixel.skill': 'atraviesa a los enemigos', 'hero.pixel.combo': 'Mirada láser',
+    'hero.bandit.name': 'Bandido', 'hero.bandit.skill': 'cada golpe retrasa el ataque enemigo un turno', 'hero.bandit.combo': 'Tentempié nocturno',
+    'hero.nugget.name': 'Nugget', 'hero.nugget.skill': 'cada golpe explota sobre los enemigos cercanos', 'hero.nugget.combo': 'Tesoro de la basura',
+    'room.kitchen': 'Cocina', 'room.living': 'Salón', 'room.bedroom': 'Dormitorio', 'room.bath': 'Baño', 'room.balcony': 'Balcón', 'room.attic': 'Desván',
+    'tip.0': 'Tira hacia atrás desde un héroe y suelta', 'tip.1': 'Cruza un hilo viejo y el nudo explotará', 'tip.2': 'Los gatos persiguen el punto láser rojo',
+    'tip.3': 'Golpea el sensor amarillo: daño triple', 'tip.4': 'Las fregonas tienen armadura: Pixel y Nugget les pegan el doble',
+    'tip.12': 'Los cepillos curan a los enemigos cercanos, golpéalos primero', 'tip.18': 'Los ventiladores desvían a los héroes, apunta con margen',
+    'tip.24': 'Los coches teledirigidos cambian de sitio cada turno',
+    woke: '¡Despierto!', revived: '¡Arriba!', waves: n => `${n} ${one(n, 'oleada', 'oleadas')}`,
+    newRoom: r => `Nueva habitación: ${r}`, record: v => `Récord: ${v}`, waveOf: (a, b) => `Oleada ${a} de ${b}`,
+    night: 'Turno de noche', nightWave: n => `Turno de noche · oleada ${n}`, levelRoom: (n, r) => `Nivel ${n} · ${r}`,
+    zoomies: '¡ZOOMIES!', armor: 'armadura', crit: '¡CRÍTICO!', plusTurn: '+1 turno', plusMischief: v => `+${v} travesura`, knot: '¡Nudo!', caught: '¡Atrapado!',
+    whoosh: '¡Zas!', whooshFast: '¡Zas! +velocidad', vroom: '¡Brum!',
+    'cry.boss': '¡TURBOASPIRADO!', 'cry.spray': '¡Psss!', 'cry.mop': '¡Plaf!', 'cry.vac': '¡Brrrum!', 'cry.brush': '¡Bzzzz!', 'cry.fan': '¡Fiuuu!', 'cry.rc': '¡Bip-bip!',
+    ko: '¡K.O.!', koHint: 'Golpea a un amigo con un disparo para levantarlo', waveClear: '¡Oleada superada!', waveClearSub: h => `+${h} de resistencia y +1 ♥ para todos`,
+    'tag.bounce': ['REBOTE', 'rebota en los enemigos'], 'tag.pierce': ['PERFORAR', 'atraviesa a los enemigos'],
+    bossTitles: [['Terror de las migas', '¡Ni una miga en el suelo!'], ['Señor del mando', '¡Este sofá ahora es mío!'], ['Pesadilla nocturna', 'Hora de dormir... ¡para siempre!'],
+      ['Barón del jabón', '¡Os mando por el desagüe!'], ['Tormentoso', '¡Os soplaré del balcón!'], ['Fantasma del desván', 'Aquí no vive nadie... ¡salvo yo!']],
+    bossWarn: 'ATENCIÓN · LLEGA EL JEFE', bossName: 'ROBO-JEFE 9000', 'stat.hp': 'Vida', 'stat.atk': 'Golpe', 'stat.every': 'Ataca',
+    'stat.everyN': n => `cada ${n} turnos`, bossHint: 'Golpea el sensor amarillo: daño triple', tapToStart: 'Toca para empezar',
+    turn: n => `Turno ${n}`, hudWave: n => ` · oleada ${n}`, pullHint: 'Tira hacia atrás desde un héroe y suelta', par3: n => `3 estrellas: termina en ${n} turnos o menos`,
+    koCount: n => `K.O. · ${n}`, zoomReady: 'listo · dispara', zoomTap: 'toca: x2 poder', mischief: 'Travesura',
+    homeHp: (a, b) => `Resistencia del piso ${a} / ${b}`, typeBounce: 'rebote', typePierce: 'perforar',
+    features: [['Ovillo', 'Cada héroe deja un hilo. Cruza un hilo viejo y el nudo explota sobre los enemigos cercanos. Hasta 2 nudos por disparo.'],
+      ['Puntero láser', 'Los gatos giran hacia el punto rojo. Atrápalo para ganar velocidad y travesura.'], ['Cajas', 'Entra en la caja A y sal por la caja B.'],
+      ['Travesura → Zoomies', 'Recoge pescado y pizza. La barra llena da un disparo con doble poder.'], ['Mapaches', 'Bandido retrasa los ataques enemigos, Nugget provoca explosiones de basura.']],
+    tagline: 'Gatos y mapaches contra la rebelión de las aspiradoras',
+    howtoIntro: 'Tira hacia atrás desde un héroe y suelta, como un tirachinas. El número sobre un enemigo indica los turnos hasta su ataque.',
+    play: 'Jugar', hello: n => `¡Hola, ${n}! Elige un nivel`, pickLevel: 'Elige un nivel', chStars: (a, b) => `${a} / ${b} estrellas`, boss: 'JEFE',
+    howto: 'Cómo jugar', nightAfter: 'Turno de noche · tras el nivel 4', levelDone: n => `¡Nivel ${n} completado!`, shiftOver: 'Turno terminado',
+    vacWon: 'Ganaron las aspiradoras', winSub: (t, p) => `${t} turnos · 3 estrellas con ${p}`, survived: w => `Resistido: ${w}`,
+    allKo: 'Todos los héroes K.O. Inténtalo de nuevo', waveTry: (a, b) => `Oleada ${a} de ${b}. Inténtalo de nuevo`,
+    'st.knots': 'Nudos atados', 'st.lasers': 'Láseres atrapados', 'st.crits': 'Críticos al sensor', 'st.portals': 'Teletransportes',
+    newBestLevel: '¡Nuevo récord en este nivel!', newBestNight: '¡Nuevo récord del turno de noche!', again: 'Otra vez', map: 'Mapa', next: 'Siguiente',
+    toMap: 'Al mapa', allDone: '¡Piso salvado! Todos los niveles completados', lang: 'Idioma',
+    aria: 'Pawsling. Tira hacia atrás desde un héroe y suelta para lanzarlo como con un tirachinas.',
+    board: 'Clasificación', boardNight: 'Turno de noche', boardStars: 'Estrellas', boardYou: 'tú', boardEmpty: 'Aún no hay nadie. ¡Sé el primero!',
+    boardLoading: 'Cargando…', boardError: 'No se pudo cargar la clasificación. Revisa la conexión e inténtalo de nuevo.',
+    boardTgOnly: 'La clasificación funciona cuando el juego se abre en Telegram.', boardRetry: 'Actualizar', boardPlayer: 'Jugador',
+  },
+};
+function tr(key, ...a) {
+  const v = key in I18N[LANG] ? I18N[LANG][key] : key in I18N.en ? I18N.en[key] : key;
+  return typeof v === 'function' ? v(...a) : v;
+}
+// shrink a font until the text fits
+function fitFont(text, maxW, size, weight = 900, fam = FD) {
+  let s = size;
+  ctx.font = `${weight} ${s}px ${fam}`;
+  while (ctx.measureText(text).width > maxW && s > 9) { s--; ctx.font = `${weight} ${s}px ${fam}`; }
+}
+// game data reads its text through the dictionary
+for (const h of HEROES) for (const f of ['name', 'skill', 'combo']) Object.defineProperty(h, f, { get: () => tr(`hero.${h.id}.${f}`), enumerable: true, configurable: true });
+for (const ch of CHAPTERS) Object.defineProperty(ch, 'name', { get: () => tr('room.' + ch.key), enumerable: true, configurable: true });
+LEVELS.forEach((l, i) => { if (l.tip) Object.defineProperty(l, 'tip', { get: () => tr('tip.' + i), enumerable: true, configurable: true }); });
+cv.setAttribute('aria-label', tr('aria'));
+document.documentElement.lang = LANG;
 
 // ---------- progress ----------
 const PKEY = 'pawsling-progress-v1';
@@ -1027,7 +1271,7 @@ function uiBtn(x, y, w, h, label, cb, primary) {
   ctx.fillStyle = 'rgba(255,255,255,.16)'; rr(x + 6, y + 4, w - 12, h * .32, 10); ctx.fill();
   if (!primary) { ctx.strokeStyle = '#4a4278'; ctx.lineWidth = 2; rr(x, y, w, h, 14); ctx.stroke(); }
   ctx.fillStyle = primary ? '#15122a' : '#f4efe6';
-  ctx.font = `900 ${h > 48 ? 20 : 16}px ${FD}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  fitFont(label, w - 18, h > 48 ? 20 : 16); ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
   ctx.fillText(label, x + w / 2, y + h / 2 + 1);
 }
 function iconBtn(x, y, kind, cb) {
@@ -1092,7 +1336,7 @@ function advanceHero() {
     n = (n + 1) % G.heroes.length;
     const h = G.heroes[n];
     if (!h.ko) break;
-    if (--h.ko === 0) wake(h, 1, 'Прокинувся!');
+    if (--h.ko === 0) wake(h, 1, tr('woke'));
   }
   G.cur = n;
 }
@@ -1104,7 +1348,7 @@ const plural = (n, one, few, many) => {
   const m10 = n % 10, m100 = n % 100;
   return m10 === 1 && m100 !== 11 ? one : m10 >= 2 && m10 <= 4 && (m100 < 12 || m100 > 14) ? few : many;
 };
-const wavesWord = n => `${n} ${plural(n, 'хвиля', 'хвилі', 'хвиль')}`;
+const wavesWord = n => tr('waves', n);
 function startEndless() {
   newRun(0);
   G.li = -1;
@@ -1227,9 +1471,9 @@ function setupWave(n) {
   const boss = G.enemies.find(e => e.type === 'boss');
   if (boss) { startBossIntro(boss); return; }
   G.state = 'banner';
-  const sub = endless ? (n > 0 && n % 5 === 0 ? `Нова кімната: ${ch.name}` : `Рекорд: ${wavesWord(PROG.endless || 0)}`)
-    : n === 0 && G.lvl.tip ? G.lvl.tip : `Хвиля ${n + 1} з ${waves.length}`;
-  G.banner = { title: endless ? `Нічна зміна · хвиля ${n + 1}` : `Рівень ${G.li + 1} · ${ch.name}`, sub, t: n === 0 && G.lvl.tip ? 2.2 : 1.5, max: n === 0 && G.lvl.tip ? 2.2 : 1.5, done: () => { G.state = 'aim'; announceHero(); } };
+  const sub = endless ? (n > 0 && n % 5 === 0 ? tr('newRoom', ch.name) : tr('record', wavesWord(PROG.endless || 0)))
+    : n === 0 && G.lvl.tip ? G.lvl.tip : tr('waveOf', n + 1, waves.length);
+  G.banner = { title: endless ? tr('nightWave', n + 1) : tr('levelRoom', G.li + 1, ch.name), sub, t: n === 0 && G.lvl.tip ? 2.2 : 1.5, max: n === 0 && G.lvl.tip ? 2.2 : 1.5, done: () => { G.state = 'aim'; announceHero(); } };
   Snd.play('wave');
 }
 
@@ -1244,7 +1488,7 @@ function launch(dx, dy) {
   s.trail = { pts: [[h.x, h.y]], color: h.yarn, turn: G.turn, gold: zoom, used: new Set(), shot: s };
   G.trails.push(s.trail);
   G.shot = s;
-  if (zoom) { G.meter = 0; G.zoomArmed = false; ftext(h.x, h.y - 40, 'ТИГИДИК!', '#ffd166', 22); Snd.play('zoom'); flash('#ffd166', .35); ring(h.x, h.y, 90, '#ffd166'); }
+  if (zoom) { G.meter = 0; G.zoomArmed = false; ftext(h.x, h.y - 40, tr('zoomies'), '#ffd166', 22); Snd.play('zoom'); flash('#ffd166', .35); ring(h.x, h.y, 90, '#ffd166'); }
   burst(h.x, h.y, h.yarn, 8, 160);
   Snd.play('launch'); haptic('medium');
   G.state = 'moving';
@@ -1278,11 +1522,11 @@ function hitEnemy(e, nx, ny) {
   let crit = false;
   if (e.type === 'mop') {
     if (h.type === 'pierce') { dmg *= 2; crit = true; }
-    else { dmg *= .5; ftext(e.x, e.y - e.r - 30, 'броня', '#9fb3c8', 13); Snd.play('armor'); }
+    else { dmg *= .5; ftext(e.x, e.y - e.r - 30, tr('armor'), '#9fb3c8', 13); Snd.play('armor'); }
   }
   if (e.type === 'boss' && angDiff(Math.atan2(h.y - e.y, h.x - e.x), e.weak) < .6) {
     dmg *= 3; crit = true; G.stats.crits++;
-    ftext(e.x, e.y - e.r - 34, 'КРИТ!', '#ffe066', 18);
+    ftext(e.x, e.y - e.r - 34, tr('crit'), '#ffe066', 18);
   }
   burst(h.x - nx * h.r, h.y - ny * h.r, '#fff', 6, 150);
   sparks(h.x - nx * h.r, h.y - ny * h.r, crit ? 12 : 6, crit ? '#ffe066' : '#fff6d0');
@@ -1291,7 +1535,7 @@ function hitEnemy(e, nx, ny) {
   damageEnemy(e, dmg, crit);
   if (h.id === 'bandit' && e.alive && !s.delayed.has(e)) {
     s.delayed.add(e); e.timer++;
-    ftext(e.x + e.r, e.y + 4, '+1 хід', '#5ce1c6', 14);
+    ftext(e.x + e.r, e.y + 4, tr('plusTurn'), '#5ce1c6', 14);
   }
   if (h.id === 'nugget') {
     ring(e.x, e.y, 90, '#c9a86a');
@@ -1322,7 +1566,7 @@ function triggerCombo(o) {
     Snd.play('heal');
   } else {
     addMeter(12 * z);
-    ftext(o.x, o.y - o.r - 32, '+' + (12 * z) + ' бешкету', '#ff8fb1', 14);
+    ftext(o.x, o.y - o.r - 32, tr('plusMischief', 12 * z), '#ff8fb1', 14);
     burst(o.x, o.y, '#ff8fb1', 14);
   }
 }
@@ -1335,7 +1579,7 @@ function knot(p, gold) {
   burst(p[0], p[1], gold ? '#ffd166' : '#ff8fb1', 14, 220);
   themeBurst(p[0], p[1], 10, 200);
   flash(gold ? '#ffd166' : '#ff8fb1', .18);
-  ftext(p[0], p[1] - 16, 'Вузол!', gold ? '#ffd166' : '#ff8fb1', 18);
+  ftext(p[0], p[1] - 16, tr('knot'), gold ? '#ffd166' : '#ff8fb1', 18);
   addMeter(10);
   G.shake = Math.max(G.shake, 5);
   Snd.play('knot'); haptic('heavy');
@@ -1382,7 +1626,7 @@ function stepShot(dt) {
         const sp = Math.hypot(h.vx, h.vy) || 1, ns = Math.min(sp * 1.25, h.speed * 1.3);
         h.vx *= ns / sp; h.vy *= ns / sp;
         burst(L.x, L.y, '#ff3b5c', 18);
-        ftext(L.x, L.y - 20, 'Спіймав!', '#ff6b85', 16);
+        ftext(L.x, L.y - 20, tr('caught'), '#ff6b85', 16);
         Snd.play('meow'); haptic('medium');
       }
     }
@@ -1425,7 +1669,7 @@ function stepShot(dt) {
       if (o === h || s.combos.has(o)) continue;
       if (dist(h.x, h.y, o.x, o.y) >= h.r + o.r) continue;
       s.combos.add(o);
-      if (o.ko) { wake(o, 2, 'Підняли!'); Snd.play('heal'); haptic('success'); }
+      if (o.ko) { wake(o, 2, tr('revived')); Snd.play('heal'); haptic('success'); }
       else triggerCombo(o);
     }
 
@@ -1440,7 +1684,7 @@ function stepShot(dt) {
         if (h.kind === 'cat') { h.vx *= 1.15; h.vy *= 1.15; }
         s.portalCd = .4; G.stats.portals++;
         burst(o.x, o.y, '#ffc857', 12);
-        ftext(o.x, o.y - 32, h.kind === 'cat' ? 'Шусть! +швидкість' : 'Шусть!', '#ffc857', 14);
+        ftext(o.x, o.y - 32, h.kind === 'cat' ? tr('whooshFast') : tr('whoosh'), '#ffc857', 14);
         Snd.play('portal'); haptic('light');
         s.trail = { pts: [[h.x, h.y]], color: h.yarn, turn: G.turn, gold: s.zoom, used: new Set(), shot: s };
         G.trails.push(s.trail);
@@ -1454,7 +1698,7 @@ function stepShot(dt) {
       const bonus = h.kind === 'raccoon' ? 16 : 8;
       addMeter(bonus);
       burst(sn.x, sn.y, sn.kind === 'fish' ? '#7ec8e3' : '#ffd166', 10, 120);
-      ftext(sn.x, sn.y - 18, '+' + bonus + ' бешкету', '#ff8fb1', 13);
+      ftext(sn.x, sn.y - 18, tr('plusMischief', bonus), '#ff8fb1', 13);
       Snd.play('snack');
     }
 
@@ -1515,7 +1759,7 @@ function driveCars() {
       const q = freeSpot(55);
       if (dist(q.x, q.y, e.x, e.y) > 90 && q.y < BOT - 150) {
         e.tx = q.x; e.ty = q.y; e.ang = Math.atan2(q.y - e.y, q.x - e.x);
-        ftext(e.x, e.y - e.r - 18, 'Вррум!', '#ffb070', 12);
+        ftext(e.x, e.y - e.r - 18, tr('vroom'), '#ffb070', 12);
         break;
       }
     }
@@ -1532,7 +1776,7 @@ function nextAttack() {
   G.beams.push({ x1: e.x, y1: e.y, x2: t.x, y2: t.y, life: .45, max: .45, col: e.type === 'spray' ? '#6ec3ff' : '#ff3b5c', w: e.type === 'boss' ? 12 : 6 });
   G.hp = Math.max(0, G.hp - e.atk);
   ftext(t.x, t.y - 30, '-' + e.atk, '#ff6b85', 20);
-  const cry = { boss: 'ТУРБО-ВСМОКТУВАННЯ!', spray: 'Пшшш!', mop: 'Шльоп!', vac: 'Вжжжух!', brush: 'Дзззз!', fan: 'Фшшух!', rc: 'Бі-біп!' }[e.type];
+  const cry = tr('cry.' + e.type);
   ftext(e.x, e.y - e.r - 22, cry, '#ffc857', 14);
   burst(t.x, t.y, '#ff6b85', 14);
   G.shake = e.type === 'boss' ? 14 : 7;
@@ -1543,8 +1787,8 @@ function nextAttack() {
   ftext(t.x, t.y - 52, '-' + loss + ' ♥', '#ff5d7a', 16);
   if (t.hearts === 0) {
     t.ko = KO_TURNS;
-    ftext(t.x, t.y + t.r + 18, 'Нокаут!', '#ffc857', 18);
-    if (!G.koTaught) { G.koTaught = true; ftext(W / 2, BOT - 40, 'Зачепи друга пострілом, щоб підняти', '#5ce1c6', 15); }
+    ftext(t.x, t.y + t.r + 18, tr('ko'), '#ffc857', 18);
+    if (!G.koTaught) { G.koTaught = true; ftext(W / 2, BOT - 40, tr('koHint'), '#5ce1c6', 15); }
     haptic('heavy');
   }
   e.timer = e.maxTimer;
@@ -1590,7 +1834,7 @@ function waveClear() {
   G.hp = Math.min(G.maxHp, G.hp + heal);
   for (const h of G.heroes) { if (h.ko) { h.ko = 0; h.hearts = 1; } else h.hearts = Math.min(h.maxHearts, h.hearts + 1); }
   G.state = 'banner';
-  G.banner = { title: 'Хвилю зачищено!', sub: `+${heal} до міцності квартири і +1 ♥ кожному`, t: 1.5, max: 1.5,
+  G.banner = { title: tr('waveClear'), sub: tr('waveClearSub', heal), t: 1.5, max: 1.5,
     done: () => { G.turn++; advanceHero(); setupWave(G.wave + 1); } };
   playRound(G.lvl.ch);
 }
@@ -1707,15 +1951,9 @@ function heroEyes(h, r, o, mood) {
   if (mood === 'sad') { ctx.fillStyle = '#7ec8e3'; ctx.beginPath(); ctx.moveTo(r * .42, r * .08); ctx.quadraticCurveTo(r * .52, r * .26, r * .42, r * .3); ctx.quadraticCurveTo(r * .32, r * .26, r * .42, r * .08); ctx.fill(); }
 }
 
-const TYPE_TAG = { bounce: ['ВІДСКОК', 'відбивається від ворогів'], pierce: ['ПРОШИВАННЯ', 'пролітає ворогів наскрізь'] };
 // ---------- boss intro ----------
 // Before a boss wave: warning stripes, the boss drops in with a thud, then its name, a room-specific
 // nickname and catchphrase, its stats and the sensor hint. A tap skips it after a moment.
-const BOSS_TITLES = [
-  ['Гроза крихт', 'Жодної крихти на підлозі!'],
-  ['Володар пульта', 'Цей диван тепер мій!'],
-  ['Нічний жах', 'Час спати... назавжди!'],
-];
 const INTRO_LEN = 4.2, INTRO_LAND = .9;
 function startBossIntro(boss) {
   G.state = 'bossintro';
@@ -1775,7 +2013,7 @@ function drawBossIntro() {
   ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
   if (t < INTRO_LAND + .4 || Math.sin(T * 10) > -.2) {
     ctx.fillStyle = '#ff4d6d'; ctx.font = `900 16px ${FD}`;
-    ctx.fillText('УВАГА · БОС НАБЛИЖАЄТЬСЯ', W / 2, 138);
+    fitFont(tr('bossWarn'), W - 40, 16); ctx.fillText(tr('bossWarn'), W / 2, 138);
   }
   // the boss drops in and lands with a shockwave
   const by = 280, R = 104;
@@ -1798,9 +2036,9 @@ function drawBossIntro() {
     ctx.globalAlpha = a * nameK;
     ctx.save(); ctx.translate(W / 2, 432); ctx.scale(.7 + .3 * nameK, .7 + .3 * nameK);
     ctx.shadowColor = '#ff3b5c'; ctx.shadowBlur = 18;
-    ctx.fillStyle = '#ff4d6d'; ctx.font = `900 36px ${FD}`; ctx.fillText('РОБО-БОС 9000', 0, 0);
+    ctx.fillStyle = '#ff4d6d'; fitFont(tr('bossName'), W - 60, 36); ctx.fillText(tr('bossName'), 0, 0);
     ctx.restore();
-    const [title, quote] = BOSS_TITLES[c];
+    const [title, quote] = tr('bossTitles')[c % 6];
     ctx.fillStyle = ch.col; ctx.font = `900 19px ${FD}`; ctx.fillText(`«${title}»`, W / 2, 470);
     ctx.fillStyle = '#c9c2e6'; ctx.font = `italic 800 14px ${FB}`; ctx.fillText(`„${quote}“`, W / 2, 498);
   }
@@ -1808,7 +2046,7 @@ function drawBossIntro() {
   const statK = ease((t - 1.45) / .3);
   if (statK > 0) {
     ctx.globalAlpha = a * statK;
-    const chips = [['Міцність', e.maxHp], ['Удар', e.atk], ['Атакує', `кожні ${e.maxTimer} ходи`]];
+    const chips = [[tr('stat.hp'), e.maxHp], [tr('stat.atk'), e.atk], [tr('stat.every'), tr('stat.everyN', e.maxTimer)]];
     const cw = 128, gap = 10, x0 = W / 2 - (cw * 3 + gap * 2) / 2;
     chips.forEach(([label, val], i) => {
       const x = x0 + i * (cw + gap), yy = 530 + (1 - statK) * 14;
@@ -1829,12 +2067,12 @@ function drawBossIntro() {
     ctx.fillStyle = 'rgba(255,224,102,.35)'; circ(66, hy + 22, 13 * p);
     ctx.fillStyle = '#ffe066'; circ(66, hy + 22, 8); ctx.fillStyle = '#fff'; circ(66, hy + 22, 3);
     ctx.textAlign = 'left'; ctx.fillStyle = '#ffe066'; ctx.font = `900 14px ${FB}`;
-    ctx.fillText('Бий у жовтий сенсор: потрійна шкода', 88, hy + 23);
+    fitFont(tr('bossHint'), W - 140, 14, 900, FB); ctx.fillText(tr('bossHint'), 88, hy + 23);
     ctx.textAlign = 'center';
   }
   if (t > 2.3) {
     ctx.globalAlpha = a * (.55 + .45 * Math.sin(T * 4));
-    ctx.fillStyle = '#c9c2e6'; ctx.font = `800 13px ${FB}`; ctx.fillText('Торкнись, щоб почати', W / 2, 676);
+    ctx.fillStyle = '#c9c2e6'; ctx.font = `800 13px ${FB}`; ctx.fillText(tr('tapToStart'), W / 2, 676);
   }
   ctx.restore();
 }
@@ -1845,7 +2083,7 @@ function drawTypeTag() {
   if (!tg || G.state !== 'aim' || drag) return;
   const h = G.heroes[G.cur], k = tg.life / tg.max;
   const a = Math.min(1, k * 3, (1 - k) * 8), rise = (1 - k) * 10;
-  const [title, sub] = TYPE_TAG[h.type];
+  const [title, sub] = tr('tag.' + h.type);
   const y = Math.max(TOP + 34, h.y - h.r - 44 - rise);
   ctx.save(); ctx.globalAlpha = a;
   ctx.font = `900 15px ${FD}`;
@@ -2483,24 +2721,24 @@ function drawHUD() {
   iconBtn(W - 46, 13, 'sound', () => Snd.toggle());
   ctx.textBaseline = 'middle';
   ctx.textAlign = 'left'; ctx.fillStyle = '#f4efe6'; ctx.font = `900 16px ${FD}`;
-  const pre = G.lvl.endless ? '' : `${G.li + 1}. `, nm = G.lvl.endless ? 'Нічна зміна' : G.ch.name;
+  const pre = G.lvl.endless ? '' : `${G.li + 1}. `, nm = G.lvl.endless ? tr('night') : G.ch.name;
   ctx.fillText(pre, 56, 24);
   let tx = 56 + ctx.measureText(pre).width;
   ctx.fillStyle = G.ch.col; ctx.fillText(nm, tx, 24); tx += ctx.measureText(nm).width;
-  ctx.fillStyle = '#f4efe6'; ctx.fillText(G.lvl.endless ? ` · хвиля ${G.wave + 1}` : ` · ${G.wave + 1}/${G.lvl.waves.length}`, tx, 24);
+  ctx.fillStyle = '#f4efe6'; ctx.fillText(G.lvl.endless ? tr('hudWave', G.wave + 1) : ` · ${G.wave + 1}/${G.lvl.waves.length}`, tx, 24);
   ctx.textAlign = 'right'; ctx.font = `800 13px ${FB}`; ctx.fillStyle = '#c9c2e6';
-  ctx.fillText(`Хід ${G.turn}`, W - 56, 24);
+  ctx.fillText(tr('turn', G.turn), W - 56, 24);
   const boss = G.enemies.find(e => e.type === 'boss' && e.alive);
   if (boss) {
     const bx = 56, bw = W - 112;
     ctx.fillStyle = '#2a2548'; rr(bx, 37, bw, 12, 6); ctx.fill();
     ctx.fillStyle = '#ff4d6d'; rr(bx, 37, Math.max(12, bw * boss.hp / boss.maxHp), 12, 6); ctx.fill();
     ctx.fillStyle = '#fff'; ctx.font = `900 9.5px ${FB}`; ctx.textAlign = 'center';
-    ctx.fillText(`РОБО-БОС 9000 · ${boss.hp}`, W / 2, 43.5);
+    ctx.fillText(`${tr('bossName')} · ${boss.hp}`, W / 2, 43.5);
   } else {
     ctx.textAlign = 'left'; ctx.font = `700 11.5px ${FB}`; ctx.fillStyle = '#8f88b5';
-    ctx.fillText(G.lvl.endless ? `Рекорд: ${wavesWord(PROG.endless || 0)} · ${G.ch.name}`
-      : G.li === 0 ? 'Тягни від героя назад і відпускай' : `3 зірки: пройти за ${G.lvl.par} ходів або швидше`, 56, 45);
+    ctx.fillText(G.lvl.endless ? `${tr('record', wavesWord(PROG.endless || 0))} · ${G.ch.name}`
+      : G.li === 0 ? tr('pullHint') : tr('par3', G.lvl.par), 56, 45);
   }
 
   G.heroes.forEach((h, i) => {
@@ -2522,7 +2760,7 @@ function drawHUD() {
     ctx.stroke();
     if (h.ko) {
       ctx.fillStyle = '#8f88b5'; ctx.font = `800 10px ${FB}`; ctx.textAlign = 'center';
-      ctx.fillText(`нокаут · ${h.ko}`, x, y + 35);
+      ctx.fillText(tr('koCount', h.ko), x, y + 35);
     } else heartsRow(h, x, y + 35, 4);
   });
 
@@ -2550,12 +2788,12 @@ function drawHUD() {
   ctx.textAlign = 'center';
   if (full) {
     ctx.fillStyle = '#15122a'; ctx.font = `900 17px ${FD}`;
-    ctx.fillText('ТИГИДИК!', B.x + B.w / 2, B.y + 20);
+    fitFont(tr('zoomies'), B.w - 12, 17); ctx.fillText(tr('zoomies'), B.x + B.w / 2, B.y + 20);
     ctx.font = `800 10px ${FB}`;
-    ctx.fillText(G.zoomArmed ? 'готово · стріляй' : 'торкнись: x2 сила', B.x + B.w / 2, B.y + 37);
+    ctx.fillText(G.zoomArmed ? tr('zoomReady') : tr('zoomTap'), B.x + B.w / 2, B.y + 37);
   } else {
     ctx.fillStyle = '#fff'; ctx.font = `900 15px ${FD}`;
-    ctx.fillText('Бешкет', B.x + B.w / 2, B.y + 19);
+    fitFont(tr('mischief'), B.w - 12, 15); ctx.fillText(tr('mischief'), B.x + B.w / 2, B.y + 19);
     ctx.font = `800 11px ${FB}`;
     ctx.fillText(`${Math.floor(G.meter)} / 100`, B.x + B.w / 2, B.y + 36);
   }
@@ -2578,13 +2816,13 @@ function drawHUD() {
   ctx.beginPath(); ctx.moveTo(20, 765); ctx.lineTo(26, 759); ctx.lineTo(32, 765); ctx.moveTo(22, 764); ctx.lineTo(22, 770); ctx.lineTo(30, 770); ctx.lineTo(30, 764); ctx.stroke();
   ctx.font = `900 11px ${FB}`; ctx.textAlign = 'center'; ctx.lineJoin = 'round';
   ctx.strokeStyle = '#15122a'; ctx.lineWidth = 3;
-  const hpText = `Міцність квартири ${Math.ceil(G.hp)} / ${G.maxHp}`;
+  const hpText = tr('homeHp', Math.ceil(G.hp), G.maxHp);
   ctx.strokeText(hpText, W / 2, 765.5); ctx.fillStyle = '#fff'; ctx.fillText(hpText, W / 2, 765.5);
 
   const h = G.heroes[G.cur];
   ctx.textAlign = 'left'; ctx.fillStyle = '#b9b2da';
   let fs = 12;
-  const hint = `${h.name} · ${h.type === 'bounce' ? 'відскок' : 'прошивання'} · ${h.skill}`;
+  const hint = `${h.name} · ${tr(h.type === 'bounce' ? 'typeBounce' : 'typePierce')} · ${h.skill}`;
   do { ctx.font = `700 ${fs}px ${FB}`; fs -= .5; } while (ctx.measureText(hint).width > W - 32 && fs > 8);
   ctx.fillText(hint, 16, 789);
 }
@@ -2629,13 +2867,8 @@ function drawBanner() {
 }
 
 // ---------- drawing: overlays & screens ----------
-const FEATURES = [
-  ['#ff8fb1', 'Клубки', 'Кожен герой лишає нитку. Перетни стару нитку, і вузол вибухне по ворогах поруч. До 2 вузлів за постріл.'],
-  ['#ff3b5c', 'Лазерна указка', 'Коти звертають до червоної точки. Спіймали — прискорення і бешкет.'],
-  ['#c68a4f', 'Коробки', 'Залетів у коробку A — вилетів з коробки B.'],
-  ['#5ce1c6', 'Бешкет → Тигидик', 'Збирай рибу й піцу. Повна шкала дає постріл з подвійною силою.'],
-  ['#9aa0ad', 'Єноти', 'Бандит відкладає атаки ворогів, Наґет влаштовує сміттєві вибухи.'],
-];
+const FEATURE_COLS = ['#ff8fb1', '#ff3b5c', '#c68a4f', '#5ce1c6', '#9aa0ad'];
+const FEATURES = () => tr('features').map((f, i) => [FEATURE_COLS[i], ...f]);
 
 function drawHowto() {
   ctx.drawImage(BGS[1], 0, 0, W, H);
@@ -2646,18 +2879,18 @@ function drawHowto() {
   });
   ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
   ctx.fillStyle = '#ffc857'; ctx.font = `900 56px ${FD}`; ctx.fillText('Pawsling', W / 2, 200);
-  ctx.fillStyle = '#f4efe6'; ctx.font = `800 15px ${FB}`; ctx.fillText('Коти та єноти проти повстання пилососів', W / 2, 240);
+  ctx.fillStyle = '#f4efe6'; ctx.font = `800 15px ${FB}`; fitFont(tr('tagline'), W - 40, 15, 800, FB); ctx.fillText(tr('tagline'), W / 2, 240);
   ctx.fillStyle = '#c9c2e6'; ctx.font = `700 12.5px ${FB}`;
-  wrap('Тягни від героя назад і відпускай, як рогатку. Цифра над ворогом — скільки ходів до його атаки.', W / 2, 270, W - 80, 16);
+  wrap(tr('howtoIntro'), W / 2, 270, W - 80, 16);
   let y = 330;
-  for (const [col, title, desc] of FEATURES) {
+  for (const [col, title, desc] of FEATURES()) {
     ctx.fillStyle = col; circ(44, y, 6);
     ctx.textAlign = 'left'; ctx.font = `900 16px ${FD}`; ctx.fillText(title, 62, y);
     ctx.fillStyle = '#c9c2e6'; ctx.font = `700 12.5px ${FB}`;
     const end = wrap(desc, 62, y + 20, W - 100, 16);
     y = end + 32;
   }
-  uiBtn(75, 700, W - 150, 56, 'Грати', closeHowto, true);
+  uiBtn(75, 700, W - 150, 56, tr('play'), closeHowto, true);
 }
 
 function drawNode(c, x, y, r, col, open) {
@@ -2760,7 +2993,7 @@ function drawMap() {
   ctx.fillStyle = '#ffc857'; ctx.font = `900 40px ${FD}`; ctx.fillText('Pawsling', W / 2, 62);
   ctx.shadowBlur = 0;
   ctx.fillStyle = '#c9c2e6'; ctx.font = `800 14px ${FB}`;
-  ctx.fillText(TG_NAME ? `Привіт, ${TG_NAME}! Обери рівень` : 'Обери рівень', W / 2, 100);
+  ctx.fillText(TG_NAME ? tr('hello', TG_NAME) : tr('pickLevel'), W / 2, 100);
   const ts = totalStars();
   star(W / 2 - 34, 126, 9, '#ffc857');
   ctx.fillStyle = '#f4efe6'; ctx.font = `900 16px ${FD}`; ctx.textAlign = 'left';
@@ -2785,7 +3018,7 @@ function drawMap() {
     ctx.fillText(ch.name, 60, y0);
     const chStars = ids.reduce((a, li) => a + (PROG.stars[String(li + 1)] || 0), 0);
     ctx.textAlign = 'right'; ctx.fillStyle = '#c9c2e6'; ctx.font = `800 12px ${FB}`;
-    ctx.fillText(`${chStars} / ${ids.length * 3} зірок`, W - 28, y0);
+    ctx.fillText(tr('chStars', chStars, ids.length * 3), W - 28, y0);
     ctx.strokeStyle = ch.col; ctx.globalAlpha = .6; ctx.lineWidth = 3; ctx.setLineDash([6, 7]); ctx.lineCap = 'round';
     ctx.lineDashOffset = RM ? 0 : -T * 12;
     ctx.beginPath(); pts.forEach(([x, y], i) => i ? ctx.lineTo(x, y) : ctx.moveTo(x, y)); ctx.stroke();
@@ -2800,7 +3033,7 @@ function drawMap() {
       if (open) {
         ctx.fillStyle = '#15122a'; ctx.textAlign = 'center';
         ctx.font = `900 ${isBoss ? 15 : 22}px ${FD}`;
-        ctx.fillText(isBoss ? 'БОС' : String(n), x, y + bob + 1);
+        ctx.fillText(isBoss ? tr('boss') : String(n), x, y + bob + 1);
         if (isBoss) { ctx.font = `800 10px ${FB}`; ctx.fillText(String(n), x, y + bob + 16); }
       } else {
         ctx.fillStyle = '#5b5488'; rr(x - 8, y - 2, 16, 12, 3); ctx.fill();
@@ -2826,12 +3059,35 @@ function drawMap() {
   fade.addColorStop(0, 'rgba(17,14,34,0)'); fade.addColorStop(1, '#110e22');
   ctx.fillStyle = fade; ctx.fillRect(0, MAP_VIEW - 26, W, 34);
   ctx.fillStyle = '#110e22'; ctx.fillRect(0, MAP_VIEW + 8, W, H - MAP_VIEW - 8);
-  uiBtn(16, 736, 128, 46, 'Як грати', () => setScreen('howto'), false);
+  uiBtn(16, 736, 128, 46, tr('howto'), () => setScreen('howto'), false);
   const nightOpen = PROG.unlocked >= ENDLESS_UNLOCK;
   const rec = PROG.endless || 0;
-  uiBtn(154, 736, W - 170, 46, nightOpen ? (rec ? `Нічна зміна · ${rec}` : 'Нічна зміна') : 'Нічна зміна · після 4 рівня',
+  uiBtn(154, 736, W - 170, 46, nightOpen ? (rec ? `${tr('night')} · ${rec}` : tr('night')) : tr('nightAfter'),
     () => { if (nightOpen) startEndless(); else { Snd.play('locked'); haptic('warning'); } }, nightOpen);
   iconBtn(W - 46, 13, 'sound', () => Snd.toggle());
+  langBtn();
+}
+function langBtn() {
+  const x = 12, y = 13, w = 44, h = 34;
+  UI.push({ x: x - 4, y: y - 4, w: w + 8, h: h + 8, cb: () => setScreen('lang') });
+  ctx.fillStyle = '#0d0b1d'; rr(x, y + 3, w, h, 10); ctx.fill();
+  const g = ctx.createLinearGradient(0, y, 0, y + h);
+  g.addColorStop(0, '#2e2859'); g.addColorStop(1, '#1f1a40');
+  ctx.fillStyle = g; rr(x, y, w, h, 10); ctx.fill();
+  ctx.strokeStyle = '#4a4278'; ctx.lineWidth = 1.5; rr(x, y, w, h, 10); ctx.stroke();
+  ctx.fillStyle = '#f4efe6'; ctx.font = `900 13px ${FD}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillText(LANG.toUpperCase(), x + w / 2, y + h / 2 + 1);
+}
+function drawLang() {
+  drawMap(); UI = [];
+  ctx.fillStyle = 'rgba(12,10,26,.9)'; ctx.fillRect(0, 0, W, H);
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillStyle = '#ffc857'; ctx.font = `900 28px ${FD}`; ctx.fillText(tr('lang'), W / 2, 200);
+  Object.entries(LANGS).forEach(([k, name], i) => uiBtn(75, 240 + i * 68, W - 150, 54, name, () => {
+    LANG = k; lsSet('pawsling-lang', k);
+    cv.setAttribute('aria-label', tr('aria')); document.documentElement.lang = k;
+    setScreen('map');
+  }, k === LANG));
 }
 
 function drawEnd() {
@@ -2847,9 +3103,10 @@ function drawEnd() {
   G.heroes.forEach((h, i) => drawHero(h, 90 + i * 90, 150 + (win ? Math.abs(Math.sin(T * 5 + i)) * -14 : 6), 28, null, { mood: win ? 'happy' : 'sad', look: [0, 1] }));
   ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
   ctx.fillStyle = win ? '#ffc857' : '#ff6b85'; ctx.font = `900 34px ${FD}`;
-  ctx.fillText(win ? `Рівень ${G.li + 1} пройдено!` : G.lvl.endless ? 'Зміну завершено' : 'Пилососи перемогли', W / 2, 235);
+  const endTitle = win ? tr('levelDone', G.li + 1) : G.lvl.endless ? tr('shiftOver') : tr('vacWon');
+  fitFont(endTitle, W - 40, 34); ctx.fillText(endTitle, W / 2, 235);
   ctx.fillStyle = '#f4efe6'; ctx.font = `800 15px ${FB}`;
-  ctx.fillText(win ? `${G.turn} ходів · для 3 зірок треба ${G.lvl.par}` : G.lvl.endless ? `Протрималися: ${wavesWord(G.wave)}` : (G.loseReason === 'ko' ? 'Усі герої в нокауті. Спробуй ще раз' : `Хвиля ${G.wave + 1} з ${G.lvl.waves.length}. Спробуй ще раз`), W / 2, 272);
+  ctx.fillText(win ? tr('winSub', G.turn, G.lvl.par) : G.lvl.endless ? tr('survived', wavesWord(G.wave)) : (G.loseReason === 'ko' ? tr('allKo') : tr('waveTry', G.wave + 1, G.lvl.waves.length)), W / 2, 272);
   let y0 = 320;
   if (win) {
     for (let s = 0; s < 3; s++) {
@@ -2859,7 +3116,7 @@ function drawEnd() {
     y0 = 382;
   }
   const st = G.stats;
-  const rows = [['Вузлів зав\'язано', st.knots], ['Лазер спіймано', st.lasers], ['Критів по сенсору', st.crits], ['Телепортів', st.portals]];
+  const rows = [[tr('st.knots'), st.knots], [tr('st.lasers'), st.lasers], [tr('st.crits'), st.crits], [tr('st.portals'), st.portals]];
   rows.forEach(([k, v], i) => {
     const y = y0 + i * 34;
     ctx.fillStyle = '#231e44'; rr(80, y - 14, W - 160, 28, 10); ctx.fill();
@@ -2868,29 +3125,29 @@ function drawEnd() {
   });
   if (win && G.newBest) {
     ctx.textAlign = 'center'; ctx.fillStyle = '#5ce1c6'; ctx.font = `800 14px ${FB}`;
-    ctx.fillText('Новий рекорд для цього рівня!', W / 2, y0 + 150);
+    ctx.fillText(tr('newBestLevel'), W / 2, y0 + 150);
   }
   if (G.lvl.endless) {
     ctx.textAlign = 'center'; ctx.font = `800 14px ${FB}`;
     ctx.fillStyle = G.newBest ? '#5ce1c6' : '#8f88b5';
-    ctx.fillText(G.newBest ? 'Новий рекорд нічної зміни!' : `Рекорд: ${wavesWord(PROG.endless || 0)}`, W / 2, y0 + 150);
-    uiBtn(75, 600, W - 150, 56, 'Ще раз', startEndless, true);
-    uiBtn(75, 670, W - 150, 46, 'Карта', goMap, false);
+    ctx.fillText(G.newBest ? tr('newBestNight') : tr('record', wavesWord(PROG.endless || 0)), W / 2, y0 + 150);
+    uiBtn(75, 600, W - 150, 56, tr('again'), startEndless, true);
+    uiBtn(75, 670, W - 150, 46, tr('map'), goMap, false);
     return;
   }
   const hasNext = win && G.li < LEVELS.length - 1;
   const li = G.li;
-  if (hasNext) uiBtn(75, 600, W - 150, 56, 'Далі', () => startLevel(li + 1), true);
-  else uiBtn(75, 600, W - 150, 56, win ? 'До карти' : 'Ще раз', win ? goMap : () => startLevel(li), true);
+  if (hasNext) uiBtn(75, 600, W - 150, 56, tr('next'), () => startLevel(li + 1), true);
+  else uiBtn(75, 600, W - 150, 56, win ? tr('toMap') : tr('again'), win ? goMap : () => startLevel(li), true);
   if (hasNext) {
-    uiBtn(75, 670, (W - 160) / 2, 46, 'Ще раз', () => startLevel(li), false);
-    uiBtn(85 + (W - 160) / 2, 670, (W - 160) / 2, 46, 'Карта', goMap, false);
+    uiBtn(75, 670, (W - 160) / 2, 46, tr('again'), () => startLevel(li), false);
+    uiBtn(85 + (W - 160) / 2, 670, (W - 160) / 2, 46, tr('map'), goMap, false);
   } else if (!win) {
-    uiBtn(75, 670, W - 150, 46, 'Карта', goMap, false);
+    uiBtn(75, 670, W - 150, 46, tr('map'), goMap, false);
   }
   if (win && !hasNext) {
     ctx.textAlign = 'center'; ctx.fillStyle = '#ffc857'; ctx.font = `900 18px ${FD}`;
-    ctx.fillText('Квартиру врятовано! Усі рівні пройдено', W / 2, 690);
+    fitFont(tr('allDone'), W - 30, 18); ctx.fillText(tr('allDone'), W / 2, 690);
   }
 }
 
@@ -2977,6 +3234,7 @@ function draw() {
   ctx.clearRect(0, 0, W, H);
   if (SCREEN === 'game' && G) drawGame();
   else if (SCREEN === 'howto') drawHowto();
+  else if (SCREEN === 'lang') drawLang();
   else drawMap();
 }
 
