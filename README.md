@@ -82,6 +82,17 @@ The game runs without a permanently running server: the page is on GitHub Pages
   records paid purchases in the `purchases` table and answers /start in the player's language.
   Stars earned go to the bot's balance (withdrawal via Fragment, see @BotFather → Payments).
 
+## Content
+
+- **More heroes**: Rex the rescue dog (shop, 50 Stars; heals every ally he touches) and Hammy the
+  hamster (free after level 24; the further he rolls, the harder he hits). A team is 4-5 heroes,
+  picked on the Heroes screen.
+- **Seasonal events**: Halloween (15 Oct - 5 Nov) and New Year (15 Dec - 10 Jan). An event card sits
+  on top of the map while it runs; three levels with costumed enemies, and finishing them gives an
+  exclusive hat. Progress is kept per event year. In `#dev`, `window.__event = 'halloween'` forces one.
+- **Story**: a two-panel comic before the first level of each room and a finale after level 42,
+  shown once each (`PROG.story`), all in five languages.
+
 ## Depth
 
 - **Hero levels** (the paw button on the map): heroes earn XP for every win (more for more stars,

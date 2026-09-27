@@ -34,7 +34,7 @@ if (TG) {
     if (tgv('6.1')) {
       TG.setHeaderColor('#15122a');
       TG.setBackgroundColor('#110e22');
-      TG.BackButton.onClick(() => { if (SCREEN === 'game') goMap(); else if (SCREEN === 'howto') closeHowto(); else if (['lang', 'board', 'shop', 'prep', 'daily', 'heroes'].includes(SCREEN)) setScreen('map'); });
+      TG.BackButton.onClick(() => { if (SCREEN === 'game') goMap(); else if (SCREEN === 'howto') closeHowto(); else if (SCREEN === 'story') storyNext(true); else if (['lang', 'board', 'shop', 'prep', 'daily', 'heroes'].includes(SCREEN)) setScreen('map'); });
     }
     if (tgv('7.7')) TG.disableVerticalSwipes();
     TG.onEvent('viewportChanged', resize);
@@ -626,6 +626,25 @@ const I18N = {
     'st.knots': 'Вузлів зав\'язано', 'st.lasers': 'Лазер спіймано', 'st.crits': 'Критів по сенсору', 'st.portals': 'Телепортів',
     newBestLevel: 'Новий рекорд для цього рівня!', newBestNight: 'Новий рекорд нічної зміни!', again: 'Ще раз', map: 'Карта', next: 'Далі',
     toMap: 'До карти', allDone: 'Квартиру врятовано! Усі рівні пройдено', lang: 'Мова',
+    'st.0.0': 'Опівночі роботи-пилососи прокинулися й вирішили, що в квартирі забагато котячої шерсті.',
+    'st.0.1': 'Моя шерсть — моя справа! Команда, до бою!',
+    'st.1.0': 'Не перемикайтеся! Вітальня тепер моя!',
+    'st.1.1': 'Пульт у нас. Вимикаємо рекламу.',
+    'st.2.0': 'Дзелень! Підйом, пухнасті! Спати заборонено!',
+    'st.2.1': 'Ще п\'ять хвилиночок… Ну гаразд, б\'ємо.',
+    'st.3.0': 'Усіх до пральні! Режим: віджим!',
+    'st.3.1': 'Єноти не бояться води. Майже.',
+    'st.4.0': 'Здую вас разом із квітами!',
+    'st.4.1': 'Тримайся за перила — і стріляй!',
+    'st.5.0': 'У-у-у… Хто розбудив горище?',
+    'st.5.1': 'Привиди — це просто пил із характером.',
+    'st.6.0': 'Я РОБО-БОС 9000. Я тут головний!',
+    'st.6.1': 'Щось мені каже, що головний сидить нижче…',
+    'st.7.0': 'Це я смикав за ниточки. Усі пилососи — мої маріонетки!',
+    'st.7.1': 'Ниточки? Ми в них розбираємося найкраще!',
+    'st.end.0': 'Квартиру врятовано. Пилососи знову просто прибирають.',
+    'st.end.1': 'А крихти під диваном — це вже традиція.',
+    storySkip: 'Пропустити', storyTap: 'торкнись, щоб продовжити',
     'ev.halloween': 'Хелловін', 'ev.newyear': 'Новий рік', evSub: (d, n) => `Подія: ${d}/${n} рівнів · нагорода — капелюх`, evLevel: (e, n) => `${e} · ${n}/3`,
     evDone: 'Рівень події пройдено!', evHat: 'Новий капелюх для команди!',
     'item.hat_pumpkin': 'Гарбузовий капелюх', 'itemd.hat_pumpkin': 'Нагорода Хелловіну', 'item.hat_santa': 'Новорічна шапка', 'itemd.hat_santa': 'Нагорода Нового року',
@@ -708,6 +727,25 @@ const I18N = {
     'st.knots': 'Knots tied', 'st.lasers': 'Lasers caught', 'st.crits': 'Sensor crits', 'st.portals': 'Teleports',
     newBestLevel: 'New record for this level!', newBestNight: 'New Night Shift record!', again: 'Again', map: 'Map', next: 'Next',
     toMap: 'To the map', allDone: 'Home saved! All levels complete', lang: 'Language',
+    'st.0.0': 'At midnight the robot vacuums woke up and decided the flat had far too much cat hair.',
+    'st.0.1': 'My fur, my business! Team, let\'s go!',
+    'st.1.0': 'Don\'t touch that dial! The living room is mine now!',
+    'st.1.1': 'We\'ve got the remote. Switching off the ads.',
+    'st.2.0': 'Ring-a-ling! Up you get, fluffballs! No sleeping allowed!',
+    'st.2.1': 'Five more minutes… Fine, let\'s fight.',
+    'st.3.0': 'Everyone into the wash! Mode: spin cycle!',
+    'st.3.1': 'Raccoons aren\'t afraid of water. Mostly.',
+    'st.4.0': 'I\'ll blow you away along with the flowers!',
+    'st.4.1': 'Hold on to the railing and shoot!',
+    'st.5.0': 'Oooooh… Who woke the attic?',
+    'st.5.1': 'Ghosts are just dust with attitude.',
+    'st.6.0': 'I am ROBO-BOSS 9000. I\'m in charge here!',
+    'st.6.1': 'Something tells me the real boss is further down…',
+    'st.7.0': 'It was me pulling the strings. Every vacuum is my puppet!',
+    'st.7.1': 'Strings? Nobody knows yarn better than us!',
+    'st.end.0': 'The flat is saved. The vacuums are back to just cleaning.',
+    'st.end.1': 'The crumbs under the couch stay, though. It\'s tradition.',
+    storySkip: 'Skip', storyTap: 'tap to continue',
     'ev.halloween': 'Halloween', 'ev.newyear': 'New Year', evSub: (d, n) => `Event: ${d}/${n} levels · reward: a hat`, evLevel: (e, n) => `${e} · ${n}/3`,
     evDone: 'Event level complete!', evHat: 'A new hat for the team!',
     'item.hat_pumpkin': 'Pumpkin hat', 'itemd.hat_pumpkin': 'Halloween reward', 'item.hat_santa': 'Santa hat', 'itemd.hat_santa': 'New Year reward',
@@ -790,6 +828,25 @@ const I18N = {
     'st.knots': 'Zawiązane supły', 'st.lasers': 'Złapane lasery', 'st.crits': 'Kryty w czujnik', 'st.portals': 'Teleporty',
     newBestLevel: 'Nowy rekord tego poziomu!', newBestNight: 'Nowy rekord nocnej zmiany!', again: 'Jeszcze raz', map: 'Mapa', next: 'Dalej',
     toMap: 'Do mapy', allDone: 'Mieszkanie uratowane! Wszystkie poziomy ukończone', lang: 'Język',
+    'st.0.0': 'O północy roboty sprzątające się obudziły i uznały, że w mieszkaniu jest za dużo kociej sierści.',
+    'st.0.1': 'Moja sierść, moja sprawa! Drużyna, do boju!',
+    'st.1.0': 'Nie przełączajcie! Salon jest teraz mój!',
+    'st.1.1': 'Mamy pilota. Wyłączamy reklamy.',
+    'st.2.0': 'Dryń-dryń! Pobudka, futrzaki! Spanie zabronione!',
+    'st.2.1': 'Jeszcze pięć minutek… No dobra, walczymy.',
+    'st.3.0': 'Wszyscy do prania! Tryb: wirowanie!',
+    'st.3.1': 'Szopy nie boją się wody. Prawie.',
+    'st.4.0': 'Zdmuchnę was razem z kwiatkami!',
+    'st.4.1': 'Trzymaj się balustrady i strzelaj!',
+    'st.5.0': 'Uuuu… Kto obudził strych?',
+    'st.5.1': 'Duchy to po prostu kurz z charakterem.',
+    'st.6.0': 'Jestem ROBO-BOSS 9000. Ja tu rządzę!',
+    'st.6.1': 'Coś mi mówi, że prawdziwy szef siedzi niżej…',
+    'st.7.0': 'To ja pociągałem za sznurki. Wszystkie odkurzacze to moje marionetki!',
+    'st.7.1': 'Sznurki? Na włóczce znamy się najlepiej!',
+    'st.end.0': 'Mieszkanie uratowane. Odkurzacze znowu po prostu sprzątają.',
+    'st.end.1': 'A okruchy pod kanapą to już tradycja.',
+    storySkip: 'Pomiń', storyTap: 'dotknij, aby kontynuować',
     'ev.halloween': 'Halloween', 'ev.newyear': 'Nowy Rok', evSub: (d, n) => `Wydarzenie: ${d}/${n} poziomów · nagroda: czapka`, evLevel: (e, n) => `${e} · ${n}/3`,
     evDone: 'Poziom wydarzenia ukończony!', evHat: 'Nowa czapka dla drużyny!',
     'item.hat_pumpkin': 'Dyniowa czapka', 'itemd.hat_pumpkin': 'Nagroda z Halloween', 'item.hat_santa': 'Czapka Mikołaja', 'itemd.hat_santa': 'Nagroda noworoczna',
@@ -872,6 +929,25 @@ const I18N = {
     'st.knots': 'Geknüpfte Knoten', 'st.lasers': 'Laser gefangen', 'st.crits': 'Sensor-Krits', 'st.portals': 'Teleports',
     newBestLevel: 'Neuer Rekord für dieses Level!', newBestNight: 'Neuer Nachtschicht-Rekord!', again: 'Nochmal', map: 'Karte', next: 'Weiter',
     toMap: 'Zur Karte', allDone: 'Wohnung gerettet! Alle Level geschafft', lang: 'Sprache',
+    'st.0.0': 'Um Mitternacht wachten die Saugroboter auf und beschlossen, dass es viel zu viele Katzenhaare gibt.',
+    'st.0.1': 'Mein Fell, meine Sache! Team, los geht\'s!',
+    'st.1.0': 'Bleiben Sie dran! Das Wohnzimmer gehört jetzt mir!',
+    'st.1.1': 'Wir haben die Fernbedienung. Werbung aus.',
+    'st.2.0': 'Rrring! Aufstehen, Fellknäuel! Schlafen verboten!',
+    'st.2.1': 'Noch fünf Minuten… Na gut, kämpfen wir.',
+    'st.3.0': 'Alle in die Wäsche! Programm: Schleudern!',
+    'st.3.1': 'Waschbären haben keine Angst vor Wasser. Meistens.',
+    'st.4.0': 'Ich puste euch mitsamt den Blumen weg!',
+    'st.4.1': 'Halt dich am Geländer fest und schieß!',
+    'st.5.0': 'Huuuu… Wer hat den Dachboden geweckt?',
+    'st.5.1': 'Geister sind nur Staub mit Charakter.',
+    'st.6.0': 'Ich bin ROBO-BOSS 9000. Ich bin hier der Chef!',
+    'st.6.1': 'Irgendwas sagt mir, der echte Chef sitzt weiter unten…',
+    'st.7.0': 'Ich habe die Fäden gezogen. Alle Sauger sind meine Marionetten!',
+    'st.7.1': 'Fäden? Mit Wolle kennen wir uns am besten aus!',
+    'st.end.0': 'Die Wohnung ist gerettet. Die Sauger putzen wieder nur.',
+    'st.end.1': 'Die Krümel unterm Sofa bleiben aber. Tradition.',
+    storySkip: 'Überspringen', storyTap: 'tippen zum Fortfahren',
     'ev.halloween': 'Halloween', 'ev.newyear': 'Neujahr', evSub: (d, n) => `Event: ${d}/${n} Level · Preis: ein Hut`, evLevel: (e, n) => `${e} · ${n}/3`,
     evDone: 'Event-Level geschafft!', evHat: 'Ein neuer Hut fürs Team!',
     'item.hat_pumpkin': 'Kürbishut', 'itemd.hat_pumpkin': 'Halloween-Preis', 'item.hat_santa': 'Weihnachtsmütze', 'itemd.hat_santa': 'Neujahrspreis',
@@ -954,6 +1030,25 @@ const I18N = {
     'st.knots': 'Nudos atados', 'st.lasers': 'Láseres atrapados', 'st.crits': 'Críticos al sensor', 'st.portals': 'Teletransportes',
     newBestLevel: '¡Nuevo récord en este nivel!', newBestNight: '¡Nuevo récord del turno de noche!', again: 'Otra vez', map: 'Mapa', next: 'Siguiente',
     toMap: 'Al mapa', allDone: '¡Piso salvado! Todos los niveles completados', lang: 'Idioma',
+    'st.0.0': 'A medianoche, las aspiradoras robot despertaron y decidieron que en el piso había demasiado pelo de gato.',
+    'st.0.1': '¡Mi pelo, mi asunto! ¡Equipo, al ataque!',
+    'st.1.0': '¡No cambien de canal! ¡El salón ahora es mío!',
+    'st.1.1': 'Tenemos el mando. Fuera anuncios.',
+    'st.2.0': '¡Riiing! ¡Arriba, peludos! ¡Prohibido dormir!',
+    'st.2.1': 'Cinco minutitos más… Vale, a pelear.',
+    'st.3.0': '¡Todos a la lavadora! ¡Modo: centrifugado!',
+    'st.3.1': 'Los mapaches no temen al agua. Casi.',
+    'st.4.0': '¡Os soplaré junto con las flores!',
+    'st.4.1': '¡Agárrate a la barandilla y dispara!',
+    'st.5.0': 'Uuuuh… ¿Quién despertó al desván?',
+    'st.5.1': 'Los fantasmas son solo polvo con carácter.',
+    'st.6.0': '¡Soy ROBO-JEFE 9000! ¡Aquí mando yo!',
+    'st.6.1': 'Algo me dice que el verdadero jefe está más abajo…',
+    'st.7.0': 'Era yo quien movía los hilos. ¡Todas las aspiradoras son mis marionetas!',
+    'st.7.1': '¿Hilos? ¡Nadie sabe más de ovillos que nosotros!',
+    'st.end.0': 'El piso está a salvo. Las aspiradoras vuelven a limpiar sin más.',
+    'st.end.1': 'Las migas bajo el sofá se quedan. Es tradición.',
+    storySkip: 'Saltar', storyTap: 'toca para continuar',
     'ev.halloween': 'Halloween', 'ev.newyear': 'Año Nuevo', evSub: (d, n) => `Evento: ${d}/${n} niveles · premio: un sombrero`, evLevel: (e, n) => `${e} · ${n}/3`,
     evDone: '¡Nivel del evento completado!', evHat: '¡Un sombrero nuevo para el equipo!',
     'item.hat_pumpkin': 'Sombrero de calabaza', 'itemd.hat_pumpkin': 'Premio de Halloween', 'item.hat_santa': 'Gorro de Papá Noel', 'itemd.hat_santa': 'Premio de Año Nuevo',
@@ -1034,6 +1129,7 @@ function mergeProg(a, b) {
   r.ev = { ...(a.ev || {}) };
   for (const k in (b.ev || {})) r.ev[k] = Math.max(r.ev[k] || 0, b.ev[k]);
   r.hats = { ...(a.hats || {}), ...(b.hats || {}) };
+  r.story = { ...(a.story || {}), ...(b.story || {}) };
   return r;
 }
 function loadProg() {
@@ -1784,7 +1880,11 @@ function advanceHero() {
   }
   G.cur = n;
 }
-function startLevel(li) { newRun(li); setScreen('game'); setupWave(0); }
+function startLevel(li, noStory) {
+  const c = LEVELS[li].ch;
+  if (!noStory && CH_LEVELS[c][0] === li && STORY[c] && !(PROG.story && PROG.story[c])) { showStory(c, () => startLevel(li, true)); return; }
+  newRun(li); setScreen('game'); setupWave(0);
+}
 
 // ---------- night shift: endless waves ----------
 const ENDLESS_UNLOCK = 5; // opens once level 4 (the first boss) is beaten
@@ -4730,6 +4830,76 @@ function drawEventFx(id) {
   }
 }
 
+
+// ---------- story: a two-panel comic before each room's first level, and a finale ----------
+// Panels: the room as a backdrop, actors (heroes or enemies) and one line from a speaker.
+const BOSS_AT = k => ({ e: 'boss', kind: k, x: 205, y: 225, r: 88 });
+const STORY = {
+  0: [{ bg: 0, actors: [{ e: 'vac', x: 110, y: 210, r: 40 }, { e: 'vac', x: 300, y: 185, r: 40 }, { e: 'vac', x: 205, y: 300, r: 48 }], who: null },
+      { bg: 0, actors: [{ h: 'mochi', x: 140, y: 250, r: 62 }, { h: 'bandit', x: 285, y: 262, r: 60 }], who: 'mochi' }],
+  1: [{ bg: 1, actors: [BOSS_AT(1)], who: 'boss', kind: 1 }, { bg: 1, actors: [{ h: 'pixel', x: 205, y: 250, r: 72 }], who: 'pixel' }],
+  2: [{ bg: 2, actors: [BOSS_AT(2)], who: 'boss', kind: 2 }, { bg: 2, actors: [{ h: 'nugget', x: 205, y: 250, r: 72, mood: 'hurt' }], who: 'nugget' }],
+  3: [{ bg: 3, actors: [BOSS_AT(3)], who: 'boss', kind: 3 }, { bg: 3, actors: [{ h: 'bandit', x: 205, y: 250, r: 72 }], who: 'bandit' }],
+  4: [{ bg: 4, actors: [BOSS_AT(4)], who: 'boss', kind: 4 }, { bg: 4, actors: [{ h: 'mochi', x: 205, y: 250, r: 72 }], who: 'mochi' }],
+  5: [{ bg: 5, actors: [BOSS_AT(5)], who: 'boss', kind: 5 }, { bg: 5, actors: [{ h: 'pixel', x: 205, y: 250, r: 72 }], who: 'pixel' }],
+  6: [{ bg: 6, actors: [BOSS_AT(6)], who: 'boss', kind: 6 }, { bg: 6, actors: [{ h: 'bandit', x: 205, y: 250, r: 72 }], who: 'bandit' }],
+  7: [{ bg: 7, actors: [BOSS_AT(7)], who: 'boss', kind: 7 },
+      { bg: 7, actors: [{ h: 'mochi', x: 70, y: 260, r: 44 }, { h: 'pixel', x: 160, y: 250, r: 44 }, { h: 'bandit', x: 250, y: 258, r: 46 }, { h: 'nugget', x: 340, y: 262, r: 46 }], who: 'mochi' }],
+  end: [{ bg: 0, actors: [{ h: 'mochi', x: 70, y: 250, r: 44, mood: 'happy' }, { h: 'pixel', x: 160, y: 244, r: 44, mood: 'happy' }, { h: 'bandit', x: 250, y: 252, r: 46, mood: 'happy' }, { h: 'nugget', x: 340, y: 256, r: 46, mood: 'happy' }], who: null },
+        { bg: 1, actors: [{ e: 'vac', x: 130, y: 250, r: 52 }, { h: 'nugget', x: 290, y: 250, r: 64, mood: 'happy' }], who: 'nugget' }],
+};
+let STORYRUN = null;
+function showStory(key, then) { STORYRUN = { key, i: 0, then }; setScreen('story'); }
+function storyNext(skip) {
+  const st = STORYRUN;
+  if (!st) return;
+  if (!skip && st.i < STORY[st.key].length - 1) { st.i++; Snd.play('click'); return; }
+  PROG.story = { ...(PROG.story || {}), [st.key]: 1 }; saveProg();
+  STORYRUN = null; st.then();
+}
+const ENEMY_DRAW = { vac: drawVac, spray: drawSpray, mop: drawMop, brush: drawBrush, fan: drawFan, rc: drawRc, shield: drawShield, split: drawSplit };
+function drawStory() {
+  const st = STORYRUN, panels = STORY[st.key], pn = panels[st.i];
+  ctx.fillStyle = '#0c0a1a'; ctx.fillRect(0, 0, W, H);
+  UI.push({ x: 0, y: 0, w: W, h: H, cb: () => storyNext(false) });
+  const px = 20, py = 90, pw = W - 40, ph = 400;
+  // the room, framed like a comic panel
+  ctx.save(); rr(px, py, pw, ph, 18); ctx.clip();
+  ctx.drawImage(BGS[pn.bg], 0, (TOP + 70) * 2, W * 2, 450 * 2, px, py, pw, ph);
+  ctx.fillStyle = 'rgba(8,6,18,.35)'; ctx.fillRect(px, py, pw, ph);
+  ctx.translate(px, py);
+  for (const a of pn.actors) {
+    if (a.h) { const h = HEROES.find(d => d.id === a.h); drawHero(h, a.x, a.y, a.r, null, { mood: a.mood, look: [0, .3] }); continue; }
+    const e = { type: a.e, kind: a.kind, r: a.r, weak: Math.PI / 2, weakT: Math.PI / 2, fade: 0, foam: a.kind === 3, ph: 0, timer: 3, maxTimer: 3, flash: 0 };
+    ctx.save(); ctx.translate(a.x, a.y);
+    ctx.fillStyle = 'rgba(0,0,0,.3)'; ctx.beginPath(); ctx.ellipse(0, a.r * .9, a.r * .9, a.r * .28, 0, 0, TAU); ctx.fill();
+    if (a.e === 'boss') drawBoss(e, a.r, RM ? 0 : T); else ENEMY_DRAW[a.e](e, a.r, RM ? 0 : T);
+    ctx.restore();
+  }
+  ctx.restore();
+  ctx.strokeStyle = '#f4efe6'; ctx.lineWidth = 3; rr(px, py, pw, ph, 18); ctx.stroke();
+  // the line, in a speech box with the speaker's name
+  const by = py + ph + 20, bh = 150;
+  ctx.fillStyle = '#f4efe6'; rr(px, by, pw, bh, 16); ctx.fill();
+  if (pn.who) {
+    const sx = pn.who === 'boss' ? 205 : (pn.actors.find(a => a.h === pn.who) || pn.actors[0]).x;
+    ctx.beginPath(); ctx.moveTo(px + sx - 14, by + 2); ctx.lineTo(px + sx, by - 18); ctx.lineTo(px + sx + 14, by + 2); ctx.closePath(); ctx.fill();
+  }
+  ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+  let ty = by + 28;
+  if (pn.who) {
+    const name = pn.who === 'boss' ? bossName({ kind: pn.kind }) : HEROES.find(d => d.id === pn.who).name;
+    const col = pn.who === 'boss' ? BOSS_COL[pn.kind] : HEROES.find(d => d.id === pn.who).dark;
+    ctx.fillStyle = col; fitFont(name, pw - 40, 16); ctx.fillText(name, px + 20, ty); ty += 28;
+  }
+  ctx.fillStyle = '#1b1830'; ctx.font = `${pn.who ? 800 : 'italic 800'} 15px ${FB}`;
+  wrap(tr(`st.${st.key}.${st.i}`), px + 20, ty, pw - 40, 21);
+  // progress and skip
+  ctx.textAlign = 'center'; ctx.fillStyle = '#8f88b5'; ctx.font = `800 12px ${FB}`;
+  ctx.fillText(`${st.i + 1} / ${panels.length} · ${tr('storyTap')}`, W / 2, 700);
+  uiBtn(W - 150, 730, 130, 42, tr('storySkip'), () => storyNext(true), false);
+}
+
 function drawEnd() {
   const win = G.state === 'win';
   ctx.fillStyle = G.ch.shade; ctx.fillRect(0, 0, W, H);
@@ -4800,7 +4970,8 @@ function drawEnd() {
   const li = G.li;
   const wind = !win && drawSecondWind();
   if (hasNext) uiBtn(75, 600, W - 150, 56, tr('next'), () => startLevel(li + 1), true);
-  else uiBtn(75, 600, W - 150, wind ? 50 : 56, win ? tr('toMap') : tr('again'), win ? goMap : () => startLevel(li), !wind);
+  else uiBtn(75, 600, W - 150, wind ? 50 : 56, win ? tr('toMap') : tr('again'),
+    win ? () => (PROG.story && PROG.story.end ? goMap() : showStory('end', goMap)) : () => startLevel(li), !wind);
   if (hasNext) {
     uiBtn(75, 670, (W - 160) / 2, 46, tr('again'), () => startLevel(li), false);
     uiBtn(85 + (W - 160) / 2, 670, (W - 160) / 2, 46, tr('map'), goMap, false);
@@ -4906,6 +5077,7 @@ function draw() {
   else if (SCREEN === 'prep') drawPrep();
   else if (SCREEN === 'daily') drawDaily();
   else if (SCREEN === 'heroes') drawHeroes();
+  else if (SCREEN === 'story') drawStory();
   else drawMap();
 }
 
