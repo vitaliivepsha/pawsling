@@ -30,6 +30,9 @@ worker/             the leaderboard: a Cloudflare Worker with a D1 database
   to 35% and twins split into two minis when destroyed.
 - Each room is tougher than the last (enemy toughness ×1 in the kitchen up to ×3.8 in the server room).
 - Stars: 3 for finishing within the par turn count, 2 for up to 1.5×par, 1 otherwise.
+- Guide (the ? button on the map and in a level): Basics, Knots (rules, golden and two-hero knots)
+  and Enemies (every robot, unknown ones hidden until met). The first time a robot type shows up in a
+  run, a “New enemy” card explains it (kept in progress as `seen`).
 - Night Shift (unlocks after level 4): endless generated waves, a boss every 5th wave, the room changes
   every 5 waves; the record is the number of waves survived.
 - Heroes have hearts (Bandit 4, the others 3). A hero at 0 hearts is knocked out for 2 turns; an ally

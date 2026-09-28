@@ -36,7 +36,7 @@ if (TG) {
     if (tgv('6.1')) {
       TG.setHeaderColor('#15122a');
       TG.setBackgroundColor('#110e22');
-      TG.BackButton.onClick(() => { if (SCREEN === 'game') goMap(); else if (SCREEN === 'howto') closeHowto(); else if (SCREEN === 'story') storyNext(true); else if (['lang', 'board', 'shop', 'prep', 'daily', 'heroes'].includes(SCREEN)) setScreen('map'); });
+      TG.BackButton.onClick(() => { if (SCREEN === 'game') goMap(); else if (SCREEN === 'howto') closeHowto(); else if (SCREEN === 'story') storyNext(true); else if (SCREEN === 'guide') closeGuide(); else if (['lang', 'board', 'shop', 'prep', 'daily', 'heroes'].includes(SCREEN)) setScreen('map'); });
     }
     if (tgv('7.7')) TG.disableVerticalSwipes();
     TG.onEvent('viewportChanged', resize);
@@ -674,7 +674,10 @@ const I18N = {
     'hero.pixel.name': 'Піксель', 'hero.pixel.skill': 'пролітає крізь ворогів наскрізь', 'hero.pixel.combo': 'Лазерний погляд',
     'hero.bandit.name': 'Бандит', 'hero.bandit.skill': 'кожен удар відкладає атаку ворога на хід', 'hero.bandit.combo': 'Нічний перекус',
     'hero.nugget.name': 'Наґет', 'hero.nugget.skill': 'кожен удар вибухає по сусідніх ворогах', 'hero.nugget.combo': 'Скарб зі смітника',
-    'room.kitchen': 'Кухня', 'room.living': 'Вітальня', 'room.bedroom': 'Спальня', 'room.bath': 'Ванна', 'room.balcony': 'Балкон', 'room.attic': 'Горище', 'room.garage': 'Гараж', 'room.basement': 'Підвал', 'room.roof': 'Дах', 'tip.roof': 'Дах: магніти притягують героїв, закручуй постріли навколо них', 'tip.storm': 'Дрон б\'є блискавкою, що перескакує на героя поруч: тримайтеся нарізно', privacy: 'Конфіденційність', terms: 'Умови використання', 'room.garden': 'Сад', 'tip.garden': 'Сад: кроти через хід ховаються під землю, бий їх, коли вони нагорі', 'tip.mow': 'Газонокосарка мчить до героя, якого вдарила: не збивайтеся в купу перед нею', 'room.server': 'Серверна', 'tip.server': 'Серверна: 3D-принтери друкують міні-роботів, вимикай їх першими', 'tip.hub': 'Хаб підганяє роботів: після його атаки всі б\'ють на хід раніше', underground: 'Під землею!', 'tip.basement': 'Підвал: усі вороги разом, і вони міцніші, ніж будь-коли', 'tip.web': 'Павук обплутує героїв: зачепи обплутаного друга пострілом, щоб звільнити', webStuck: 'У павутині!', webFreed: 'Звільнили!',
+    'room.kitchen': 'Кухня', 'room.living': 'Вітальня', 'room.bedroom': 'Спальня', 'room.bath': 'Ванна', 'room.balcony': 'Балкон', 'room.attic': 'Горище', 'room.garage': 'Гараж', 'room.basement': 'Підвал', 'room.roof': 'Дах', 'tip.roof': 'Дах: магніти притягують героїв, закручуй постріли навколо них', 'tip.storm': 'Дрон б\'є блискавкою, що перескакує на героя поруч: тримайтеся нарізно', privacy: 'Конфіденційність', terms: 'Умови використання', 'room.garden': 'Сад', 'tip.garden': 'Сад: кроти через хід ховаються під землю, бий їх, коли вони нагорі', 'tip.mow': 'Газонокосарка мчить до героя, якого вдарила: не збивайтеся в купу перед нею', guide: 'Довідник', guideBasics: 'Основи', guideKnots: 'Вузли', guideFoes: 'Вороги', foeNew: 'НОВИЙ ВОРОГ', foeUnknown: 'Зустрінеш далі', 'guide.basics': [['Постріл', 'Потягни від героя назад і відпусти — він полетить у протилежний бік. Пунктир показує початок польоту. Один постріл — один хід, герої ходять по черзі.'], ['Відскок і прошивання', 'Герої з відскоком відбиваються від ворогів і стін. З прошиванням — пролітають ворогів наскрізь і б\'ють кожного на шляху. Значок біля портрета показує тип.'], ['Таймер ворога', 'Цифра біля ворога — скільки ходів до його атаки. Коли там 1, він світиться червоним, а пунктир показує ціль: найближчого героя на ногах.'], ['Серця й нокаут', 'Удар забирає в героя серце (бос — два) і частину міцності квартири. Без сердець герой спить 2 ходи; зачепи його іншим героєм, щоб розбудити. Квартира на нулі — поразка.'], ['Комбо друзів', 'Зачепи в польоті іншого героя, і спрацює його вміння: Мочі — хвиля мурчання, Піксель — лазер, Бандит лікує квартиру, Наґет дає бешкет, Рекс повертає серця, Хома й Іскра б\'ють випадкових ворогів.'], ['Бешкет і Тигидик', 'Шкала росте від збитих роботів, вузлів, риби, піци й лазера. Повна — торкнись її: наступний постріл стане Тигидиком з подвійною шкодою і золотою ниткою.'], ['Лазер і коробки', 'Коти звертають до червоної точки: спіймали — прискорення і бешкет. Влетів у коробку A — вилетів з коробки B.'], ['Зірки й випробування', '3 зірки — пройти рівень за вказану кількість ходів (перехід між хвилями теж хід), 2 — до півтора раза довше. Пройдений рівень можна переграти у випробуванні за корону.']],
+    'guide.knots': [['Як зав\'язати вузол', 'Кожен герой лишає за собою нитку. Коли інший постріл перетинає стару нитку, на перетині вибухає вузол і б\'є всіх ворогів поруч.'], ['Правила', 'Нитки лежать 2 ходи, потім зникають. За постріл — до 2 вузлів, Тигидиком — до 4. Кожен шматок нитки вибухає лише раз, а свою нитку з того самого польоту перетнути не можна.'], ['Золоті вузли', 'Нитка Тигидика золота. Вузли на ній і вузли, зав\'язані Тигидиком, б\'ють удвічі сильніше.'], ['Вузли двох героїв', 'Нитка одного героя, яку перетнув інший, дає особливий вузол. Різні звірі — вогняний (+50% шкоди). Два коти — мурчальний (ширший вибух). Два єноти — сміттєвий (вороги атакують на хід пізніше).'], ['Порада', 'Перший постріл проклади крізь натовп роботів, другим перетни його нитку поруч із ними. Один хід — кілька вибухів.']],
+    'foe.vac': ['Пилосос', 'Звичайний робот. Б\'є найближчого героя.'], 'foe.spray': ['Розпилювач', 'Слабший, але атакує частіше — кожні 2 ходи.'], 'foe.mop': ['Швабра', 'У броні: герої з відскоком б\'ють її вдвічі слабше, з прошиванням — удвічі сильніше.'], 'foe.brush': ['Зубна щітка', 'Після кожного ходу лікує роботів поруч. Вимикай її першою.'], 'foe.fan': ['Вентилятор', 'Здуває героїв з курсу. Цілься з поправкою.'], 'foe.rc': ['Радіомашинка', 'Щоходу переїжджає на нове місце.'], 'foe.shield': ['Щитобот', 'Роботи поруч отримують лише третину шкоди. Спершу вимкни його.'], 'foe.split': ['Двійник', 'Коли його зламати, розпадається на двох міні-роботів.'], 'foe.magnet': ['Магніт', 'Притягує героїв і викривлює їхній політ.'], 'foe.mole': ['Кріт', 'Через хід ховається під землю — тоді його не вдарити.'], 'foe.printer': ['3D-принтер', 'Після атаки друкує міні-робота, до двох одночасно.'], 'foe.boss': ['Боси', 'Кожна кімната закінчується своїм босом із власним вмінням. Бий у жовтий сенсор — потрійна шкода.'], 
+    'room.server': 'Серверна', 'tip.server': 'Серверна: 3D-принтери друкують міні-роботів, вимикай їх першими', 'tip.hub': 'Хаб підганяє роботів: після його атаки всі б\'ють на хід раніше', underground: 'Під землею!', 'tip.basement': 'Підвал: усі вороги разом, і вони міцніші, ніж будь-коли', 'tip.web': 'Павук обплутує героїв: зачепи обплутаного друга пострілом, щоб звільнити', webStuck: 'У павутині!', webFreed: 'Звільнили!',
     'tip.shield': 'Щитоботи захищають сусідів: спершу збий щитобота', 'tip.split': 'Двійнята після знищення розпадаються на двох малюків', shielded: 'щит', 'cry.shield': 'Дзинь!', 'cry.split': 'Бульк!', 'cry.mini': 'Пі-пі!',
     'tip.0': 'Потягни від героя назад і відпусти', 'tip.1': 'Перетни стару нитку, і вузол вибухне', 'tip.2': 'Коти женуться за червоною лазерною точкою',
     'tip.3': 'Бий у жовтий сенсор: потрійна шкода', 'tip.4': 'Швабри в броні: Піксель і Наґет б\'ють їх удвічі сильніше',
@@ -781,7 +784,10 @@ const I18N = {
     'hero.pixel.name': 'Pixel', 'hero.pixel.skill': 'flies straight through enemies', 'hero.pixel.combo': 'Laser Stare',
     'hero.bandit.name': 'Bandit', 'hero.bandit.skill': 'each hit delays the enemy attack by a turn', 'hero.bandit.combo': 'Midnight Snack',
     'hero.nugget.name': 'Nugget', 'hero.nugget.skill': 'each hit blasts nearby enemies', 'hero.nugget.combo': 'Trash Treasure',
-    'room.kitchen': 'Kitchen', 'room.living': 'Living room', 'room.bedroom': 'Bedroom', 'room.bath': 'Bathroom', 'room.balcony': 'Balcony', 'room.attic': 'Attic', 'room.garage': 'Garage', 'room.basement': 'Basement', 'room.roof': 'Roof', 'tip.roof': 'Roof: magnets pull heroes in, curve your shots around them', 'tip.storm': 'The drone\'s lightning jumps to a nearby hero: keep your team spread out', privacy: 'Privacy Policy', terms: 'Terms of Use', 'room.garden': 'Garden', 'tip.garden': 'Garden: moles dig underground every other turn, hit them while they are up', 'tip.mow': 'The mower charges at the hero it hits: don\'t bunch up in front of it', 'room.server': 'Server room', 'tip.server': 'Server room: 3D printers print mini robots, take them out first', 'tip.hub': 'The hub speeds robots up: after its attack they all strike a turn sooner', underground: 'Underground!', 'tip.basement': 'Basement: every enemy type at once, and tougher than ever', 'tip.web': 'The spider webs heroes: hit a webbed friend with a shot to free them', webStuck: 'Stuck in a web!', webFreed: 'Freed!',
+    'room.kitchen': 'Kitchen', 'room.living': 'Living room', 'room.bedroom': 'Bedroom', 'room.bath': 'Bathroom', 'room.balcony': 'Balcony', 'room.attic': 'Attic', 'room.garage': 'Garage', 'room.basement': 'Basement', 'room.roof': 'Roof', 'tip.roof': 'Roof: magnets pull heroes in, curve your shots around them', 'tip.storm': 'The drone\'s lightning jumps to a nearby hero: keep your team spread out', privacy: 'Privacy Policy', terms: 'Terms of Use', 'room.garden': 'Garden', 'tip.garden': 'Garden: moles dig underground every other turn, hit them while they are up', 'tip.mow': 'The mower charges at the hero it hits: don\'t bunch up in front of it', guide: 'Guide', guideBasics: 'Basics', guideKnots: 'Knots', guideFoes: 'Enemies', foeNew: 'NEW ENEMY', foeUnknown: 'You\'ll meet it later', 'guide.basics': [['The shot', 'Pull back from a hero and let go: it flies the opposite way. The dotted line shows the start of the flight. One shot is one turn; heroes take turns in order.'], ['Bounce and pierce', 'Bounce heroes rebound off enemies and walls. Pierce heroes fly straight through enemies and hit everyone on the way. The badge by the portrait shows the type.'], ['Enemy timer', 'The number by an enemy is how many turns until it attacks. At 1 it glows red and a dotted line shows its target: the closest hero still standing.'], ['Hearts and knockouts', 'A hit costs the hero a heart (two from a boss) and some home strength. Out of hearts, a hero sleeps for 2 turns; bump them with another hero to wake them. Home at zero means defeat.'], ['Friend combos', 'Touch another hero mid-flight and their skill fires: Mochi a purr wave, Pixel a laser, Bandit heals the home, Nugget adds mischief, Rex restores hearts, Hammy and Sparky hit random enemies.'], ['Mischief and Zoomies', 'The meter fills from knocked-out robots, knots, fish, pizza and the laser. When it\'s full, tap it: your next shot is Zoomies, with double damage and a golden thread.'], ['Laser and boxes', 'Cats swerve towards the red dot: catch it for speed and mischief. Fly into box A, come out of box B.'], ['Stars and challenge mode', '3 stars: finish within the turn count shown (a wave change counts as a turn); 2 stars: up to half as long again. Beat a level, then replay it in challenge mode for a crown.']],
+    'guide.knots': [['Tying a knot', 'Every hero leaves a thread. When another shot crosses an old thread, a knot explodes at the crossing and hits every enemy nearby.'], ['Rules', 'Threads last 2 turns, then fade. Up to 2 knots per shot, 4 with Zoomies. Each piece of thread explodes only once, and a shot can\'t cross its own thread from the same flight.'], ['Golden knots', 'The Zoomies thread is golden. Knots on it, and knots tied by a Zoomies shot, hit twice as hard.'], ['Two-hero knots', 'One hero\'s thread crossed by another hero makes a special knot. Different animals: fire (+50% damage). Two cats: purr (a wider blast). Two raccoons: trash (enemies attack a turn later).'], ['Tip', 'Send the first shot through a crowd of robots, then cross its thread next to them with the second. One turn, several explosions.']],
+    'foe.vac': ['Vacuum', 'A plain robot. Hits the closest hero.'], 'foe.spray': ['Sprayer', 'Weaker, but attacks more often: every 2 turns.'], 'foe.mop': ['Mop', 'Armored: bounce heroes do half damage to it, pierce heroes double.'], 'foe.brush': ['Toothbrush', 'After each turn it heals robots around it. Take it out first.'], 'foe.fan': ['Fan', 'Blows heroes off course. Aim with that in mind.'], 'foe.rc': ['RC car', 'Drives to a new spot every turn.'], 'foe.shield': ['Shield bot', 'Robots next to it take only a third of the damage. Switch it off first.'], 'foe.split': ['Twin', 'Breaks into two mini robots when destroyed.'], 'foe.magnet': ['Magnet', 'Pulls heroes in and bends their flight.'], 'foe.mole': ['Mole', 'Digs underground every other turn; then it can\'t be hit.'], 'foe.printer': ['3D printer', 'After attacking it prints a mini robot, two at most.'], 'foe.boss': ['Bosses', 'Every room ends with its own boss and its own trick. Hit the yellow sensor for triple damage.'], 
+    'room.server': 'Server room', 'tip.server': 'Server room: 3D printers print mini robots, take them out first', 'tip.hub': 'The hub speeds robots up: after its attack they all strike a turn sooner', underground: 'Underground!', 'tip.basement': 'Basement: every enemy type at once, and tougher than ever', 'tip.web': 'The spider webs heroes: hit a webbed friend with a shot to free them', webStuck: 'Stuck in a web!', webFreed: 'Freed!',
     'tip.shield': 'Shield bots protect their neighbors: take the shield bot out first', 'tip.split': 'Twins split into two little ones when destroyed', shielded: 'shield', 'cry.shield': 'Clang!', 'cry.split': 'Blorp!', 'cry.mini': 'Meep!',
     'tip.0': 'Pull back from a hero and let go', 'tip.1': 'Cross an old thread and the knot explodes', 'tip.2': 'Cats chase the red laser dot',
     'tip.3': 'Hit the yellow sensor: triple damage', 'tip.4': 'Mops are armored: Pixel and Nugget hit them twice as hard',
@@ -888,7 +894,10 @@ const I18N = {
     'hero.pixel.name': 'Pixel', 'hero.pixel.skill': 'przelatuje przez wrogów na wylot', 'hero.pixel.combo': 'Laserowe spojrzenie',
     'hero.bandit.name': 'Bandyta', 'hero.bandit.skill': 'każde trafienie opóźnia atak wroga o turę', 'hero.bandit.combo': 'Nocna przekąska',
     'hero.nugget.name': 'Nugget', 'hero.nugget.skill': 'każde trafienie wybucha na pobliskich wrogach', 'hero.nugget.combo': 'Skarb ze śmietnika',
-    'room.kitchen': 'Kuchnia', 'room.living': 'Salon', 'room.bedroom': 'Sypialnia', 'room.bath': 'Łazienka', 'room.balcony': 'Balkon', 'room.attic': 'Strych', 'room.garage': 'Garaż', 'room.basement': 'Piwnica', 'room.roof': 'Dach', 'tip.roof': 'Dach: magnesy przyciągają bohaterów, zakręcaj strzały wokół nich', 'tip.storm': 'Piorun drona przeskakuje na bohatera obok: trzymajcie się osobno', privacy: 'Prywatność', terms: 'Regulamin', 'room.garden': 'Ogród', 'tip.garden': 'Ogród: krety co drugą turę chowają się pod ziemię, bij je, gdy są na górze', 'tip.mow': 'Kosiarka szarżuje na trafionego bohatera: nie stójcie w kupie przed nią', 'room.server': 'Serwerownia', 'tip.server': 'Serwerownia: drukarki 3D drukują mini-roboty, wyłącz je najpierw', 'tip.hub': 'Hub przyspiesza roboty: po jego ataku wszystkie biją turę wcześniej', underground: 'Pod ziemią!', 'tip.basement': 'Piwnica: wszystkie rodzaje wrogów naraz, twardsze niż kiedykolwiek', 'tip.web': 'Pająk oplata bohaterów: traf oplątanego przyjaciela strzałem, by go uwolnić', webStuck: 'W pajęczynie!', webFreed: 'Uwolniony!',
+    'room.kitchen': 'Kuchnia', 'room.living': 'Salon', 'room.bedroom': 'Sypialnia', 'room.bath': 'Łazienka', 'room.balcony': 'Balkon', 'room.attic': 'Strych', 'room.garage': 'Garaż', 'room.basement': 'Piwnica', 'room.roof': 'Dach', 'tip.roof': 'Dach: magnesy przyciągają bohaterów, zakręcaj strzały wokół nich', 'tip.storm': 'Piorun drona przeskakuje na bohatera obok: trzymajcie się osobno', privacy: 'Prywatność', terms: 'Regulamin', 'room.garden': 'Ogród', 'tip.garden': 'Ogród: krety co drugą turę chowają się pod ziemię, bij je, gdy są na górze', 'tip.mow': 'Kosiarka szarżuje na trafionego bohatera: nie stójcie w kupie przed nią', guide: 'Poradnik', guideBasics: 'Podstawy', guideKnots: 'Supły', guideFoes: 'Wrogowie', foeNew: 'NOWY WRÓG', foeUnknown: 'Spotkasz go później', 'guide.basics': [['Strzał', 'Pociągnij od bohatera do tyłu i puść: poleci w przeciwną stronę. Kropkowana linia pokazuje początek lotu. Jeden strzał to jedna tura, bohaterowie grają po kolei.'], ['Odbicie i przebicie', 'Bohaterowie z odbiciem odbijają się od wrogów i ścian. Z przebiciem przelatują przez wrogów na wylot i trafiają każdego po drodze. Znaczek przy portrecie pokazuje typ.'], ['Licznik wroga', 'Liczba przy wrogu to tury do jego ataku. Przy 1 świeci na czerwono, a kropkowana linia pokazuje cel: najbliższego bohatera na nogach.'], ['Serca i nokaut', 'Cios zabiera bohaterowi serce (boss dwa) i część wytrzymałości mieszkania. Bez serc bohater śpi 2 tury; trąć go innym bohaterem, by go obudzić. Mieszkanie na zerze to porażka.'], ['Kombo przyjaciół', 'Traf w locie innego bohatera, a odpali jego umiejętność: Mochi fala mruczenia, Pixel laser, Bandyta leczy mieszkanie, Nugget daje psoty, Reks przywraca serca, Tomek i Iskra biją losowych wrogów.'], ['Psoty i Szał', 'Pasek rośnie za zniszczone roboty, supły, rybę, pizzę i laser. Pełny — stuknij go: następny strzał to Szał, z podwójnymi obrażeniami i złotą nicią.'], ['Laser i pudełka', 'Koty skręcają do czerwonej kropki: złap ją, by przyspieszyć i dostać psoty. Wleć do pudełka A, wylecisz z pudełka B.'], ['Gwiazdki i wyzwanie', '3 gwiazdki: przejdź poziom w podanej liczbie tur (zmiana fali to też tura), 2: do półtora raza dłużej. Przejdź poziom, potem zagraj go w wyzwaniu o koronę.']],
+    'guide.knots': [['Jak zawiązać supeł', 'Każdy bohater zostawia nić. Gdy inny strzał przetnie starą nić, na skrzyżowaniu wybucha supeł i trafia wszystkich wrogów obok.'], ['Zasady', 'Nici leżą 2 tury, potem znikają. Do 2 supłów na strzał, w Szale do 4. Każdy kawałek nici wybucha tylko raz, a strzał nie przetnie własnej nici z tego samego lotu.'], ['Złote supły', 'Nić Szału jest złota. Supły na niej i supły zawiązane Szałem biją dwa razy mocniej.'], ['Supły dwóch bohaterów', 'Nić jednego bohatera przecięta przez innego daje specjalny supeł. Różne zwierzęta: ognisty (+50% obrażeń). Dwa koty: mruczący (szerszy wybuch). Dwa szopy: śmieciowy (wrogowie atakują turę później).'], ['Rada', 'Pierwszy strzał poprowadź przez tłum robotów, drugim przetnij jego nić obok nich. Jedna tura, kilka wybuchów.']],
+    'foe.vac': ['Odkurzacz', 'Zwykły robot. Bije najbliższego bohatera.'], 'foe.spray': ['Spryskiwacz', 'Słabszy, ale atakuje częściej: co 2 tury.'], 'foe.mop': ['Mop', 'Opancerzony: bohaterowie z odbiciem zadają mu połowę obrażeń, z przebiciem podwójne.'], 'foe.brush': ['Szczoteczka', 'Po każdej turze leczy roboty obok. Wyłącz ją najpierw.'], 'foe.fan': ['Wentylator', 'Zdmuchuje bohaterów z kursu. Celuj z poprawką.'], 'foe.rc': ['Autko RC', 'Co turę przejeżdża w nowe miejsce.'], 'foe.shield': ['Tarczobot', 'Roboty obok dostają tylko jedną trzecią obrażeń. Wyłącz go najpierw.'], 'foe.split': ['Bliźniak', 'Po zniszczeniu rozpada się na dwa mini-roboty.'], 'foe.magnet': ['Magnes', 'Przyciąga bohaterów i zakrzywia ich lot.'], 'foe.mole': ['Kret', 'Co drugą turę chowa się pod ziemię i wtedy nie da się go trafić.'], 'foe.printer': ['Drukarka 3D', 'Po ataku drukuje mini-robota, najwyżej dwa naraz.'], 'foe.boss': ['Bossowie', 'Każdy pokój kończy się własnym bossem z własną sztuczką. Trafiaj w żółty czujnik: potrójne obrażenia.'], 
+    'room.server': 'Serwerownia', 'tip.server': 'Serwerownia: drukarki 3D drukują mini-roboty, wyłącz je najpierw', 'tip.hub': 'Hub przyspiesza roboty: po jego ataku wszystkie biją turę wcześniej', underground: 'Pod ziemią!', 'tip.basement': 'Piwnica: wszystkie rodzaje wrogów naraz, twardsze niż kiedykolwiek', 'tip.web': 'Pająk oplata bohaterów: traf oplątanego przyjaciela strzałem, by go uwolnić', webStuck: 'W pajęczynie!', webFreed: 'Uwolniony!',
     'tip.shield': 'Tarczoboty chronią sąsiadów: najpierw zbij tarczobota', 'tip.split': 'Bliźniaki po zniszczeniu rozpadają się na dwa maluchy', shielded: 'tarcza', 'cry.shield': 'Brzdęk!', 'cry.split': 'Bulk!', 'cry.mini': 'Pip!',
     'tip.0': 'Pociągnij od bohatera do tyłu i puść', 'tip.1': 'Przetnij starą nitkę, a supeł wybuchnie', 'tip.2': 'Koty gonią czerwoną kropkę lasera',
     'tip.3': 'Trafiaj w żółty czujnik: potrójne obrażenia', 'tip.4': 'Mopy mają pancerz: Pixel i Nugget biją je dwa razy mocniej',
@@ -995,7 +1004,10 @@ const I18N = {
     'hero.pixel.name': 'Pixel', 'hero.pixel.skill': 'fliegt glatt durch Gegner hindurch', 'hero.pixel.combo': 'Laserblick',
     'hero.bandit.name': 'Bandit', 'hero.bandit.skill': 'jeder Treffer verzögert den Gegnerangriff um einen Zug', 'hero.bandit.combo': 'Mitternachtssnack',
     'hero.nugget.name': 'Nugget', 'hero.nugget.skill': 'jeder Treffer explodiert bei nahen Gegnern', 'hero.nugget.combo': 'Mülltonnenschatz',
-    'room.kitchen': 'Küche', 'room.living': 'Wohnzimmer', 'room.bedroom': 'Schlafzimmer', 'room.bath': 'Badezimmer', 'room.balcony': 'Balkon', 'room.attic': 'Dachboden', 'room.garage': 'Garage', 'room.basement': 'Keller', 'room.roof': 'Dach', 'tip.roof': 'Dach: Magnete ziehen Helden an, lenk deine Schüsse um sie herum', 'tip.storm': 'Der Blitz der Drohne springt auf nahe Helden über: bleibt verteilt', privacy: 'Datenschutz', terms: 'Nutzungsbedingungen', 'room.garden': 'Garten', 'tip.garden': 'Garten: Maulwürfe graben sich jeden zweiten Zug ein, triff sie, wenn sie oben sind', 'tip.mow': 'Der Mäher prescht auf den getroffenen Helden zu: drängt euch nicht vor ihm zusammen', 'room.server': 'Serverraum', 'tip.server': 'Serverraum: 3D-Drucker drucken Mini-Roboter, schalte sie zuerst aus', 'tip.hub': 'Der Hub treibt Roboter an: nach seinem Angriff schlagen alle einen Zug früher zu', underground: 'Unter der Erde!', 'tip.basement': 'Keller: alle Gegnerarten auf einmal, härter als je zuvor', 'tip.web': 'Die Spinne umspinnt Helden: triff einen eingesponnenen Freund, um ihn zu befreien', webStuck: 'Im Netz!', webFreed: 'Befreit!',
+    'room.kitchen': 'Küche', 'room.living': 'Wohnzimmer', 'room.bedroom': 'Schlafzimmer', 'room.bath': 'Badezimmer', 'room.balcony': 'Balkon', 'room.attic': 'Dachboden', 'room.garage': 'Garage', 'room.basement': 'Keller', 'room.roof': 'Dach', 'tip.roof': 'Dach: Magnete ziehen Helden an, lenk deine Schüsse um sie herum', 'tip.storm': 'Der Blitz der Drohne springt auf nahe Helden über: bleibt verteilt', privacy: 'Datenschutz', terms: 'Nutzungsbedingungen', 'room.garden': 'Garten', 'tip.garden': 'Garten: Maulwürfe graben sich jeden zweiten Zug ein, triff sie, wenn sie oben sind', 'tip.mow': 'Der Mäher prescht auf den getroffenen Helden zu: drängt euch nicht vor ihm zusammen', guide: 'Spielhilfe', guideBasics: 'Grundlagen', guideKnots: 'Knoten', guideFoes: 'Gegner', foeNew: 'NEUER GEGNER', foeUnknown: 'Triffst du später', 'guide.basics': [['Der Schuss', 'Zieh vom Helden nach hinten und lass los: er fliegt in die Gegenrichtung. Die gepunktete Linie zeigt den Anfang des Flugs. Ein Schuss ist ein Zug, die Helden sind reihum dran.'], ['Abprallen und Durchbohren', 'Abpraller springen von Gegnern und Wänden ab. Durchbohrer fliegen durch Gegner hindurch und treffen jeden auf dem Weg. Das Abzeichen am Porträt zeigt den Typ.'], ['Gegner-Timer', 'Die Zahl am Gegner zeigt die Züge bis zu seinem Angriff. Bei 1 leuchtet er rot, und eine gepunktete Linie zeigt sein Ziel: den nächsten Helden auf den Beinen.'], ['Herzen und K.o.', 'Ein Treffer kostet den Helden ein Herz (beim Boss zwei) und etwas Wohnungsstärke. Ohne Herzen schläft ein Held 2 Züge; stupse ihn mit einem anderen Helden an, um ihn zu wecken. Wohnung auf null heißt verloren.'], ['Freundes-Kombos', 'Berühre im Flug einen anderen Helden, und seine Fähigkeit löst aus: Mochi eine Schnurrwelle, Pixel einen Laser, Bandit heilt die Wohnung, Nugget gibt Unfug, Rex bringt Herzen zurück, Hamsti und Funke treffen zufällige Gegner.'], ['Unfug und Flitzen', 'Die Leiste füllt sich durch zerstörte Roboter, Knoten, Fisch, Pizza und den Laser. Ist sie voll, tipp sie an: der nächste Schuss wird zum Flitzen, mit doppeltem Schaden und goldenem Faden.'], ['Laser und Kisten', 'Katzen biegen zum roten Punkt ab: fang ihn für Tempo und Unfug. In Kiste A hinein, aus Kiste B heraus.'], ['Sterne und Herausforderung', '3 Sterne: das Level in der angegebenen Zugzahl schaffen (ein Wellenwechsel zählt als Zug), 2: bis zur anderthalbfachen Zahl. Geschaffte Level kannst du in der Herausforderung für eine Krone wiederholen.']],
+    'guide.knots': [['Einen Knoten binden', 'Jeder Held hinterlässt einen Faden. Kreuzt ein anderer Schuss einen alten Faden, explodiert am Kreuzungspunkt ein Knoten und trifft alle Gegner in der Nähe.'], ['Regeln', 'Fäden bleiben 2 Züge liegen, dann verschwinden sie. Bis zu 2 Knoten pro Schuss, beim Flitzen bis zu 4. Jedes Fadenstück explodiert nur einmal, und ein Schuss kann seinen eigenen Faden aus demselben Flug nicht kreuzen.'], ['Goldene Knoten', 'Der Faden beim Flitzen ist golden. Knoten darauf und Knoten, die beim Flitzen gebunden werden, treffen doppelt so hart.'], ['Knoten zweier Helden', 'Der Faden eines Helden, gekreuzt von einem anderen, ergibt einen besonderen Knoten. Verschiedene Tiere: Feuer (+50% Schaden). Zwei Katzen: Schnurren (größere Explosion). Zwei Waschbären: Müll (Gegner greifen einen Zug später an).'], ['Tipp', 'Schick den ersten Schuss durch eine Robotergruppe und kreuze seinen Faden mit dem zweiten direkt daneben. Ein Zug, mehrere Explosionen.']],
+    'foe.vac': ['Sauger', 'Ein gewöhnlicher Roboter. Trifft den nächsten Helden.'], 'foe.spray': ['Sprüher', 'Schwächer, greift aber öfter an: alle 2 Züge.'], 'foe.mop': ['Mopp', 'Gepanzert: Abpraller machen halben Schaden, Durchbohrer doppelten.'], 'foe.brush': ['Zahnbürste', 'Heilt nach jedem Zug Roboter in der Nähe. Schalte sie zuerst aus.'], 'foe.fan': ['Ventilator', 'Pustet Helden vom Kurs. Ziel mit Vorhalt.'], 'foe.rc': ['RC-Auto', 'Fährt jeden Zug an einen neuen Ort.'], 'foe.shield': ['Schildbot', 'Roboter daneben bekommen nur ein Drittel des Schadens. Schalte ihn zuerst aus.'], 'foe.split': ['Zwilling', 'Zerfällt beim Zerstören in zwei Mini-Roboter.'], 'foe.magnet': ['Magnet', 'Zieht Helden an und lenkt ihren Flug ab.'], 'foe.mole': ['Maulwurf', 'Gräbt sich jeden zweiten Zug ein und ist dann nicht zu treffen.'], 'foe.printer': ['3D-Drucker', 'Druckt nach dem Angriff einen Mini-Roboter, höchstens zwei zugleich.'], 'foe.boss': ['Bosse', 'Jeder Raum endet mit einem eigenen Boss und seinem eigenen Trick. Triff den gelben Sensor für dreifachen Schaden.'], 
+    'room.server': 'Serverraum', 'tip.server': 'Serverraum: 3D-Drucker drucken Mini-Roboter, schalte sie zuerst aus', 'tip.hub': 'Der Hub treibt Roboter an: nach seinem Angriff schlagen alle einen Zug früher zu', underground: 'Unter der Erde!', 'tip.basement': 'Keller: alle Gegnerarten auf einmal, härter als je zuvor', 'tip.web': 'Die Spinne umspinnt Helden: triff einen eingesponnenen Freund, um ihn zu befreien', webStuck: 'Im Netz!', webFreed: 'Befreit!',
     'tip.shield': 'Schildbots schützen ihre Nachbarn: schalte zuerst den Schildbot aus', 'tip.split': 'Zwillinge zerfallen beim Zerstören in zwei Kleine', shielded: 'Schild', 'cry.shield': 'Kling!', 'cry.split': 'Blubb!', 'cry.mini': 'Piep!',
     'tip.0': 'Vom Helden nach hinten ziehen und loslassen', 'tip.1': 'Kreuze einen alten Faden und der Knoten explodiert', 'tip.2': 'Katzen jagen den roten Laserpunkt',
     'tip.3': 'Triff den gelben Sensor: dreifacher Schaden', 'tip.4': 'Wischmopps sind gepanzert: Pixel und Nugget treffen sie doppelt',
@@ -1102,7 +1114,10 @@ const I18N = {
     'hero.pixel.name': 'Pixel', 'hero.pixel.skill': 'atraviesa a los enemigos', 'hero.pixel.combo': 'Mirada láser',
     'hero.bandit.name': 'Bandido', 'hero.bandit.skill': 'cada golpe retrasa el ataque enemigo un turno', 'hero.bandit.combo': 'Tentempié nocturno',
     'hero.nugget.name': 'Nugget', 'hero.nugget.skill': 'cada golpe explota sobre los enemigos cercanos', 'hero.nugget.combo': 'Tesoro de la basura',
-    'room.kitchen': 'Cocina', 'room.living': 'Salón', 'room.bedroom': 'Dormitorio', 'room.bath': 'Baño', 'room.balcony': 'Balcón', 'room.attic': 'Desván', 'room.garage': 'Garaje', 'room.basement': 'Sótano', 'room.roof': 'Tejado', 'tip.roof': 'Tejado: los imanes atraen a los héroes, curva tus disparos a su alrededor', 'tip.storm': 'El rayo del dron salta al héroe más cercano: mantened el equipo separado', privacy: 'Privacidad', terms: 'Términos de uso', 'room.garden': 'Jardín', 'tip.garden': 'Jardín: los topos se esconden bajo tierra cada dos turnos, golpéalos cuando estén arriba', 'tip.mow': 'El cortacésped embiste al héroe que golpea: no os amontonéis delante', 'room.server': 'Sala de servidores', 'tip.server': 'Sala de servidores: las impresoras 3D imprimen mini robots, elimínalas primero', 'tip.hub': 'El hub acelera a los robots: tras su ataque todos golpean un turno antes', underground: '¡Bajo tierra!', 'tip.basement': 'Sótano: todos los enemigos a la vez, más duros que nunca', 'tip.web': 'La araña atrapa a los héroes: golpea a un amigo atrapado para liberarlo', webStuck: '¡En la telaraña!', webFreed: '¡Liberado!',
+    'room.kitchen': 'Cocina', 'room.living': 'Salón', 'room.bedroom': 'Dormitorio', 'room.bath': 'Baño', 'room.balcony': 'Balcón', 'room.attic': 'Desván', 'room.garage': 'Garaje', 'room.basement': 'Sótano', 'room.roof': 'Tejado', 'tip.roof': 'Tejado: los imanes atraen a los héroes, curva tus disparos a su alrededor', 'tip.storm': 'El rayo del dron salta al héroe más cercano: mantened el equipo separado', privacy: 'Privacidad', terms: 'Términos de uso', 'room.garden': 'Jardín', 'tip.garden': 'Jardín: los topos se esconden bajo tierra cada dos turnos, golpéalos cuando estén arriba', 'tip.mow': 'El cortacésped embiste al héroe que golpea: no os amontonéis delante', guide: 'Guía', guideBasics: 'Básico', guideKnots: 'Nudos', guideFoes: 'Enemigos', foeNew: 'NUEVO ENEMIGO', foeUnknown: 'Lo conocerás más adelante', 'guide.basics': [['El disparo', 'Tira hacia atrás desde un héroe y suelta: volará en sentido contrario. La línea de puntos muestra el inicio del vuelo. Un disparo es un turno; los héroes juegan por orden.'], ['Rebote y perforación', 'Los héroes de rebote rebotan en enemigos y paredes. Los de perforación atraviesan a los enemigos y golpean a todos a su paso. La insignia junto al retrato muestra el tipo.'], ['Contador del enemigo', 'El número junto a un enemigo son los turnos hasta su ataque. En 1 brilla en rojo y una línea de puntos muestra su objetivo: el héroe en pie más cercano.'], ['Corazones y K.O.', 'Un golpe le quita al héroe un corazón (dos si es un jefe) y algo de resistencia de la casa. Sin corazones, el héroe duerme 2 turnos; tócalo con otro héroe para despertarlo. La casa a cero es derrota.'], ['Combos de amigos', 'Toca a otro héroe en pleno vuelo y se activa su habilidad: Mochi, una onda de ronroneo; Pixel, un láser; Bandido cura la casa; Nugget da travesura; Rex devuelve corazones; Hamy y Chispa golpean enemigos al azar.'], ['Travesura y Zoomies', 'La barra se llena con robots destruidos, nudos, pescado, pizza y el láser. Cuando esté llena, tócala: tu siguiente disparo será Zoomies, con daño doble e hilo dorado.'], ['Láser y cajas', 'Los gatos giran hacia el punto rojo: atrápalo para ganar velocidad y travesura. Entra en la caja A y sal por la caja B.'], ['Estrellas y desafío', '3 estrellas: supera el nivel en los turnos indicados (cambiar de oleada también cuenta), 2: hasta la mitad más. Tras superar un nivel, juégalo en el desafío por una corona.']],
+    'guide.knots': [['Cómo atar un nudo', 'Cada héroe deja un hilo. Cuando otro disparo cruza un hilo viejo, en el cruce explota un nudo que golpea a todos los enemigos cercanos.'], ['Reglas', 'Los hilos duran 2 turnos y luego desaparecen. Hasta 2 nudos por disparo, 4 con Zoomies. Cada trozo de hilo explota una sola vez y un disparo no puede cruzar su propio hilo del mismo vuelo.'], ['Nudos dorados', 'El hilo de Zoomies es dorado. Los nudos en él y los atados con Zoomies golpean el doble de fuerte.'], ['Nudos de dos héroes', 'El hilo de un héroe cruzado por otro crea un nudo especial. Animales distintos: fuego (+50% de daño). Dos gatos: ronroneo (explosión más amplia). Dos mapaches: basura (los enemigos atacan un turno después).'], ['Consejo', 'Lanza el primer disparo entre un grupo de robots y cruza su hilo junto a ellos con el segundo. Un turno, varias explosiones.']],
+    'foe.vac': ['Aspiradora', 'Un robot normal. Golpea al héroe más cercano.'], 'foe.spray': ['Rociador', 'Más débil, pero ataca más a menudo: cada 2 turnos.'], 'foe.mop': ['Fregona', 'Blindada: los héroes de rebote le hacen la mitad de daño, los de perforación el doble.'], 'foe.brush': ['Cepillo', 'Tras cada turno cura a los robots cercanos. Elimínalo primero.'], 'foe.fan': ['Ventilador', 'Desvía a los héroes de su rumbo. Apunta con margen.'], 'foe.rc': ['Coche teledirigido', 'Cada turno se mueve a un sitio nuevo.'], 'foe.shield': ['Robot escudo', 'Los robots a su lado reciben solo un tercio del daño. Apágalo primero.'], 'foe.split': ['Gemelo', 'Al destruirlo se divide en dos mini robots.'], 'foe.magnet': ['Imán', 'Atrae a los héroes y curva su vuelo.'], 'foe.mole': ['Topo', 'Cada dos turnos se esconde bajo tierra y no se le puede golpear.'], 'foe.printer': ['Impresora 3D', 'Tras atacar imprime un mini robot, dos como máximo.'], 'foe.boss': ['Jefes', 'Cada sala termina con su propio jefe y su propio truco. Golpea el sensor amarillo: triple daño.'], 
+    'room.server': 'Sala de servidores', 'tip.server': 'Sala de servidores: las impresoras 3D imprimen mini robots, elimínalas primero', 'tip.hub': 'El hub acelera a los robots: tras su ataque todos golpean un turno antes', underground: '¡Bajo tierra!', 'tip.basement': 'Sótano: todos los enemigos a la vez, más duros que nunca', 'tip.web': 'La araña atrapa a los héroes: golpea a un amigo atrapado para liberarlo', webStuck: '¡En la telaraña!', webFreed: '¡Liberado!',
     'tip.shield': 'Los escudobots protegen a sus vecinos: elimina primero al escudobot', 'tip.split': 'Los gemelos se parten en dos pequeños al destruirlos', shielded: 'escudo', 'cry.shield': '¡Clang!', 'cry.split': '¡Blop!', 'cry.mini': '¡Pip!',
     'tip.0': 'Tira hacia atrás desde un héroe y suelta', 'tip.1': 'Cruza un hilo viejo y el nudo explotará', 'tip.2': 'Los gatos persiguen el punto láser rojo',
     'tip.3': 'Golpea el sensor amarillo: daño triple', 'tip.4': 'Las fregonas tienen armadura: Pixel y Nugget les pegan el doble',
@@ -1259,6 +1274,7 @@ function mergeProg(a, b) {
   for (const k in (b.ev || {})) r.ev[k] = Math.max(r.ev[k] || 0, b.ev[k]);
   r.hats = { ...(a.hats || {}), ...(b.hats || {}) };
   r.story = { ...(a.story || {}), ...(b.story || {}) };
+  r.seen = { ...(a.seen || {}), ...(b.seen || {}) };
   return r;
 }
 // The cloud copy is written only after it has been read and merged, so a save made in the
@@ -1279,7 +1295,7 @@ function loadProg() {
       if (!err && val) {
         try {
           const before = PROG.unlocked;
-          PROG = mergeProg(PROG, JSON.parse(val)); lsSet(PKEY, JSON.stringify(PROG));
+          PROG = mergeProg(PROG, JSON.parse(val)); seedSeen(); lsSet(PKEY, JSON.stringify(PROG));
           if (PROG.unlocked !== before) { cloudDirty = true; if (SCREEN === 'map') MAP.focus = true; }
         } catch (e) {}
       }
@@ -2214,6 +2230,8 @@ function iconBtn(x, y, kind, cb) {
     ctx.beginPath(); ctx.arc(cx - 7, cy - 4, 3.5, Math.PI * .5, Math.PI * 1.5); ctx.stroke();
     ctx.beginPath(); ctx.arc(cx + 7, cy - 4, 3.5, -Math.PI * .5, Math.PI * .5); ctx.stroke();
     ctx.fillRect(cx - 1.5, cy + 3, 3, 4); ctx.fillRect(cx - 6, cy + 7, 12, 2.5);
+  } else if (kind === 'help') {
+    ctx.font = `900 20px ${FD}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('?', cx, cy + 1);
   } else {
     ctx.beginPath(); ctx.moveTo(cx - 9, cy - 3); ctx.lineTo(cx - 5, cy - 3); ctx.lineTo(cx, cy - 8); ctx.lineTo(cx, cy + 8); ctx.lineTo(cx - 5, cy + 3); ctx.lineTo(cx - 9, cy + 3); ctx.closePath(); ctx.fill();
     if (Snd.on) {
@@ -2426,7 +2444,7 @@ function setupWave(n) {
   G.state = 'banner';
   const sub = endless ? (n > 0 && n % 5 === 0 ? tr('newRoom', ch.name) : tr('record', wavesWord(PROG.endless || 0)))
     : n === 0 && G.lvl.tip ? G.lvl.tip : tr('waveOf', n + 1, waves.length);
-  G.banner = { title: endless ? tr('nightWave', n + 1) : G.lvl.event ? tr('evLevel', tr('ev.' + G.lvl.event.id), G.lvl.evIdx + 1) : tr('levelRoom', G.li + 1, ch.name), sub, t: n === 0 && G.lvl.tip ? 2.2 : 1.5, max: n === 0 && G.lvl.tip ? 2.2 : 1.5, done: () => { G.state = 'aim'; announceHero(); } };
+  G.banner = { title: endless ? tr('nightWave', n + 1) : G.lvl.event ? tr('evLevel', tr('ev.' + G.lvl.event.id), G.lvl.evIdx + 1) : tr('levelRoom', G.li + 1, ch.name), sub, t: n === 0 && G.lvl.tip ? 2.2 : 1.5, max: n === 0 && G.lvl.tip ? 2.2 : 1.5, done: afterIntro };
   Snd.play('wave');
 }
 
@@ -2950,6 +2968,7 @@ const live = o => o.life > 0;
 const onScreen = c => (c.vy > 0 ? c.y < H + 20 : c.y > -20);
 function update(dt) {
   if (SCREEN === 'map') updateMap(dt);
+  if (SCREEN === 'guide') updateScroll(GUIDE, dt, gDrag);
   if (SCREEN !== 'game' || !G) return;
   const L = G.laser;
   if (L && !L.caught) { L.x = L.bx + Math.cos(T * 1.3) * 12; L.y = L.by + Math.sin(T * 1.7) * 10; }
@@ -2960,6 +2979,7 @@ function update(dt) {
     if (G.banner.t <= 0) { const d = G.banner.done; G.banner = null; d(); }
   }
   else if (G.state === 'bossintro') updateBossIntro(dt);
+  else if (G.state === 'foe') G.foe.t += dt;
   const drag0 = Math.pow(.05, dt);
   for (const p of G.parts) {
     const d = p.shape === 'spark' ? Math.pow(.2, dt) : drag0;
@@ -3210,8 +3230,7 @@ function startBossIntro(boss) {
 function endBossIntro() {
   G.intro = null;
   Amb.duck(1);
-  G.state = 'aim';
-  announceHero();
+  afterIntro();
 }
 function updateBossIntro(dt) {
   const I = G.intro;
@@ -4676,6 +4695,7 @@ function drawTexts() {
 function drawHUD() {
   iconBtn(12, 13, 'back', goMap);
   iconBtn(W - 46, 13, 'sound', () => Snd.toggle());
+  iconBtn(W - 90, 13, 'help', () => openGuide(0));
   ctx.textBaseline = 'middle';
   ctx.textAlign = 'left'; ctx.fillStyle = '#f4efe6'; ctx.font = `900 16px ${FD}`;
   const pre = G.lvl.endless || G.lvl.event ? '' : `${G.li + 1}. `, nm = G.lvl.endless ? tr('night') : G.lvl.event ? tr('ev.' + G.lvl.event.id) : G.ch.name;
@@ -4684,7 +4704,7 @@ function drawHUD() {
   ctx.fillStyle = G.ch.col; ctx.fillText(nm, tx, 24); tx += ctx.measureText(nm).width;
   ctx.fillStyle = '#f4efe6'; ctx.fillText(G.lvl.endless ? tr('hudWave', G.wave + 1) : ` · ${G.wave + 1}/${G.lvl.waves.length}`, tx, 24);
   ctx.textAlign = 'right'; ctx.font = `800 13px ${FB}`; ctx.fillStyle = '#c9c2e6';
-  ctx.fillText(tr('turn', G.turn), W - 56, 24);
+  ctx.fillText(tr('turn', G.turn), W - 100, 24);
   const boss = G.enemies.find(e => e.type === 'boss' && e.alive);
   if (boss) {
     const bx = 56, bw = W - 112;
@@ -5170,7 +5190,7 @@ function drawMap() {
   fade.addColorStop(0, 'rgba(17,14,34,0)'); fade.addColorStop(1, '#110e22');
   ctx.fillStyle = fade; ctx.fillRect(0, MAP_VIEW - 26, W, 34);
   ctx.fillStyle = '#110e22'; ctx.fillRect(0, MAP_VIEW + 8, W, H - MAP_VIEW - 8);
-  uiBtn(16, 736, 46, 46, '?', () => setScreen('howto'), false);
+  uiBtn(16, 736, 46, 46, '?', () => openGuide(0), false);
   uiBtn(70, 736, 170, 46, tr('daily'), () => { DAILY.msg = null; setScreen('daily'); }, false);
   // in Telegram, wait for the server's answer: this device may not know the challenge was done elsewhere
   if ((DAILY.loaded || !serverOn()) && !challengeDone()) { ctx.fillStyle = '#ff5d7a'; circ(232, 740, 6); ctx.strokeStyle = '#110e22'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(232, 740, 6, 0, TAU); ctx.stroke(); }
@@ -5481,6 +5501,177 @@ function drawShop() {
   if (note) { ctx.textAlign = 'center'; ctx.fillStyle = SHOP.msg ? '#ff8fb1' : '#8f88b5'; ctx.font = `800 12px ${FB}`; wrap(note, W / 2, H - 22, W - 60, 16); }
 }
 
+
+// ---------- guide: basics, knots and every robot, plus a card the first time a robot shows up ----------
+const FOE_TYPES = ['vac', 'spray', 'mop', 'brush', 'fan', 'rc', 'shield', 'split', 'magnet', 'mole', 'printer'];
+const firstLevelOf = type => LEVELS.findIndex(l => l.waves.some(w => w.some(([t]) => t === type)));
+// players who already passed a robot's first level have met it: no card for them
+function seedSeen() {
+  const seen = { ...(PROG.seen || {}) };
+  for (const t of FOE_TYPES) { const i = firstLevelOf(t); if (i >= 0 && i < PROG.unlocked - 1) seen[t] = 1; }
+  PROG.seen = seen;
+}
+const foeKnown = t => !!(PROG.seen && PROG.seen[t]) || (t === 'boss' ? PROG.unlocked > 3 : firstLevelOf(t) >= 0 && firstLevelOf(t) < PROG.unlocked);
+function afterIntro() {
+  const t = G.enemies.map(e => e.type).find(tp => FOE_TYPES.includes(tp) && !(PROG.seen && PROG.seen[tp]));
+  if (t) { G.state = 'foe'; G.foe = { type: t, t: 0 }; Snd.play('wave'); return; }
+  G.state = 'aim'; announceHero();
+}
+function closeFoe() {
+  PROG.seen = { ...(PROG.seen || {}), [G.foe.type]: 1 }; saveProg();
+  G.foe = null; afterIntro();
+}
+const foeStub = (type, r) => ({ type, kind: 0, r, weak: Math.PI / 2, weakT: Math.PI / 2, fade: 0, foam: false, ph: 0, timer: 3, maxTimer: 3, flash: 0 });
+function drawFoe(type, x, y, r) {
+  ctx.save(); ctx.translate(x, y);
+  if (type === 'boss') drawBoss(foeStub('boss', r), r, RM ? 0 : T); else ENEMY_DRAW[type](foeStub(type, r), r, RM ? 0 : T);
+  ctx.restore();
+}
+function drawFoeCard() {
+  const f = G.foe, k = Math.min(1, f.t / .35), sc = RM ? 1 : .8 + .2 * easeOutBack(k), [name, desc] = tr('foe.' + f.type), col = G.ch.col;
+  UI = [];
+  UI.push({ x: 0, y: 0, w: W, h: H, cb: () => { if (G.foe && G.foe.t > .35) closeFoe(); } });
+  ctx.save();
+  ctx.globalAlpha = Math.min(1, f.t / .2);
+  ctx.fillStyle = 'rgba(8,6,18,.82)'; ctx.fillRect(0, 0, W, H);
+  ctx.translate(W / 2, 400); ctx.scale(sc, sc); ctx.translate(-W / 2, -400);
+  const cg = ctx.createLinearGradient(0, 220, 0, 580);
+  cg.addColorStop(0, G.ch.hud); cg.addColorStop(1, '#15122a');
+  ctx.fillStyle = cg; rr(40, 220, W - 80, 360, 24); ctx.fill();
+  ctx.strokeStyle = col; ctx.lineWidth = 2.5; rr(40, 220, W - 80, 360, 24); ctx.stroke();
+  ctx.font = `900 14px ${FD}`; const lw = ctx.measureText(tr('foeNew')).width + 30;
+  ctx.fillStyle = col; rr(W / 2 - lw / 2, 204, lw, 32, 16); ctx.fill();
+  ctx.fillStyle = '#15122a'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(tr('foeNew'), W / 2, 221);
+  ctx.save(); ctx.globalCompositeOperation = 'lighter'; glowAt(W / 2, 330, 110, hexRgb(col), .3); ctx.restore();
+  drawFoe(f.type, W / 2, 326 + (RM ? 0 : Math.sin(T * 3) * 4), 46);
+  ctx.fillStyle = col; fitFont(name, W - 120, 28); ctx.fillText(name, W / 2, 422);
+  ctx.fillStyle = '#e6e1f5'; ctx.font = `800 15px ${FB}`;
+  splitLines(desc, W - 120).slice(0, 4).forEach((ln, i) => ctx.fillText(ln, W / 2, 462 + i * 21));
+  ctx.restore();
+  if (f.t > .6) { ctx.globalAlpha = .55 + .45 * Math.sin(T * 4); ctx.fillStyle = '#c9c2e6'; ctx.font = `800 13px ${FB}`; ctx.textAlign = 'center'; ctx.fillText(tr('storyTap'), W / 2, 612); ctx.globalAlpha = 1; }
+}
+
+const GUIDE = { tab: 0, y: 0, v: 0, maxY: 0, from: 'map' };
+const GUIDE_TOP = 128;
+let gDrag = null;
+function openGuide(tab) { GUIDE.tab = tab; GUIDE.y = 0; GUIDE.v = 0; GUIDE.from = SCREEN; setScreen('guide'); }
+function closeGuide() { if (GUIDE.from === 'game' && G) setScreen('game'); else setScreen('map'); }
+function updateScroll(o, dt, d) {
+  if (d && d.moved) return;
+  if (o.v) { o.y += o.v * dt; o.v *= Math.pow(.04, dt); if (Math.abs(o.v) < 8) o.v = 0; }
+  if (o.y < 0) o.y += -o.y * Math.min(1, dt * 12);
+  else if (o.y > o.maxY) o.y += (o.maxY - o.y) * Math.min(1, dt * 12);
+}
+function dragScroll(o, d, py) {
+  const dy = py - d.sy;
+  if (!d.moved && Math.abs(dy) > 8) d.moved = true;
+  if (!d.moved) return;
+  const now = performance.now(), dts = Math.max(.008, (now - d.lt) / 1000);
+  o.v = -(py - d.ly) / dts; d.ly = py; d.lt = now;
+  let y = d.y0 - dy;
+  if (y < 0) y *= .4; else if (y > o.maxY) y = o.maxY + (y - o.maxY) * .4;
+  o.y = y;
+}
+// little pictures for the guide entries, drawn with the game's own painters
+function guideArt(key, cx, cy) {
+  const hero = id => HEROES.find(h => h.id === id), t = RM ? 0 : T;
+  const thread = (pts, col, w = 4) => { ctx.lineCap = 'round'; ctx.lineJoin = 'round'; ctx.strokeStyle = col; ctx.lineWidth = w; ctx.beginPath(); pts.forEach(([x, y], i) => i ? ctx.lineTo(x, y) : ctx.moveTo(x, y)); ctx.stroke(); };
+  const bang = (x, y, col, r = 14) => { ctx.save(); ctx.globalCompositeOperation = 'lighter'; glowAt(x, y, r * 1.8, hexRgb(col), .7); ctx.restore(); ctx.strokeStyle = col; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.stroke(); };
+  if (key === 'b0') {
+    ctx.fillStyle = '#fff'; for (let i = 1; i <= 4; i++) circ(cx - 4 + i * 6, cy - 2 - i * 6, 2.2 - i * .2);
+    drawHero(hero('mochi'), cx - 10, cy + 12, 16, null, { look: [.7, -.7] });
+  } else if (key === 'b1') {
+    drawHero(hero('bandit'), cx - 13, cy + 9, 14, null, {}); drawHero(hero('pixel'), cx + 14, cy - 9, 14, null, {});
+  } else if (key === 'b2') {
+    drawFoe('vac', cx - 4, cy + 6, 20);
+    ctx.fillStyle = '#ff3b5c'; circ(cx + 16, cy - 14, 10); ctx.strokeStyle = '#fff'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(cx + 16, cy - 14, 10, 0, TAU); ctx.stroke();
+    ctx.fillStyle = '#fff'; ctx.font = `900 12px ${FD}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('1', cx + 16, cy - 13);
+  } else if (key === 'b3') {
+    heart(cx - 18, cy - 4, 8, '#ff5d7a'); heart(cx, cy - 4, 8, '#ff5d7a'); heart(cx + 18, cy - 4, 8, 'rgba(59,53,99,.9)');
+    ctx.fillStyle = '#ffe066'; for (let k = 0; k < 3; k++) { const a = t * 3 + k * TAU / 3; star(cx + Math.cos(a) * 14, cy + 20 + Math.sin(a) * 4, 4, '#ffe066'); }
+  } else if (key === 'b4') {
+    drawHero(hero('mochi'), cx - 12, cy + 8, 14, null, { mood: 'happy' }); drawHero(hero('nugget'), cx + 14, cy - 8, 14, null, { mood: 'happy' });
+    star(cx + 2, cy - 2, 6, '#ffe066');
+  } else if (key === 'b5') {
+    ctx.fillStyle = '#231e44'; rr(cx - 28, cy - 9, 56, 18, 9); ctx.fill();
+    ctx.fillStyle = '#ffd166'; rr(cx - 28, cy - 9, 56, 18, 9); ctx.fill();
+    ctx.fillStyle = '#15122a'; ctx.font = `900 11px ${FD}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('×2', cx, cy + 1);
+    thread([[cx - 24, cy + 24], [cx, cy + 16], [cx + 24, cy + 24]], '#ffd166', 3);
+  } else if (key === 'b6') {
+    drawHero(hero('pixel'), cx - 12, cy + 10, 14, null, { look: [.8, -.6] });
+    ctx.save(); ctx.globalCompositeOperation = 'lighter'; glowAt(cx + 16, cy - 14, 14, '255,60,90', .9); ctx.restore(); ctx.fillStyle = '#fff'; circ(cx + 16, cy - 14, 2.5);
+  } else if (key === 'b7') {
+    star(cx - 20, cy + 4, 9, '#ffc857'); star(cx, cy - 4, 11, '#ffc857'); star(cx + 20, cy + 4, 9, '#ffc857');
+    ctx.save(); ctx.translate(cx, cy + 22); drawHat('crown', 16); ctx.restore();
+  } else if (key === 'k0') {
+    thread([[cx - 26, cy + 20], [cx + 26, cy - 20]], '#ff9f43'); thread([[cx - 26, cy - 20], [cx + 26, cy + 20]], '#b18cff'); bang(cx, cy, '#ff8fb1');
+  } else if (key === 'k1') {
+    ctx.globalAlpha = .35; thread([[cx - 26, cy + 18], [cx - 6, cy - 10], [cx + 26, cy + 6]], '#5ce1c6'); ctx.globalAlpha = 1;
+    thread([[cx - 26, cy - 18], [cx + 4, cy + 20], [cx + 26, cy - 14]], '#ff9f43');
+    ctx.fillStyle = '#fff'; ctx.font = `900 13px ${FD}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('2', cx + 18, cy + 22);
+  } else if (key === 'k2') {
+    thread([[cx - 26, cy + 20], [cx + 26, cy - 20]], '#ffd166', 5); thread([[cx - 26, cy - 20], [cx + 26, cy + 20]], '#ff9f43'); bang(cx, cy, '#ffd166', 16);
+  } else if (key === 'k3') {
+    bang(cx - 18, cy - 10, KNOT_COL.fire, 9); bang(cx + 18, cy - 10, KNOT_COL.purr, 11); bang(cx, cy + 14, KNOT_COL.trash, 9);
+  } else if (key === 'k4') {
+    drawFoe('vac', cx - 14, cy - 12, 11); drawFoe('spray', cx + 14, cy - 12, 10); drawFoe('vac', cx, cy + 12, 11);
+    ctx.globalAlpha = .8; thread([[cx - 28, cy + 2], [cx + 28, cy - 2]], '#ff9f43', 3); thread([[cx - 6, cy - 28], [cx + 6, cy + 28]], '#5ce1c6', 3); ctx.globalAlpha = 1;
+    bang(cx, cy, '#ff8fb1', 8);
+  } else if (FOE_TYPES.includes(key) || key === 'boss') {
+    if (foeKnown(key)) drawFoe(key, cx, cy + 2, key === 'boss' ? 22 : 24);
+    else { ctx.fillStyle = '#2a2548'; circ(cx, cy, 24); ctx.fillStyle = '#6f6893'; ctx.font = `900 26px ${FD}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('?', cx, cy + 1); }
+  }
+}
+function guideEntries() {
+  if (GUIDE.tab === 0) return tr('guide.basics').map(([title, desc], i) => ({ art: 'b' + i, title, desc, col: '#ffc857' }));
+  if (GUIDE.tab === 1) return tr('guide.knots').map(([title, desc], i) => ({ art: 'k' + i, title, desc, col: '#ff8fb1' }));
+  return FOE_TYPES.concat('boss').map(t => {
+    const known = foeKnown(t), [name, desc] = tr('foe.' + t);
+    return { art: t, title: known ? name : '???', desc: known ? desc : tr('foeUnknown'), col: known ? '#5ce1c6' : '#6f6893' };
+  });
+}
+function drawGuide() {
+  ctx.fillStyle = '#110e22'; ctx.fillRect(0, 0, W, H);
+  const g = ctx.createRadialGradient(W / 2, 60, 10, W / 2, 60, 320);
+  g.addColorStop(0, 'rgba(255,200,87,.14)'); g.addColorStop(1, 'rgba(255,200,87,0)');
+  ctx.fillStyle = g; ctx.fillRect(0, 0, W, 400);
+  // the list scrolls under the header
+  ctx.save(); ctx.beginPath(); ctx.rect(0, GUIDE_TOP, W, H - GUIDE_TOP); ctx.clip(); ctx.translate(0, -GUIDE.y);
+  let y = GUIDE_TOP + 8;
+  const tw = W - 32 - 108 - 12;
+  for (const e of guideEntries()) {
+    ctx.font = `800 13px ${FB}`;
+    const lines = splitLines(e.desc, tw), h = Math.max(92, 44 + lines.length * 18 + 12);
+    if (y - GUIDE.y < H && y + h - GUIDE.y > GUIDE_TOP) {
+      ctx.fillStyle = '#1d1938'; rr(16, y, W - 32, h, 16); ctx.fill();
+      ctx.strokeStyle = '#3b3563'; ctx.lineWidth = 1.5; rr(16, y, W - 32, h, 16); ctx.stroke();
+      const ay = y + h / 2;
+      const ag = ctx.createLinearGradient(0, ay - 36, 0, ay + 36);
+      ag.addColorStop(0, '#2e2859'); ag.addColorStop(1, '#1a1633');
+      ctx.fillStyle = ag; rr(28, ay - 36, 72, 72, 14); ctx.fill();
+      ctx.save(); rr(28, ay - 36, 72, 72, 14); ctx.clip(); guideArt(e.art, 64, ay); ctx.restore();
+      ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+      ctx.fillStyle = e.col; fitFont(e.title, tw, 16); ctx.fillText(e.title, 114, y + 24);
+      ctx.fillStyle = '#c9c2e6'; ctx.font = `800 13px ${FB}`;
+      lines.forEach((ln, i) => ctx.fillText(ln, 114, y + 48 + i * 18));
+    }
+    y += h + 10;
+  }
+  ctx.restore();
+  GUIDE.maxY = Math.max(0, y + 6 - H);
+  if (GUIDE.maxY > 0) {
+    const vh = H - GUIDE_TOP, th = vh * vh / (vh + GUIDE.maxY), ty = GUIDE_TOP + (vh - th) * Math.max(0, Math.min(1, GUIDE.y / GUIDE.maxY));
+    ctx.fillStyle = 'rgba(201,194,230,.25)'; rr(W - 6, ty + 4, 3, th - 8, 2); ctx.fill();
+  }
+  // header on top of the list
+  ctx.fillStyle = '#110e22'; ctx.fillRect(0, 0, W, GUIDE_TOP);
+  ctx.fillStyle = g; ctx.fillRect(0, 0, W, GUIDE_TOP);
+  iconBtn(12, 13, 'back', closeGuide);
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillStyle = '#ffc857'; fitFont(tr('guide'), W - 120, 30); ctx.fillText(tr('guide'), W / 2, 32);
+  [tr('guideBasics'), tr('guideKnots'), tr('guideFoes')].forEach((label, i) =>
+    uiBtn(16 + i * 143, 70, 132, 44, label, () => { GUIDE.tab = i; GUIDE.y = 0; GUIDE.v = 0; }, GUIDE.tab === i));
+}
 
 // ---------- daily: login bonus, challenge of the day, inviting friends ----------
 // The worker hands out the login bonus and challenge rewards (once a day) and gifts invites.
@@ -6308,6 +6499,7 @@ function drawGame() {
   drawHUD();
   drawBanner();
   drawBossIntro();
+  if (G.state === 'foe') drawFoeCard();
   if (G.state === 'win' || G.state === 'lose') { UI = []; drawEnd(); }
 }
 
@@ -6324,6 +6516,7 @@ function draw() {
   else if (SCREEN === 'daily') drawDaily();
   else if (SCREEN === 'heroes') drawHeroes();
   else if (SCREEN === 'story') drawStory();
+  else if (SCREEN === 'guide') drawGuide();
   else drawMap();
 }
 
@@ -6345,6 +6538,12 @@ cv.addEventListener('pointerdown', ev => {
     try { cv.setPointerCapture(ev.pointerId); } catch (e) {}
     return;
   }
+  if (SCREEN === 'guide' && p.y > GUIDE_TOP) {
+    gDrag = { sy: p.y, y0: GUIDE.y, ly: p.y, lt: performance.now(), moved: false, p };
+    GUIDE.v = 0;
+    try { cv.setPointerCapture(ev.pointerId); } catch (e) {}
+    return;
+  }
   if (hitUI(p)) return;
   if (SCREEN === 'game' && G && G.state === 'bossintro') { if (G.intro.t > .6) endBossIntro(); return; }
   if (SCREEN !== 'game' || !G || G.state !== 'aim') return;
@@ -6361,6 +6560,7 @@ function hitUI(p) {
   return false;
 }
 cv.addEventListener('pointermove', ev => {
+  if (gDrag) { dragScroll(GUIDE, gDrag, toGame(ev).y); return; }
   if (mapDrag) {
     const p = toGame(ev), dy = p.y - mapDrag.sy;
     if (!mapDrag.moved && Math.abs(dy) > 8) mapDrag.moved = true;
@@ -6378,6 +6578,11 @@ cv.addEventListener('pointermove', ev => {
   drag.x = p.x; drag.y = p.y;
 });
 cv.addEventListener('pointerup', () => {
+  if (gDrag) {
+    const d = gDrag; gDrag = null;
+    if (!d.moved) hitUI(d.p); else if (performance.now() - d.lt > 90) GUIDE.v = 0;
+    return;
+  }
   if (mapDrag) {
     const md = mapDrag;
     mapDrag = null;
@@ -6390,20 +6595,23 @@ cv.addEventListener('pointerup', () => {
   drag = null;
   if (SCREEN === 'game' && G && G.state === 'aim' && Math.hypot(dx, dy) > 18) launch(dx, dy);
 });
-cv.addEventListener('pointercancel', () => { drag = null; mapDrag = null; });
+cv.addEventListener('pointercancel', () => { drag = null; mapDrag = null; gDrag = null; });
 cv.addEventListener('wheel', ev => {
+  if (SCREEN === 'guide') { ev.preventDefault(); GUIDE.v = 0; GUIDE.y = Math.max(0, Math.min(GUIDE.maxY, GUIDE.y + ev.deltaY * .6)); return; }
   if (SCREEN !== 'map') return;
   ev.preventDefault();
   MAP.v = 0; MAP.y = Math.max(0, Math.min(MAP.maxY, MAP.y + ev.deltaY * .6));
 }, { passive: false });
 cv.addEventListener('keydown', ev => {
   if (ev.key === 'Escape' && SCREEN === 'game') goMap();
+  else if (ev.key === 'Escape' && SCREEN === 'guide') closeGuide();
   if (SCREEN === 'howto' && (ev.key === 'Enter' || ev.key === ' ')) { ev.preventDefault(); closeHowto(); }
   if (SCREEN === 'game' && G && (ev.key === 'z' || ev.key === 'я') && G.state === 'aim' && G.meter >= 100) G.zoomArmed = !G.zoomArmed;
 });
 
 // ---------- boot ----------
 loadProg();
+seedSeen();
 refreshInv();
 setScreen(lsGet('pawsling-seen') || PROG.unlocked > 1 ? 'map' : 'howto');
 loadDaily();
