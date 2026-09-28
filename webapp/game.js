@@ -5210,8 +5210,15 @@ function inviteFriend() {
   const uid = TG && TG.initDataUnsafe && TG.initDataUnsafe.user && TG.initDataUnsafe.user.id;
   if (!serverOn() || !DAILY.bot || !uid) { DAILY.msg = tr('dailyTgOnly'); return; }
   const link = `https://t.me/${DAILY.bot}?startapp=ref_${uid}`;
-  try { TG.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent(tr('inviteText'))}`); }
-  catch (e) { DAILY.msg = tr('dailyTgOnly'); }
+  const plain = () => {
+    try { TG.openTelegramLink(`https://t.me/share/url?url=${encodeURIComponent(link)}&text=${encodeURIComponent(tr('inviteText'))}`); }
+    catch (e) { DAILY.msg = tr('dailyTgOnly'); }
+  };
+  // a card with a picture and a Play button: plain Mini App links get no preview in Telegram
+  if (!TG.shareMessage || !tgv('8.0')) { plain(); return; }
+  api('/share', { lang: LANG }).then(r => {
+    try { TG.shareMessage(r.id); } catch (e) { plain(); }
+  }).catch(plain);
 }
 function rewardIcon(g, x, y) {
   const keys = Object.keys(g);

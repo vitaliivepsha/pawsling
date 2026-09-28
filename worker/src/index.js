@@ -12,6 +12,8 @@
 // POST /daily     { initData }  ->  today's login bonus (once a day), streak, invite count, bot name;
 //   a first visit through a friend's link (start_param ref_<id>) gifts both players
 // POST /challenge { initData, reward }  ->  the daily challenge reward, once a day
+// POST /share     { initData, lang }  ->  { id }  an invite card (picture, text, Play button with the
+//   player's referral link) prepared for WebApp.shareMessage; t.me Mini App links get no link preview
 // cron (Monday 00:05 UTC): the week's top 3 in Night Shift get prizes and a message from the bot
 // POST /tg       the bot's webhook (set automatically on the first game request):
 //   approves pre-checkout queries, records successful payments and refunds, answers /start.
@@ -48,31 +50,36 @@ function weekStart(ts = Date.now()) { // Monday 00:00 UTC of the week containing
 }
 const weekKey = (ts = Date.now()) => utcDay(weekStart(ts));
 const TEXT = {
-  uk: { sent: 'Дякуємо! Повідомлення передано розробнику.',
+  uk: { invite: 'Коти та єноти проти роботів-пилососів! Зіграй зі мною в Pawsling 🐾',
+    sent: 'Дякуємо! Повідомлення передано розробнику.',
     refJoined: n => `${n} прийшов у гру за твоїм запрошенням! Вам обом: +1 серце і +1 швидкий старт.`,
     weekWin: (place, w) => `Тиждень «Нічної зміни» завершено: ти на ${place} місці (${w} хвиль)! Приз уже в магазині.`,
     items: { heart3: ['Серце+ ×3', '+1 серце кожному героєві на 3 рівні.'], meter3: ['Швидкий старт ×3', 'Пів шкали «Бешкету» на старті 3 рівнів.'], hat_party: ['Святковий ковпак', 'Капелюшок для всієї команди, назавжди.'], hat_crown: ['Корона', 'Корона для всієї команди, назавжди.'], hat_bow: ['Бантик', 'Бантик для всієї команди, назавжди.'], rainbow: ['Райдужна нитка', 'Нитки героїв переливаються веселкою, назавжди.'], hero_rex: ['Рекс', 'Новий герой: пес-рятувальник, що лікує друзів, яких зачепить.'], hero_spark: ['Іскра', 'Нова героїня: її удар перескакує блискавкою на найближчого ворога.'] },
     title: 'Друге дихання', desc: 'Продовж рівень: повна міцність квартири й усі герої знову на ногах.',
     start: n => `Привіт, ${n}! Роботи-пилососи захопили квартиру. Запускай котів і єнотів, як з рогатки!`, play: '🐾 Грати' },
-  en: { sent: 'Thanks! Your message has been sent to the developer.',
+  en: { invite: 'Cats and raccoons vs robot vacuums! Play Pawsling with me 🐾',
+    sent: 'Thanks! Your message has been sent to the developer.',
     refJoined: n => `${n} joined the game with your invite! You both get +1 heart and +1 quick start.`,
     weekWin: (place, w) => `The Night Shift week is over: you finished #${place} (${w} waves)! Your prize is in the shop.`,
     items: { heart3: ['Heart+ ×3', '+1 heart for every hero, for 3 levels.'], meter3: ['Quick start ×3', 'Half a Mischief meter at the start of 3 levels.'], hat_party: ['Party hat', 'A hat for the whole team, forever.'], hat_crown: ['Crown', 'A crown for the whole team, forever.'], hat_bow: ['Bow', 'A bow for the whole team, forever.'], rainbow: ['Rainbow yarn', 'Hero threads shimmer in rainbow colors, forever.'], hero_rex: ['Rex', 'A new hero: a rescue dog that heals every friend he touches.'], hero_spark: ['Sparky', 'A new hero: her hits arc like lightning to the nearest enemy.'] },
     title: 'Second wind', desc: 'Continue the level: full home strength and every hero back on their feet.',
     start: n => `Hi, ${n}! Robot vacuums have taken over the flat. Launch the cats and raccoons like a slingshot!`, play: '🐾 Play' },
-  pl: { sent: 'Dzięki! Wiadomość trafiła do twórcy gry.',
+  pl: { invite: 'Koty i szopy kontra roboty sprzątające! Zagraj ze mną w Pawsling 🐾',
+    sent: 'Dzięki! Wiadomość trafiła do twórcy gry.',
     refJoined: n => `${n} dołączył(a) do gry z twojego zaproszenia! Oboje dostajecie +1 serce i +1 szybki start.`,
     weekWin: (place, w) => `Tydzień nocnej zmiany zakończony: zajmujesz ${place}. miejsce (${w} fal)! Nagroda czeka w sklepie.`,
     items: { heart3: ['Serce+ ×3', '+1 serce dla każdego bohatera na 3 poziomy.'], meter3: ['Szybki start ×3', 'Pół paska psot na starcie 3 poziomów.'], hat_party: ['Czapeczka imprezowa', 'Czapka dla całej drużyny, na zawsze.'], hat_crown: ['Korona', 'Korona dla całej drużyny, na zawsze.'], hat_bow: ['Kokardka', 'Kokardka dla całej drużyny, na zawsze.'], rainbow: ['Tęczowa włóczka', 'Nitki bohaterów mienią się tęczą, na zawsze.'], hero_rex: ['Reks', 'Nowy bohater: pies ratownik, który leczy przyjaciół, których dotknie.'], hero_spark: ['Iskra', 'Nowa bohaterka: jej ciosy przeskakują piorunem na najbliższego wroga.'] },
     title: 'Drugi oddech', desc: 'Kontynuuj poziom: pełna wytrzymałość mieszkania i wszyscy bohaterowie znów na nogach.',
     start: n => `Cześć, ${n}! Roboty sprzątające przejęły mieszkanie. Wystrzel koty i szopy jak z procy!`, play: '🐾 Graj' },
-  de: { sent: 'Danke! Deine Nachricht wurde an den Entwickler weitergeleitet.',
+  de: { invite: 'Katzen und Waschbären gegen Saugroboter! Spiel Pawsling mit mir 🐾',
+    sent: 'Danke! Deine Nachricht wurde an den Entwickler weitergeleitet.',
     refJoined: n => `${n} ist über deine Einladung ins Spiel gekommen! Ihr bekommt beide +1 Herz und +1 Schnellstart.`,
     weekWin: (place, w) => `Die Nachtschicht-Woche ist vorbei: Platz ${place} (${w} Wellen)! Dein Preis liegt im Shop.`,
     items: { heart3: ['Herz+ ×3', '+1 Herz für jeden Helden, für 3 Level.'], meter3: ['Schnellstart ×3', 'Halbe Unfug-Leiste zu Beginn von 3 Leveln.'], hat_party: ['Partyhut', 'Ein Hut für das ganze Team, für immer.'], hat_crown: ['Krone', 'Eine Krone für das ganze Team, für immer.'], hat_bow: ['Schleife', 'Eine Schleife für das ganze Team, für immer.'], rainbow: ['Regenbogenwolle', 'Die Fäden der Helden schimmern in Regenbogenfarben, für immer.'], hero_rex: ['Rex', 'Ein neuer Held: ein Rettungshund, der jeden berührten Freund heilt.'], hero_spark: ['Funke', 'Eine neue Heldin: ihre Treffer springen als Blitz zum nächsten Gegner.'] },
     title: 'Zweite Luft', desc: 'Spiel weiter: volle Wohnungsstärke und alle Helden wieder auf den Beinen.',
     start: n => `Hallo, ${n}! Saugroboter haben die Wohnung übernommen. Schieß Katzen und Waschbären wie mit einer Schleuder!`, play: '🐾 Spielen' },
-  es: { sent: '¡Gracias! Tu mensaje se ha enviado al desarrollador.',
+  es: { invite: '¡Gatos y mapaches contra aspiradoras robot! Juega Pawsling conmigo 🐾',
+    sent: '¡Gracias! Tu mensaje se ha enviado al desarrollador.',
     refJoined: n => `¡${n} se unió al juego con tu invitación! Los dos recibís +1 corazón y +1 inicio rápido.`,
     weekWin: (place, w) => `Terminó la semana del turno de noche: quedaste en el puesto ${place} (${w} oleadas). ¡Tu premio está en la tienda!`,
     items: { heart3: ['Corazón+ ×3', '+1 corazón para cada héroe durante 3 niveles.'], meter3: ['Inicio rápido ×3', 'Media barra de travesura al empezar 3 niveles.'], hat_party: ['Gorro de fiesta', 'Un gorro para todo el equipo, para siempre.'], hat_crown: ['Corona', 'Una corona para todo el equipo, para siempre.'], hat_bow: ['Lazo', 'Un lazo para todo el equipo, para siempre.'], rainbow: ['Hilo arcoíris', 'Los hilos de los héroes brillan con los colores del arcoíris, para siempre.'], hero_rex: ['Rex', 'Un nuevo héroe: un perro de rescate que cura a cada amigo que toca.'], hero_spark: ['Chispa', 'Una nueva heroína: sus golpes saltan como un rayo al enemigo más cercano.'] },
@@ -92,7 +99,7 @@ export default {
     const json = (body, status = 200) => new Response(JSON.stringify(body), { status, headers: { ...cors, 'Content-Type': 'application/json' } });
     if (req.method === 'OPTIONS') return new Response(null, { headers: cors });
     const url = new URL(req.url), path = url.pathname;
-    if (req.method !== 'POST' || !['/board', '/invoice', '/inventory', '/use', '/daily', '/challenge', '/tg'].includes(path)) return json({ error: 'not found' }, 404);
+    if (req.method !== 'POST' || !['/board', '/invoice', '/inventory', '/use', '/daily', '/challenge', '/share', '/tg'].includes(path)) return json({ error: 'not found' }, 404);
 
     if (path === '/tg') {
       // only Telegram knows the secret we gave it in setWebhook
@@ -130,6 +137,17 @@ export default {
     }
 
     if (path === '/daily') return json(await daily(env, user));
+    if (path === '/share') {
+      if (!botName) { const me = await tg(env, 'getMe', {}); botName = me.ok ? me.result.username : null; }
+      const t = text(body.lang || user.language_code), art = 'https://vitaliivepsha.github.io/pawsling/promo/';
+      const r = await tg(env, 'savePreparedInlineMessage', {
+        user_id: user.id, allow_user_chats: true, allow_group_chats: true, allow_channel_chats: true,
+        result: { type: 'photo', id: 'invite-' + user.id, photo_url: art + 'welcome-1280x720.jpg', thumbnail_url: art + 'welcome-640x360.jpg',
+          photo_width: 1280, photo_height: 720, caption: t.invite,
+          reply_markup: { inline_keyboard: [[{ text: t.play, url: `https://t.me/${botName}?startapp=ref_${user.id}` }]] } },
+      });
+      return r.ok ? json({ id: r.result.id }) : json({ error: 'share failed' }, 502);
+    }
     if (path === '/challenge') {
       if (!BOOSTERS.includes(body.reward)) return json({ error: 'bad reward' }, 400);
       await ensureTables(env.DB);
