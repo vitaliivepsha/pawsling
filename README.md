@@ -138,6 +138,12 @@ npx wrangler d1 create pawsling                      # put the printed database_
 npx wrangler d1 execute pawsling --remote --file=schema.sql
 npx wrangler deploy                                  # prints https://pawsling-leaderboard.<account>.workers.dev
 npx wrangler secret put BOT_TOKEN                    # paste the bot token when asked
+npx wrangler secret put ADMIN_ID                     # optional: your Telegram id, for sales messages
 ```
+
+With `ADMIN_ID` set, the bot messages the owner about every purchase and refund (a refund also
+takes back what the purchase gave), and answers the owner's `/sales` with sales for the last day,
+week, month and all time, the best sellers and the latest purchases. Refunded purchases are not
+counted. Other players get no answer to `/sales`.
 
 Then set `BOARD_URL` at the top of the leaderboard section in `webapp/game.js` to that address and push.

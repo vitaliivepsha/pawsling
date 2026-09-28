@@ -14,7 +14,9 @@
 // POST /challenge { initData, reward }  ->  the daily challenge reward, once a day
 // cron (Monday 00:05 UTC): the week's top 3 in Night Shift get prizes and a message from the bot
 // POST /tg       the bot's webhook (set automatically on the first game request):
-//   approves pre-checkout queries, records successful payments, answers /start.
+//   approves pre-checkout queries, records successful payments and refunds, answers /start.
+// ADMIN_ID (secret, optional): the owner's Telegram id. The bot messages the owner about every
+//   purchase and refund, and answers the owner's /sales with a sales summary.
 
 const MAX_AGE = 7 * 24 * 3600; // initData older than this is refused
 const LIMITS = { night: 500, stars: 300 }; // anything above is not a real result
@@ -260,6 +262,7 @@ async function ensureTables(db) {
       night INTEGER NOT NULL DEFAULT 0, at INTEGER NOT NULL, PRIMARY KEY (week, user_id))`),
     db.prepare('CREATE INDEX IF NOT EXISTS idx_weekly ON weekly (week, night DESC, at ASC)'),
     db.prepare('CREATE TABLE IF NOT EXISTS week_awards (week TEXT PRIMARY KEY, at INTEGER NOT NULL)'),
+    db.prepare('CREATE TABLE IF NOT EXISTS refunds (charge_id TEXT PRIMARY KEY, at INTEGER NOT NULL)'),
   ]);
   tablesReady = true;
 }
@@ -288,7 +291,28 @@ async function onUpdate(env, u) {
     const ins = await env.DB.prepare('INSERT OR IGNORE INTO purchases (charge_id, user_id, item, stars, at) VALUES (?1, ?2, ?3, ?4, ?5)')
       .bind(p.telegram_payment_charge_id, m.from.id, item, p.total_amount, Math.floor(Date.now() / 1000)).run();
     const g = ITEMS[item] && ITEMS[item].grant;
-    if (g && ins.meta.changes > 0) await grant(env.DB, m.from.id, g);
+    if (ins.meta.changes > 0) {
+      if (g) await grant(env.DB, m.from.id, g);
+      await notifyAdmin(env, `💰 ${buyer(m.from)} купує «${itemName(item)}» за ${p.total_amount} ⭐`);
+    }
+    return;
+  }
+  if (m.refunded_payment) {
+    // a refund takes back what the purchase gave, as far as it is still there
+    const p = m.refunded_payment;
+    await ensureTables(env.DB);
+    const ins = await env.DB.prepare('INSERT OR IGNORE INTO refunds (charge_id, at) VALUES (?1, ?2)')
+      .bind(p.telegram_payment_charge_id, Math.floor(Date.now() / 1000)).run();
+    if (ins.meta.changes === 0) return;
+    const row = await env.DB.prepare('SELECT user_id, item FROM purchases WHERE charge_id = ?1').bind(p.telegram_payment_charge_id).first();
+    const g = row && ITEMS[row.item] && ITEMS[row.item].grant;
+    if (g) await env.DB.batch(Object.entries(g).map(([k, n]) => env.DB.prepare(
+      'UPDATE inventory SET count = MAX(0, count - ?3) WHERE user_id = ?1 AND item = ?2').bind(row.user_id, k, n)));
+    await notifyAdmin(env, `↩️ Повернення: ${p.total_amount} ⭐ ${buyer(m.from)}${row ? ` за «${itemName(row.item)}»` : ''}`);
+    return;
+  }
+  if (typeof m.text === 'string' && /^\/sales\b/.test(m.text) && isAdmin(env, m.from)) {
+    await tg(env, 'sendMessage', { chat_id: m.chat.id, text: await salesReport(env.DB) });
     return;
   }
   if (typeof m.text === 'string' && /^\/(start|play)\b/.test(m.text) && env.WEBAPP_URL) {
@@ -298,6 +322,35 @@ async function onUpdate(env, u) {
       reply_markup: { inline_keyboard: [[{ text: t.play, web_app: { url: env.WEBAPP_URL } }]] },
     });
   }
+}
+
+// ---------- owner: purchase notifications and /sales ----------
+const isAdmin = (env, from) => !!(env.ADMIN_ID && from && String(from.id) === String(env.ADMIN_ID).trim());
+const itemName = item => (TEXT.uk.items[item] || [])[0] || (item === 'continue' ? TEXT.uk.title : item || '?');
+const buyer = u => `${displayName(u || {})}${u && u.username ? ' @' + u.username : ''} (id ${u ? u.id : '?'})`;
+async function notifyAdmin(env, msg) {
+  if (!env.ADMIN_ID) return;
+  try { await tg(env, 'sendMessage', { chat_id: String(env.ADMIN_ID).trim(), text: msg }); } catch (e) {}
+}
+async function salesReport(db) {
+  await ensureTables(db);
+  const now = Math.floor(Date.now() / 1000), paid = 'charge_id NOT IN (SELECT charge_id FROM refunds)';
+  const period = async since => db.prepare(`SELECT COUNT(*) AS n, COALESCE(SUM(stars), 0) AS s FROM purchases WHERE ${paid} AND at >= ?1`).bind(since).first();
+  const [d1, d7, d30, all] = await Promise.all([period(now - 86400), period(now - 7 * 86400), period(now - 30 * 86400), period(0)]);
+  const back = await db.prepare(`SELECT COUNT(*) AS n, COALESCE(SUM(stars), 0) AS s FROM purchases WHERE charge_id IN (SELECT charge_id FROM refunds)`).first();
+  const buyers = await db.prepare(`SELECT COUNT(DISTINCT user_id) AS n FROM purchases WHERE ${paid}`).first();
+  const top = await db.prepare(`SELECT item, COUNT(*) AS n, SUM(stars) AS s FROM purchases WHERE ${paid} GROUP BY item ORDER BY s DESC LIMIT 5`).all();
+  const last = await db.prepare(`SELECT p.item, p.stars, p.at, p.user_id, pl.name FROM purchases p LEFT JOIN players pl ON pl.id = p.user_id
+    WHERE ${paid.replace('charge_id', 'p.charge_id')} ORDER BY p.at DESC LIMIT 5`).all();
+  const line = (label, r) => `${label}: ${r.n} ${r.n === 1 ? 'покупка' : r.n >= 2 && r.n <= 4 ? 'покупки' : 'покупок'} · ${r.s} ⭐`;
+  const when = ts => new Date(ts * 1000).toLocaleString('uk-UA', { timeZone: 'Europe/Kyiv', day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' });
+  const out = ['📊 Продажі Pawsling', '', line('За 24 год', d1), line('За 7 днів', d7), line('За 30 днів', d30), line('Усього', all),
+    `Покупців: ${buyers.n}`];
+  if (back.n) out.push(`Повернено: ${back.n} · ${back.s} ⭐ (не враховано вище)`);
+  if (top.results.length) { out.push('', 'Найкраще продається:'); for (const r of top.results) out.push(`• ${itemName(r.item)} — ${r.n} × · ${r.s} ⭐`); }
+  if (last.results.length) { out.push('', 'Останні покупки:'); for (const r of last.results) out.push(`• ${when(r.at)} · ${itemName(r.item)} · ${r.stars} ⭐ · ${r.name || 'id ' + r.user_id}`); }
+  if (!all.n) out.push('', 'Поки що покупок немає.');
+  return out.join('\n');
 }
 
 function clampInt(v, max) {
