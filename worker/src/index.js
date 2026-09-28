@@ -16,7 +16,8 @@
 //   player's referral link) prepared for WebApp.shareMessage; t.me Mini App links get no link preview
 // cron (Monday 00:05 UTC): the week's top 3 in Night Shift get prizes and a message from the bot
 // POST /tg       the bot's webhook (set automatically on the first game request):
-//   approves pre-checkout queries, records successful payments and refunds, answers /start.
+//   approves pre-checkout queries, records successful payments and refunds, answers /start,
+//   and answers inline queries (@the_bot in any chat) with the player's invite card.
 // ADMIN_ID (secret, optional): the owner's Telegram id. The bot messages the owner about every
 //   purchase and refund, and answers the owner's /sales with a sales summary. Other text sent to the
 //   bot goes to the owner as a support message; the owner's reply to it goes back to that player.
@@ -139,12 +140,9 @@ export default {
     if (path === '/daily') return json(await daily(env, user));
     if (path === '/share') {
       if (!botName) { const me = await tg(env, 'getMe', {}); botName = me.ok ? me.result.username : null; }
-      const t = text(body.lang || user.language_code), art = 'https://vitaliivepsha.github.io/pawsling/promo/';
       const r = await tg(env, 'savePreparedInlineMessage', {
         user_id: user.id, allow_user_chats: true, allow_group_chats: true, allow_channel_chats: true,
-        result: { type: 'photo', id: 'invite-' + user.id, photo_url: art + 'welcome-1280x720.jpg', thumbnail_url: art + 'welcome-640x360.jpg',
-          photo_width: 1280, photo_height: 720, caption: t.invite,
-          reply_markup: { inline_keyboard: [[{ text: t.play, url: `https://t.me/${botName}?startapp=ref_${user.id}` }]] } },
+        result: inviteCard(text(body.lang || user.language_code), user.id),
       });
       return r.ok ? json({ id: r.result.id }) : json({ error: 'share failed' }, 502);
     }
@@ -262,8 +260,10 @@ async function ensureHook(env, origin) {
   if (hookReady) return;
   const url = origin + '/tg';
   const info = await tg(env, 'getWebhookInfo', {});
-  if (!(info.ok && info.result.url === url)) {
-    await tg(env, 'setWebhook', { url, secret_token: await hookSecret(env), allowed_updates: ['message', 'pre_checkout_query'] });
+  const want = ['message', 'pre_checkout_query', 'inline_query'];
+  const have = (info.ok && info.result.allowed_updates) || [];
+  if (!(info.ok && info.result.url === url) || want.some(k => !have.includes(k))) {
+    await tg(env, 'setWebhook', { url, secret_token: await hookSecret(env), allowed_updates: want });
   }
   hookReady = true;
 }
@@ -295,7 +295,22 @@ async function inventory(db, id) {
   const rows = await db.prepare('SELECT item, count FROM inventory WHERE user_id = ?1 AND count > 0').bind(id).all();
   return Object.fromEntries(rows.results.map(r => [r.item, r.count]));
 }
+// the invite: a picture, a line of text and a Play button carrying the sender's referral link
+function inviteCard(t, uid) {
+  const art = 'https://vitaliivepsha.github.io/pawsling/promo/';
+  return { type: 'photo', id: 'invite-' + uid, photo_url: art + 'welcome-1280x720.jpg', thumbnail_url: art + 'welcome-640x360.jpg',
+    photo_width: 1280, photo_height: 720, caption: t.invite,
+    reply_markup: { inline_keyboard: [[{ text: t.play, url: `https://t.me/${botName}?startapp=ref_${uid}` }]] } };
+}
 async function onUpdate(env, u) {
+  if (u.inline_query) {
+    // typing @the_bot in any chat offers the invite card
+    const q = u.inline_query;
+    if (!botName) { const me = await tg(env, 'getMe', {}); botName = me.ok ? me.result.username : null; }
+    await tg(env, 'answerInlineQuery', { inline_query_id: q.id, is_personal: true, cache_time: 300,
+      results: [inviteCard(text(q.from && q.from.language_code), q.from.id)] });
+    return;
+  }
   if (u.pre_checkout_query) {
     const q = u.pre_checkout_query;
     let item = null;
