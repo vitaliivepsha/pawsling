@@ -1,7 +1,9 @@
 (() => {
 const W = 450, H = 800, TOP = 60, BOT = 676;
 const cv = document.getElementById('game');
-const ctx = cv.getContext('2d');
+let ctx = cv.getContext('2d');
+// comic mode (an experiment, off unless the address has ?comic): ink outlines, halftone and sound-effect bursts
+const COMIC = /[?&]comic\b/.test(location.search);
 const RM = matchMedia('(prefers-reduced-motion: reduce)').matches;
 const FD = 'Rubik,"Arial Black",system-ui,sans-serif';
 const FB = 'Nunito,system-ui,sans-serif';
@@ -2441,6 +2443,7 @@ function launch(dx, dy) {
   G.shot = s;
   if (zoom) { G.meter = 0; G.zoomArmed = false; ftext(h.x, h.y - 40, tr('zoomies'), '#ffd166', 22); Snd.play('zoom'); flash('#ffd166', .35); ring(h.x, h.y, 90, '#ffd166'); }
   burst(h.x, h.y, h.yarn, 8, 160);
+  comicPop(G.heroes[G.cur].x, G.heroes[G.cur].y - 30, 'launch');
   Snd.play('launch'); haptic('medium');
   G.state = 'moving';
 }
@@ -2485,6 +2488,7 @@ function damageEnemy(e, amt, crit) {
       }
       ftext(e.x, e.y - 34, tr('cry.split'), '#ffd166', 16);
     }
+    comicPop(e.x, e.y, 'kill', e.type === 'boss');
     Snd.play('kill'); haptic(e.type === 'boss' ? 'heavy' : 'rigid');
   }
 }
@@ -2513,6 +2517,7 @@ function hitEnemy(e, nx, ny) {
   sparks(h.x - nx * h.r, h.y - ny * h.r, crit ? 12 : 6, crit ? '#ffe066' : '#fff6d0');
   if (crit) G.hitstop = Math.max(G.hitstop, .035);
   Snd.play(crit ? 'crit' : 'hit'); haptic(crit ? 'heavy' : 'light');
+  comicPop(e.x + rnd(-10, 10), e.y - e.r * .6, crit ? 'crit' : 'hit');
   damageEnemy(e, dmg, crit);
   if (h.id === 'bandit' && e.alive && !s.delayed.has(e)) {
     s.delayed.add(e); e.timer += h.lvl >= 10 ? 2 : 1;
@@ -2596,6 +2601,7 @@ function knot(p, gold, h1, h2) {
   ftext(p[0], p[1] - 16, combo ? tr('knot.' + combo) : tr('knot'), col, combo ? 20 : 18);
   addMeter(10);
   G.shake = Math.max(G.shake, combo ? 8 : 5);
+  comicPop(p[0], p[1], 'knot');
   Snd.play('knot'); haptic('heavy');
   for (const e of G.enemies) {
     if (!e.alive || dist(p[0], p[1], e.x, e.y) >= R + e.r) continue;
@@ -2860,6 +2866,7 @@ function nextAttack() {
     burst(h.x, h.y, '#ff6b85', 14);
     h.hearts = Math.max(0, h.hearts - loss);
     ftext(h.x, h.y - 52, '-' + loss + ' ♥', '#ff5d7a', 16);
+    comicPop(h.x, h.y - 20, 'ouch');
     if (h.hearts === 0) {
       G.everKo = true;
       h.ko = KO_TURNS;
@@ -6120,9 +6127,109 @@ function drawEnd() {
   }
 }
 
+// ---------- comic mode ----------
+// Actors are painted into a layer, a flat ink silhouette of that layer is stamped around them in
+// eight directions (a thick outline), the room gets halftone dots and a panel border, and hits
+// throw starburst sound effects. Only active with ?comic in the address.
+const COMIC_WORDS = {
+  uk: { hit: ['БАХ!', 'БУМ!', 'ТРАХ!', 'ГЕП!'], crit: 'ХРЯСЬ!', kill: 'КАБУМ!', knot: 'БАБАХ!', launch: 'ВЖУХ!', ouch: 'ОЙ!' },
+  en: { hit: ['BAM!', 'BOOM!', 'WHAM!', 'POW!'], crit: 'KRAK!', kill: 'KABOOM!', knot: 'KA-BLAM!', launch: 'WHOOSH!', ouch: 'OUCH!' },
+  pl: { hit: ['BAM!', 'BUM!', 'TRACH!', 'ŁUP!'], crit: 'CHRUP!', kill: 'KABUM!', knot: 'BUCH!', launch: 'ŚMIG!', ouch: 'AUĆ!' },
+  de: { hit: ['BAM!', 'BUMM!', 'KRACH!', 'PENG!'], crit: 'KNACKS!', kill: 'KAWUMM!', knot: 'RUMMS!', launch: 'WUSCH!', ouch: 'AUA!' },
+  es: { hit: ['¡BAM!', '¡BUM!', '¡PAF!', '¡ZAS!'], crit: '¡CRAC!', kill: '¡KABUM!', knot: '¡PUM!', launch: '¡FIUU!', ouch: '¡AY!' },
+};
+const COMIC_INK = '#15122a';
+let comicLayers = null, comicHalf = null;
+function comicPop(x, y, kind, big) {
+  if (!COMIC || !G) return;
+  G.pops = G.pops || [];
+  if (kind === 'hit' && G.pops.some(p => p.kind === 'hit' && T - p.t0 < .25)) return;
+  const words = COMIC_WORDS[LANG] || COMIC_WORDS.en, w = words[kind];
+  const text = Array.isArray(w) ? w[Math.floor(Math.random() * w.length)] : w;
+  const size = kind === 'kill' ? (big ? 34 : 26) : kind === 'crit' || kind === 'knot' ? 24 : kind === 'launch' || kind === 'ouch' ? 16 : 19;
+  const fill = kind === 'kill' ? '#ff6b3d' : kind === 'ouch' ? '#6ec3ff' : kind === 'launch' ? '#fff3c4' : '#ffe14d';
+  G.pops.push({ x: Math.max(50, Math.min(W - 50, x)), y: Math.max(TOP + 40, y), text, size, fill, kind, t0: T, rot: rnd(-.3, .3), seed: Math.random() * 100 });
+  if (G.pops.length > 8) G.pops.shift();
+}
+function drawComicPops() {
+  if (!G.pops) return;
+  G.pops = G.pops.filter(p => T - p.t0 < .8);
+  for (const p of G.pops) {
+    const k = (T - p.t0) / .8, pop = RM ? 1 : k < .12 ? .4 + k / .12 * .8 : 1.2 - Math.min(.2, (k - .12) * .6);
+    ctx.save(); ctx.globalAlpha = k > .7 ? 1 - (k - .7) / .3 : 1;
+    ctx.translate(p.x, p.y); ctx.rotate(p.rot); ctx.scale(pop, pop);
+    ctx.font = `900 ${p.size}px ${FD}`;
+    const tw = ctx.measureText(p.text).width, R = tw * .62 + p.size * .5;
+    // the starburst
+    ctx.beginPath();
+    for (let i = 0; i < 18; i++) {
+      const a = i / 18 * TAU, j = Math.sin(p.seed + i * 7.3) * .12, rad = (i % 2 ? .62 + j : 1 + j) * R;
+      ctx.lineTo(Math.cos(a) * rad, Math.sin(a) * rad * .72);
+    }
+    ctx.closePath();
+    ctx.fillStyle = COMIC_INK; ctx.save(); ctx.translate(4, 5); ctx.fill(); ctx.restore();
+    ctx.fillStyle = p.fill; ctx.fill();
+    ctx.strokeStyle = COMIC_INK; ctx.lineWidth = 3.5; ctx.lineJoin = 'round'; ctx.stroke();
+    ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.strokeStyle = COMIC_INK; ctx.lineWidth = Math.max(4, p.size * .22); ctx.strokeText(p.text, 0, 1);
+    ctx.fillStyle = p.kind === 'ouch' || p.kind === 'launch' ? '#fff' : '#e5484d'; ctx.fillText(p.text, 0, 1);
+    ctx.restore();
+  }
+}
+function comicPaper() {
+  // halftone dots, denser towards the bottom-right, cached per canvas size
+  const w = cv.width, h = cv.height;
+  if (!comicHalf || comicHalf.width !== w || comicHalf.height !== h) {
+    comicHalf = document.createElement('canvas'); comicHalf.width = w; comicHalf.height = h;
+    const g = comicHalf.getContext('2d'), step = Math.max(6, Math.round(7 * scale * dpr)), diag = Math.hypot(w, h);
+    g.fillStyle = 'rgba(8,4,20,.28)';
+    for (let y = 0; y < h; y += step) for (let x = (Math.round(y / step) % 2) * step / 2; x < w; x += step) {
+      const r = step * .42 * Math.min(1, Math.hypot(x, y) / diag * 1.4);
+      if (r > .4) { g.beginPath(); g.arc(x, y, r, 0, TAU); g.fill(); }
+    }
+  }
+  ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0);
+  ctx.beginPath(); ctx.rect(0, TOP * scale * dpr, w, (BOT - TOP) * scale * dpr); ctx.clip();
+  ctx.drawImage(comicHalf, 0, 0);
+  ctx.restore();
+}
+function comicBegin() {
+  const w = cv.width, h = cv.height;
+  if (!comicLayers || comicLayers.a.width !== w || comicLayers.a.height !== h) {
+    const mk = () => { const c = document.createElement('canvas'); c.width = w; c.height = h; return c; };
+    const a = mk(), sl = mk();
+    comicLayers = { a, sl, actx: a.getContext('2d'), sctx: sl.getContext('2d') };
+  }
+  const L = comicLayers, main = ctx;
+  L.actx.setTransform(1, 0, 0, 1, 0, 0); L.actx.clearRect(0, 0, w, h);
+  L.actx.setTransform(main.getTransform());
+  ctx = L.actx;
+  return { main, L };
+}
+function comicEnd({ main, L }) {
+  ctx = main;
+  const w = L.a.width, h = L.a.height, s = L.sctx;
+  s.globalCompositeOperation = 'source-over'; s.clearRect(0, 0, w, h); s.drawImage(L.a, 0, 0);
+  s.globalCompositeOperation = 'source-in'; s.fillStyle = COMIC_INK; s.fillRect(0, 0, w, h);
+  s.globalCompositeOperation = 'source-over';
+  main.save(); main.setTransform(1, 0, 0, 1, 0, 0);
+  const o = Math.max(2.5, 3.2 * scale * dpr);
+  for (let i = 0; i < 8; i++) { const a = i / 8 * TAU; main.drawImage(L.sl, Math.cos(a) * o, Math.sin(a) * o); }
+  main.drawImage(L.a, 0, 0);
+  main.restore();
+}
+function comicPanel() {
+  // the arena framed like a comic panel
+  ctx.save();
+  ctx.strokeStyle = '#f4efe6'; ctx.lineWidth = 7; ctx.strokeRect(3.5, TOP + 3.5, W - 7, BOT - TOP - 7);
+  ctx.strokeStyle = COMIC_INK; ctx.lineWidth = 4; ctx.strokeRect(7, TOP + 7, W - 14, BOT - TOP - 14);
+  ctx.restore();
+}
+
 function drawGame() {
   const c = G.lvl.ch;
   ctx.drawImage(bg(c), 0, 0, W, H);
+  if (COMIC) comicPaper();
   const sh = RM ? 0 : G.shake;
   ctx.save();
   ctx.translate((Math.random() - .5) * sh, (Math.random() - .5) * sh);
@@ -6131,12 +6238,13 @@ function drawGame() {
   drawRoomUnder(c);
   drawPuddles();
   drawTrails();
+  if (COMIC) { drawLaser(); drawShields(); drawThreats(); }
+  const ink = COMIC ? comicBegin() : null;
   G.boxes.forEach(drawBox);
   G.snacks.forEach(drawSnack);
-  drawLaser();
-  drawShields();
+  if (!COMIC) { drawLaser(); drawShields(); }
   for (const e of G.enemies) if (e.alive) drawEnemy(e);
-  drawThreats();
+  if (!COMIC) drawThreats();
   G.heroes.forEach((h, i) => {
     const cur = i === G.cur && (G.state === 'aim' || G.state === 'moving');
     ctx.fillStyle = 'rgba(0,0,0,.3)'; ctx.beginPath(); ctx.ellipse(h.x, h.y + h.r * .85, h.r * .9, h.r * .3, 0, 0, TAU); ctx.fill();
@@ -6179,6 +6287,7 @@ function drawGame() {
     } else drawHero(h, h.x, h.y, h.r, gold ? '#ffd166' : null, ho);
     if (h.webbed) drawWeb(h.x, h.y, h.r + 10);
   });
+  if (ink) comicEnd(ink);
   drawFx();
   drawRoomOver(c);
   if (G.lvl.event) drawEventFx(G.lvl.event.id);
@@ -6186,6 +6295,7 @@ function drawGame() {
   drawTypeTag();
   ctx.restore();
   drawTexts();
+  if (COMIC) { comicPanel(); drawComicPops(); }
   ctx.restore();
   if (G.flash) {
     const f = G.flash, a = f.a;
