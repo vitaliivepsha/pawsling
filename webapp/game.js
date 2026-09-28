@@ -4847,7 +4847,8 @@ function drawMap() {
   ctx.fillStyle = '#110e22'; ctx.fillRect(0, MAP_VIEW + 8, W, H - MAP_VIEW - 8);
   uiBtn(16, 736, 46, 46, '?', () => setScreen('howto'), false);
   uiBtn(70, 736, 170, 46, tr('daily'), () => { DAILY.msg = null; setScreen('daily'); }, false);
-  if (!challengeDone()) { ctx.fillStyle = '#ff5d7a'; circ(232, 740, 6); ctx.strokeStyle = '#110e22'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(232, 740, 6, 0, TAU); ctx.stroke(); }
+  // in Telegram, wait for the server's answer: this device may not know the challenge was done elsewhere
+  if ((DAILY.loaded || !serverOn()) && !challengeDone()) { ctx.fillStyle = '#ff5d7a'; circ(232, 740, 6); ctx.strokeStyle = '#110e22'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(232, 740, 6, 0, TAU); ctx.stroke(); }
   const nightOpen = PROG.unlocked >= ENDLESS_UNLOCK;
   const rec = PROG.endless || 0;
   uiBtn(248, 736, W - 264, 46, nightOpen ? (rec ? `${tr('night')} · ${rec}` : tr('night')) : tr('nightAfter'),
@@ -5189,11 +5190,12 @@ async function loadDaily() {
   try {
     const d = await api('/daily', {});
     Object.assign(DAILY, { loaded: true, streak: d.streak, claimed: d.claimed, challengeDone: d.challengeDone, invited: d.invited, bot: d.bot, today: d.today });
+    if (d.challengeDone && d.today) lsSet('pawsling-ch', d.today);
     if (d.items) setInv(d.items);
     if (d.gifted) DAILY.msg = tr('giftedMsg');
     // open the daily screen once when today's bonus has just been given
     if ((d.claimed || d.gifted) && SCREEN === 'map' && !DAILY.shown) { DAILY.shown = true; setScreen('daily'); }
-  } catch (e) {}
+  } catch (e) { DAILY.loaded = true; } // offline: fall back to what this device knows
 }
 function startChallenge() {
   const ch = todayChallenge();
