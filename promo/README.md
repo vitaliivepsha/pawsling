@@ -15,7 +15,8 @@ Everything needed to list the game in Telegram's app catalog and in other catalo
 
 | File | Size | Use |
 |---|---|---|
-| `webapp/icon-512.png` | 512×512 | bot avatar (@BotFather → /setuserpic), catalog icon |
+| `assets/bot-avatar.png` | 1024×1024 | bot avatar (@BotFather → /setuserpic): a paw in flight |
+| `webapp/icon-512.png` | 512×512 | the same logo: site icon, catalog icon |
 | `webapp/og.jpg` | 1200×630 | link preview of the web page (Open Graph) |
 | `promo/en/*.jpg`, `promo/uk/*.jpg` | 1080×1920 | Mini App media previews and catalog screenshots, in order 1–6 |
 | `promo/welcome-640x360.jpg` | 640×360 | @BotFather → Welcome message → Set Welcome Picture (empty chat); a 1280×720 copy is next to it |
@@ -53,6 +54,6 @@ Telegram picks apps for the catalog itself; these settings raise the chances:
 
 1. @BotFather → your bot → **Bot Settings → Configure Mini App → Main App**: already on.
 2. Same place → **Media previews**: upload `promo/en/1…6.jpg` for English, then add a Ukrainian set from `promo/uk/` for the Ukrainian language.
-3. @BotFather → **/setuserpic**: upload `webapp/icon-512.png`.
+3. @BotFather → **/setuserpic**: upload `assets/bot-avatar.png`.
 4. @BotFather → your bot → **Bot Settings → Privacy Policy** (if offered in your BotFather version): the Privacy Policy link above.
 5. Descriptions in five languages are already set through the Bot API (they show in the bot's profile and in `t.me` link previews).
