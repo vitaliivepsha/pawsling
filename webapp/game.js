@@ -4915,7 +4915,8 @@ function drawSecondWind() {
 
 // ---------- shop: boosters, hats, rainbow yarn, a new hero ----------
 // The worker keeps each player's inventory; a paid item is credited there by the payment webhook.
-const PRICES = { heart3: 15, meter3: 15, hat_party: 20, hat_crown: 30, hat_bow: 20, rainbow: 25, hero_spark: 50, hero_rex: 50 }; // = ITEMS in the worker
+const PRICES = { heart3: 15, meter3: 15, hat_party: 20, hat_crown: 40, hat_bow: 20, rainbow: 25, hero_spark: 150, hero_rex: 150 }; // = ITEMS in the worker
+const OLD_PRICES = { hero_spark: 250, hero_rex: 250 }; // shown struck through, as a discount
 const GRANTS = { hero_rex: { hero_rex: 1 }, heart3: { heart: 3 }, meter3: { meter: 3 }, hat_party: { hat_party: 1 }, hat_crown: { hat_crown: 1 }, hat_bow: { hat_bow: 1 },
   rainbow: { rainbow: 1 }, hero_spark: { hero_spark: 1 } };
 const SHOP_LIST = ['heart3', 'meter3', 'hero_spark', 'hero_rex', 'hat_party', 'hat_crown', 'hat_bow', 'rainbow'];
@@ -5097,6 +5098,18 @@ function drawShop() {
     ctx.textAlign = 'center'; ctx.fillStyle = h.yarn; fitFont(tr('item.' + id), cw - 16, 16); ctx.fillText(tr('item.' + id), x + cw / 2, y + 94);
     ctx.fillStyle = '#c9c2e6'; ctx.font = `700 11px ${FB}`;
     splitLines(tr('itemd.' + id), cw - 20).slice(0, 2).forEach((ln, k) => ctx.fillText(ln, x + cw / 2, y + 112 + k * 13));
+    if (!a.have && OLD_PRICES[id]) {
+      // the discount: a badge in the corner and the old price struck through
+      const bx = x + cw - 12, pct = Math.round((1 - PRICES[id] / OLD_PRICES[id]) * 100);
+      ctx.save(); ctx.translate(bx - 24, y + 18); ctx.rotate(.12);
+      ctx.fillStyle = '#ff5d7a'; rr(-27, -11, 54, 22, 11); ctx.fill();
+      ctx.fillStyle = '#fff'; ctx.font = `900 12px ${FD}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(`−${pct}%`, 0, 1);
+      ctx.restore();
+      const old = `★ ${OLD_PRICES[id]}`;
+      ctx.font = `900 13px ${FD}`; ctx.textAlign = 'right'; ctx.fillStyle = '#8f88b5'; ctx.fillText(old, bx, y + 46);
+      const ow = ctx.measureText(old).width;
+      ctx.strokeStyle = '#ff5d7a'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(bx - ow - 2, y + 49); ctx.lineTo(bx + 2, y + 43); ctx.stroke();
+    }
     uiBtn(x + 10, y + ch - 40, cw - 20, 32, a.label, a.cb, a.primary);
   });
 

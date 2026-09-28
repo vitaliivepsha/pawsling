@@ -28,11 +28,11 @@ const ITEMS = {
   heart3: { stars: 15, grant: { heart: 3 } },
   meter3: { stars: 15, grant: { meter: 3 } },
   hat_party: { stars: 20, grant: { hat_party: 1 } },
-  hat_crown: { stars: 30, grant: { hat_crown: 1 } },
+  hat_crown: { stars: 40, grant: { hat_crown: 1 } },
   hat_bow: { stars: 20, grant: { hat_bow: 1 } },
   rainbow: { stars: 25, grant: { rainbow: 1 } },
-  hero_spark: { stars: 50, grant: { hero_spark: 1 } },
-  hero_rex: { stars: 50, grant: { hero_rex: 1 } },
+  hero_spark: { stars: 150, grant: { hero_spark: 1 } },
+  hero_rex: { stars: 150, grant: { hero_rex: 1 } },
 };
 const BOOSTERS = ['heart', 'meter']; // the only items that get used up
 // login bonus by day of the streak (the 7th day restarts the cycle)

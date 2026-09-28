@@ -90,7 +90,7 @@ The game runs without a permanently running server: the page is on GitHub Pages
 
 ## Content
 
-- **More heroes**: Rex the rescue dog (shop, 50 Stars; heals every ally he touches) and Hammy the
+- **More heroes**: Rex the rescue dog (shop, 150 Stars, shown as a discount from 250; heals every ally he touches) and Hammy the
   hamster (free after level 24; the further he rolls, the harder he hits). A team is 4-5 heroes,
   picked on the Heroes screen.
 - **Seasonal events**: Halloween (15 Oct - 5 Nov) and New Year (15 Dec - 10 Jan). An event card sits
@@ -126,7 +126,7 @@ The game runs without a permanently running server: the page is on GitHub Pages
 
 `worker/` is a Cloudflare Worker (free plan) with a D1 database. The game posts Telegram's `initData`
 with every request; the worker checks its signature with the bot token, so a result is always saved
-for the real Telegram account. Scores are capped (500 waves, 90 stars); a determined player could
+for the real Telegram account. Scores are capped (500 waves, 300 stars); a determined player could
 still send a fake result from their own account, which is the usual limit of a client-side game.
 
 Setup (Node 18+; with nvm: `nvm use 22`):
