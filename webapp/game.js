@@ -641,7 +641,7 @@ const I18N = {
     'hero.pixel.name': 'Піксель', 'hero.pixel.skill': 'пролітає крізь ворогів наскрізь', 'hero.pixel.combo': 'Лазерний погляд',
     'hero.bandit.name': 'Бандит', 'hero.bandit.skill': 'кожен удар відкладає атаку ворога на хід', 'hero.bandit.combo': 'Нічний перекус',
     'hero.nugget.name': 'Наґет', 'hero.nugget.skill': 'кожен удар вибухає по сусідніх ворогах', 'hero.nugget.combo': 'Скарб зі смітника',
-    'room.kitchen': 'Кухня', 'room.living': 'Вітальня', 'room.bedroom': 'Спальня', 'room.bath': 'Ванна', 'room.balcony': 'Балкон', 'room.attic': 'Горище', 'room.garage': 'Гараж', 'room.basement': 'Підвал', 'room.roof': 'Дах', 'tip.roof': 'Дах: магніти притягують героїв, закручуй постріли навколо них', 'tip.storm': 'Дрон б\'є блискавкою, що перескакує на героя поруч: тримайтеся нарізно', 'room.garden': 'Сад', 'tip.garden': 'Сад: кроти через хід ховаються під землю, бий їх, коли вони нагорі', 'tip.mow': 'Газонокосарка мчить до героя, якого вдарила: не збивайтеся в купу перед нею', underground: 'Під землею!', 'tip.basement': 'Підвал: усі вороги разом, і вони міцніші, ніж будь-коли', 'tip.web': 'Павук обплутує героїв: зачепи обплутаного друга пострілом, щоб звільнити', webStuck: 'У павутині!', webFreed: 'Звільнили!',
+    'room.kitchen': 'Кухня', 'room.living': 'Вітальня', 'room.bedroom': 'Спальня', 'room.bath': 'Ванна', 'room.balcony': 'Балкон', 'room.attic': 'Горище', 'room.garage': 'Гараж', 'room.basement': 'Підвал', 'room.roof': 'Дах', 'tip.roof': 'Дах: магніти притягують героїв, закручуй постріли навколо них', 'tip.storm': 'Дрон б\'є блискавкою, що перескакує на героя поруч: тримайтеся нарізно', privacy: 'Конфіденційність', terms: 'Умови використання', 'room.garden': 'Сад', 'tip.garden': 'Сад: кроти через хід ховаються під землю, бий їх, коли вони нагорі', 'tip.mow': 'Газонокосарка мчить до героя, якого вдарила: не збивайтеся в купу перед нею', underground: 'Під землею!', 'tip.basement': 'Підвал: усі вороги разом, і вони міцніші, ніж будь-коли', 'tip.web': 'Павук обплутує героїв: зачепи обплутаного друга пострілом, щоб звільнити', webStuck: 'У павутині!', webFreed: 'Звільнили!',
     'tip.shield': 'Щитоботи захищають сусідів: спершу збий щитобота', 'tip.split': 'Двійнята після знищення розпадаються на двох малюків', shielded: 'щит', 'cry.shield': 'Дзинь!', 'cry.split': 'Бульк!', 'cry.mini': 'Пі-пі!',
     'tip.0': 'Потягни від героя назад і відпусти', 'tip.1': 'Перетни стару нитку, і вузол вибухне', 'tip.2': 'Коти женуться за червоною лазерною точкою',
     'tip.3': 'Бий у жовтий сенсор: потрійна шкода', 'tip.4': 'Швабри в броні: Піксель і Наґет б\'ють їх удвічі сильніше',
@@ -746,7 +746,7 @@ const I18N = {
     'hero.pixel.name': 'Pixel', 'hero.pixel.skill': 'flies straight through enemies', 'hero.pixel.combo': 'Laser Stare',
     'hero.bandit.name': 'Bandit', 'hero.bandit.skill': 'each hit delays the enemy attack by a turn', 'hero.bandit.combo': 'Midnight Snack',
     'hero.nugget.name': 'Nugget', 'hero.nugget.skill': 'each hit blasts nearby enemies', 'hero.nugget.combo': 'Trash Treasure',
-    'room.kitchen': 'Kitchen', 'room.living': 'Living room', 'room.bedroom': 'Bedroom', 'room.bath': 'Bathroom', 'room.balcony': 'Balcony', 'room.attic': 'Attic', 'room.garage': 'Garage', 'room.basement': 'Basement', 'room.roof': 'Roof', 'tip.roof': 'Roof: magnets pull heroes in, curve your shots around them', 'tip.storm': 'The drone\'s lightning jumps to a nearby hero: keep your team spread out', 'room.garden': 'Garden', 'tip.garden': 'Garden: moles dig underground every other turn, hit them while they are up', 'tip.mow': 'The mower charges at the hero it hits: don\'t bunch up in front of it', underground: 'Underground!', 'tip.basement': 'Basement: every enemy type at once, and tougher than ever', 'tip.web': 'The spider webs heroes: hit a webbed friend with a shot to free them', webStuck: 'Stuck in a web!', webFreed: 'Freed!',
+    'room.kitchen': 'Kitchen', 'room.living': 'Living room', 'room.bedroom': 'Bedroom', 'room.bath': 'Bathroom', 'room.balcony': 'Balcony', 'room.attic': 'Attic', 'room.garage': 'Garage', 'room.basement': 'Basement', 'room.roof': 'Roof', 'tip.roof': 'Roof: magnets pull heroes in, curve your shots around them', 'tip.storm': 'The drone\'s lightning jumps to a nearby hero: keep your team spread out', privacy: 'Privacy Policy', terms: 'Terms of Use', 'room.garden': 'Garden', 'tip.garden': 'Garden: moles dig underground every other turn, hit them while they are up', 'tip.mow': 'The mower charges at the hero it hits: don\'t bunch up in front of it', underground: 'Underground!', 'tip.basement': 'Basement: every enemy type at once, and tougher than ever', 'tip.web': 'The spider webs heroes: hit a webbed friend with a shot to free them', webStuck: 'Stuck in a web!', webFreed: 'Freed!',
     'tip.shield': 'Shield bots protect their neighbors: take the shield bot out first', 'tip.split': 'Twins split into two little ones when destroyed', shielded: 'shield', 'cry.shield': 'Clang!', 'cry.split': 'Blorp!', 'cry.mini': 'Meep!',
     'tip.0': 'Pull back from a hero and let go', 'tip.1': 'Cross an old thread and the knot explodes', 'tip.2': 'Cats chase the red laser dot',
     'tip.3': 'Hit the yellow sensor: triple damage', 'tip.4': 'Mops are armored: Pixel and Nugget hit them twice as hard',
@@ -851,7 +851,7 @@ const I18N = {
     'hero.pixel.name': 'Pixel', 'hero.pixel.skill': 'przelatuje przez wrogów na wylot', 'hero.pixel.combo': 'Laserowe spojrzenie',
     'hero.bandit.name': 'Bandyta', 'hero.bandit.skill': 'każde trafienie opóźnia atak wroga o turę', 'hero.bandit.combo': 'Nocna przekąska',
     'hero.nugget.name': 'Nugget', 'hero.nugget.skill': 'każde trafienie wybucha na pobliskich wrogach', 'hero.nugget.combo': 'Skarb ze śmietnika',
-    'room.kitchen': 'Kuchnia', 'room.living': 'Salon', 'room.bedroom': 'Sypialnia', 'room.bath': 'Łazienka', 'room.balcony': 'Balkon', 'room.attic': 'Strych', 'room.garage': 'Garaż', 'room.basement': 'Piwnica', 'room.roof': 'Dach', 'tip.roof': 'Dach: magnesy przyciągają bohaterów, zakręcaj strzały wokół nich', 'tip.storm': 'Piorun drona przeskakuje na bohatera obok: trzymajcie się osobno', 'room.garden': 'Ogród', 'tip.garden': 'Ogród: krety co drugą turę chowają się pod ziemię, bij je, gdy są na górze', 'tip.mow': 'Kosiarka szarżuje na trafionego bohatera: nie stójcie w kupie przed nią', underground: 'Pod ziemią!', 'tip.basement': 'Piwnica: wszystkie rodzaje wrogów naraz, twardsze niż kiedykolwiek', 'tip.web': 'Pająk oplata bohaterów: traf oplątanego przyjaciela strzałem, by go uwolnić', webStuck: 'W pajęczynie!', webFreed: 'Uwolniony!',
+    'room.kitchen': 'Kuchnia', 'room.living': 'Salon', 'room.bedroom': 'Sypialnia', 'room.bath': 'Łazienka', 'room.balcony': 'Balkon', 'room.attic': 'Strych', 'room.garage': 'Garaż', 'room.basement': 'Piwnica', 'room.roof': 'Dach', 'tip.roof': 'Dach: magnesy przyciągają bohaterów, zakręcaj strzały wokół nich', 'tip.storm': 'Piorun drona przeskakuje na bohatera obok: trzymajcie się osobno', privacy: 'Prywatność', terms: 'Regulamin', 'room.garden': 'Ogród', 'tip.garden': 'Ogród: krety co drugą turę chowają się pod ziemię, bij je, gdy są na górze', 'tip.mow': 'Kosiarka szarżuje na trafionego bohatera: nie stójcie w kupie przed nią', underground: 'Pod ziemią!', 'tip.basement': 'Piwnica: wszystkie rodzaje wrogów naraz, twardsze niż kiedykolwiek', 'tip.web': 'Pająk oplata bohaterów: traf oplątanego przyjaciela strzałem, by go uwolnić', webStuck: 'W pajęczynie!', webFreed: 'Uwolniony!',
     'tip.shield': 'Tarczoboty chronią sąsiadów: najpierw zbij tarczobota', 'tip.split': 'Bliźniaki po zniszczeniu rozpadają się na dwa maluchy', shielded: 'tarcza', 'cry.shield': 'Brzdęk!', 'cry.split': 'Bulk!', 'cry.mini': 'Pip!',
     'tip.0': 'Pociągnij od bohatera do tyłu i puść', 'tip.1': 'Przetnij starą nitkę, a supeł wybuchnie', 'tip.2': 'Koty gonią czerwoną kropkę lasera',
     'tip.3': 'Trafiaj w żółty czujnik: potrójne obrażenia', 'tip.4': 'Mopy mają pancerz: Pixel i Nugget biją je dwa razy mocniej',
@@ -956,7 +956,7 @@ const I18N = {
     'hero.pixel.name': 'Pixel', 'hero.pixel.skill': 'fliegt glatt durch Gegner hindurch', 'hero.pixel.combo': 'Laserblick',
     'hero.bandit.name': 'Bandit', 'hero.bandit.skill': 'jeder Treffer verzögert den Gegnerangriff um einen Zug', 'hero.bandit.combo': 'Mitternachtssnack',
     'hero.nugget.name': 'Nugget', 'hero.nugget.skill': 'jeder Treffer explodiert bei nahen Gegnern', 'hero.nugget.combo': 'Mülltonnenschatz',
-    'room.kitchen': 'Küche', 'room.living': 'Wohnzimmer', 'room.bedroom': 'Schlafzimmer', 'room.bath': 'Badezimmer', 'room.balcony': 'Balkon', 'room.attic': 'Dachboden', 'room.garage': 'Garage', 'room.basement': 'Keller', 'room.roof': 'Dach', 'tip.roof': 'Dach: Magnete ziehen Helden an, lenk deine Schüsse um sie herum', 'tip.storm': 'Der Blitz der Drohne springt auf nahe Helden über: bleibt verteilt', 'room.garden': 'Garten', 'tip.garden': 'Garten: Maulwürfe graben sich jeden zweiten Zug ein, triff sie, wenn sie oben sind', 'tip.mow': 'Der Mäher prescht auf den getroffenen Helden zu: drängt euch nicht vor ihm zusammen', underground: 'Unter der Erde!', 'tip.basement': 'Keller: alle Gegnerarten auf einmal, härter als je zuvor', 'tip.web': 'Die Spinne umspinnt Helden: triff einen eingesponnenen Freund, um ihn zu befreien', webStuck: 'Im Netz!', webFreed: 'Befreit!',
+    'room.kitchen': 'Küche', 'room.living': 'Wohnzimmer', 'room.bedroom': 'Schlafzimmer', 'room.bath': 'Badezimmer', 'room.balcony': 'Balkon', 'room.attic': 'Dachboden', 'room.garage': 'Garage', 'room.basement': 'Keller', 'room.roof': 'Dach', 'tip.roof': 'Dach: Magnete ziehen Helden an, lenk deine Schüsse um sie herum', 'tip.storm': 'Der Blitz der Drohne springt auf nahe Helden über: bleibt verteilt', privacy: 'Datenschutz', terms: 'Nutzungsbedingungen', 'room.garden': 'Garten', 'tip.garden': 'Garten: Maulwürfe graben sich jeden zweiten Zug ein, triff sie, wenn sie oben sind', 'tip.mow': 'Der Mäher prescht auf den getroffenen Helden zu: drängt euch nicht vor ihm zusammen', underground: 'Unter der Erde!', 'tip.basement': 'Keller: alle Gegnerarten auf einmal, härter als je zuvor', 'tip.web': 'Die Spinne umspinnt Helden: triff einen eingesponnenen Freund, um ihn zu befreien', webStuck: 'Im Netz!', webFreed: 'Befreit!',
     'tip.shield': 'Schildbots schützen ihre Nachbarn: schalte zuerst den Schildbot aus', 'tip.split': 'Zwillinge zerfallen beim Zerstören in zwei Kleine', shielded: 'Schild', 'cry.shield': 'Kling!', 'cry.split': 'Blubb!', 'cry.mini': 'Piep!',
     'tip.0': 'Vom Helden nach hinten ziehen und loslassen', 'tip.1': 'Kreuze einen alten Faden und der Knoten explodiert', 'tip.2': 'Katzen jagen den roten Laserpunkt',
     'tip.3': 'Triff den gelben Sensor: dreifacher Schaden', 'tip.4': 'Wischmopps sind gepanzert: Pixel und Nugget treffen sie doppelt',
@@ -1061,7 +1061,7 @@ const I18N = {
     'hero.pixel.name': 'Pixel', 'hero.pixel.skill': 'atraviesa a los enemigos', 'hero.pixel.combo': 'Mirada láser',
     'hero.bandit.name': 'Bandido', 'hero.bandit.skill': 'cada golpe retrasa el ataque enemigo un turno', 'hero.bandit.combo': 'Tentempié nocturno',
     'hero.nugget.name': 'Nugget', 'hero.nugget.skill': 'cada golpe explota sobre los enemigos cercanos', 'hero.nugget.combo': 'Tesoro de la basura',
-    'room.kitchen': 'Cocina', 'room.living': 'Salón', 'room.bedroom': 'Dormitorio', 'room.bath': 'Baño', 'room.balcony': 'Balcón', 'room.attic': 'Desván', 'room.garage': 'Garaje', 'room.basement': 'Sótano', 'room.roof': 'Tejado', 'tip.roof': 'Tejado: los imanes atraen a los héroes, curva tus disparos a su alrededor', 'tip.storm': 'El rayo del dron salta al héroe más cercano: mantened el equipo separado', 'room.garden': 'Jardín', 'tip.garden': 'Jardín: los topos se esconden bajo tierra cada dos turnos, golpéalos cuando estén arriba', 'tip.mow': 'El cortacésped embiste al héroe que golpea: no os amontonéis delante', underground: '¡Bajo tierra!', 'tip.basement': 'Sótano: todos los enemigos a la vez, más duros que nunca', 'tip.web': 'La araña atrapa a los héroes: golpea a un amigo atrapado para liberarlo', webStuck: '¡En la telaraña!', webFreed: '¡Liberado!',
+    'room.kitchen': 'Cocina', 'room.living': 'Salón', 'room.bedroom': 'Dormitorio', 'room.bath': 'Baño', 'room.balcony': 'Balcón', 'room.attic': 'Desván', 'room.garage': 'Garaje', 'room.basement': 'Sótano', 'room.roof': 'Tejado', 'tip.roof': 'Tejado: los imanes atraen a los héroes, curva tus disparos a su alrededor', 'tip.storm': 'El rayo del dron salta al héroe más cercano: mantened el equipo separado', privacy: 'Privacidad', terms: 'Términos de uso', 'room.garden': 'Jardín', 'tip.garden': 'Jardín: los topos se esconden bajo tierra cada dos turnos, golpéalos cuando estén arriba', 'tip.mow': 'El cortacésped embiste al héroe que golpea: no os amontonéis delante', underground: '¡Bajo tierra!', 'tip.basement': 'Sótano: todos los enemigos a la vez, más duros que nunca', 'tip.web': 'La araña atrapa a los héroes: golpea a un amigo atrapado para liberarlo', webStuck: '¡En la telaraña!', webFreed: '¡Liberado!',
     'tip.shield': 'Los escudobots protegen a sus vecinos: elimina primero al escudobot', 'tip.split': 'Los gemelos se parten en dos pequeños al destruirlos', shielded: 'escudo', 'cry.shield': '¡Clang!', 'cry.split': '¡Blop!', 'cry.mini': '¡Pip!',
     'tip.0': 'Tira hacia atrás desde un héroe y suelta', 'tip.1': 'Cruza un hilo viejo y el nudo explotará', 'tip.2': 'Los gatos persiguen el punto láser rojo',
     'tip.3': 'Golpea el sensor amarillo: daño triple', 'tip.4': 'Las fregonas tienen armadura: Pixel y Nugget les pegan el doble',
@@ -4539,6 +4539,23 @@ function drawHowto() {
     y = end + 32;
   }
   uiBtn(75, 700, W - 150, 56, tr('play'), closeHowto, true);
+  // links to the privacy policy and the terms, opened in the browser
+  ctx.font = `800 12px ${FB}`; ctx.textAlign = 'center'; ctx.fillStyle = '#8f88b5';
+  const docs = [[tr('privacy'), 'privacy.html'], [tr('terms'), 'terms.html']];
+  const ws = docs.map(([t]) => ctx.measureText(t).width), gap = 28, total = ws[0] + ws[1] + gap;
+  let lx = W / 2 - total / 2;
+  docs.forEach(([t, page], i) => {
+    const cx = lx + ws[i] / 2;
+    ctx.fillText(t, cx, 780); ctx.fillRect(lx, 788, ws[i], 1);
+    UI.push({ x: lx - 6, y: 766, w: ws[i] + 12, h: 30, cb: () => openDoc(page) });
+    lx += ws[i] + gap;
+  });
+  ctx.fillText('·', W / 2 - total / 2 + ws[0] + gap / 2, 780);
+}
+function openDoc(page) {
+  const url = new URL(page + '?lang=' + (LANG === 'uk' ? 'uk' : 'en'), location.href).href;
+  try { if (TG && TG.openLink) { TG.openLink(url); return; } } catch (e) {}
+  window.open(url, '_blank', 'noopener');
 }
 
 function drawNode(c, x, y, r, col, open) {
@@ -5954,11 +5971,15 @@ loadDaily();
 // #dev: timer-driven loop (keeps running in hidden tabs) plus a state hook for testing
 const DEV = location.hash === '#dev';
 const nextFrame = DEV ? cb => setTimeout(() => cb(performance.now()), 16) : requestAnimationFrame;
-if (DEV) window.__pawsling = { get G() { return G; }, set G(v) { G = v; }, get SCREEN() { return SCREEN; }, get DAILY() { return DAILY; }, startLevel, startEndless, launch, PROG: () => PROG, MAP, BOARD, setScreen, secondWind, setInv, get INV() { return INV; }, prepLevel, setupWave, step: dt => update(dt), LEVELS, CHAPTERS, ENEMY, bg, BGS };
+if (DEV) window.__pawsling = { get G() { return G; }, set G(v) { G = v; }, get SCREEN() { return SCREEN; }, get DAILY() { return DAILY; }, startLevel, startEndless, launch, PROG: () => PROG, MAP, BOARD, setScreen, secondWind, setInv, get INV() { return INV; }, prepLevel, setupWave, step: dt => update(dt), LEVELS, CHAPTERS, ENEMY, bg, BGS,
+  // store art: pause the loop, size the canvas, then draw with the game's own painters
+  draw, art: { get ctx() { return ctx; }, cv, drawHero, drawBoss, drawEnemy, chIcon, star, heart, rr, glowAt, drawHat, hexRgb, HEROES, BOSS_COL, FD, FB, W, H, TOP, BOT },
+  size(w, h, k) { cv.width = w; cv.height = h; scale = k; dpr = 1; } };
 let last = performance.now();
 // Slow devices: if frames keep taking longer than ~45 ms, drop the animated room lights.
 let LOWFX = false, slowMs = 0, failed = false, failN = 0;
 function frame(now) {
+  if (DEV && window.__pause) { last = now; nextFrame(frame); return; }
   const raw = now - last, dt = Math.min(.033, raw / 1000);
   last = now; T += dt;
   if (!LOWFX && !DEV) { slowMs = raw > 45 ? slowMs + raw : Math.max(0, slowMs - raw); if (slowMs > 1500) LOWFX = true; }
