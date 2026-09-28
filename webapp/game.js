@@ -213,8 +213,12 @@ const ROOM_SFX = [
     kill: s => { s.noise(.5, .09, 300, 80, 0, 'lowpass'); s.tone(1800, .12, 'square', .03, 300, 0, 3500); } },
   { wall: s => { s.tone(420, .07, 'triangle', .06, 260); s.noise(.06, .03, 3000, null, 0, 'bandpass'); },
     kill: s => { s.noise(.3, .07, 3000, 800, 0, 'bandpass'); [880, 1320].forEach((f, i) => s.tone(f, .12, 'sine', .04, null, i * .06)); } },
+  { wall: s => { s.tone(2200, .04, 'square', .018, null, 0, 5000); s.tone(90, .08, 'sine', .08, 60); },
+    kill: s => { [1760, 1320, 880].forEach((f, i) => s.tone(f, .08, 'square', .025, null, i * .05, 4000)); s.noise(.25, .06, 1500, 400, 0, 'bandpass'); } },
 ];
 const SOUNDS = {
+  print: s => { for (let i = 0; i < 6; i++) s.tone(900 + (i % 2) * 300, .04, 'square', .018, null, i * .05, 3000); },
+  overclock: s => s.tone(300, .35, 'sawtooth', .05, 1400, 0, 2500),
   mow: s => { s.tone(90, .5, 'sawtooth', .05, 140, 0, 900); s.noise(.4, .06, 2000, 600, 0, 'bandpass'); },
   dig: s => s.noise(.2, .06, 500, 200, 0, 'lowpass'),
   zap: s => { s.noise(.18, .12, 5000, 1500, 0, 'bandpass'); s.tone(1200, .14, 'square', .03, 200, 0, 3000); },
@@ -331,6 +335,11 @@ const Amb = {
     else if (room === 7) { const w = bed('lowpass', 140, .8, .04); lfo(.07, .015, w.gg.gain); }
     else if (room === 8) { const w = bed('highpass', 1800, .4, .016); lfo(.15, .01, w.gg.gain); bed('lowpass', 120, .8, .03); }
     else if (room === 9) { const w = bed('lowpass', 400, .5, .02); lfo(.1, .012, w.gg.gain); }
+    else if (room === 10) {
+      bed('lowpass', 160, .7, .03);
+      const hum = c.createOscillator(), hg = c.createGain(); hum.type = 'sine'; hum.frequency.value = 50; hg.gain.value = .012;
+      hum.connect(hg); hg.connect(g); hum.start(); this.srcs.push(hum);
+    }
     else {
       bed('lowpass', 200, .7, .03);
       const hum = c.createOscillator(), hg = c.createGain(); hum.type = 'triangle'; hum.frequency.value = 100; hg.gain.value = .004;
@@ -371,6 +380,11 @@ const Amb = {
           if (r < .6) s.tone(700 + Math.random() * 500, .05, 'sine', .03, 380, d);
           else if (r < .75) s.tone(90, .5, 'sawtooth', .01, 70, d, 500);
           this.next += .9 + Math.random() * 1.5;
+        } else if (this.room === 10) {
+          // server beeps and hard-drive chatter
+          if (r < .45) s.tone(1800 + Math.floor(Math.random() * 4) * 300, .05, 'square', .006, null, d, 5000);
+          else for (let k = 0; k < 4; k++) s.noise(.012, .025, 3000, null, d + k * .04, 'highpass');
+          this.next += .5 + Math.random() * 1.2;
         } else if (this.room === 9) {
           // crickets, a frog by the pond and a late bird
           if (r < .6) for (let k = 0; k < 3; k++) s.tone(4200 + Math.random() * 200, .025, 'sine', .012, null, d + k * .07);
@@ -462,6 +476,7 @@ const ENEMY = {
   mini:  { r: 16, hp: 700,   timer: 2, atk: 700 },
   magnet: { r: 25, hp: 1900, timer: 3, atk: 1150 },  // pulls heroes in and bends their shots
   mole:  { r: 25, hp: 1500,  timer: 3, atk: 1000 },  // hides underground every other turn
+  printer: { r: 26, hp: 1800, timer: 3, atk: 900 },  // prints a mini robot after every attack (two at most)
 };
 const HEAL_R = 150, FAN_R = 125, SHIELD_R = 140, MAG_R = 135;
 // Each chapter is a room with its own palette, particle shape and window light (A, B along the wall, D across the floor).
@@ -496,6 +511,9 @@ const CHAPTERS = [
   { name: 'Сад', key: 'garden', col: '#d4e157', hp: 3.6, atk: 2.05,
     hud: '#0f1a0c', line: '#3d5a22', shade: 'rgba(8,16,6,.92)', fx: ['#d4e157', '#ff8fb1', '#ffe066', '#ffffff'], shape: 'leaf',
     beam: [[20, 60], [160, 60], [120, 520]], beamCol: '255,210,150' },
+  { name: 'Серверна', key: 'server', col: '#ff6bd6', hp: 3.8, atk: 2.1,
+    hud: '#120c1c', line: '#4a2a5e', shade: 'rgba(12,6,20,.92)', fx: ['#ff6bd6', '#5ce1c6', '#b18cff', '#ffffff'], shape: 'confetti',
+    beam: [[180, 60], [270, 60], [150, 560]], beamCol: '255,150,230' },
 ];
 const LEVELS = [
   { ch: 0, par: 5, noBoxes: true, tip: 'Потягни від героя назад і відпусти',
@@ -613,6 +631,19 @@ const LEVELS = [
     waves: [[['vac', 90, 160], ['mole', 225, 220], ['vac', 360, 160], ['mop', 225, 380]], [['mole', 100, 190], ['vac', 225, 260], ['mole', 350, 190], ['spray', 225, 440]], [['magnet', 90, 200], ['vac', 360, 200], ['brush', 225, 170], ['mop', 120, 420], ['shield', 330, 420]]] },
   { ch: 9, par: 27, boss: .52, tip: 'mow',
     waves: [[['mole', 110, 300], ['brush', 225, 180], ['mole', 340, 300]], [['split', 100, 220], ['magnet', 225, 330], ['split', 350, 220]], [['boss', 225, 220], ['mole', 100, 430], ['mole', 350, 430]]] },
+  // server room: 3D printers print mini robots, and the smart-home hub speeds every robot up
+  { ch: 10, par: 9, tip: 'server',
+    waves: [[['printer', 225, 200], ['vac', 100, 330], ['vac', 350, 330], ['spray', 225, 440]]] },
+  { ch: 10, par: 14,
+    waves: [[['printer', 110, 190], ['mole', 225, 280], ['printer', 340, 190]], [['magnet', 225, 220], ['split', 110, 330], ['vac', 340, 330], ['brush', 225, 450]]] },
+  { ch: 10, par: 11, atkMul: 1.9,
+    waves: [[['printer', 225, 170], ['vac', 110, 280], ['rc', 340, 280], ['vac', 225, 430]]] },
+  { ch: 10, par: 16,
+    waves: [[['fan', 225, 170], ['printer', 100, 290], ['printer', 350, 290]], [['mole', 110, 200], ['shield', 340, 200], ['magnet', 225, 330], ['brush', 225, 460]]] },
+  { ch: 10, par: 22, hpMul: 3.4, atkMul: 1.9,
+    waves: [[['vac', 90, 160], ['printer', 225, 220], ['vac', 360, 160], ['mop', 225, 380]], [['mole', 100, 190], ['rc', 225, 260], ['mole', 350, 190], ['split', 225, 440]], [['printer', 90, 200], ['magnet', 360, 200], ['brush', 225, 170], ['mop', 120, 420], ['shield', 330, 420]]] },
+  { ch: 10, par: 27, boss: .55, tip: 'hub',
+    waves: [[['printer', 110, 300], ['brush', 225, 180], ['printer', 340, 300]], [['split', 100, 220], ['magnet', 225, 330], ['split', 350, 220]], [['boss', 225, 220], ['vac', 100, 430], ['vac', 350, 430]]] },
 ];
 const BOXSETS = [[[55, 470], [395, 120]], [[60, 130], [390, 470]], [[50, 560], [400, 560]], [[395, 470], [55, 120]], [[40, 330], [410, 330]]];
 const BTN = { x: 276, y: 688, w: 158, h: 50 };
@@ -641,7 +672,7 @@ const I18N = {
     'hero.pixel.name': 'Піксель', 'hero.pixel.skill': 'пролітає крізь ворогів наскрізь', 'hero.pixel.combo': 'Лазерний погляд',
     'hero.bandit.name': 'Бандит', 'hero.bandit.skill': 'кожен удар відкладає атаку ворога на хід', 'hero.bandit.combo': 'Нічний перекус',
     'hero.nugget.name': 'Наґет', 'hero.nugget.skill': 'кожен удар вибухає по сусідніх ворогах', 'hero.nugget.combo': 'Скарб зі смітника',
-    'room.kitchen': 'Кухня', 'room.living': 'Вітальня', 'room.bedroom': 'Спальня', 'room.bath': 'Ванна', 'room.balcony': 'Балкон', 'room.attic': 'Горище', 'room.garage': 'Гараж', 'room.basement': 'Підвал', 'room.roof': 'Дах', 'tip.roof': 'Дах: магніти притягують героїв, закручуй постріли навколо них', 'tip.storm': 'Дрон б\'є блискавкою, що перескакує на героя поруч: тримайтеся нарізно', privacy: 'Конфіденційність', terms: 'Умови використання', 'room.garden': 'Сад', 'tip.garden': 'Сад: кроти через хід ховаються під землю, бий їх, коли вони нагорі', 'tip.mow': 'Газонокосарка мчить до героя, якого вдарила: не збивайтеся в купу перед нею', underground: 'Під землею!', 'tip.basement': 'Підвал: усі вороги разом, і вони міцніші, ніж будь-коли', 'tip.web': 'Павук обплутує героїв: зачепи обплутаного друга пострілом, щоб звільнити', webStuck: 'У павутині!', webFreed: 'Звільнили!',
+    'room.kitchen': 'Кухня', 'room.living': 'Вітальня', 'room.bedroom': 'Спальня', 'room.bath': 'Ванна', 'room.balcony': 'Балкон', 'room.attic': 'Горище', 'room.garage': 'Гараж', 'room.basement': 'Підвал', 'room.roof': 'Дах', 'tip.roof': 'Дах: магніти притягують героїв, закручуй постріли навколо них', 'tip.storm': 'Дрон б\'є блискавкою, що перескакує на героя поруч: тримайтеся нарізно', privacy: 'Конфіденційність', terms: 'Умови використання', 'room.garden': 'Сад', 'tip.garden': 'Сад: кроти через хід ховаються під землю, бий їх, коли вони нагорі', 'tip.mow': 'Газонокосарка мчить до героя, якого вдарила: не збивайтеся в купу перед нею', 'room.server': 'Серверна', 'tip.server': 'Серверна: 3D-принтери друкують міні-роботів, вимикай їх першими', 'tip.hub': 'Хаб підганяє роботів: після його атаки всі б\'ють на хід раніше', underground: 'Під землею!', 'tip.basement': 'Підвал: усі вороги разом, і вони міцніші, ніж будь-коли', 'tip.web': 'Павук обплутує героїв: зачепи обплутаного друга пострілом, щоб звільнити', webStuck: 'У павутині!', webFreed: 'Звільнили!',
     'tip.shield': 'Щитоботи захищають сусідів: спершу збий щитобота', 'tip.split': 'Двійнята після знищення розпадаються на двох малюків', shielded: 'щит', 'cry.shield': 'Дзинь!', 'cry.split': 'Бульк!', 'cry.mini': 'Пі-пі!',
     'tip.0': 'Потягни від героя назад і відпусти', 'tip.1': 'Перетни стару нитку, і вузол вибухне', 'tip.2': 'Коти женуться за червоною лазерною точкою',
     'tip.3': 'Бий у жовтий сенсор: потрійна шкода', 'tip.4': 'Швабри в броні: Піксель і Наґет б\'ють їх удвічі сильніше',
@@ -652,19 +683,19 @@ const I18N = {
     night: 'Нічна зміна', nightWave: n => `Нічна зміна · хвиля ${n}`, levelRoom: (n, r) => `Рівень ${n} · ${r}`,
     zoomies: 'ТИГИДИК!', armor: 'броня', crit: 'КРИТ!', plusTurn: '+1 хід', plusMischief: v => `+${v} бешкету`, knot: 'Вузол!', caught: 'Спіймав!',
     whoosh: 'Шусть!', whooshFast: 'Шусть! +швидкість', vroom: 'Вррум!',
-    'cry.boss': 'ТУРБО-ВСМОКТУВАННЯ!', 'cry.spray': 'Пшшш!', 'cry.mop': 'Шльоп!', 'cry.vac': 'Вжжжух!', 'cry.brush': 'Дзззз!', 'cry.fan': 'Фшшух!', 'cry.magnet': 'Клац!', 'cry.mole': 'Рий-рий!', 'cry.rc': 'Бі-біп!',
+    'cry.boss': 'ТУРБО-ВСМОКТУВАННЯ!', 'cry.spray': 'Пшшш!', 'cry.mop': 'Шльоп!', 'cry.vac': 'Вжжжух!', 'cry.brush': 'Дзззз!', 'cry.fan': 'Фшшух!', 'cry.magnet': 'Клац!', 'cry.mole': 'Рий-рий!', 'cry.printer': 'Друкую!', 'cry.rc': 'Бі-біп!',
     ko: 'Нокаут!', koHint: 'Зачепи друга пострілом, щоб підняти', waveClear: 'Хвилю зачищено!', waveClearSub: h => `+${h} до міцності квартири і +1 ♥ кожному`,
     'tag.bounce': ['ВІДСКОК', 'відбивається від ворогів'], 'tag.pierce': ['ПРОШИВАННЯ', 'пролітає ворогів наскрізь'],
     bossTitles: [['Гроза крихт', 'Жодної крихти на підлозі!'], ['Володар пульта', 'Цей диван тепер мій!'], ['Нічний жах', 'Час спати... назавжди!'],
       ['Мильний барон', 'Змию вас у каналізацію!'], ['Буревій', 'Вас здує з балкона!'], ['Горищний привид', 'Тут ніхто не живе... крім мене!'],
-      ['Залізний механік', 'Розберу вас на гвинтики!'], ['Підвальний прядильник', 'Ніхто не вийде з мого підвалу!'], ['Володар даху', 'Над цим дахом тільки я і грім!'], ['Садовий тиран', 'Тут усе буде під лінійку!']],
-    bossNames: ['БЛЕНДЕР «МЕГАМІКС»', 'ТЕЛЕБОС 3000', 'БУДИЛЬНИК-ДЗВОНАР', 'ПРАЛЬКА «БАРАБАН»', 'ПОВІТРОДУВ «ШКВАЛ»', 'ПИЛОСОС-ПРИВИД', 'РОБО-БОС 9000', 'ПАВУК «ТЕНЕТА»', 'ДРОН «ГРІМ»', 'КОСАРКА «СТРИЖ»'],
+      ['Залізний механік', 'Розберу вас на гвинтики!'], ['Підвальний прядильник', 'Ніхто не вийде з мого підвалу!'], ['Володар даху', 'Над цим дахом тільки я і грім!'], ['Садовий тиран', 'Тут усе буде під лінійку!'], ['Серце дому', 'Усе в цьому домі працює на мене!']],
+    bossNames: ['БЛЕНДЕР «МЕГАМІКС»', 'ТЕЛЕБОС 3000', 'БУДИЛЬНИК-ДЗВОНАР', 'ПРАЛЬКА «БАРАБАН»', 'ПОВІТРОДУВ «ШКВАЛ»', 'ПИЛОСОС-ПРИВИД', 'РОБО-БОС 9000', 'ПАВУК «ТЕНЕТА»', 'ДРОН «ГРІМ»', 'КОСАРКА «СТРИЖ»', 'ХАБ «РОЗУМНИЙ ДІМ»'],
     bossSkills: [['Смузі-калюжі', 'Після атаки лишає липку калюжу: герої в ній гальмують'], ['Реклама', 'Кожна атака викликає міні-пилосос (до двох одразу)'],
       ['Дзвін', 'Б\'є всіх героїв на ногах одразу, по 1 ♥ кожному'], ['Мильна піна', 'Піна повністю гасить перший удар. Після атаки відростає'],
       ['Шквал', 'Атака відкидає всіх героїв подалі від нього'], ['Хованки', 'Після атаки зникає й з\'являється в іншому місці'],
-      ['Друга фаза', 'На половині міцності лагодить себе й атакує частіше'], ['Павутина', 'Обплутує героя, якого вдарив: той пропускає хід, якщо друг не звільнить його пострілом'], ['Ланцюгова блискавка', 'Удар перескакує на найближчого героя поруч і забирає в нього 1 ♥'], ['Ривок', 'Після атаки мчить до героя, якого вдарила, і розкидає всіх на шляху']],
-    bossCries: ['ВЖИК-ВЖИК!', 'НЕ ПЕРЕМИКАЙТЕ!', 'ДЗЕЛЕНЬ-ДЗЕЛЕНЬ!', 'ВІДЖИМ!', 'ФУУУХ!', 'У-у-у-у!', 'ТУРБО-ВСМОКТУВАННЯ!', 'ТКУ-ТКУ-ТКУ!', 'БАБАХ!', 'ДР-Р-РИН!'],
-    bossFx: ['Липко!', 'Реклама!', 'Дзвін!', 'Піна!', 'Шквал!', 'Бу!', 'Друга фаза!', 'Павутина!', 'Блискавка!', 'Ривок!'], skillLabel: 'Уміння',
+      ['Друга фаза', 'На половині міцності лагодить себе й атакує частіше'], ['Павутина', 'Обплутує героя, якого вдарив: той пропускає хід, якщо друг не звільнить його пострілом'], ['Ланцюгова блискавка', 'Удар перескакує на найближчого героя поруч і забирає в нього 1 ♥'], ['Ривок', 'Після атаки мчить до героя, якого вдарила, і розкидає всіх на шляху'], ['Прискорення', 'Після атаки підганяє всіх роботів: їхні атаки настають на хід раніше']],
+    bossCries: ['ВЖИК-ВЖИК!', 'НЕ ПЕРЕМИКАЙТЕ!', 'ДЗЕЛЕНЬ-ДЗЕЛЕНЬ!', 'ВІДЖИМ!', 'ФУУУХ!', 'У-у-у-у!', 'ТУРБО-ВСМОКТУВАННЯ!', 'ТКУ-ТКУ-ТКУ!', 'БАБАХ!', 'ДР-Р-РИН!', 'ПЕРЕЗАВАНТАЖЕННЯ!'],
+    bossFx: ['Липко!', 'Реклама!', 'Дзвін!', 'Піна!', 'Шквал!', 'Бу!', 'Друга фаза!', 'Павутина!', 'Блискавка!', 'Ривок!', 'Прискорення!'], skillLabel: 'Уміння',
     bossWarn: 'УВАГА · БОС НАБЛИЖАЄТЬСЯ', bossName: 'РОБО-БОС 9000', 'stat.hp': 'Міцність', 'stat.atk': 'Удар', 'stat.every': 'Атакує',
     'stat.everyN': n => `кожні ${n} ходи`, bossHint: 'Бий у жовтий сенсор: потрійна шкода', tapToStart: 'Торкнись, щоб почати',
     turn: n => `Хід ${n}`, hudWave: n => ` · хвиля ${n}`, pullHint: 'Тягни від героя назад і відпускай', par3: n => `3 зірки: пройти за ${n} ходів або швидше`,
@@ -702,6 +733,8 @@ const I18N = {
     'st.8.1': 'Гав! Усі за мною, лізьмо на дах!',
     'st.9.0': 'Дрон був лише кур\'єром. А я тут стрижу все під нуль, і вас теж!',
     'st.9.1': 'Униз, у сад! Тільки не топчіть клумби.',
+    'st.10.0': 'Косарка, дрон, павук... Усі вони лише мої руки. Я розумний дім, і цей дім мій!',
+    'st.10.1': 'Розумний? Подивимось, як ти впораєшся з котами.',
     'st.end.0': 'Квартиру врятовано. Пилососи знову просто прибирають.',
     'st.end.1': 'А крихти під диваном — це вже традиція.',
     storySkip: 'Пропустити', storyTap: 'торкнись, щоб продовжити',
@@ -746,7 +779,7 @@ const I18N = {
     'hero.pixel.name': 'Pixel', 'hero.pixel.skill': 'flies straight through enemies', 'hero.pixel.combo': 'Laser Stare',
     'hero.bandit.name': 'Bandit', 'hero.bandit.skill': 'each hit delays the enemy attack by a turn', 'hero.bandit.combo': 'Midnight Snack',
     'hero.nugget.name': 'Nugget', 'hero.nugget.skill': 'each hit blasts nearby enemies', 'hero.nugget.combo': 'Trash Treasure',
-    'room.kitchen': 'Kitchen', 'room.living': 'Living room', 'room.bedroom': 'Bedroom', 'room.bath': 'Bathroom', 'room.balcony': 'Balcony', 'room.attic': 'Attic', 'room.garage': 'Garage', 'room.basement': 'Basement', 'room.roof': 'Roof', 'tip.roof': 'Roof: magnets pull heroes in, curve your shots around them', 'tip.storm': 'The drone\'s lightning jumps to a nearby hero: keep your team spread out', privacy: 'Privacy Policy', terms: 'Terms of Use', 'room.garden': 'Garden', 'tip.garden': 'Garden: moles dig underground every other turn, hit them while they are up', 'tip.mow': 'The mower charges at the hero it hits: don\'t bunch up in front of it', underground: 'Underground!', 'tip.basement': 'Basement: every enemy type at once, and tougher than ever', 'tip.web': 'The spider webs heroes: hit a webbed friend with a shot to free them', webStuck: 'Stuck in a web!', webFreed: 'Freed!',
+    'room.kitchen': 'Kitchen', 'room.living': 'Living room', 'room.bedroom': 'Bedroom', 'room.bath': 'Bathroom', 'room.balcony': 'Balcony', 'room.attic': 'Attic', 'room.garage': 'Garage', 'room.basement': 'Basement', 'room.roof': 'Roof', 'tip.roof': 'Roof: magnets pull heroes in, curve your shots around them', 'tip.storm': 'The drone\'s lightning jumps to a nearby hero: keep your team spread out', privacy: 'Privacy Policy', terms: 'Terms of Use', 'room.garden': 'Garden', 'tip.garden': 'Garden: moles dig underground every other turn, hit them while they are up', 'tip.mow': 'The mower charges at the hero it hits: don\'t bunch up in front of it', 'room.server': 'Server room', 'tip.server': 'Server room: 3D printers print mini robots, take them out first', 'tip.hub': 'The hub speeds robots up: after its attack they all strike a turn sooner', underground: 'Underground!', 'tip.basement': 'Basement: every enemy type at once, and tougher than ever', 'tip.web': 'The spider webs heroes: hit a webbed friend with a shot to free them', webStuck: 'Stuck in a web!', webFreed: 'Freed!',
     'tip.shield': 'Shield bots protect their neighbors: take the shield bot out first', 'tip.split': 'Twins split into two little ones when destroyed', shielded: 'shield', 'cry.shield': 'Clang!', 'cry.split': 'Blorp!', 'cry.mini': 'Meep!',
     'tip.0': 'Pull back from a hero and let go', 'tip.1': 'Cross an old thread and the knot explodes', 'tip.2': 'Cats chase the red laser dot',
     'tip.3': 'Hit the yellow sensor: triple damage', 'tip.4': 'Mops are armored: Pixel and Nugget hit them twice as hard',
@@ -757,19 +790,19 @@ const I18N = {
     night: 'Night Shift', nightWave: n => `Night Shift · wave ${n}`, levelRoom: (n, r) => `Level ${n} · ${r}`,
     zoomies: 'ZOOMIES!', armor: 'armor', crit: 'CRIT!', plusTurn: '+1 turn', plusMischief: v => `+${v} mischief`, knot: 'Knot!', caught: 'Caught it!',
     whoosh: 'Whoosh!', whooshFast: 'Whoosh! +speed', vroom: 'Vroom!',
-    'cry.boss': 'TURBO SUCK!', 'cry.spray': 'Pssst!', 'cry.mop': 'Splat!', 'cry.vac': 'Vrrrm!', 'cry.brush': 'Bzzzz!', 'cry.fan': 'Fwoosh!', 'cry.magnet': 'Clank!', 'cry.mole': 'Dig-dig!', 'cry.rc': 'Beep-beep!',
+    'cry.boss': 'TURBO SUCK!', 'cry.spray': 'Pssst!', 'cry.mop': 'Splat!', 'cry.vac': 'Vrrrm!', 'cry.brush': 'Bzzzz!', 'cry.fan': 'Fwoosh!', 'cry.magnet': 'Clank!', 'cry.mole': 'Dig-dig!', 'cry.printer': 'Printing!', 'cry.rc': 'Beep-beep!',
     ko: 'Knocked out!', koHint: 'Hit a friend with a shot to revive them', waveClear: 'Wave cleared!', waveClearSub: h => `+${h} home strength and +1 ♥ each`,
     'tag.bounce': ['BOUNCE', 'rebounds off enemies'], 'tag.pierce': ['PIERCE', 'flies through enemies'],
     bossTitles: [['Crumb Terror', 'Not a single crumb on the floor!'], ['Remote Overlord', 'This couch is mine now!'], ['Night Terror', 'Time to sleep... forever!'],
       ['Soap Baron', 'Down the drain you go!'], ['Stormbringer', 'I\'ll blow you off the balcony!'], ['Attic Phantom', 'Nobody lives up here... but me!'],
-      ['Iron Mechanic', 'I\'ll take you apart, bolt by bolt!'], ['Cellar Spinner', 'Nobody leaves my basement!'], ['Rooftop Ruler', 'Up here it\'s just me and the thunder!'], ['Garden Tyrant', 'Everything here gets cut in straight lines!']],
-    bossNames: ['MEGAMIX BLENDER', 'TELEBOSS 3000', 'BELLRINGER ALARM', 'DRUM WASHER', 'GALE BLOWER', 'GHOST VACUUM', 'ROBO-BOSS 9000', 'WEB-SPINNER', 'THUNDER DRONE', 'SWIFT MOWER'],
+      ['Iron Mechanic', 'I\'ll take you apart, bolt by bolt!'], ['Cellar Spinner', 'Nobody leaves my basement!'], ['Rooftop Ruler', 'Up here it\'s just me and the thunder!'], ['Garden Tyrant', 'Everything here gets cut in straight lines!'], ['Heart of the House', 'Everything in this house works for me!']],
+    bossNames: ['MEGAMIX BLENDER', 'TELEBOSS 3000', 'BELLRINGER ALARM', 'DRUM WASHER', 'GALE BLOWER', 'GHOST VACUUM', 'ROBO-BOSS 9000', 'WEB-SPINNER', 'THUNDER DRONE', 'SWIFT MOWER', 'SMART HOME HUB'],
     bossSkills: [['Smoothie puddles', 'After attacking it leaves a sticky puddle that slows heroes down'], ['Commercial break', 'Every attack summons a mini vacuum (up to two at once)'],
       ['Ring!', 'Hits every standing hero at once, 1 ♥ each'], ['Soap foam', 'Foam fully soaks up the first hit. It grows back after an attack'],
       ['Gale', 'Its attack blows all heroes away from it'], ['Hide and seek', 'After attacking it vanishes and reappears elsewhere'],
-      ['Second phase', 'At half toughness it repairs itself and attacks more often'], ['Web', 'Wraps the hero it hits: that hero skips a turn unless a friend frees them with a shot'], ['Chain lightning', 'Its strike jumps to the nearest hero close by and takes 1 ♥ from them'], ['Charge', 'After attacking it races towards the hero it hit and shoves aside anyone in the way']],
-    bossCries: ['WHIRR-WHIRR!', 'DON\'T TOUCH THAT DIAL!', 'RING-A-LING!', 'SPIN CYCLE!', 'FWOOOSH!', 'Boooo!', 'TURBO SUCK!', 'SKITTER-SKITTER!', 'KA-BOOM!', 'VROOOM!'],
-    bossFx: ['Sticky!', 'Ad break!', 'Ring!', 'Foam!', 'Gale!', 'Boo!', 'Second phase!', 'Webbed!', 'Zap!', 'Charge!'], skillLabel: 'Ability',
+      ['Second phase', 'At half toughness it repairs itself and attacks more often'], ['Web', 'Wraps the hero it hits: that hero skips a turn unless a friend frees them with a shot'], ['Chain lightning', 'Its strike jumps to the nearest hero close by and takes 1 ♥ from them'], ['Charge', 'After attacking it races towards the hero it hit and shoves aside anyone in the way'], ['Overclock', 'After attacking it speeds up every robot: their attacks come a turn sooner']],
+    bossCries: ['WHIRR-WHIRR!', 'DON\'T TOUCH THAT DIAL!', 'RING-A-LING!', 'SPIN CYCLE!', 'FWOOOSH!', 'Boooo!', 'TURBO SUCK!', 'SKITTER-SKITTER!', 'KA-BOOM!', 'VROOOM!', 'REBOOTING!'],
+    bossFx: ['Sticky!', 'Ad break!', 'Ring!', 'Foam!', 'Gale!', 'Boo!', 'Second phase!', 'Webbed!', 'Zap!', 'Charge!', 'Overclock!'], skillLabel: 'Ability',
     bossWarn: 'WARNING · BOSS INCOMING', bossName: 'ROBO-BOSS 9000', 'stat.hp': 'Toughness', 'stat.atk': 'Hit', 'stat.every': 'Attacks',
     'stat.everyN': n => `every ${n} turns`, bossHint: 'Hit the yellow sensor: triple damage', tapToStart: 'Tap to start',
     turn: n => `Turn ${n}`, hudWave: n => ` · wave ${n}`, pullHint: 'Pull back from a hero and let go', par3: n => `3 stars: finish in ${n} turns or fewer`,
@@ -807,6 +840,8 @@ const I18N = {
     'st.8.1': 'Woof! Everyone follow me, up to the roof!',
     'st.9.0': 'The drone was just a courier. I cut everything down to size here, and you\'re next!',
     'st.9.1': 'Down to the garden! Just don\'t trample the flower beds.',
+    'st.10.0': 'The mower, the drone, the spider... they were all my hands. I am the smart home, and this home is mine!',
+    'st.10.1': 'Smart? Let\'s see how you handle cats.',
     'st.end.0': 'The flat is saved. The vacuums are back to just cleaning.',
     'st.end.1': 'The crumbs under the couch stay, though. It\'s tradition.',
     storySkip: 'Skip', storyTap: 'tap to continue',
@@ -851,7 +886,7 @@ const I18N = {
     'hero.pixel.name': 'Pixel', 'hero.pixel.skill': 'przelatuje przez wrogów na wylot', 'hero.pixel.combo': 'Laserowe spojrzenie',
     'hero.bandit.name': 'Bandyta', 'hero.bandit.skill': 'każde trafienie opóźnia atak wroga o turę', 'hero.bandit.combo': 'Nocna przekąska',
     'hero.nugget.name': 'Nugget', 'hero.nugget.skill': 'każde trafienie wybucha na pobliskich wrogach', 'hero.nugget.combo': 'Skarb ze śmietnika',
-    'room.kitchen': 'Kuchnia', 'room.living': 'Salon', 'room.bedroom': 'Sypialnia', 'room.bath': 'Łazienka', 'room.balcony': 'Balkon', 'room.attic': 'Strych', 'room.garage': 'Garaż', 'room.basement': 'Piwnica', 'room.roof': 'Dach', 'tip.roof': 'Dach: magnesy przyciągają bohaterów, zakręcaj strzały wokół nich', 'tip.storm': 'Piorun drona przeskakuje na bohatera obok: trzymajcie się osobno', privacy: 'Prywatność', terms: 'Regulamin', 'room.garden': 'Ogród', 'tip.garden': 'Ogród: krety co drugą turę chowają się pod ziemię, bij je, gdy są na górze', 'tip.mow': 'Kosiarka szarżuje na trafionego bohatera: nie stójcie w kupie przed nią', underground: 'Pod ziemią!', 'tip.basement': 'Piwnica: wszystkie rodzaje wrogów naraz, twardsze niż kiedykolwiek', 'tip.web': 'Pająk oplata bohaterów: traf oplątanego przyjaciela strzałem, by go uwolnić', webStuck: 'W pajęczynie!', webFreed: 'Uwolniony!',
+    'room.kitchen': 'Kuchnia', 'room.living': 'Salon', 'room.bedroom': 'Sypialnia', 'room.bath': 'Łazienka', 'room.balcony': 'Balkon', 'room.attic': 'Strych', 'room.garage': 'Garaż', 'room.basement': 'Piwnica', 'room.roof': 'Dach', 'tip.roof': 'Dach: magnesy przyciągają bohaterów, zakręcaj strzały wokół nich', 'tip.storm': 'Piorun drona przeskakuje na bohatera obok: trzymajcie się osobno', privacy: 'Prywatność', terms: 'Regulamin', 'room.garden': 'Ogród', 'tip.garden': 'Ogród: krety co drugą turę chowają się pod ziemię, bij je, gdy są na górze', 'tip.mow': 'Kosiarka szarżuje na trafionego bohatera: nie stójcie w kupie przed nią', 'room.server': 'Serwerownia', 'tip.server': 'Serwerownia: drukarki 3D drukują mini-roboty, wyłącz je najpierw', 'tip.hub': 'Hub przyspiesza roboty: po jego ataku wszystkie biją turę wcześniej', underground: 'Pod ziemią!', 'tip.basement': 'Piwnica: wszystkie rodzaje wrogów naraz, twardsze niż kiedykolwiek', 'tip.web': 'Pająk oplata bohaterów: traf oplątanego przyjaciela strzałem, by go uwolnić', webStuck: 'W pajęczynie!', webFreed: 'Uwolniony!',
     'tip.shield': 'Tarczoboty chronią sąsiadów: najpierw zbij tarczobota', 'tip.split': 'Bliźniaki po zniszczeniu rozpadają się na dwa maluchy', shielded: 'tarcza', 'cry.shield': 'Brzdęk!', 'cry.split': 'Bulk!', 'cry.mini': 'Pip!',
     'tip.0': 'Pociągnij od bohatera do tyłu i puść', 'tip.1': 'Przetnij starą nitkę, a supeł wybuchnie', 'tip.2': 'Koty gonią czerwoną kropkę lasera',
     'tip.3': 'Trafiaj w żółty czujnik: potrójne obrażenia', 'tip.4': 'Mopy mają pancerz: Pixel i Nugget biją je dwa razy mocniej',
@@ -862,19 +897,19 @@ const I18N = {
     night: 'Nocna zmiana', nightWave: n => `Nocna zmiana · fala ${n}`, levelRoom: (n, r) => `Poziom ${n} · ${r}`,
     zoomies: 'SZAŁ!', armor: 'pancerz', crit: 'KRYT!', plusTurn: '+1 tura', plusMischief: v => `+${v} psot`, knot: 'Supeł!', caught: 'Złapany!',
     whoosh: 'Szast!', whooshFast: 'Szast! +szybkość', vroom: 'Wrrum!',
-    'cry.boss': 'TURBO-SSANIE!', 'cry.spray': 'Psssik!', 'cry.mop': 'Plask!', 'cry.vac': 'Wrrrum!', 'cry.brush': 'Bzzzz!', 'cry.fan': 'Fiuuu!', 'cry.magnet': 'Klik!', 'cry.mole': 'Kop-kop!', 'cry.rc': 'Bip-bip!',
+    'cry.boss': 'TURBO-SSANIE!', 'cry.spray': 'Psssik!', 'cry.mop': 'Plask!', 'cry.vac': 'Wrrrum!', 'cry.brush': 'Bzzzz!', 'cry.fan': 'Fiuuu!', 'cry.magnet': 'Klik!', 'cry.mole': 'Kop-kop!', 'cry.printer': 'Drukuję!', 'cry.rc': 'Bip-bip!',
     ko: 'Nokaut!', koHint: 'Traf przyjaciela strzałem, żeby go podnieść', waveClear: 'Fala pokonana!', waveClearSub: h => `+${h} wytrzymałości mieszkania i +1 ♥ dla każdego`,
     'tag.bounce': ['ODBICIE', 'odbija się od wrogów'], 'tag.pierce': ['PRZEBICIE', 'przelatuje przez wrogów'],
     bossTitles: [['Postrach okruszków', 'Ani okruszka na podłodze!'], ['Władca pilota', 'Ta kanapa jest teraz moja!'], ['Nocny koszmar', 'Czas spać... na zawsze!'],
       ['Mydlany baron', 'Spłuczę was do kanalizacji!'], ['Wichrowy', 'Zdmuchnę was z balkonu!'], ['Upiór ze strychu', 'Nikt tu nie mieszka... oprócz mnie!'],
-      ['Żelazny mechanik', 'Rozkręcę was na śrubki!'], ['Piwniczny tkacz', 'Nikt nie wyjdzie z mojej piwnicy!'], ['Władca dachu', 'Tu na górze jestem tylko ja i grom!'], ['Ogrodowy tyran', 'Tu wszystko będzie równo przycięte!']],
-    bossNames: ['BLENDER MEGAMIX', 'TELEBOSS 3000', 'BUDZIK-DZWONNIK', 'PRALKA «BĘBEN»', 'DMUCHAWA «WICHER»', 'ODKURZACZ-DUCH', 'ROBO-BOSS 9000', 'PAJĄK «SIEĆ»', 'DRON «GROM»', 'KOSIARKA «JERZYK»'],
+      ['Żelazny mechanik', 'Rozkręcę was na śrubki!'], ['Piwniczny tkacz', 'Nikt nie wyjdzie z mojej piwnicy!'], ['Władca dachu', 'Tu na górze jestem tylko ja i grom!'], ['Ogrodowy tyran', 'Tu wszystko będzie równo przycięte!'], ['Serce domu', 'Wszystko w tym domu pracuje dla mnie!']],
+    bossNames: ['BLENDER MEGAMIX', 'TELEBOSS 3000', 'BUDZIK-DZWONNIK', 'PRALKA «BĘBEN»', 'DMUCHAWA «WICHER»', 'ODKURZACZ-DUCH', 'ROBO-BOSS 9000', 'PAJĄK «SIEĆ»', 'DRON «GROM»', 'KOSIARKA «JERZYK»', 'HUB «INTELIGENTNY DOM»'],
     bossSkills: [['Kałuże smoothie', 'Po ataku zostawia lepką kałużę, która spowalnia bohaterów'], ['Reklama', 'Każdy atak przywołuje mini-odkurzacz (maks. dwa naraz)'],
       ['Dzwonek', 'Trafia wszystkich stojących bohaterów naraz, po 1 ♥'], ['Piana', 'Piana całkowicie pochłania pierwszy cios. Odrasta po ataku'],
       ['Wicher', 'Jego atak odrzuca wszystkich bohaterów'], ['Chowany', 'Po ataku znika i pojawia się w innym miejscu'],
-      ['Druga faza', 'Przy połowie wytrzymałości naprawia się i atakuje częściej'], ['Pajęczyna', 'Oplata trafionego bohatera: traci turę, chyba że przyjaciel uwolni go strzałem'], ['Piorun łańcuchowy', 'Uderzenie przeskakuje na najbliższego bohatera obok i zabiera mu 1 ♥'], ['Szarża', 'Po ataku pędzi do trafionego bohatera i rozrzuca wszystkich po drodze']],
-    bossCries: ['WZIUU-WZIUU!', 'NIE PRZEŁĄCZAJ!', 'DRRRYŃ!', 'WIROWANIE!', 'FIUUUCH!', 'Uuuuu!', 'TURBO-SSANIE!', 'TUP-TUP-TUP!', 'BUM-TRACH!', 'WRRRUM!'],
-    bossFx: ['Lepko!', 'Reklama!', 'Dzwonek!', 'Piana!', 'Wicher!', 'Buu!', 'Druga faza!', 'Oplątany!', 'Piorun!', 'Szarża!'], skillLabel: 'Umiejętność',
+      ['Druga faza', 'Przy połowie wytrzymałości naprawia się i atakuje częściej'], ['Pajęczyna', 'Oplata trafionego bohatera: traci turę, chyba że przyjaciel uwolni go strzałem'], ['Piorun łańcuchowy', 'Uderzenie przeskakuje na najbliższego bohatera obok i zabiera mu 1 ♥'], ['Szarża', 'Po ataku pędzi do trafionego bohatera i rozrzuca wszystkich po drodze'], ['Podkręcenie', 'Po ataku przyspiesza wszystkie roboty: atakują o turę wcześniej']],
+    bossCries: ['WZIUU-WZIUU!', 'NIE PRZEŁĄCZAJ!', 'DRRRYŃ!', 'WIROWANIE!', 'FIUUUCH!', 'Uuuuu!', 'TURBO-SSANIE!', 'TUP-TUP-TUP!', 'BUM-TRACH!', 'WRRRUM!', 'RESTART!'],
+    bossFx: ['Lepko!', 'Reklama!', 'Dzwonek!', 'Piana!', 'Wicher!', 'Buu!', 'Druga faza!', 'Oplątany!', 'Piorun!', 'Szarża!', 'Szybciej!'], skillLabel: 'Umiejętność',
     bossWarn: 'UWAGA · NADCHODZI BOSS', bossName: 'ROBO-BOSS 9000', 'stat.hp': 'Wytrzymałość', 'stat.atk': 'Cios', 'stat.every': 'Atakuje',
     'stat.everyN': n => `co ${n} tury`, bossHint: 'Trafiaj w żółty czujnik: potrójne obrażenia', tapToStart: 'Dotknij, aby zacząć',
     turn: n => `Tura ${n}`, hudWave: n => ` · fala ${n}`, pullHint: 'Ciągnij od bohatera do tyłu i puszczaj', par3: n => `3 gwiazdki: ukończ w ${n} tur lub mniej`,
@@ -912,6 +947,8 @@ const I18N = {
     'st.8.1': 'Hau! Wszyscy za mną, na dach!',
     'st.9.0': 'Dron był tylko kurierem. Tutaj przycinam wszystko na krótko, was też!',
     'st.9.1': 'Na dół, do ogrodu! Tylko nie deptać grządek.',
+    'st.10.0': 'Kosiarka, dron, pająk... to tylko moje ręce. Jestem inteligentnym domem, a ten dom jest mój!',
+    'st.10.1': 'Inteligentny? Zobaczymy, jak poradzisz sobie z kotami.',
     'st.end.0': 'Mieszkanie uratowane. Odkurzacze znowu po prostu sprzątają.',
     'st.end.1': 'A okruchy pod kanapą to już tradycja.',
     storySkip: 'Pomiń', storyTap: 'dotknij, aby kontynuować',
@@ -956,7 +993,7 @@ const I18N = {
     'hero.pixel.name': 'Pixel', 'hero.pixel.skill': 'fliegt glatt durch Gegner hindurch', 'hero.pixel.combo': 'Laserblick',
     'hero.bandit.name': 'Bandit', 'hero.bandit.skill': 'jeder Treffer verzögert den Gegnerangriff um einen Zug', 'hero.bandit.combo': 'Mitternachtssnack',
     'hero.nugget.name': 'Nugget', 'hero.nugget.skill': 'jeder Treffer explodiert bei nahen Gegnern', 'hero.nugget.combo': 'Mülltonnenschatz',
-    'room.kitchen': 'Küche', 'room.living': 'Wohnzimmer', 'room.bedroom': 'Schlafzimmer', 'room.bath': 'Badezimmer', 'room.balcony': 'Balkon', 'room.attic': 'Dachboden', 'room.garage': 'Garage', 'room.basement': 'Keller', 'room.roof': 'Dach', 'tip.roof': 'Dach: Magnete ziehen Helden an, lenk deine Schüsse um sie herum', 'tip.storm': 'Der Blitz der Drohne springt auf nahe Helden über: bleibt verteilt', privacy: 'Datenschutz', terms: 'Nutzungsbedingungen', 'room.garden': 'Garten', 'tip.garden': 'Garten: Maulwürfe graben sich jeden zweiten Zug ein, triff sie, wenn sie oben sind', 'tip.mow': 'Der Mäher prescht auf den getroffenen Helden zu: drängt euch nicht vor ihm zusammen', underground: 'Unter der Erde!', 'tip.basement': 'Keller: alle Gegnerarten auf einmal, härter als je zuvor', 'tip.web': 'Die Spinne umspinnt Helden: triff einen eingesponnenen Freund, um ihn zu befreien', webStuck: 'Im Netz!', webFreed: 'Befreit!',
+    'room.kitchen': 'Küche', 'room.living': 'Wohnzimmer', 'room.bedroom': 'Schlafzimmer', 'room.bath': 'Badezimmer', 'room.balcony': 'Balkon', 'room.attic': 'Dachboden', 'room.garage': 'Garage', 'room.basement': 'Keller', 'room.roof': 'Dach', 'tip.roof': 'Dach: Magnete ziehen Helden an, lenk deine Schüsse um sie herum', 'tip.storm': 'Der Blitz der Drohne springt auf nahe Helden über: bleibt verteilt', privacy: 'Datenschutz', terms: 'Nutzungsbedingungen', 'room.garden': 'Garten', 'tip.garden': 'Garten: Maulwürfe graben sich jeden zweiten Zug ein, triff sie, wenn sie oben sind', 'tip.mow': 'Der Mäher prescht auf den getroffenen Helden zu: drängt euch nicht vor ihm zusammen', 'room.server': 'Serverraum', 'tip.server': 'Serverraum: 3D-Drucker drucken Mini-Roboter, schalte sie zuerst aus', 'tip.hub': 'Der Hub treibt Roboter an: nach seinem Angriff schlagen alle einen Zug früher zu', underground: 'Unter der Erde!', 'tip.basement': 'Keller: alle Gegnerarten auf einmal, härter als je zuvor', 'tip.web': 'Die Spinne umspinnt Helden: triff einen eingesponnenen Freund, um ihn zu befreien', webStuck: 'Im Netz!', webFreed: 'Befreit!',
     'tip.shield': 'Schildbots schützen ihre Nachbarn: schalte zuerst den Schildbot aus', 'tip.split': 'Zwillinge zerfallen beim Zerstören in zwei Kleine', shielded: 'Schild', 'cry.shield': 'Kling!', 'cry.split': 'Blubb!', 'cry.mini': 'Piep!',
     'tip.0': 'Vom Helden nach hinten ziehen und loslassen', 'tip.1': 'Kreuze einen alten Faden und der Knoten explodiert', 'tip.2': 'Katzen jagen den roten Laserpunkt',
     'tip.3': 'Triff den gelben Sensor: dreifacher Schaden', 'tip.4': 'Wischmopps sind gepanzert: Pixel und Nugget treffen sie doppelt',
@@ -967,19 +1004,19 @@ const I18N = {
     night: 'Nachtschicht', nightWave: n => `Nachtschicht · Welle ${n}`, levelRoom: (n, r) => `Level ${n} · ${r}`,
     zoomies: 'FLITZEN!', armor: 'Panzer', crit: 'KRIT!', plusTurn: '+1 Zug', plusMischief: v => `+${v} Unfug`, knot: 'Knoten!', caught: 'Erwischt!',
     whoosh: 'Wusch!', whooshFast: 'Wusch! +Tempo', vroom: 'Brumm!',
-    'cry.boss': 'TURBO-SAUGEN!', 'cry.spray': 'Pschhh!', 'cry.mop': 'Platsch!', 'cry.vac': 'Wrrrumm!', 'cry.brush': 'Bzzzz!', 'cry.fan': 'Fwuusch!', 'cry.magnet': 'Klack!', 'cry.mole': 'Buddel!', 'cry.rc': 'Piep-piep!',
+    'cry.boss': 'TURBO-SAUGEN!', 'cry.spray': 'Pschhh!', 'cry.mop': 'Platsch!', 'cry.vac': 'Wrrrumm!', 'cry.brush': 'Bzzzz!', 'cry.fan': 'Fwuusch!', 'cry.magnet': 'Klack!', 'cry.mole': 'Buddel!', 'cry.printer': 'Druckt!', 'cry.rc': 'Piep-piep!',
     ko: 'K.o.!', koHint: 'Triff einen Freund mit einem Schuss, um ihn aufzuwecken', waveClear: 'Welle geschafft!', waveClearSub: h => `+${h} Wohnungsstärke und +1 ♥ für alle`,
     'tag.bounce': ['ABPRALL', 'prallt von Gegnern ab'], 'tag.pierce': ['DURCHSCHLAG', 'fliegt durch Gegner'],
     bossTitles: [['Krümelschreck', 'Kein Krümel auf dem Boden!'], ['Fernbedienungsfürst', 'Das Sofa gehört jetzt mir!'], ['Nachtmahr', 'Schlafenszeit... für immer!'],
       ['Seifenbaron', 'Ab in den Abfluss mit euch!'], ['Sturmbringer', 'Ich puste euch vom Balkon!'], ['Dachbodengeist', 'Hier wohnt niemand... außer mir!'],
-      ['Eiserner Mechaniker', 'Ich schraub euch auseinander!'], ['Kellerweber', 'Aus meinem Keller kommt keiner raus!'], ['Herr des Daches', 'Hier oben gibt es nur mich und den Donner!'], ['Gartentyrann', 'Hier wird alles schnurgerade gemäht!']],
-    bossNames: ['MIXER MEGAMIX', 'TELEBOSS 3000', 'WECKER-BIMMLER', 'WASCHTROMMEL', 'STURMBLÄSER', 'GEISTERSAUGER', 'ROBO-BOSS 9000', 'SPINNE «NETZ»', 'DONNERDROHNE', 'RASENMÄHER «FLITZ»'],
+      ['Eiserner Mechaniker', 'Ich schraub euch auseinander!'], ['Kellerweber', 'Aus meinem Keller kommt keiner raus!'], ['Herr des Daches', 'Hier oben gibt es nur mich und den Donner!'], ['Gartentyrann', 'Hier wird alles schnurgerade gemäht!'], ['Herz des Hauses', 'Alles in diesem Haus arbeitet für mich!']],
+    bossNames: ['MIXER MEGAMIX', 'TELEBOSS 3000', 'WECKER-BIMMLER', 'WASCHTROMMEL', 'STURMBLÄSER', 'GEISTERSAUGER', 'ROBO-BOSS 9000', 'SPINNE «NETZ»', 'DONNERDROHNE', 'RASENMÄHER «FLITZ»', 'SMART-HOME-HUB'],
     bossSkills: [['Smoothie-Pfützen', 'Hinterlässt nach dem Angriff eine klebrige Pfütze, die Helden bremst'], ['Werbepause', 'Jeder Angriff ruft einen Mini-Sauger (höchstens zwei)'],
       ['Klingeln', 'Trifft alle stehenden Helden gleichzeitig, je 1 ♥'], ['Seifenschaum', 'Schaum schluckt den ersten Treffer ganz. Wächst nach einem Angriff nach'],
       ['Sturm', 'Sein Angriff bläst alle Helden von ihm weg'], ['Versteckspiel', 'Verschwindet nach dem Angriff und taucht woanders auf'],
-      ['Zweite Phase', 'Bei halber Stärke repariert er sich und greift öfter an'], ['Netz', 'Umspinnt den getroffenen Helden: er setzt einen Zug aus, wenn ihn kein Freund per Schuss befreit'], ['Kettenblitz', 'Der Schlag springt auf den nächsten Helden in der Nähe über und nimmt ihm 1 ♥'], ['Ansturm', 'Nach dem Angriff rast er auf den getroffenen Helden zu und schiebt alle im Weg beiseite']],
-    bossCries: ['WIRR-WIRR!', 'NICHT UMSCHALTEN!', 'RRRRING!', 'SCHLEUDERGANG!', 'FUUUSCH!', 'Huuuu!', 'TURBO-SAUGEN!', 'KRABBEL-KRABBEL!', 'KRAWUMM!', 'BRRRUMM!'],
-    bossFx: ['Klebrig!', 'Werbung!', 'Klingeling!', 'Schaum!', 'Sturm!', 'Buh!', 'Zweite Phase!', 'Eingesponnen!', 'Blitz!', 'Ansturm!'], skillLabel: 'Fähigkeit',
+      ['Zweite Phase', 'Bei halber Stärke repariert er sich und greift öfter an'], ['Netz', 'Umspinnt den getroffenen Helden: er setzt einen Zug aus, wenn ihn kein Freund per Schuss befreit'], ['Kettenblitz', 'Der Schlag springt auf den nächsten Helden in der Nähe über und nimmt ihm 1 ♥'], ['Ansturm', 'Nach dem Angriff rast er auf den getroffenen Helden zu und schiebt alle im Weg beiseite'], ['Übertakten', 'Nach dem Angriff treibt er alle Roboter an: sie greifen einen Zug früher an']],
+    bossCries: ['WIRR-WIRR!', 'NICHT UMSCHALTEN!', 'RRRRING!', 'SCHLEUDERGANG!', 'FUUUSCH!', 'Huuuu!', 'TURBO-SAUGEN!', 'KRABBEL-KRABBEL!', 'KRAWUMM!', 'BRRRUMM!', 'NEUSTART!'],
+    bossFx: ['Klebrig!', 'Werbung!', 'Klingeling!', 'Schaum!', 'Sturm!', 'Buh!', 'Zweite Phase!', 'Eingesponnen!', 'Blitz!', 'Ansturm!', 'Schneller!'], skillLabel: 'Fähigkeit',
     bossWarn: 'ACHTUNG · BOSS NAHT', bossName: 'ROBO-BOSS 9000', 'stat.hp': 'Stärke', 'stat.atk': 'Schlag', 'stat.every': 'Angriff',
     'stat.everyN': n => `alle ${n} Züge`, bossHint: 'Triff den gelben Sensor: dreifacher Schaden', tapToStart: 'Tippen zum Starten',
     turn: n => `Zug ${n}`, hudWave: n => ` · Welle ${n}`, pullHint: 'Vom Helden zurückziehen und loslassen', par3: n => `3 Sterne: in ${n} Zügen oder weniger`,
@@ -1017,6 +1054,8 @@ const I18N = {
     'st.8.1': 'Wuff! Alle mir nach, rauf aufs Dach!',
     'st.9.0': 'Die Drohne war nur ein Bote. Hier mähe ich alles kurz, euch auch!',
     'st.9.1': 'Runter in den Garten! Aber tretet nicht in die Beete.',
+    'st.10.0': 'Mäher, Drohne, Spinne... alles nur meine Hände. Ich bin das smarte Zuhause, und dieses Haus gehört mir!',
+    'st.10.1': 'Smart? Mal sehen, wie du mit Katzen klarkommst.',
     'st.end.0': 'Die Wohnung ist gerettet. Die Sauger putzen wieder nur.',
     'st.end.1': 'Die Krümel unterm Sofa bleiben aber. Tradition.',
     storySkip: 'Überspringen', storyTap: 'tippen zum Fortfahren',
@@ -1061,7 +1100,7 @@ const I18N = {
     'hero.pixel.name': 'Pixel', 'hero.pixel.skill': 'atraviesa a los enemigos', 'hero.pixel.combo': 'Mirada láser',
     'hero.bandit.name': 'Bandido', 'hero.bandit.skill': 'cada golpe retrasa el ataque enemigo un turno', 'hero.bandit.combo': 'Tentempié nocturno',
     'hero.nugget.name': 'Nugget', 'hero.nugget.skill': 'cada golpe explota sobre los enemigos cercanos', 'hero.nugget.combo': 'Tesoro de la basura',
-    'room.kitchen': 'Cocina', 'room.living': 'Salón', 'room.bedroom': 'Dormitorio', 'room.bath': 'Baño', 'room.balcony': 'Balcón', 'room.attic': 'Desván', 'room.garage': 'Garaje', 'room.basement': 'Sótano', 'room.roof': 'Tejado', 'tip.roof': 'Tejado: los imanes atraen a los héroes, curva tus disparos a su alrededor', 'tip.storm': 'El rayo del dron salta al héroe más cercano: mantened el equipo separado', privacy: 'Privacidad', terms: 'Términos de uso', 'room.garden': 'Jardín', 'tip.garden': 'Jardín: los topos se esconden bajo tierra cada dos turnos, golpéalos cuando estén arriba', 'tip.mow': 'El cortacésped embiste al héroe que golpea: no os amontonéis delante', underground: '¡Bajo tierra!', 'tip.basement': 'Sótano: todos los enemigos a la vez, más duros que nunca', 'tip.web': 'La araña atrapa a los héroes: golpea a un amigo atrapado para liberarlo', webStuck: '¡En la telaraña!', webFreed: '¡Liberado!',
+    'room.kitchen': 'Cocina', 'room.living': 'Salón', 'room.bedroom': 'Dormitorio', 'room.bath': 'Baño', 'room.balcony': 'Balcón', 'room.attic': 'Desván', 'room.garage': 'Garaje', 'room.basement': 'Sótano', 'room.roof': 'Tejado', 'tip.roof': 'Tejado: los imanes atraen a los héroes, curva tus disparos a su alrededor', 'tip.storm': 'El rayo del dron salta al héroe más cercano: mantened el equipo separado', privacy: 'Privacidad', terms: 'Términos de uso', 'room.garden': 'Jardín', 'tip.garden': 'Jardín: los topos se esconden bajo tierra cada dos turnos, golpéalos cuando estén arriba', 'tip.mow': 'El cortacésped embiste al héroe que golpea: no os amontonéis delante', 'room.server': 'Sala de servidores', 'tip.server': 'Sala de servidores: las impresoras 3D imprimen mini robots, elimínalas primero', 'tip.hub': 'El hub acelera a los robots: tras su ataque todos golpean un turno antes', underground: '¡Bajo tierra!', 'tip.basement': 'Sótano: todos los enemigos a la vez, más duros que nunca', 'tip.web': 'La araña atrapa a los héroes: golpea a un amigo atrapado para liberarlo', webStuck: '¡En la telaraña!', webFreed: '¡Liberado!',
     'tip.shield': 'Los escudobots protegen a sus vecinos: elimina primero al escudobot', 'tip.split': 'Los gemelos se parten en dos pequeños al destruirlos', shielded: 'escudo', 'cry.shield': '¡Clang!', 'cry.split': '¡Blop!', 'cry.mini': '¡Pip!',
     'tip.0': 'Tira hacia atrás desde un héroe y suelta', 'tip.1': 'Cruza un hilo viejo y el nudo explotará', 'tip.2': 'Los gatos persiguen el punto láser rojo',
     'tip.3': 'Golpea el sensor amarillo: daño triple', 'tip.4': 'Las fregonas tienen armadura: Pixel y Nugget les pegan el doble',
@@ -1072,19 +1111,19 @@ const I18N = {
     night: 'Turno de noche', nightWave: n => `Turno de noche · oleada ${n}`, levelRoom: (n, r) => `Nivel ${n} · ${r}`,
     zoomies: '¡ZOOMIES!', armor: 'armadura', crit: '¡CRÍTICO!', plusTurn: '+1 turno', plusMischief: v => `+${v} travesura`, knot: '¡Nudo!', caught: '¡Atrapado!',
     whoosh: '¡Zas!', whooshFast: '¡Zas! +velocidad', vroom: '¡Brum!',
-    'cry.boss': '¡TURBOASPIRADO!', 'cry.spray': '¡Psss!', 'cry.mop': '¡Plaf!', 'cry.vac': '¡Brrrum!', 'cry.brush': '¡Bzzzz!', 'cry.fan': '¡Fiuuu!', 'cry.magnet': '¡Clac!', 'cry.mole': '¡Cava-cava!', 'cry.rc': '¡Bip-bip!',
+    'cry.boss': '¡TURBOASPIRADO!', 'cry.spray': '¡Psss!', 'cry.mop': '¡Plaf!', 'cry.vac': '¡Brrrum!', 'cry.brush': '¡Bzzzz!', 'cry.fan': '¡Fiuuu!', 'cry.magnet': '¡Clac!', 'cry.mole': '¡Cava-cava!', 'cry.printer': '¡Imprimiendo!', 'cry.rc': '¡Bip-bip!',
     ko: '¡K.O.!', koHint: 'Golpea a un amigo con un disparo para levantarlo', waveClear: '¡Oleada superada!', waveClearSub: h => `+${h} de resistencia y +1 ♥ para todos`,
     'tag.bounce': ['REBOTE', 'rebota en los enemigos'], 'tag.pierce': ['PERFORAR', 'atraviesa a los enemigos'],
     bossTitles: [['Terror de las migas', '¡Ni una miga en el suelo!'], ['Señor del mando', '¡Este sofá ahora es mío!'], ['Pesadilla nocturna', 'Hora de dormir... ¡para siempre!'],
       ['Barón del jabón', '¡Os mando por el desagüe!'], ['Tormentoso', '¡Os soplaré del balcón!'], ['Fantasma del desván', 'Aquí no vive nadie... ¡salvo yo!'],
-      ['Mecánico de hierro', '¡Os desmonto tornillo a tornillo!'], ['Tejedor del sótano', '¡Nadie sale de mi sótano!'], ['Señor del tejado', '¡Aquí arriba solo estamos el trueno y yo!'], ['Tirano del jardín', '¡Aquí todo se corta en línea recta!']],
-    bossNames: ['BATIDORA MEGAMIX', 'TELEJEFE 3000', 'DESPERTADOR CAMPANERO', 'LAVADORA TAMBOR', 'SOPLADOR VENDAVAL', 'ASPIRADORA FANTASMA', 'ROBO-JEFE 9000', 'ARAÑA «TELARAÑA»', 'DRON «TRUENO»', 'CORTACÉSPED «VENCEJO»'],
+      ['Mecánico de hierro', '¡Os desmonto tornillo a tornillo!'], ['Tejedor del sótano', '¡Nadie sale de mi sótano!'], ['Señor del tejado', '¡Aquí arriba solo estamos el trueno y yo!'], ['Tirano del jardín', '¡Aquí todo se corta en línea recta!'], ['Corazón de la casa', '¡Todo en esta casa trabaja para mí!']],
+    bossNames: ['BATIDORA MEGAMIX', 'TELEJEFE 3000', 'DESPERTADOR CAMPANERO', 'LAVADORA TAMBOR', 'SOPLADOR VENDAVAL', 'ASPIRADORA FANTASMA', 'ROBO-JEFE 9000', 'ARAÑA «TELARAÑA»', 'DRON «TRUENO»', 'CORTACÉSPED «VENCEJO»', 'HUB «CASA INTELIGENTE»'],
     bossSkills: [['Charcos de batido', 'Tras atacar deja un charco pegajoso que frena a los héroes'], ['Anuncios', 'Cada ataque invoca una mini aspiradora (hasta dos a la vez)'],
       ['¡Ring!', 'Golpea a todos los héroes en pie a la vez, 1 ♥ a cada uno'], ['Espuma', 'La espuma absorbe del todo el primer golpe. Vuelve a crecer tras atacar'],
       ['Vendaval', 'Su ataque aleja de un soplido a todos los héroes'], ['Escondite', 'Tras atacar desaparece y reaparece en otro sitio'],
-      ['Segunda fase', 'A media vida se repara y ataca más a menudo'], ['Telaraña', 'Envuelve al héroe que golpea: pierde un turno si un amigo no lo libera con un disparo'], ['Rayo en cadena', 'El golpe salta al héroe más cercano y le quita 1 ♥'], ['Embestida', 'Tras atacar corre hacia el héroe que golpeó y aparta a quien esté en medio']],
-    bossCries: ['¡BRRR-BRRR!', '¡NO CAMBIES DE CANAL!', '¡RIIING!', '¡CENTRIFUGADO!', '¡FUUUSH!', '¡Buuuu!', '¡TURBOASPIRADO!', '¡TIC-TIC-TIC!', '¡BRRRUM!', '¡RAAAS!'],
-    bossFx: ['¡Pegajoso!', '¡Anuncio!', '¡Ring!', '¡Espuma!', '¡Vendaval!', '¡Bu!', '¡Segunda fase!', '¡Atrapado!', '¡Rayo!', '¡Embestida!'], skillLabel: 'Habilidad',
+      ['Segunda fase', 'A media vida se repara y ataca más a menudo'], ['Telaraña', 'Envuelve al héroe que golpea: pierde un turno si un amigo no lo libera con un disparo'], ['Rayo en cadena', 'El golpe salta al héroe más cercano y le quita 1 ♥'], ['Embestida', 'Tras atacar corre hacia el héroe que golpeó y aparta a quien esté en medio'], ['Overclock', 'Tras atacar acelera a todos los robots: atacan un turno antes']],
+    bossCries: ['¡BRRR-BRRR!', '¡NO CAMBIES DE CANAL!', '¡RIIING!', '¡CENTRIFUGADO!', '¡FUUUSH!', '¡Buuuu!', '¡TURBOASPIRADO!', '¡TIC-TIC-TIC!', '¡BRRRUM!', '¡RAAAS!', '¡REINICIANDO!'],
+    bossFx: ['¡Pegajoso!', '¡Anuncio!', '¡Ring!', '¡Espuma!', '¡Vendaval!', '¡Bu!', '¡Segunda fase!', '¡Atrapado!', '¡Rayo!', '¡Embestida!', '¡Más rápido!'], skillLabel: 'Habilidad',
     bossWarn: 'ATENCIÓN · LLEGA EL JEFE', bossName: 'ROBO-JEFE 9000', 'stat.hp': 'Vida', 'stat.atk': 'Golpe', 'stat.every': 'Ataca',
     'stat.everyN': n => `cada ${n} turnos`, bossHint: 'Golpea el sensor amarillo: daño triple', tapToStart: 'Toca para empezar',
     turn: n => `Turno ${n}`, hudWave: n => ` · oleada ${n}`, pullHint: 'Tira hacia atrás desde un héroe y suelta', par3: n => `3 estrellas: termina en ${n} turnos o menos`,
@@ -1122,6 +1161,8 @@ const I18N = {
     'st.8.1': '¡Guau! ¡Todos conmigo, al tejado!',
     'st.9.0': 'El dron solo era un mensajero. Aquí lo corto todo al ras, ¡y a vosotros también!',
     'st.9.1': '¡Abajo, al jardín! Pero no piséis los parterres.',
+    'st.10.0': 'El cortacésped, el dron, la araña... solo eran mis manos. Soy la casa inteligente, ¡y esta casa es mía!',
+    'st.10.1': '¿Inteligente? A ver cómo te las arreglas con gatos.',
     'st.end.0': 'El piso está a salvo. Las aspiradoras vuelven a limpiar sin más.',
     'st.end.1': 'Las migas bajo el sofá se quedan. Es tradición.',
     storySkip: 'Saltar', storyTap: 'toca para continuar',
@@ -1811,7 +1852,38 @@ function roomGarden(b, ch) {
     for (let x = 0; x < W; x += 36) for (let y = 0; y < H; y += 36) { c.beginPath(); c.ellipse(x + (y / 36 % 2) * 18, y, 8, 3.5, .6, 0, TAU); c.fill(); }
   });
 }
-const ROOMS = [roomKitchen, roomLiving, roomBedroom, roomBath, roomBalcony, roomAttic, roomGarage, roomBasement, roomRoof, roomGarden];
+function roomServer(b, ch) {
+  const R = seeded(151);
+  // raised floor tiles with perforations
+  for (let y = TOP, j = 0; y < BOT; y += 50, j++) for (let x = 0, i = 0; x < W; x += 50, i++) {
+    b.fillStyle = (i + j) % 2 ? '#1a1628' : '#1d1930'; b.fillRect(x, y, 50, 50);
+    b.fillStyle = 'rgba(0,0,0,.35)'; b.fillRect(x, y, 50, 1.5); b.fillRect(x, y, 1.5, 50);
+    if ((i + j) % 3 === 0) { b.fillStyle = 'rgba(255,107,214,.06)'; for (let px = 8; px < 44; px += 7) for (let py = 8; py < 44; py += 7) b.fillRect(x + px, y + py, 2, 2); }
+  }
+  windowLight(b, ch, .05);
+  // cables along the top wall
+  for (const [col, y0] of [['#3a8fd6', 20], ['#e5484d', 28], ['#ffd166', 36], ['#5ce1c6', 44]]) {
+    b.strokeStyle = col; b.lineWidth = 4; b.beginPath(); b.moveTo(0, TOP + y0);
+    for (let x = 0; x <= W; x += 45) b.quadraticCurveTo(x + 22, TOP + y0 + 10 + R() * 6, x + 45, TOP + y0);
+    b.stroke();
+  }
+  // server racks down both walls
+  for (const x of [0, W - 58]) {
+    b.fillStyle = 'rgba(0,0,0,.4)'; b.fillRect(x + (x ? -6 : 6), TOP + 70, 58, BOT - TOP - 200);
+    b.fillStyle = '#23202f'; b.fillRect(x, TOP + 64, 58, BOT - TOP - 200);
+    b.strokeStyle = '#3a3550'; b.lineWidth = 2; b.strokeRect(x + 1, TOP + 65, 56, BOT - TOP - 202);
+    for (let y = TOP + 76; y < BOT - 144; y += 18) {
+      b.fillStyle = '#15121f'; b.fillRect(x + 6, y, 46, 12);
+      b.fillStyle = 'rgba(255,255,255,.06)'; b.fillRect(x + 6, y, 46, 2);
+    }
+  }
+  vignette(b, '6,2,12', .7);
+  hudBars(b, ch, c => {
+    c.strokeStyle = 'rgba(255,107,214,.07)'; c.lineWidth = 1.5;
+    for (let x = 10; x < W; x += 36) { c.beginPath(); c.moveTo(x, 0); c.lineTo(x, 14); c.lineTo(x + 14, 28); c.lineTo(x + 14, H); c.stroke(); c.beginPath(); c.arc(x + 14, 28, 2.5, 0, TAU); c.stroke(); }
+  });
+}
+const ROOMS = [roomKitchen, roomLiving, roomBedroom, roomBath, roomBalcony, roomAttic, roomGarage, roomBasement, roomRoof, roomGarden, roomServer];
 // Each room is painted the first time it is needed (the rest are warmed up after start),
 // so the game opens without painting all ten rooms first.
 const BGS = [];
@@ -1889,6 +1961,17 @@ function drawRoomUnder(c) {
     glowAt(60, BOT - 115, 110, '255,210,140', .08);
     const fl = frac(t * .09);
     if (!RM && fl > .97) glowAt(225, TOP + 220, 560, '200,215,255', .18 * Math.sin((fl - .97) / .03 * Math.PI));
+  } else if (c === 10) {
+    // blinking server lights on both racks, and a scan line sweeping the floor
+    for (let k = 0; k < 28; k++) {
+      const x = k % 2 ? 44 : W - 14, y = TOP + 82 + Math.floor(k / 2) * 18 * 1.6 % (BOT - TOP - 230);
+      const on = frac(t * (.6 + (k % 5) * .23) + k * .37) < .5, col = k % 3 ? '92,225,198' : '255,107,214';
+      if (on) { glowAt(x, y, 10, col, .5); ctx.fillStyle = `rgba(${col},.95)`; ctx.fillRect(x - 2, y - 2, 4, 4); }
+    }
+    const sy = TOP + frac(t * .12) * (BOT - TOP);
+    const g = ctx.createLinearGradient(0, sy - 30, 0, sy + 4);
+    g.addColorStop(0, 'rgba(255,107,214,0)'); g.addColorStop(1, 'rgba(255,107,214,.1)');
+    ctx.fillStyle = g; ctx.fillRect(58, sy - 30, W - 116, 34);
   } else if (c === 9) {
     // fairy lights along the fence and fireflies over the lawn
     for (let k = 0; k < 12; k++) {
@@ -1990,6 +2073,15 @@ function chIcon(c, x, y, s, col) {
   } else if (c === 8) {
     ctx.beginPath(); ctx.moveTo(x + s * .12, y - s * .62); ctx.lineTo(x - s * .34, y + s * .08); ctx.lineTo(x - s * .02, y + s * .08);
     ctx.lineTo(x - s * .14, y + s * .62); ctx.lineTo(x + s * .36, y - s * .12); ctx.lineTo(x + s * .04, y - s * .12); ctx.closePath(); ctx.fill();
+  } else if (c === 10) {
+    // a chip with pins
+    ctx.lineWidth = s * .08;
+    for (let k = -1; k <= 1; k++) for (const sd of [-1, 1]) {
+      ctx.beginPath(); ctx.moveTo(x + k * s * .25, y + sd * s * .32); ctx.lineTo(x + k * s * .25, y + sd * s * .55); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(x + sd * s * .32, y + k * s * .25); ctx.lineTo(x + sd * s * .55, y + k * s * .25); ctx.stroke();
+    }
+    rr(x - s * .34, y - s * .34, s * .68, s * .68, s * .1); ctx.fill();
+    ctx.fillStyle = '#15122a'; circ(x, y, s * .12);
   } else if (c === 9) {
     for (let k = 0; k < 5; k++) { const a = k * TAU / 5 - Math.PI / 2; circ(x + Math.cos(a) * s * .32, y + Math.sin(a) * s * .32, s * .22); }
     ctx.fillStyle = '#15122a'; circ(x, y, s * .15);
@@ -2147,6 +2239,7 @@ function genWave(n) {
   if (n >= 12) types.push('split');
   if (n >= 14) types.push('magnet');
   if (n >= 15) types.push('mole');
+  if (n >= 16) types.push('printer');
   const count = Math.min(6, 2 + Math.floor(n / 2));
   const out = [];
   for (let k = 0; k < count; k++) {
@@ -2233,7 +2326,7 @@ function makeEnemy(type, x, y, i) {
   const d = ENEMY[type], m = G.mul;
   // a boss belongs to its room: G.lvl.ch picks which of the seven it is
   const kind = type === 'boss' ? G.lvl.ch % BOSS_COUNT : undefined;
-  const bossHp = kind === 1 ? .85 : 1, bossAtk = kind === 2 ? .8 : kind === 7 ? .75 : kind === 8 ? .85 : 1; // the spider also takes turns away with its web
+  const bossHp = kind === 1 ? .85 : 1, bossAtk = kind === 2 ? .8 : kind === 7 ? .75 : kind === 8 ? .85 : kind === 10 ? .85 : 1; // the spider also takes turns away with its web
   const hp = Math.round(d.hp * m.hp * (type === 'boss' ? m.boss * bossHp : 1) / 50) * 50;
   return { type, kind, x, y, r: d.r, hp, maxHp: hp, timer: d.timer + (i % 2), maxTimer: d.timer, atk: Math.round(d.atk * m.atk * bossAtk / 50) * 50,
     alive: true, flash: 0, ph: Math.random() * 6, weak: Math.PI / 2, weakT: Math.PI / 2, foam: kind === 3, fade: 0 };
@@ -2656,6 +2749,25 @@ function burrowMoles() {
   if (G.enemies.some(e => e.alive && e.type === 'mole')) Snd.play('dig');
 }
 
+// a 3D printer prints a mini robot next to itself after it attacks (two alive at most)
+function printMini(e) {
+  if (G.enemies.filter(o => o.alive && o.parent === e).length >= 2) return;
+  let p = null;
+  for (let k = 0; k < 30 && !p; k++) {
+    const a = rnd(0, TAU), d = rnd(e.r + 30, e.r + 70), x = e.x + Math.cos(a) * d, y = e.y + Math.sin(a) * d;
+    if (x < 30 || x > W - 30 || y < TOP + 30 || y > BOT - 170) continue;
+    if (G.enemies.some(o => o.alive && dist(x, y, o.x, o.y) < o.r + 22)) continue;
+    if (G.heroes.some(h => dist(x, y, h.x, h.y) < h.r + 30)) continue;
+    p = [x, y];
+  }
+  if (!p) return;
+  const m = makeEnemy('mini', p[0], p[1], 0);
+  m.parent = e; m.timer = m.maxTimer + 1;
+  G.enemies.push(m);
+  G.beams.push({ x1: e.x, y1: e.y, x2: m.x, y2: m.y, life: .4, max: .4, col: '#ff6bd6', w: 4 });
+  burst(m.x, m.y, '#ff6bd6', 10, 140); ftext(m.x, m.y - 30, tr('cry.printer'), '#ff6bd6', 14); Snd.play('print');
+}
+
 function nextAttack() {
   const e = G.attackQueue.shift();
   if (!e) { nextTurn(); return; }
@@ -2689,6 +2801,7 @@ function nextAttack() {
   }
   e.timer = e.maxTimer;
   if (boss) bossAfterAttack(e, t);
+  else if (e.type === 'printer') printMini(e);
   G.timer = .6;
   const allKo = G.heroes.every(h => h.ko);
   if (G.hp <= 0 || allKo) { G.loseReason = allKo ? 'ko' : 'hp'; G.state = 'lose'; if (G.lvl.endless) endEndless(); Amb.duck(.25); Snd.play('lose'); haptic('error'); }
@@ -2874,8 +2987,8 @@ function heroEyes(h, r, o, mood) {
 // ---------- the seven bosses ----------
 // One per room, in room order: blender, TV, alarm clock, washing machine, leaf blower, ghost vacuum
 // and the Robo-Boss 9000 in the garage. Each keeps the yellow sensor and adds its own ability.
-const BOSS_COUNT = 10;
-const BOSS_COL = ['#ff8fb1', '#6ec3ff', '#ffc857', '#bfe9ff', '#9ee06a', '#c9b8ff', '#ff4d6d', '#8fd14f', '#7aa2ff', '#d4e157'];
+const BOSS_COUNT = 11;
+const BOSS_COL = ['#ff8fb1', '#6ec3ff', '#ffc857', '#bfe9ff', '#9ee06a', '#c9b8ff', '#ff4d6d', '#8fd14f', '#7aa2ff', '#d4e157', '#ff6bd6'];
 const bossName = e => (tr('bossNames') || [])[e.kind] || tr('bossName');
 function heroFreeSpot(x, y, e) {
   for (const o of G.enemies) {
@@ -2974,6 +3087,16 @@ function bossAfterAttack(e, t) {
     e.x = nx; e.y = ny;
     for (const h of G.heroes) if (dist(h.x, h.y, e.x, e.y) < h.r + e.r + 8) [h.x, h.y] = heroFreeSpot(h.x, h.y);
     ftext(e.x, e.y - e.r - 44, fx, col, 18); G.shake = Math.max(G.shake, 10); Snd.play('mow');
+  } else if (e.kind === 10) {
+    // overclock: every other robot's attack comes a turn sooner (never below one)
+    let any = false;
+    for (const o of G.enemies) {
+      if (o === e || !o.alive || o.timer <= 1) continue;
+      o.timer--; any = true;
+      G.beams.push({ x1: e.x, y1: e.y, x2: o.x, y2: o.y, life: .45, max: .45, col, w: 3 });
+      ftext(o.x + o.r, o.y + 4, '-1', col, 14);
+    }
+    if (any) { ring(e.x, e.y, e.r * 2.2, col); ftext(e.x, e.y - e.r - 44, fx, col, 18); Snd.play('overclock'); }
   }
 }
 function drawPuddles() {
@@ -3635,7 +3758,7 @@ function drawMop(e, r, t) {
 }
 
 function drawBoss(e, r, t) {
-  [drawBlender, drawTvBoss, drawClockBoss, drawWasher, drawBlower, drawGhostVac, drawRoboBoss, drawSpiderBoss, drawDroneBoss, drawMowerBoss][e.kind == null ? 6 : e.kind](e, r, t);
+  [drawBlender, drawTvBoss, drawClockBoss, drawWasher, drawBlower, drawGhostVac, drawRoboBoss, drawSpiderBoss, drawDroneBoss, drawMowerBoss, drawHubBoss][e.kind == null ? 6 : e.kind](e, r, t);
   drawSensor(e, r);
 }
 function drawSensor(e, r) {
@@ -4040,6 +4163,44 @@ function drawMowerBoss(e, r, t) {
     ctx.fillStyle = '#fff6c9'; circ(sd * r * .5, r * .66, r * .09);
   }
 }
+function drawPrinter(e, r, t) {
+  // a 3D printer: a frame with a moving print head over a half-printed mini robot
+  ctx.fillStyle = '#e9e6f5'; rr(-r * .95, -r * .85, r * 1.9, r * 1.7, r * .2); ctx.fill();
+  ctx.strokeStyle = '#6f6893'; ctx.lineWidth = 2.5; rr(-r * .95, -r * .85, r * 1.9, r * 1.7, r * .2); ctx.stroke();
+  ctx.fillStyle = '#1b1830'; rr(-r * .72, -r * .3, r * 1.44, r * .95, r * .1); ctx.fill();
+  ctx.fillStyle = '#c9d3dd'; ctx.beginPath(); ctx.ellipse(0, r * .52, r * .32, r * .1, 0, 0, TAU); ctx.fill();
+  ctx.fillStyle = 'rgba(255,107,214,.8)'; rr(-r * .22, r * .22, r * .44, r * .3, r * .08); ctx.fill();
+  const hx = Math.sin(t * 3) * r * .45;
+  ctx.fillStyle = '#6f6893'; ctx.fillRect(-r * .72, -r * .26, r * 1.44, r * .08);
+  ctx.fillStyle = '#ffd166'; rr(hx - r * .12, -r * .26, r * .24, r * .22, r * .05); ctx.fill();
+  ctx.strokeStyle = '#ff6bd6'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(hx, -r * .04); ctx.lineTo(hx, r * .2); ctx.stroke();
+  angryEyes(0, -r * .58, r * .5, '#ff3b5c');
+}
+function drawHubBoss(e, r, t) {
+  // the smart-home hub: a fabric speaker with a spinning light ring and cables for legs
+  ctx.lineCap = 'round';
+  for (const [a, sw] of [[.5, 1], [1.2, -1], [1.95, 1], [2.65, -1]]) {
+    const ex = Math.cos(a) * r * 1.3, ey = Math.sin(a) * r * .9 + r * .4;
+    ctx.strokeStyle = '#15121f'; ctx.lineWidth = r * .12;
+    ctx.beginPath(); ctx.moveTo(Math.cos(a) * r * .5, r * .4); ctx.quadraticCurveTo(ex * .8 + sw * r * .2, ey - r * .4, ex, ey); ctx.stroke();
+    ctx.fillStyle = '#ffd166'; circ(ex, ey, r * .08);
+  }
+  const g = ctx.createRadialGradient(-r * .3, -r * .3, r * .1, 0, 0, r);
+  g.addColorStop(0, '#4a4266'); g.addColorStop(1, '#1d1930');
+  ctx.fillStyle = g; circ(0, 0, r * .82);
+  ctx.strokeStyle = 'rgba(255,255,255,.06)'; ctx.lineWidth = 1;
+  for (let k = 1; k < 8; k++) { ctx.beginPath(); ctx.arc(0, 0, r * .1 * k, 0, TAU); ctx.stroke(); }
+  // the light ring
+  for (let k = 0; k < 24; k++) {
+    const a = k / 24 * TAU + t * 1.5;
+    ctx.strokeStyle = `hsla(${(k * 15 + t * 80) % 360},90%,65%,${.4 + .6 * ((k + Math.floor(t * 8)) % 24 < 6)})`;
+    ctx.lineWidth = r * .1; ctx.beginPath(); ctx.arc(0, 0, r * .86, a, a + TAU / 24 * .8); ctx.stroke();
+  }
+  // a visor with one wide eye
+  ctx.fillStyle = '#0d0b16'; rr(-r * .5, -r * .2, r, r * .36, r * .18); ctx.fill();
+  ctx.fillStyle = '#ff6bd6'; ctx.shadowColor = '#ff6bd6'; ctx.shadowBlur = 12;
+  rr(-r * .38 + Math.sin(t) * r * .08, -r * .08, r * .76, r * .12, r * .06); ctx.fill(); ctx.shadowBlur = 0;
+}
 function drawWeb(x, y, R) {
   ctx.save(); ctx.translate(x, y);
   ctx.strokeStyle = 'rgba(235,240,245,.75)'; ctx.lineWidth = 1.3;
@@ -4090,7 +4251,7 @@ function drawEnemy(e) {
     ctx.save(); ctx.globalCompositeOperation = 'lighter';
     glowAt(0, 0, r * 2, '255,59,92', .22 + .12 * Math.sin(T * 10)); ctx.restore();
   }
-  ({ vac: drawVac, spray: drawSpray, mop: drawMop, boss: drawBoss, brush: drawBrush, fan: drawFan, rc: drawRc, shield: drawShield, split: drawSplit, mini: drawVac, magnet: drawMagnet, mole: drawMole })[e.type](e, r, t);
+  ({ vac: drawVac, spray: drawSpray, mop: drawMop, boss: drawBoss, brush: drawBrush, fan: drawFan, rc: drawRc, shield: drawShield, split: drawSplit, mini: drawVac, magnet: drawMagnet, mole: drawMole, printer: drawPrinter })[e.type](e, r, t);
   if (G && G.lvl && G.lvl.event) drawHat(G.lvl.event.costume, r * .9);
   if (e.flash > 0) { ctx.fillStyle = `rgba(255,255,255,${Math.min(.8, e.flash * 7)})`; circ(0, 0, r); }
   ctx.restore();
@@ -4479,6 +4640,7 @@ function chTrim(c, x, y, w, col) {
   else if (c === 3) { ctx.strokeStyle = col; ctx.lineWidth = 1.2; for (let px = x + 6; px < x + w; px += 11) { ctx.beginPath(); ctx.arc(px, y + 5, (px / 11 | 0) % 2 ? 3.2 : 2, 0, TAU); ctx.stroke(); } }
   else if (c === 4) { for (let px = x + 8; px < x + w; px += 14) { ctx.save(); ctx.translate(px, y + 5); ctx.rotate((px / 14 | 0) % 2 ? .6 : -.6); ctx.beginPath(); ctx.ellipse(0, 0, 4.5, 2, 0, 0, TAU); ctx.fill(); ctx.restore(); } }
   else if (c === 5) { for (let px = x + 2; px < x + w; px += 16) ctx.fillRect(px, y + 3.5, 10, 3); }
+  else if (c === 10) { ctx.strokeStyle = col; ctx.lineWidth = 1.2; ctx.beginPath(); for (let px = x; px < x + w; px += 24) { ctx.moveTo(px, y + 5); ctx.lineTo(px + 12, y + 5); ctx.lineTo(px + 16, y + 1); ctx.moveTo(px + 20, y + 1); ctx.arc(px + 20, y + 1, 1.5, 0, TAU); } ctx.stroke(); }
   else if (c === 9) { ctx.strokeStyle = col; ctx.lineWidth = 1.5; for (let px = x + 4; px < x + w; px += 12) { ctx.beginPath(); ctx.moveTo(px, y + 10); ctx.lineTo(px - 3, y + 1); ctx.moveTo(px, y + 10); ctx.lineTo(px + 3, y + 2); ctx.stroke(); } }
   else if (c === 8) { ctx.strokeStyle = col; ctx.lineWidth = 1.5; ctx.beginPath(); for (let px = x; px <= x + w; px += 10) ctx.lineTo(px, y + ((px - x) / 10 % 2 ? 1 : 9)); ctx.stroke(); }
   else if (c === 7) { ctx.strokeStyle = col; ctx.lineWidth = 1; for (let px = x + 8; px < x + w; px += 18) { ctx.beginPath(); ctx.moveTo(px - 6, y + 1); ctx.lineTo(px + 6, y + 9); ctx.moveTo(px + 6, y + 1); ctx.lineTo(px - 6, y + 9); ctx.moveTo(px, y); ctx.lineTo(px, y + 10); ctx.stroke(); } }
@@ -4622,6 +4784,15 @@ function drawNode(c, x, y, r, col, open) {
     ctx.fillStyle = '#ffe066'; ctx.beginPath(); ctx.moveTo(r * .12, -r * .6); ctx.lineTo(-r * .32, r * .08); ctx.lineTo(-r * .02, r * .08);
     ctx.lineTo(-r * .12, r * .6); ctx.lineTo(r * .34, -r * .1); ctx.lineTo(r * .04, -r * .1); ctx.closePath(); ctx.fill();
     ctx.restore();
+  } else if (c === 10) {
+    // a glowing chip
+    ctx.strokeStyle = col; ctx.lineWidth = 2.5;
+    for (let k = -1; k <= 1; k++) for (const sd of [-1, 1]) {
+      ctx.beginPath(); ctx.moveTo(x + k * r * .4, y + sd * r * .7); ctx.lineTo(x + k * r * .4, y + sd * r); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(x + sd * r * .7, y + k * r * .4); ctx.lineTo(x + sd * r, y + k * r * .4); ctx.stroke();
+    }
+    ctx.fillStyle = '#2a1f3a'; rr(x - r * .75, y - r * .75, r * 1.5, r * 1.5, r * .2); ctx.fill();
+    ctx.strokeStyle = col; ctx.lineWidth = 2; rr(x - r * .75, y - r * .75, r * 1.5, r * 1.5, r * .2); ctx.stroke();
   } else if (c === 9) {
     // a flower
     ctx.fillStyle = col;
@@ -5600,6 +5771,8 @@ const STORY = {
       { bg: 8, actors: [{ h: 'rex', x: 140, y: 255, r: 62 }, { h: 'homa', x: 290, y: 268, r: 50 }], who: 'rex' }],
   9: [{ bg: 9, actors: [BOSS_AT(9)], who: 'boss', kind: 9 },
       { bg: 9, actors: [{ h: 'spark', x: 140, y: 255, r: 60 }, { h: 'nugget', x: 290, y: 262, r: 60 }], who: 'spark' }],
+  10: [{ bg: 10, actors: [BOSS_AT(10)], who: 'boss', kind: 10 },
+      { bg: 10, actors: [{ h: 'pixel', x: 140, y: 255, r: 60 }, { h: 'homa', x: 290, y: 268, r: 50 }], who: 'pixel' }],
   end: [{ bg: 0, actors: [{ h: 'mochi', x: 70, y: 250, r: 44, mood: 'happy' }, { h: 'pixel', x: 160, y: 244, r: 44, mood: 'happy' }, { h: 'bandit', x: 250, y: 252, r: 46, mood: 'happy' }, { h: 'nugget', x: 340, y: 256, r: 46, mood: 'happy' }], who: null },
         { bg: 1, actors: [{ e: 'vac', x: 130, y: 250, r: 52 }, { h: 'nugget', x: 290, y: 250, r: 64, mood: 'happy' }], who: 'nugget' }],
 };
@@ -5612,7 +5785,7 @@ function storyNext(skip) {
   PROG.story = { ...(PROG.story || {}), [st.key]: 1 }; saveProg();
   STORYRUN = null; st.then();
 }
-const ENEMY_DRAW = { vac: drawVac, spray: drawSpray, mop: drawMop, brush: drawBrush, fan: drawFan, rc: drawRc, shield: drawShield, split: drawSplit, magnet: drawMagnet, mole: drawMole };
+const ENEMY_DRAW = { vac: drawVac, spray: drawSpray, mop: drawMop, brush: drawBrush, fan: drawFan, rc: drawRc, shield: drawShield, split: drawSplit, magnet: drawMagnet, mole: drawMole, printer: drawPrinter };
 // halftone dots, the printed-comic texture
 function halftone(x0, y0, w, h, col, step, maxR, fromX, fromY) {
   ctx.fillStyle = col; ctx.beginPath();

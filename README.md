@@ -12,8 +12,8 @@ worker/             the leaderboard: a Cloudflare Worker with a D1 database
 
 ## Gameplay
 
-- 54 levels in 10 rooms, each room ends with a boss: Kitchen, Living room, Bedroom (4 levels each),
-  Bathroom, Balcony, Attic, Garage, Basement, Roof, Garden (6 levels each). The map scrolls.
+- 60 levels in 11 rooms, each room ends with a boss: Kitchen, Living room, Bedroom (4 levels each),
+  Bathroom, Balcony, Attic, Garage, Basement, Roof, Garden, Server room (6 levels each). The map scrolls.
 - The basement mixes every enemy type (toughness ×3.1) and ends with the Web-Spinner: after each
   attack it webs the hero it hit, who skips their next turn unless an ally frees them with a shot.
 - The roof (toughness ×3.45) adds magnets that pull heroes in and bend their shots, and ends with
@@ -22,10 +22,13 @@ worker/             the leaderboard: a Cloudflare Worker with a D1 database
 - The garden (toughness ×3.6) adds moles that dig underground every other turn, when shots roll
   right over them, and ends with the Swift Mower: after each attack it charges at the hero it hit
   and shoves aside anyone in its way.
+- The server room (toughness ×3.8) adds 3D printers that print a mini robot after every attack (two
+  at most), and ends with the Smart Home Hub: after each attack it overclocks every other robot, so
+  their attacks come a turn sooner.
 - Later rooms bring new enemies: a toothbrush heals enemies nearby, a fan blows heroes off course,
   an RC car drives to a new spot every turn; in the garage a shield bot cuts damage to its neighbors
   to 35% and twins split into two minis when destroyed.
-- Each room is tougher than the last (enemy toughness ×1 in the kitchen up to ×3.6 in the garden).
+- Each room is tougher than the last (enemy toughness ×1 in the kitchen up to ×3.8 in the server room).
 - Stars: 3 for finishing within the par turn count, 2 for up to 1.5×par, 1 otherwise.
 - Night Shift (unlocks after level 4): endless generated waves, a boss every 5th wave, the room changes
   every 5 waves; the record is the number of waves survived.
