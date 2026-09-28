@@ -46,7 +46,7 @@ function haptic(kind) {
     if (TG && tgv('6.1')) {
       if (kind === 'success' || kind === 'error' || kind === 'warning') TG.HapticFeedback.notificationOccurred(kind);
       else TG.HapticFeedback.impactOccurred(kind);
-    } else if (navigator.vibrate) {
+    } else if (navigator.vibrate && (!navigator.userActivation || navigator.userActivation.hasBeenActive)) {
       navigator.vibrate(kind === 'heavy' ? 30 : kind === 'error' ? [40, 40, 40] : kind === 'success' ? [20, 30, 20] : 10);
     }
   } catch (e) {}
@@ -1218,22 +1218,39 @@ function mergeProg(a, b) {
   r.story = { ...(a.story || {}), ...(b.story || {}) };
   return r;
 }
+// The cloud copy is written only after it has been read and merged, so a save made in the
+// first moments on a new device cannot wipe progress kept in Telegram.
+let cloudReady = !TG_CLOUD, cloudDirty = false;
+function cloudLoaded() {
+  if (cloudReady) return;
+  cloudReady = true;
+  if (cloudDirty) saveProg();
+}
 function loadProg() {
   const s = lsGet(PKEY);
   if (s) { try { PROG = mergeProg(PROG, JSON.parse(s)); } catch (e) {} }
-  if (TG_CLOUD) {
-    try {
-      TG.CloudStorage.getItem(PKEY, (err, val) => {
-        if (err || !val) return;
-        try { PROG = mergeProg(PROG, JSON.parse(val)); lsSet(PKEY, JSON.stringify(PROG)); } catch (e) {}
-      });
-    } catch (e) {}
-  }
+  if (!TG_CLOUD) return;
+  setTimeout(cloudLoaded, 6000); // some clients never answer
+  try {
+    TG.CloudStorage.getItem(PKEY, (err, val) => {
+      if (!err && val) {
+        try {
+          const before = PROG.unlocked;
+          PROG = mergeProg(PROG, JSON.parse(val)); lsSet(PKEY, JSON.stringify(PROG));
+          if (PROG.unlocked !== before) { cloudDirty = true; if (SCREEN === 'map') MAP.focus = true; }
+        } catch (e) {}
+      }
+      cloudLoaded();
+    });
+  } catch (e) { cloudLoaded(); }
 }
 function saveProg() {
   const s = JSON.stringify(PROG);
   lsSet(PKEY, s);
-  if (TG_CLOUD) { try { TG.CloudStorage.setItem(PKEY, s, () => {}); } catch (e) {} }
+  if (!TG_CLOUD) return;
+  if (!cloudReady) { cloudDirty = true; return; }
+  cloudDirty = false;
+  try { TG.CloudStorage.setItem(PKEY, s, () => {}); } catch (e) {}
 }
 const totalStars = () => Object.values(PROG.stars).reduce((a, b) => a + b, 0);
 
@@ -1245,10 +1262,6 @@ function layer(fn) {
   const c = document.createElement('canvas');
   c.width = W * 2; c.height = H * 2;
   const b = c.getContext('2d', { willReadFrequently: true }); b.scale(2, 2); fn(b); return c;
-}
-function freeze(list) {
-  if (!window.createImageBitmap) return;
-  list.forEach((c, i) => createImageBitmap(c).then(bm => { list[i] = bm; }).catch(() => {}));
 }
 const frac = v => v - Math.floor(v);
 function beamPt(ch, u, v) {
@@ -1799,8 +1812,17 @@ function roomGarden(b, ch) {
   });
 }
 const ROOMS = [roomKitchen, roomLiving, roomBedroom, roomBath, roomBalcony, roomAttic, roomGarage, roomBasement, roomRoof, roomGarden];
-const BGS = CHAPTERS.map((ch, i) => layer(b => { b.fillStyle = ch.hud; b.fillRect(0, 0, W, H); ROOMS[i](b, ch); }));
-freeze(BGS);
+// Each room is painted the first time it is needed (the rest are warmed up after start),
+// so the game opens without painting all ten rooms first.
+const BGS = [];
+function bg(c) {
+  if (!BGS[c]) {
+    const ch = CHAPTERS[c], canvas = layer(b => { b.fillStyle = ch.hud; b.fillRect(0, 0, W, H); ROOMS[c](b, ch); });
+    BGS[c] = canvas;
+    if (window.createImageBitmap) createImageBitmap(canvas).then(bm => { BGS[c] = bm; }).catch(() => {});
+  }
+  return BGS[c];
+}
 
 // animated room life: drawn under the actors (steam, TV glow, moonbeam) and over them (motes, fireflies)
 function glowAt(x, y, r, rgb, a) {
@@ -2083,12 +2105,15 @@ function advanceHero() {
     if (!h.ko) break;
     if (--h.ko === 0) wake(h, 1, tr('woke'));
   }
+  if (G.heroes[n].ko) { const up = G.heroes.findIndex(h => !h.ko); if (up >= 0) n = up; }
   G.cur = n;
 }
-function startLevel(li, noStory) {
+// onStart runs once the run exists, which may be after the room's comic
+function startLevel(li, noStory, onStart) {
   const c = LEVELS[li].ch;
-  if (!noStory && CH_LEVELS[c][0] === li && STORY[c] && !(PROG.story && PROG.story[c])) { showStory(c, () => startLevel(li, true)); return; }
+  if (!noStory && CH_LEVELS[c][0] === li && STORY[c] && !(PROG.story && PROG.story[c])) { showStory(c, () => startLevel(li, true, onStart)); return; }
   newRun(li); setScreen('game'); setupWave(0);
+  if (onStart) onStart();
 }
 
 // ---------- night shift: endless waves ----------
@@ -2337,7 +2362,7 @@ function hitEnemy(e, nx, ny) {
     for (const o of G.enemies) if (o !== e && o.alive && dist(e.x, e.y, o.x, o.y) < nr + o.r) damageEnemy(o, nd * (s.zoom ? 2 : 1));
   }
   if (h.id === 'spark') {
-    const near = G.enemies.filter(o => o !== e && o.alive && dist(e.x, e.y, o.x, o.y) < 220)
+    const near = G.enemies.filter(o => o !== e && o.alive && !o.under && dist(e.x, e.y, o.x, o.y) < 220)
       .sort((a, b) => dist(e.x, e.y, a.x, a.y) - dist(e.x, e.y, b.x, b.y)).slice(0, h.lvl >= 10 ? 2 : 1);
     for (const o of near) {
       G.beams.push({ x1: e.x, y1: e.y, x2: o.x, y2: o.y, life: .3, max: .3, col: '#ffe14d', w: 5 });
@@ -2357,7 +2382,7 @@ function triggerCombo(o) {
     for (const e of G.enemies) if (e.alive && dist(o.x, o.y, e.x, e.y) < 130 + e.r) damageEnemy(e, 350 * z);
   } else if (o.id === 'pixel') {
     let best = null, bd = 1e9;
-    for (const e of G.enemies) if (e.alive) { const d = dist(o.x, o.y, e.x, e.y); if (d < bd) { bd = d; best = e; } }
+    for (const e of G.enemies) if (e.alive && !e.under) { const d = dist(o.x, o.y, e.x, e.y); if (d < bd) { bd = d; best = e; } }
     if (best) {
       G.beams.push({ x1: o.x, y1: o.y, x2: best.x, y2: best.y, life: .35, max: .35, col: '#ffd23f', w: 7 });
       damageEnemy(best, (o.lvl >= 10 ? 800 : 550) * z);
@@ -2373,14 +2398,14 @@ function triggerCombo(o) {
     if (o.lvl >= 10) { G.hp = Math.min(G.maxHp, G.hp + 800 * z); ftext(o.x, o.y - o.r - 46, '+' + 800 * z + ' HP', '#5ce1c6', 16); }
     burst(o.x, o.y, '#ff6b6b', 16); Snd.play('heal');
   } else if (o.id === 'homa') {
-    const alive = G.enemies.filter(e => e.alive);
+    const alive = G.enemies.filter(e => e.alive && !e.under);
     for (let k = 0; k < 5 && alive.length; k++) {
       const e = alive[Math.floor(Math.random() * alive.length)];
       G.beams.push({ x1: o.x, y1: o.y, x2: e.x, y2: e.y, life: .3, max: .3, col: '#c47f2e', w: 3 });
       damageEnemy(e, 150 * z);
     }
   } else if (o.id === 'spark') {
-    const alive = G.enemies.filter(e => e.alive).sort(() => Math.random() - .5).slice(0, 3);
+    const alive = G.enemies.filter(e => e.alive && !e.under).sort(() => Math.random() - .5).slice(0, 3);
     for (const e of alive) {
       G.beams.push({ x1: e.x, y1: TOP, x2: e.x, y2: e.y, life: .4, max: .4, col: '#ffe14d', w: 6 });
       damageEnemy(e, 300 * z);
@@ -2669,9 +2694,14 @@ function nextAttack() {
   if (G.hp <= 0 || allKo) { G.loseReason = allKo ? 'ko' : 'hp'; G.state = 'lose'; if (G.lvl.endless) endEndless(); Amb.duck(.25); Snd.play('lose'); haptic('error'); }
 }
 
+function outOfTurns() {
+  if (!G.hard || G.turn <= G.lvl.par) return false;
+  G.loseReason = 'turns'; G.state = 'lose'; Amb.duck(.25); Snd.play('lose'); haptic('error');
+  return true;
+}
 function nextTurn() {
   G.turn++;
-  if (G.hard && G.turn > G.lvl.par) { G.loseReason = 'turns'; G.state = 'lose'; Amb.duck(.25); Snd.play('lose'); haptic('error'); return; }
+  if (outOfTurns()) return;
   advanceHero();
   G.trails = G.trails.filter(t => t.turn >= G.turn - 2);
   driveCars();
@@ -2716,11 +2746,19 @@ function waveClear() {
   for (const h of G.heroes) { if (h.ko) { h.ko = 0; h.hearts = 1; } else h.hearts = Math.min(h.maxHearts, h.hearts + 1); }
   G.state = 'banner';
   G.banner = { title: tr('waveClear'), sub: tr('waveClearSub', heal), t: 1.5, max: 1.5,
-    done: () => { G.turn++; advanceHero(); setupWave(G.wave + 1); } };
+    done: () => { G.turn++; if (outOfTurns()) return; advanceHero(); setupWave(G.wave + 1); } };
   playRound(G.lvl.ch);
 }
 
 // ---------- update ----------
+// drop finished entries in place, so the effect lists do not allocate new arrays every frame
+function prune(a, keep) {
+  let j = 0;
+  for (let i = 0; i < a.length; i++) if (keep(a[i])) a[j++] = a[i];
+  a.length = j;
+}
+const live = o => o.life > 0;
+const onScreen = c => (c.vy > 0 ? c.y < H + 20 : c.y > -20);
 function update(dt) {
   if (SCREEN === 'map') updateMap(dt);
   if (SCREEN !== 'game' || !G) return;
@@ -2741,15 +2779,15 @@ function update(dt) {
     if (p.shape === 'bubble') p.vy -= 60 * dt;
   }
   for (const c of G.confetti) { c.x += (c.vx + Math.sin(T * 2 + c.rot) * 30) * dt; c.y += c.vy * dt; c.rot += c.vr * dt; }
-  G.confetti = G.confetti.filter(c => c.vy > 0 ? c.y < H + 20 : c.y > -20);
+  prune(G.confetti, onScreen);
   if (G.flash) { G.flash.a -= dt * 1.6; if (G.flash.a <= 0) G.flash = null; }
-  G.parts = G.parts.filter(p => p.life > 0);
+  prune(G.parts, live);
   for (const t of G.texts) { t.y -= 40 * dt; t.life -= dt; }
-  G.texts = G.texts.filter(t => t.life > 0);
+  prune(G.texts, live);
   for (const r of G.rings) r.life -= dt;
-  G.rings = G.rings.filter(r => r.life > 0);
+  prune(G.rings, live);
   for (const b of G.beams) b.life -= dt;
-  G.beams = G.beams.filter(b => b.life > 0);
+  prune(G.beams, live);
   for (const h of G.heroes) { if (h.hurt > 0) h.hurt -= dt; if (h.happy > 0) h.happy -= dt; }
   if (G.typeTag && G.state === 'aim') { G.typeTag.life -= dt; if (G.typeTag.life <= 0) G.typeTag = null; }
   G.hpLag = G.hpLag > G.hp ? G.hpLag + (G.hp - G.hpLag) * Math.min(1, dt * 2.5) : G.hp;
@@ -4218,7 +4256,7 @@ function drawAim() {
       if (y < TOP + h.r) { y = TOP + h.r; vy = -vy; }
       if (y > BOT - h.r) { y = BOT - h.r; vy = -vy; }
       for (const e of G.enemies) {
-        if (!e.alive) continue;
+        if (!e.alive || e.under) continue;
         const ex = x - e.x, ey = y - e.y, d = Math.hypot(ex, ey) || 1, rs = h.r + e.r;
         if (d >= rs) { inside.delete(e); continue; }
         if (inside.has(e)) continue;
@@ -4275,7 +4313,7 @@ function drawFx() {
   for (const b of G.beams) {
     const a = b.life / b.max;
     ctx.globalAlpha = a; ctx.strokeStyle = b.col; ctx.lineWidth = b.w * a + 1;
-    ctx.shadowColor = b.col; ctx.shadowBlur = 14;
+    if (!LOWFX) { ctx.shadowColor = b.col; ctx.shadowBlur = 14; }
     ctx.beginPath(); ctx.moveTo(b.x1, b.y1); ctx.lineTo(b.x2, b.y2); ctx.stroke();
   }
   ctx.shadowBlur = 0;
@@ -4468,7 +4506,7 @@ function drawBanner() {
   ctx.strokeStyle = ch.col; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(W / 2, 312, 24, 0, TAU); ctx.stroke();
   chIcon(c, W / 2, 313, 26, ch.col);
   ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-  ctx.fillStyle = '#ffc857'; ctx.font = `900 26px ${FD}`; ctx.fillText(b.title, W / 2, 352);
+  ctx.fillStyle = '#ffc857'; fitFont(b.title, W - 90, 26); ctx.fillText(b.title, W / 2, 352);
   ctx.fillStyle = '#f4efe6'; ctx.font = `800 14px ${FB}`; wrap(b.sub, W / 2, 386, W - 100, 18);
   ctx.restore();
   ctx.globalAlpha = 1;
@@ -4479,7 +4517,7 @@ const FEATURE_COLS = ['#ff8fb1', '#ff3b5c', '#c68a4f', '#5ce1c6', '#9aa0ad'];
 const FEATURES = () => tr('features').map((f, i) => [FEATURE_COLS[i], ...f]);
 
 function drawHowto() {
-  ctx.drawImage(BGS[1], 0, 0, W, H);
+  ctx.drawImage(bg(1), 0, 0, W, H);
   ctx.fillStyle = 'rgba(12,10,26,.9)'; ctx.fillRect(0, 0, W, H);
   const cast = HEROES.filter(h => h.id !== 'spark'), step = (W - 24) / cast.length, hr = Math.min(26, step * .31);
   cast.forEach((h, i) => {
@@ -4726,7 +4764,7 @@ function drawMap() {
     const chOpen = ids[0] + 1 <= PROG.unlocked;
     // the chapter's room seen through a window
     ctx.save(); rr(bx, by, bw, bh, 18); ctx.clip();
-    ctx.drawImage(BGS[c], bx * 2, 300 * 2, bw * 2, bh * 2, bx, by, bw, bh);
+    ctx.drawImage(bg(c), bx * 2, 300 * 2, bw * 2, bh * 2, bx, by, bw, bh);
     ctx.translate(0, by - 300); drawRoomOver(c); ctx.translate(0, 300 - by);
     const sh = ctx.createLinearGradient(0, by, 0, by + bh);
     sh.addColorStop(0, 'rgba(10,8,20,.82)'); sh.addColorStop(.3, 'rgba(10,8,20,.45)'); sh.addColorStop(1, 'rgba(10,8,20,.6)');
@@ -4931,11 +4969,13 @@ function prepLevel(li) { // li = -1 for Night Shift
 }
 function startPrepared() {
   const pr = PREP; PREP = null;
-  if (pr.li < 0) startEndless();
-  else if (pr.hard) { newRun(pr.li); G.hard = true; setScreen('game'); setupWave(0); }
-  else startLevel(pr.li);
-  if (pr.heart && owns('heart')) { useBooster('heart'); for (const h of G.heroes) { h.maxHearts++; h.hearts++; } }
-  if (pr.meter && owns('meter')) { useBooster('meter'); G.meter = Math.max(G.meter, 50); }
+  const boost = () => {
+    if (pr.heart && owns('heart')) { useBooster('heart'); for (const h of G.heroes) { h.maxHearts++; h.hearts++; } }
+    if (pr.meter && owns('meter')) { useBooster('meter'); G.meter = Math.max(G.meter, 50); }
+  };
+  if (pr.li < 0) { startEndless(); boost(); }
+  else if (pr.hard) { newRun(pr.li); G.hard = true; setScreen('game'); setupWave(0); boost(); }
+  else startLevel(pr.li, false, boost);
 }
 function drawPrep() {
   drawMap(); UI = [];
@@ -5066,8 +5106,7 @@ async function loadDaily() {
 }
 function startChallenge() {
   const ch = todayChallenge();
-  startLevel(ch.li);
-  G.challenge = ch;
+  startLevel(ch.li, false, () => { G.challenge = ch; });
 }
 function checkChallenge() {
   const ch = G.challenge;
@@ -5201,7 +5240,7 @@ function drawDaily() {
   // a little window onto the room
   const rx = 32, ry = Y2 + 44, rs = 76;
   ctx.save(); rr(rx, ry, rs, rs, 16); ctx.clip();
-  ctx.drawImage(BGS[c], 150 * 2, 300 * 2, 150 * 2, 150 * 2, rx, ry, rs, rs);
+  ctx.drawImage(bg(c), 150 * 2, 300 * 2, 150 * 2, 150 * 2, rx, ry, rs, rs);
   ctx.fillStyle = 'rgba(12,10,26,.45)'; ctx.fillRect(rx, ry, rs, rs);
   ctx.restore();
   ctx.strokeStyle = room.col; ctx.lineWidth = 2; rr(rx, ry, rs, rs, 16); ctx.stroke();
@@ -5453,12 +5492,13 @@ function storyNext(skip) {
 const ENEMY_DRAW = { vac: drawVac, spray: drawSpray, mop: drawMop, brush: drawBrush, fan: drawFan, rc: drawRc, shield: drawShield, split: drawSplit, magnet: drawMagnet, mole: drawMole };
 // halftone dots, the printed-comic texture
 function halftone(x0, y0, w, h, col, step, maxR, fromX, fromY) {
-  ctx.fillStyle = col;
+  ctx.fillStyle = col; ctx.beginPath();
   const far = Math.hypot(w, h);
   for (let y = y0; y < y0 + h; y += step) for (let x = x0 + ((y - y0) / step % 2) * step / 2; x < x0 + w; x += step) {
     const r = maxR * Math.max(0, 1 - Math.hypot(x - fromX, y - fromY) / far * 1.6);
-    if (r > .3) { ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fill(); }
+    if (r > .3) { ctx.moveTo(x + r, y); ctx.arc(x, y, r, 0, TAU); }
   }
+  ctx.fill();
 }
 function drawStory() {
   const st = STORYRUN, panels = STORY[st.key], pn = panels[st.i], ch = CHAPTERS[pn.bg] || CHAPTERS[0];
@@ -5482,7 +5522,7 @@ function drawStory() {
   ctx.translate(W / 2 + (1 - ease) * 80, py + ph / 2); ctx.rotate(tilt + (1 - ease) * .06); ctx.translate(-W / 2, -(py + ph / 2));
   ctx.fillStyle = 'rgba(0,0,0,.5)'; ctx.fillRect(px + 8, py + 10, pw, ph);
   ctx.save(); ctx.beginPath(); ctx.rect(px, py, pw, ph); ctx.clip();
-  ctx.drawImage(BGS[pn.bg], 0, (TOP + 70) * 2, W * 2, 450 * 2, px, py, pw, ph);
+  ctx.drawImage(bg(pn.bg), 0, (TOP + 70) * 2, W * 2, 450 * 2, px, py, pw, ph);
   ctx.fillStyle = 'rgba(8,6,18,.3)'; ctx.fillRect(px, py, pw, ph);
   if (pn.who === 'boss') {
     // action lines burst out from behind the boss
@@ -5639,7 +5679,7 @@ function drawEnd() {
 
 function drawGame() {
   const c = G.lvl.ch;
-  ctx.drawImage(BGS[c], 0, 0, W, H);
+  ctx.drawImage(bg(c), 0, 0, W, H);
   const sh = RM ? 0 : G.shake;
   ctx.save();
   ctx.translate((Math.random() - .5) * sh, (Math.random() - .5) * sh);
@@ -5817,10 +5857,10 @@ loadDaily();
 // #dev: timer-driven loop (keeps running in hidden tabs) plus a state hook for testing
 const DEV = location.hash === '#dev';
 const nextFrame = DEV ? cb => setTimeout(() => cb(performance.now()), 16) : requestAnimationFrame;
-if (DEV) window.__pawsling = { get G() { return G; }, set G(v) { G = v; }, get SCREEN() { return SCREEN; }, get DAILY() { return DAILY; }, startLevel, startEndless, launch, PROG: () => PROG, MAP, BOARD, setScreen, secondWind, setInv, get INV() { return INV; }, prepLevel, setupWave, step: dt => update(dt), LEVELS, CHAPTERS, ENEMY };
+if (DEV) window.__pawsling = { get G() { return G; }, set G(v) { G = v; }, get SCREEN() { return SCREEN; }, get DAILY() { return DAILY; }, startLevel, startEndless, launch, PROG: () => PROG, MAP, BOARD, setScreen, secondWind, setInv, get INV() { return INV; }, prepLevel, setupWave, step: dt => update(dt), LEVELS, CHAPTERS, ENEMY, bg, BGS };
 let last = performance.now();
 // Slow devices: if frames keep taking longer than ~45 ms, drop the animated room lights.
-let LOWFX = false, slowMs = 0, failed = false;
+let LOWFX = false, slowMs = 0, failed = false, failN = 0;
 function frame(now) {
   const raw = now - last, dt = Math.min(.033, raw / 1000);
   last = now; T += dt;
@@ -5828,11 +5868,18 @@ function frame(now) {
   try {
     update(dt);
     draw();
-    if (!window.__pawslingOk) { window.__pawslingOk = true; const b = document.getElementById('boot'); if (b) b.remove(); }
+    failN = 0;
+    if (!window.__pawslingOk) { window.__pawslingOk = performance.now(); const b = document.getElementById('boot'); if (b) b.remove(); }
   } catch (e) {
-    if (!failed && window.__bootErr) { failed = true; window.__bootErr(e); }
+    if (window.__pawslingOk && ++failN < 30) { if (failN === 1) console.error(e); }
+    else if (!failed && window.__bootErr) { failed = true; window.__bootErr(e); }
   }
   nextFrame(frame);
 }
 nextFrame(frame);
+(function warm(c) {
+  if (c >= CHAPTERS.length) return;
+  const later = window.requestIdleCallback ? f => requestIdleCallback(f, { timeout: 2000 }) : f => setTimeout(f, 300);
+  later(() => { bg(c); warm(c + 1); });
+})(0);
 })();

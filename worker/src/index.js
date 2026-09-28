@@ -97,7 +97,7 @@ export default {
     try { body = await req.json(); } catch { return json({ error: 'bad json' }, 400); }
     const user = await verify(body.initData, env.BOT_TOKEN);
     if (!user || !user.id) return json({ error: 'unauthorized' }, 401);
-    await ensureHook(env, url.origin);
+    try { await ensureHook(env, url.origin); } catch (e) { console.log('webhook check failed', e && e.message); }
 
     if (path === '/invoice') {
       const item = ITEMS[body.item];
@@ -126,8 +126,9 @@ export default {
       if (!BOOSTERS.includes(body.reward)) return json({ error: 'bad reward' }, 400);
       await ensureTables(env.DB);
       const today = utcDay();
-      const r = await env.DB.prepare(`UPDATE daily SET challenge_day = ?2 WHERE user_id = ?1 AND (challenge_day IS NULL OR challenge_day <> ?2)`)
-        .bind(user.id, today).run();
+      const r = await env.DB.prepare(`INSERT INTO daily (user_id, streak, challenge_day, lang) VALUES (?1, 0, ?2, ?3)
+        ON CONFLICT(user_id) DO UPDATE SET challenge_day = excluded.challenge_day WHERE daily.challenge_day IS NOT excluded.challenge_day`)
+        .bind(user.id, today, user.language_code || '').run();
       if (r.meta.changes > 0) await grant(env.DB, user.id, { [body.reward]: 1 });
       return json({ ok: r.meta.changes > 0, items: await inventory(env.DB, user.id) });
     }
@@ -155,13 +156,13 @@ async function daily(env, user) {
   const known = row || await db.prepare('SELECT 1 AS x FROM players WHERE id = ?1').bind(user.id).first();
   let claimed = false, streak = row ? row.streak : 0, reward = null, gifted = false;
   if (!row || row.last_day !== today) {
-    streak = row && row.last_day === yesterday ? row.streak % DAILY.length + 1 : 1;
-    reward = DAILY[streak - 1];
-    await db.prepare(`INSERT INTO daily (user_id, last_day, streak, lang) VALUES (?1, ?2, ?3, ?4)
-      ON CONFLICT(user_id) DO UPDATE SET last_day = excluded.last_day, streak = excluded.streak, lang = excluded.lang`)
-      .bind(user.id, today, streak, user.language_code || '').run();
-    await grant(db, user.id, reward);
-    claimed = true;
+    const next = row && row.last_day === yesterday ? row.streak % DAILY.length + 1 : 1;
+    const r = await db.prepare(`INSERT INTO daily (user_id, last_day, streak, lang) VALUES (?1, ?2, ?3, ?4)
+      ON CONFLICT(user_id) DO UPDATE SET last_day = excluded.last_day, streak = excluded.streak, lang = excluded.lang
+      WHERE daily.last_day IS NOT excluded.last_day`)
+      .bind(user.id, today, next, user.language_code || '').run();
+    streak = next;
+    if (r.meta.changes > 0) { reward = DAILY[next - 1]; await grant(db, user.id, reward); claimed = true; }
   }
   // a brand-new player who came through a friend's link
   const m = /^ref_(\d+)$/.exec(user.start || '');
@@ -223,7 +224,7 @@ async function tg(env, method, body) {
   const r = await fetch(`https://api.telegram.org/bot${env.BOT_TOKEN}/${method}`, {
     method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(body),
   });
-  return r.json();
+  try { return await r.json(); } catch (e) { return { ok: false, description: 'HTTP ' + r.status }; }
 }
 // the webhook secret is derived from the bot token, so there is nothing extra to configure
 async function hookSecret(env) {
@@ -244,6 +245,10 @@ let tablesReady = false;
 async function ensureTables(db) {
   if (tablesReady) return;
   await db.batch([
+    db.prepare(`CREATE TABLE IF NOT EXISTS players (id INTEGER PRIMARY KEY, name TEXT NOT NULL, night INTEGER NOT NULL DEFAULT 0,
+      stars INTEGER NOT NULL DEFAULT 0, night_at INTEGER NOT NULL DEFAULT 0, stars_at INTEGER NOT NULL DEFAULT 0, updated_at INTEGER NOT NULL)`),
+    db.prepare('CREATE INDEX IF NOT EXISTS idx_night ON players (night DESC, night_at ASC)'),
+    db.prepare('CREATE INDEX IF NOT EXISTS idx_stars ON players (stars DESC, stars_at ASC)'),
     db.prepare(`CREATE TABLE IF NOT EXISTS purchases (charge_id TEXT PRIMARY KEY, user_id INTEGER NOT NULL,
       item TEXT NOT NULL, stars INTEGER NOT NULL, at INTEGER NOT NULL)`),
     db.prepare(`CREATE TABLE IF NOT EXISTS inventory (user_id INTEGER NOT NULL, item TEXT NOT NULL,
