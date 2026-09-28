@@ -716,7 +716,7 @@ const I18N = {
     heroes: 'Герої', lvl: n => `Рів. ${n}`, xpOf: (a, b) => `${a} / ${b} досвіду`, maxLvl: 'Максимальний рівень', perAll: 'Кожен рівень героя: +4% шкоди', xpGain: n => `+${n} досвіду кожному герою`, lvlUp: s => `новий рівень: ${s}`, 'knot.fire': 'Вогняний вузол!', 'knot.purr': 'Мурчальний вузол!', 'knot.trash': 'Сміттєвий вузол!', hardName: 'Випробування', hardDesc: n => `Вороги +40% міцності, лише ${n} ходів. Подвійний досвід і корона`, hardLeft: n => `Випробування: лишилось ${n} ходів`, hardTurns: 'Ходи скінчились. Спробуй ще раз', hardDone: n => `Випробування ${n} пройдено!`, 'perk.mochi.5': '+20% за кожен відскок', 'perk.mochi.10': '+25% за кожен відскок', 'perk.pixel.5': '+15% шкоди, пролітаючи наскрізь', 'perk.pixel.10': 'Лазерний погляд: 800 шкоди', 'perk.bandit.5': 'Нічний перекус лікує на 700', 'perk.bandit.10': 'Удар відкладає атаку на 2 ходи', 'perk.nugget.5': 'Більший радіус вибуху', 'perk.nugget.10': 'Вибухи б\'ють на 320', 'perk.spark.5': 'Блискавка б\'є на 70%', 'perk.spark.10': 'Блискавка б\'є двох ворогів',
     daily: 'Щодня', dailyBonus: 'Бонус за вхід', streak: n => `Серія: ${n} дн.`, dayShort: n => `Д${n}`, challenge: 'Завдання дня', 'ch.knots': n => `Пройди рівень і зав'яжи ${n} вузли`, 'ch.lasers': n => `Пройди рівень і спіймай лазер ${n} рази`, 'ch.noko': () => 'Пройди рівень без жодного нокауту', 'ch.par': n => `Пройди рівень за ${n} ходів або швидше`, 'ch.portals': n => `Пройди рівень і пролети крізь коробки ${n} рази`, reward: 'Нагорода', chDone: 'Виконано ✓', chWon: r => `Завдання дня виконано! +1 ${r}`, invite: 'Запроси друга', inviteDesc: 'Коли друг зайде в гру за твоїм посиланням, ви обидва отримаєте +1 серце і +1 швидкий старт', invited: n => `Запрошено: ${n}`, inviteBtn: 'Запросити', inviteText: 'Коти та єноти проти роботів-пилососів! Зіграй зі мною в Pawsling 🐾', giftedMsg: 'Тебе запросив друг: +1 серце і +1 швидкий старт!', dailyTgOnly: 'Бонуси й нагороди працюють, коли гра відкрита в Telegram', boardWeek: 'Тиждень', weekLeft: (d, h) => `До кінця: ${d} д ${h} год`, weekPrizes: 'топ-3 отримають призи в понеділок',
     shop: 'Магазин',
-    shopTgOnly: 'Магазин працює, коли гра відкрита в Telegram',
+    shopBoosts: 'Бустери', shopHeroes: 'Герої', shopLooks: 'Прикраси', shopTgOnly: 'Магазин працює, коли гра відкрита в Telegram',
     equip: 'Вдягнути',
     unequip: 'Зняти',
     inTeam: 'У команді',
@@ -821,7 +821,7 @@ const I18N = {
     heroes: 'Heroes', lvl: n => `Lv ${n}`, xpOf: (a, b) => `${a} / ${b} XP`, maxLvl: 'Max level', perAll: 'Every hero level: +4% damage', xpGain: n => `+${n} XP for every hero`, lvlUp: s => `level up: ${s}`, 'knot.fire': 'Fire knot!', 'knot.purr': 'Purring knot!', 'knot.trash': 'Trash knot!', hardName: 'Challenge mode', hardDesc: n => `Enemies +40% tougher, only ${n} turns. Double XP and a crown`, hardLeft: n => `Challenge: ${n} turns left`, hardTurns: 'Out of turns. Try again', hardDone: n => `Challenge ${n} complete!`, 'perk.mochi.5': '+20% per wall bounce', 'perk.mochi.10': '+25% per wall bounce', 'perk.pixel.5': '+15% damage when piercing', 'perk.pixel.10': 'Laser Stare: 800 damage', 'perk.bandit.5': 'Midnight Snack heals 700', 'perk.bandit.10': 'Hits delay attacks by 2 turns', 'perk.nugget.5': 'Bigger blast radius', 'perk.nugget.10': 'Blasts deal 320', 'perk.spark.5': 'Lightning deals 70%', 'perk.spark.10': 'Lightning hits two enemies',
     daily: 'Daily', dailyBonus: 'Login bonus', streak: n => `Streak: ${n} days`, dayShort: n => `D${n}`, challenge: 'Daily challenge', 'ch.knots': n => `Win the level and tie ${n} knots`, 'ch.lasers': n => `Win the level and catch the laser ${n} times`, 'ch.noko': () => 'Win the level without a single knockout', 'ch.par': n => `Win the level in ${n} turns or fewer`, 'ch.portals': n => `Win the level and fly through boxes ${n} times`, reward: 'Reward', chDone: 'Done ✓', chWon: r => `Daily challenge done! +1 ${r}`, invite: 'Invite a friend', inviteDesc: 'When a friend joins through your link, you both get +1 heart and +1 quick start', invited: n => `Invited: ${n}`, inviteBtn: 'Invite', inviteText: 'Cats and raccoons vs robot vacuums! Play Pawsling with me 🐾', giftedMsg: 'A friend invited you: +1 heart and +1 quick start!', dailyTgOnly: 'Bonuses and rewards work when the game is opened in Telegram', boardWeek: 'Week', weekLeft: (d, h) => `Ends in ${d}d ${h}h`, weekPrizes: 'the top 3 get prizes on Monday',
     shop: 'Shop',
-    shopTgOnly: 'The shop works when the game is opened in Telegram',
+    shopBoosts: 'Boosters', shopHeroes: 'Heroes', shopLooks: 'Style', shopTgOnly: 'The shop works when the game is opened in Telegram',
     equip: 'Wear',
     unequip: 'Remove',
     inTeam: 'In the team',
@@ -926,7 +926,7 @@ const I18N = {
     heroes: 'Bohaterowie', lvl: n => `Poz. ${n}`, xpOf: (a, b) => `${a} / ${b} PD`, maxLvl: 'Maksymalny poziom', perAll: 'Każdy poziom bohatera: +4% obrażeń', xpGain: n => `+${n} PD dla każdego bohatera`, lvlUp: s => `awans: ${s}`, 'knot.fire': 'Ognisty supeł!', 'knot.purr': 'Mruczący supeł!', 'knot.trash': 'Śmieciowy supeł!', hardName: 'Wyzwanie', hardDesc: n => `Wrogowie +40% wytrzymalsi, tylko ${n} tur. Podwójne PD i korona`, hardLeft: n => `Wyzwanie: zostało ${n} tur`, hardTurns: 'Skończyły się tury. Spróbuj ponownie', hardDone: n => `Wyzwanie ${n} ukończone!`, 'perk.mochi.5': '+20% za każde odbicie', 'perk.mochi.10': '+25% za każde odbicie', 'perk.pixel.5': '+15% obrażeń przy przebiciu', 'perk.pixel.10': 'Laserowe spojrzenie: 800', 'perk.bandit.5': 'Nocna przekąska leczy 700', 'perk.bandit.10': 'Ciosy opóźniają atak o 2 tury', 'perk.nugget.5': 'Większy zasięg wybuchu', 'perk.nugget.10': 'Wybuchy zadają 320', 'perk.spark.5': 'Piorun zadaje 70%', 'perk.spark.10': 'Piorun trafia dwóch wrogów',
     daily: 'Codziennie', dailyBonus: 'Bonus za logowanie', streak: n => `Seria: ${n} dni`, dayShort: n => `D${n}`, challenge: 'Zadanie dnia', 'ch.knots': n => `Wygraj poziom i zawiąż ${n} supły`, 'ch.lasers': n => `Wygraj poziom i złap laser ${n} razy`, 'ch.noko': () => 'Wygraj poziom bez żadnego nokautu', 'ch.par': n => `Wygraj poziom w ${n} tur lub mniej`, 'ch.portals': n => `Wygraj poziom i przeleć przez pudełka ${n} razy`, reward: 'Nagroda', chDone: 'Zrobione ✓', chWon: r => `Zadanie dnia wykonane! +1 ${r}`, invite: 'Zaproś znajomego', inviteDesc: 'Gdy znajomy dołączy z twojego linku, oboje dostaniecie +1 serce i +1 szybki start', invited: n => `Zaproszono: ${n}`, inviteBtn: 'Zaproś', inviteText: 'Koty i szopy kontra roboty sprzątające! Zagraj ze mną w Pawsling 🐾', giftedMsg: 'Zaprosił cię znajomy: +1 serce i +1 szybki start!', dailyTgOnly: 'Bonusy i nagrody działają, gdy gra jest otwarta w Telegramie', boardWeek: 'Tydzień', weekLeft: (d, h) => `Koniec za ${d} d ${h} godz.`, weekPrizes: 'top 3 dostanie nagrody w poniedziałek',
     shop: 'Sklep',
-    shopTgOnly: 'Sklep działa, gdy gra jest otwarta w Telegramie',
+    shopBoosts: 'Wzmocnienia', shopHeroes: 'Bohaterowie', shopLooks: 'Ozdoby', shopTgOnly: 'Sklep działa, gdy gra jest otwarta w Telegramie',
     equip: 'Załóż',
     unequip: 'Zdejmij',
     inTeam: 'W drużynie',
@@ -1031,7 +1031,7 @@ const I18N = {
     heroes: 'Helden', lvl: n => `Lv. ${n}`, xpOf: (a, b) => `${a} / ${b} EP`, maxLvl: 'Höchststufe', perAll: 'Jede Heldenstufe: +4 % Schaden', xpGain: n => `+${n} EP für jeden Helden`, lvlUp: s => `Aufstieg: ${s}`, 'knot.fire': 'Feuerknoten!', 'knot.purr': 'Schnurrknoten!', 'knot.trash': 'Müllknoten!', hardName: 'Herausforderung', hardDesc: n => `Gegner +40 % stärker, nur ${n} Züge. Doppelte EP und eine Krone`, hardLeft: n => `Herausforderung: noch ${n} Züge`, hardTurns: 'Keine Züge mehr. Versuch es nochmal', hardDone: n => `Herausforderung ${n} geschafft!`, 'perk.mochi.5': '+20 % pro Abprall', 'perk.mochi.10': '+25 % pro Abprall', 'perk.pixel.5': '+15 % Schaden beim Durchschlag', 'perk.pixel.10': 'Laserblick: 800 Schaden', 'perk.bandit.5': 'Mitternachtssnack heilt 700', 'perk.bandit.10': 'Treffer verzögern Angriffe um 2 Züge', 'perk.nugget.5': 'Größerer Explosionsradius', 'perk.nugget.10': 'Explosionen machen 320', 'perk.spark.5': 'Blitz macht 70 %', 'perk.spark.10': 'Blitz trifft zwei Gegner',
     daily: 'Täglich', dailyBonus: 'Login-Bonus', streak: n => `Serie: ${n} Tage`, dayShort: n => `T${n}`, challenge: 'Tagesaufgabe', 'ch.knots': n => `Gewinne das Level und knüpfe ${n} Knoten`, 'ch.lasers': n => `Gewinne das Level und fang den Laser ${n}-mal`, 'ch.noko': () => 'Gewinne das Level ohne ein einziges K.o.', 'ch.par': n => `Gewinne das Level in ${n} Zügen oder weniger`, 'ch.portals': n => `Gewinne das Level und flieg ${n}-mal durch Kartons`, reward: 'Belohnung', chDone: 'Erledigt ✓', chWon: r => `Tagesaufgabe geschafft! +1 ${r}`, invite: 'Freund einladen', inviteDesc: 'Kommt ein Freund über deinen Link, bekommt ihr beide +1 Herz und +1 Schnellstart', invited: n => `Eingeladen: ${n}`, inviteBtn: 'Einladen', inviteText: 'Katzen und Waschbären gegen Saugroboter! Spiel Pawsling mit mir 🐾', giftedMsg: 'Ein Freund hat dich eingeladen: +1 Herz und +1 Schnellstart!', dailyTgOnly: 'Boni und Belohnungen funktionieren, wenn das Spiel in Telegram geöffnet ist', boardWeek: 'Woche', weekLeft: (d, h) => `Endet in ${d} T ${h} Std.`, weekPrizes: 'die Top 3 bekommen am Montag Preise',
     shop: 'Shop',
-    shopTgOnly: 'Der Shop funktioniert, wenn das Spiel in Telegram geöffnet ist',
+    shopBoosts: 'Booster', shopHeroes: 'Helden', shopLooks: 'Deko', shopTgOnly: 'Der Shop funktioniert, wenn das Spiel in Telegram geöffnet ist',
     equip: 'Anziehen',
     unequip: 'Ablegen',
     inTeam: 'Im Team',
@@ -1136,7 +1136,7 @@ const I18N = {
     heroes: 'Héroes', lvl: n => `Nv. ${n}`, xpOf: (a, b) => `${a} / ${b} XP`, maxLvl: 'Nivel máximo', perAll: 'Cada nivel de héroe: +4 % de daño', xpGain: n => `+${n} XP para cada héroe`, lvlUp: s => `sube de nivel: ${s}`, 'knot.fire': '¡Nudo de fuego!', 'knot.purr': '¡Nudo ronroneante!', 'knot.trash': '¡Nudo de basura!', hardName: 'Desafío', hardDesc: n => `Enemigos +40 % más duros, solo ${n} turnos. XP doble y una corona`, hardLeft: n => `Desafío: quedan ${n} turnos`, hardTurns: 'Sin turnos. Inténtalo de nuevo', hardDone: n => `¡Desafío ${n} completado!`, 'perk.mochi.5': '+20 % por rebote', 'perk.mochi.10': '+25 % por rebote', 'perk.pixel.5': '+15 % de daño al perforar', 'perk.pixel.10': 'Mirada láser: 800 de daño', 'perk.bandit.5': 'Tentempié nocturno cura 700', 'perk.bandit.10': 'Los golpes retrasan ataques 2 turnos', 'perk.nugget.5': 'Mayor radio de explosión', 'perk.nugget.10': 'Las explosiones hacen 320', 'perk.spark.5': 'El rayo hace 70 %', 'perk.spark.10': 'El rayo alcanza a dos enemigos',
     daily: 'Diario', dailyBonus: 'Bono diario', streak: n => `Racha: ${n} días`, dayShort: n => `D${n}`, challenge: 'Reto del día', 'ch.knots': n => `Gana el nivel y ata ${n} nudos`, 'ch.lasers': n => `Gana el nivel y atrapa el láser ${n} veces`, 'ch.noko': () => 'Gana el nivel sin ningún K.O.', 'ch.par': n => `Gana el nivel en ${n} turnos o menos`, 'ch.portals': n => `Gana el nivel y atraviesa cajas ${n} veces`, reward: 'Premio', chDone: 'Hecho ✓', chWon: r => `¡Reto del día cumplido! +1 ${r}`, invite: 'Invita a un amigo', inviteDesc: 'Cuando un amigo entre con tu enlace, los dos recibiréis +1 corazón y +1 inicio rápido', invited: n => `Invitados: ${n}`, inviteBtn: 'Invitar', inviteText: '¡Gatos y mapaches contra aspiradoras robot! Juega Pawsling conmigo 🐾', giftedMsg: '¡Te invitó un amigo: +1 corazón y +1 inicio rápido!', dailyTgOnly: 'Los bonos y premios funcionan cuando el juego se abre en Telegram', boardWeek: 'Semana', weekLeft: (d, h) => `Termina en ${d} d ${h} h`, weekPrizes: 'el top 3 recibe premios el lunes',
     shop: 'Tienda',
-    shopTgOnly: 'La tienda funciona cuando el juego se abre en Telegram',
+    shopBoosts: 'Potenciadores', shopHeroes: 'Héroes', shopLooks: 'Estilo', shopTgOnly: 'La tienda funciona cuando el juego se abre en Telegram',
     equip: 'Poner',
     unequip: 'Quitar',
     inTeam: 'En el equipo',
@@ -3279,7 +3279,7 @@ function drawCritter(h, x, y, r, glow, o) {
     ctx.strokeStyle = '#f4efe6'; ctx.lineWidth = 1; ctx.beginPath(); ctx.moveTo(0, -r * .15); ctx.lineTo(0, r * .15); ctx.stroke();
     ctx.restore();
   }
-  const hat = o.hat === false ? null : activeHat();
+  const hat = heroHat(o);
   if (hat) drawHat(hat, r);
   ctx.restore();
 }
@@ -3411,7 +3411,7 @@ function drawHero(h, x, y, r, glow, o = {}) {
   } else if (id === 'spark') {
     ctx.strokeStyle = '#4fc3f7'; ctx.lineWidth = r * .14; ctx.beginPath(); ctx.arc(0, 0, r * .9, .28 * Math.PI, .72 * Math.PI); ctx.stroke();
     ctx.fillStyle = '#ffe14d'; ctx.beginPath(); ctx.moveTo(r * .04, r * .86); ctx.lineTo(-r * .1, r * 1.04); ctx.lineTo(0, r * 1.02); ctx.lineTo(-r * .05, r * 1.16); ctx.lineTo(r * .1, r * .96); ctx.lineTo(0, r * .98); ctx.closePath(); ctx.fill();
-  } else if (!(o.hat !== false && activeHat())) {
+  } else if (!heroHat(o)) {
     ctx.save(); ctx.translate(r * .16, -r * .9); ctx.rotate(.25);
     ctx.fillStyle = '#ffd166'; ctx.strokeStyle = '#b8892a'; ctx.lineWidth = 1.5;
     ctx.beginPath(); ctx.moveTo(-r * .32, r * .08);
@@ -3421,7 +3421,7 @@ function drawHero(h, x, y, r, glow, o = {}) {
     ctx.fillStyle = 'rgba(255,255,255,.8)'; circ(-r * .02, -r * .01, r * .025);
     ctx.restore();
   }
-  const hat = o.hat === false ? null : activeHat();
+  const hat = heroHat(o);
   if (hat) drawHat(hat, r);
   // front paws
   const px = id === 'bandit' ? .6 : .46, pc = cat ? h.fur : h.dark;
@@ -4595,12 +4595,16 @@ function drawNode(c, x, y, r, col, open) {
     ctx.strokeStyle = col; ctx.lineWidth = 1.5;
     for (let k = 0; k < 8; k++) { const a = k * TAU / 8; ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + Math.cos(a) * r, y + Math.sin(a) * r); ctx.stroke(); }
     for (const f of [.4, .72]) { ctx.beginPath(); ctx.arc(x, y, r * f, 0, TAU); ctx.stroke(); }
+    ctx.fillStyle = 'rgba(20,26,16,.9)'; circ(x, y, r * .46);
   } else if (c === 8) {
     // a storm cloud with a bolt
     ctx.fillStyle = '#26304f'; circ(x, y, r);
     ctx.strokeStyle = col; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.stroke();
-    ctx.fillStyle = '#ffe066'; ctx.beginPath(); ctx.moveTo(x + r * .12, y - r * .6); ctx.lineTo(x - r * .32, y + r * .08); ctx.lineTo(x - r * .02, y + r * .08);
-    ctx.lineTo(x - r * .12, y + r * .6); ctx.lineTo(x + r * .34, y - r * .1); ctx.lineTo(x + r * .04, y - r * .1); ctx.closePath(); ctx.fill();
+    // the bolt moves to a corner so the number sits on the dark cloud
+    ctx.save(); ctx.translate(x + r * .5, y - r * .48); ctx.scale(.42, .42);
+    ctx.fillStyle = '#ffe066'; ctx.beginPath(); ctx.moveTo(r * .12, -r * .6); ctx.lineTo(-r * .32, r * .08); ctx.lineTo(-r * .02, r * .08);
+    ctx.lineTo(-r * .12, r * .6); ctx.lineTo(r * .34, -r * .1); ctx.lineTo(r * .04, -r * .1); ctx.closePath(); ctx.fill();
+    ctx.restore();
   } else if (c === 9) {
     // a flower
     ctx.fillStyle = col;
@@ -4790,10 +4794,15 @@ function drawMap() {
       if (current) { ctx.save(); ctx.globalCompositeOperation = 'lighter'; glowAt(x, y, r * 2, hexRgb(ch.col), .35 + .15 * Math.sin(T * 4)); ctx.restore(); }
       drawNode(c, x, y + bob, r, ch.col, open);
       if (open) {
-        ctx.fillStyle = '#15122a'; ctx.textAlign = 'center';
-        ctx.font = `900 ${isBoss ? 15 : 22}px ${FD}`;
-        ctx.fillText(isBoss ? tr('boss') : String(n), x, y + bob + 1);
-        if (isBoss) { ctx.font = `800 10px ${FB}`; ctx.fillText(String(n), x, y + bob + 16); }
+        // dark nodes (web, storm cloud, garden flower) get white numbers with an ink outline
+        const light = c >= 7, ink = light ? '#fff' : '#15122a', rim = light ? '#15122a' : 'rgba(255,255,255,.55)';
+        const label = (txt, yy, font) => {
+          ctx.font = font; ctx.textAlign = 'center'; ctx.lineJoin = 'round';
+          ctx.strokeStyle = rim; ctx.lineWidth = light ? 5 : 3; ctx.strokeText(txt, x, yy);
+          ctx.fillStyle = ink; ctx.fillText(txt, x, yy);
+        };
+        label(isBoss ? tr('boss') : String(n), y + bob + 1, `900 ${isBoss ? 15 : 22}px ${FD}`);
+        if (isBoss) label(String(n), y + bob + 16, `900 10px ${FB}`);
       } else {
         ctx.fillStyle = '#5b5488'; rr(x - 8, y - 2, 16, 12, 3); ctx.fill();
         ctx.strokeStyle = '#5b5488'; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.arc(x, y - 3, 5, Math.PI, 0); ctx.stroke();
@@ -4917,6 +4926,8 @@ const SHOP = { busy: null, msg: null };
 const owns = k => (INV[k] || 0) > 0;
 const activeHat = () => (COS.hat && (owns('hat_' + COS.hat) || (PROG.hats && PROG.hats[COS.hat])) ? COS.hat : null);
 const rainbowOn = () => COS.rainbow && owns('rainbow');
+// the hat a hero wears: none, a specific one (shop previews) or the equipped one
+const heroHat = o => (o.hat === false ? null : typeof o.hat === 'string' ? o.hat : activeHat());
 const serverOn = () => !!(TG && TG.initData && BOARD_URL);
 function setHat(h) { COS.hat = h; lsSet('pawsling-hat', h); }
 function setRainbow(on) { COS.rainbow = on; lsSet('pawsling-rainbow', on ? 'on' : 'off'); }
@@ -5025,6 +5036,26 @@ function drawShopIcon(id, x, y) {
     ['#ff5d7a', '#ffd166', '#9ee06a', '#6ec3ff', '#b18cff'].forEach((c, k) => { ctx.strokeStyle = c; ctx.beginPath(); ctx.arc(x, y + 10, 20 - k * 3.4, Math.PI, 0); ctx.stroke(); });
   } else { ctx.save(); ctx.translate(x, y + 16); drawHat(id.slice(4), 26); ctx.restore(); }
 }
+// what an item's button says and does right now
+function shopAction(id) {
+  const g0 = GRANTS[id] || { [id]: 1 }, perm = !g0.heart && !g0.meter, key = Object.keys(g0)[0];
+  const have = (INV[key] || 0) + (PROG.hats && PROG.hats[id.slice(4)] ? 1 : 0);
+  let label = `★ ${PRICES[id]}`, cb = () => buyItem(id), primary = true, on = false;
+  if (SHOP.busy === id) label = tr('payWait');
+  else if (perm && have) {
+    primary = false;
+    if (id.startsWith('hero_')) { label = tr('owned', 1).replace(/\d+/, '✓'); cb = () => setScreen('heroes'); }
+    else if (id === 'rainbow') { on = rainbowOn(); label = on ? tr('unequip') : tr('equip'); cb = () => setRainbow(!on); }
+    else { const kind = id.slice(4); on = activeHat() === kind; label = on ? tr('unequip') : tr('equip'); cb = () => setHat(on ? '' : kind); }
+  }
+  return { label, cb, primary, perm, have, on };
+}
+function shopSection(text, y) {
+  ctx.textAlign = 'left'; ctx.textBaseline = 'middle'; ctx.fillStyle = '#8f88b5'; ctx.font = `900 12px ${FD}`;
+  const t = text.toUpperCase(); ctx.fillText(t, 22, y);
+  const w = ctx.measureText(t).width;
+  ctx.fillStyle = '#2a2548'; ctx.fillRect(30 + w, y - 1, W - 52 - w, 2);
+}
 function drawShop() {
   ctx.fillStyle = '#110e22'; ctx.fillRect(0, 0, W, H);
   const g = ctx.createRadialGradient(W / 2, 60, 10, W / 2, 60, 320);
@@ -5033,35 +5064,65 @@ function drawShop() {
   iconBtn(12, 13, 'back', () => setScreen('map'));
   ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
   ctx.fillStyle = '#ffc857'; fitFont(tr('shop'), W - 120, 30); ctx.fillText(tr('shop'), W / 2, 32);
-  const list = SHOP_LIST.concat(EVENTS.filter(e => PROG.hats && PROG.hats[e.hat]).map(e => 'hat_' + e.hat)), step = list.length > 8 ? 64 : 76;
-  list.forEach((id, i) => {
-    const g0 = GRANTS[id] || { [id]: 1 }, y = 76 + i * step, perm = !g0.heart && !g0.meter, key = Object.keys(g0)[0];
-    const have = (INV[key] || 0) + (PROG.hats && PROG.hats[id.slice(4)] ? 1 : 0);
-    ctx.fillStyle = '#1d1938'; rr(16, y, W - 32, step - 8, 14); ctx.fill();
-    ctx.strokeStyle = perm && have ? 'rgba(92,225,198,.5)' : '#3b3563'; ctx.lineWidth = 1.5; rr(16, y, W - 32, step - 8, 14); ctx.stroke();
-    const ts = Math.min(48, step - 20), tx = 28, ty = y + (step - 8 - ts) / 2;
-    const tint = id.startsWith('hero_') ? ['#6d4fb0', '#3a2b6b'] : id.startsWith('hat_') ? ['#c9962e', '#6b4a14'] : id === 'rainbow' ? ['#ff8fb1', '#6ec3ff'] : ['#d9577f', '#5a2440'];
+  const t = RM ? 0 : T;
+
+  // boosters: one row each
+  shopSection(tr('shopBoosts'), 70);
+  ['heart3', 'meter3'].forEach((id, i) => {
+    const y = 82 + i * 64, a = shopAction(id);
+    ctx.fillStyle = '#1d1938'; rr(16, y, W - 32, 56, 14); ctx.fill();
+    ctx.strokeStyle = '#3b3563'; ctx.lineWidth = 1.5; rr(16, y, W - 32, 56, 14); ctx.stroke();
+    const ts = 40, tx = 26, ty = y + 8;
     const tg = ctx.createLinearGradient(tx, ty, tx + ts, ty + ts);
-    tg.addColorStop(0, tint[0]); tg.addColorStop(1, tint[1]);
-    ctx.fillStyle = tg; rr(tx, ty, ts, ts, 12); ctx.fill();
-    ctx.fillStyle = 'rgba(255,255,255,.14)'; rr(tx + 3, ty + 3, ts - 6, ts * .34, 9); ctx.fill();
-    drawShopIcon(id, tx + ts / 2, ty + ts / 2);
-    ctx.textAlign = 'left'; ctx.textBaseline = 'middle'; ctx.fillStyle = '#f4efe6';
-    fitFont(tr('item.' + id), W - 250, 15); ctx.fillText(tr('item.' + id), 88, y + 22);
-    const desc = perm ? tr('itemd.' + id) : `${tr('itemd.' + id)} · ${tr('owned', have)}`;
-    ctx.fillStyle = '#b9b2da'; fitFont(desc, W - 250, 11.5, 700, FB); ctx.fillText(desc, 88, y + 46);
-    let label = `★ ${PRICES[id]}`, cb = () => buyItem(id), primary = true;
-    if (SHOP.busy === id) label = tr('payWait');
-    else if (perm && have) {
-      primary = false;
-      if (id.startsWith('hero_')) { label = tr('owned', 1).replace(/\d+/, '✓'); cb = () => setScreen('heroes'); }
-      else if (id === 'rainbow') { const on = rainbowOn(); label = on ? tr('unequip') : tr('equip'); cb = () => setRainbow(!on); }
-      else { const kind = id.slice(4), on = activeHat() === kind; label = on ? tr('unequip') : tr('equip'); cb = () => setHat(on ? '' : kind); }
-    }
-    uiBtn(W - 142, y + 12, 114, 44, label, cb, primary);
+    tg.addColorStop(0, '#d9577f'); tg.addColorStop(1, '#5a2440');
+    ctx.fillStyle = tg; rr(tx, ty, ts, ts, 11); ctx.fill();
+    ctx.fillStyle = 'rgba(255,255,255,.14)'; rr(tx + 3, ty + 3, ts - 6, ts * .34, 8); ctx.fill();
+    ctx.save(); ctx.translate(tx + ts / 2, ty + ts / 2); ctx.scale(.85, .85); drawShopIcon(id, 0, 0); ctx.restore();
+    ctx.textAlign = 'left'; ctx.fillStyle = '#f4efe6'; fitFont(tr('item.' + id), W - 230, 15); ctx.fillText(tr('item.' + id), 78, y + 19);
+    const desc = `${tr('itemd.' + id)} · ${tr('owned', a.have)}`;
+    ctx.fillStyle = '#b9b2da'; fitFont(desc, W - 230, 11.5, 700, FB); ctx.fillText(desc, 78, y + 40);
+    uiBtn(W - 130, y + 8, 104, 40, a.label, a.cb, a.primary);
+  });
+
+  // heroes: big cards
+  shopSection(tr('shopHeroes'), 224);
+  ['hero_spark', 'hero_rex'].forEach((id, i) => {
+    const cw = (W - 44) / 2, x = 16 + i * (cw + 12), y = 236, ch = 178, a = shopAction(id), h = HEROES.find(d => d.id === id.slice(5));
+    const cg = ctx.createLinearGradient(0, y, 0, y + ch);
+    cg.addColorStop(0, '#3a2b6b'); cg.addColorStop(1, '#1d1938');
+    ctx.fillStyle = cg; rr(x, y, cw, ch, 16); ctx.fill();
+    ctx.strokeStyle = a.have ? 'rgba(92,225,198,.6)' : hexA(h.yarn, .6); ctx.lineWidth = 2; rr(x, y, cw, ch, 16); ctx.stroke();
+    ctx.save(); ctx.globalCompositeOperation = 'lighter'; glowAt(x + cw / 2, y + 50, 50, hexRgb(h.yarn), .28 + .06 * Math.sin(t * 2 + i)); ctx.restore();
+    drawHero(h, x + cw / 2, y + 50 + Math.sin(t * 2.5 + i) * 2, 28, null, { hat: false, look: [0, .5] });
+    ctx.textAlign = 'center'; ctx.fillStyle = h.yarn; fitFont(tr('item.' + id), cw - 16, 16); ctx.fillText(tr('item.' + id), x + cw / 2, y + 94);
+    ctx.fillStyle = '#c9c2e6'; ctx.font = `700 11px ${FB}`;
+    splitLines(tr('itemd.' + id), cw - 20).slice(0, 2).forEach((ln, k) => ctx.fillText(ln, x + cw / 2, y + 112 + k * 13));
+    uiBtn(x + 10, y + ch - 40, cw - 20, 32, a.label, a.cb, a.primary);
+  });
+
+  // style: every hat on Mochi, and the rainbow yarn
+  const looks = ['hat_party', 'hat_crown', 'hat_bow'].concat(EVENTS.filter(e => PROG.hats && PROG.hats[e.hat]).map(e => 'hat_' + e.hat), ['rainbow']);
+  shopSection(tr('shopLooks'), 430);
+  const cols = 3, gw = (W - 32 - (cols - 1) * 10) / cols, rows = Math.ceil(looks.length / cols);
+  const gh = Math.min(132, (H - 40 - 442) / rows - 10), mochi = HEROES[0];
+  looks.forEach((id, i) => {
+    const x = 16 + (i % cols) * (gw + 10), y = 442 + Math.floor(i / cols) * (gh + 10), a = shopAction(id);
+    const cg = ctx.createLinearGradient(0, y, 0, y + gh);
+    if (id === 'rainbow') { cg.addColorStop(0, '#3b2b5a'); cg.addColorStop(1, '#1d1938'); }
+    else { cg.addColorStop(0, '#4a3512'); cg.addColorStop(1, '#1d1938'); }
+    ctx.fillStyle = cg; rr(x, y, gw, gh, 14); ctx.fill();
+    ctx.strokeStyle = a.on ? '#5ce1c6' : a.have ? 'rgba(92,225,198,.45)' : 'rgba(255,200,87,.35)'; ctx.lineWidth = a.on ? 2.5 : 1.5; rr(x, y, gw, gh, 14); ctx.stroke();
+    const cx = x + gw / 2, cy = y + gh * .36;
+    if (id === 'rainbow') {
+      ctx.lineWidth = 5; ctx.lineCap = 'round';
+      ['#ff5d7a', '#ffd166', '#9ee06a', '#6ec3ff', '#b18cff'].forEach((c, k) => { ctx.strokeStyle = c; ctx.beginPath(); ctx.arc(cx, cy + 16, 30 - k * 5.5, Math.PI, 0); ctx.stroke(); });
+      star(cx + 26, cy - 12, 4, '#fff3c4');
+    } else drawHero(mochi, cx, cy + 10, 24, null, { hat: id.slice(4), look: [0, .5], mood: a.on ? 'happy' : undefined });
+    ctx.textAlign = 'center'; ctx.fillStyle = '#f4efe6'; fitFont(tr('item.' + id), gw - 12, 12); ctx.fillText(tr('item.' + id), cx, y + gh - 48);
+    uiBtn(x + 8, y + gh - 38, gw - 16, 30, a.label, a.cb, a.primary);
   });
   const note = SHOP.msg || (canPay() ? '' : tr('shopTgOnly'));
-  if (note) { ctx.textAlign = 'center'; ctx.fillStyle = SHOP.msg ? '#ff8fb1' : '#8f88b5'; ctx.font = `800 13px ${FB}`; wrap(note, W / 2, 710, W - 60, 18); }
+  if (note) { ctx.textAlign = 'center'; ctx.fillStyle = SHOP.msg ? '#ff8fb1' : '#8f88b5'; ctx.font = `800 12px ${FB}`; wrap(note, W / 2, H - 22, W - 60, 16); }
 }
 
 
@@ -5329,21 +5390,44 @@ function drawHeroes() {
     const y = 78 + i * 90, own = heroOwned(h.id), inTeam = team.includes(h.id), lv = heroLevel(h.id), max = lv.L >= HERO_MAX;
     ctx.fillStyle = inTeam ? '#231e44' : '#1a1733'; rr(16, y, W - 32, 84, 14); ctx.fill();
     ctx.strokeStyle = inTeam ? h.yarn : '#3b3563'; ctx.lineWidth = inTeam ? 2 : 1.5; rr(16, y, W - 32, 84, 14); ctx.stroke();
-    ctx.save(); if (!own) ctx.globalAlpha = .4; drawHero(h, 50, y + 44, 22, null, { look: [0, .5] }); ctx.restore();
-    ctx.textAlign = 'left'; ctx.fillStyle = own ? h.yarn : '#6f6893'; fitFont(h.name, 150, 16); ctx.fillText(h.name, 86, y + 17);
+    // a portrait in a coloured circle; heroes you don't have yet are a silhouette with a lock
+    const px = 52, py = y + 42;
+    const pg = ctx.createRadialGradient(px - 8, py - 10, 4, px, py, 31);
+    pg.addColorStop(0, own ? hexA(h.yarn, .45) : '#2a2548'); pg.addColorStop(1, own ? hexA(h.yarn, .08) : '#15122a');
+    ctx.fillStyle = pg; circ(px, py, 31);
+    ctx.strokeStyle = own ? hexA(h.yarn, .8) : '#3b3563'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(px, py, 31, 0, TAU); ctx.stroke();
+    ctx.save(); if (!own) ctx.globalAlpha = .35; drawHero(h, px, py + 4, 20, null, { look: [0, .5] }); ctx.restore();
     if (!own) {
-      ctx.fillStyle = '#8f88b5'; ctx.font = `800 12px ${FB}`;
-      ctx.fillText(h.id === 'homa' ? tr('afterLvl', HOMA_UNLOCK) : tr('inShop'), 86, y + 44);
-      if (h.id !== 'homa') UI.push({ x: 16, y, w: W - 32, h: 84, cb: () => { SHOP.msg = null; setScreen('shop'); } });
+      ctx.fillStyle = '#15122a'; circ(px + 22, py + 22, 11);
+      ctx.strokeStyle = '#8f88b5'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(px + 22, py + 22, 11, 0, TAU); ctx.stroke();
+      ctx.fillStyle = '#8f88b5'; rr(px + 17, py + 21, 10, 7, 2); ctx.fill();
+      ctx.strokeStyle = '#8f88b5'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(px + 22, py + 21, 3.2, Math.PI, 0); ctx.stroke();
+    }
+    ctx.textAlign = 'left'; ctx.fillStyle = own ? h.yarn : '#8f88b5'; fitFont(h.name, 150, 16); ctx.fillText(h.name, 94, y + 17);
+    if (!own) {
+      const shopHero = h.id !== 'homa';
+      ctx.fillStyle = '#8f88b5'; fitFont(shopHero ? tr('inShop') : tr('afterLvl', HOMA_UNLOCK), W - 236, 12, 800, FB);
+      ctx.fillText(shopHero ? tr('inShop') : tr('afterLvl', HOMA_UNLOCK), 94, y + 42);
+      ctx.fillStyle = '#6f6893'; fitFont(tr('itemd.hero_' + h.id), W - 236, 11, 700, FB);
+      if (shopHero) ctx.fillText(tr('itemd.hero_' + h.id), 94, y + 62);
+      if (shopHero) {
+        UI.push({ x: 16, y, w: W - 32, h: 84, cb: () => { SHOP.msg = null; setScreen('shop'); } });
+        uiBtn(W - 116, y + 22, 92, 40, `★ ${PRICES['hero_' + h.id]}`, () => { SHOP.msg = null; setScreen('shop'); }, true);
+      }
       return;
     }
     ctx.textAlign = 'right'; ctx.fillStyle = '#ffc857'; ctx.font = `900 14px ${FD}`; ctx.fillText(tr('lvl', lv.L), W - 124, y + 17);
-    ctx.fillStyle = '#0d0b1d'; rr(86, y + 29, W - 222, 8, 4); ctx.fill();
-    ctx.fillStyle = h.yarn; rr(86, y + 29, Math.max(8, (W - 222) * (max ? 1 : lv.xp / lv.need)), 8, 4); ctx.fill();
+    const bw = W - 230;
+    ctx.fillStyle = '#0d0b1d'; rr(94, y + 28, bw, 12, 6); ctx.fill();
+    ctx.fillStyle = h.yarn; rr(94, y + 28, Math.max(12, bw * (max ? 1 : lv.xp / lv.need)), 12, 6); ctx.fill();
+    ctx.fillStyle = 'rgba(255,255,255,.25)'; rr(97, y + 29.5, Math.max(6, bw * (max ? 1 : lv.xp / lv.need) - 6), 3, 2); ctx.fill();
+    ctx.textAlign = 'center'; ctx.font = `900 9px ${FB}`; ctx.lineJoin = 'round';
+    const xpTxt = max ? 'MAX' : `${lv.xp} / ${lv.need}`;
+    ctx.strokeStyle = '#15122a'; ctx.lineWidth = 3; ctx.strokeText(xpTxt, 94 + bw / 2, y + 34.5); ctx.fillStyle = '#fff'; ctx.fillText(xpTxt, 94 + bw / 2, y + 34.5);
     [5, 10].forEach((at, k) => {
-      const open = lv.L >= at, py = y + 52 + k * 17, txt = `${tr('lvl', at)}: ${tr(`perk.${h.id}.${at}`)}`;
+      const open = lv.L >= at, py = y + 54 + k * 16, txt = `${open ? '✓' : '·'} ${tr('lvl', at)}: ${tr(`perk.${h.id}.${at}`)}`;
       ctx.textAlign = 'left'; ctx.fillStyle = open ? '#5ce1c6' : '#6f6893';
-      fitFont(txt, W - 222, 11, 800, FB); ctx.fillText(txt, 86, py);
+      fitFont(txt, W - 230, 11, 800, FB); ctx.fillText(txt, 94, py);
     });
     // team toggle
     const bx = W - 116, by = y + 22, on = inTeam;
