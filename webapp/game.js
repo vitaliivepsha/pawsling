@@ -1852,30 +1852,77 @@ function roomGarden(b, ch) {
     for (let x = 0; x < W; x += 36) for (let y = 0; y < H; y += 36) { c.beginPath(); c.ellipse(x + (y / 36 % 2) * 18, y, 8, 3.5, .6, 0, TAU); c.fill(); }
   });
 }
+// shared geometry so the animated LEDs, packets and fans line up with the painted room
+const SRV = { rackW: 58, top: TOP + 64, units: 22, unitY: i => TOP + 76 + i * 18, cables: [['#3a8fd6', 20], ['#e5484d', 28], ['#ffd166', 36], ['#5ce1c6', 44]],
+  cableY: (y0, x) => { const u = frac(x / 45); return TOP + y0 + 26 * u * (1 - u); }, fans: [[22, BOT - 44], [W - 22, BOT - 44]], emblem: [225, 372] };
 function roomServer(b, ch) {
   const R = seeded(151);
-  // raised floor tiles with perforations
+  // raised floor: bevelled tiles, every third one a perforated vent
   for (let y = TOP, j = 0; y < BOT; y += 50, j++) for (let x = 0, i = 0; x < W; x += 50, i++) {
     b.fillStyle = (i + j) % 2 ? '#1a1628' : '#1d1930'; b.fillRect(x, y, 50, 50);
-    b.fillStyle = 'rgba(0,0,0,.35)'; b.fillRect(x, y, 50, 1.5); b.fillRect(x, y, 1.5, 50);
-    if ((i + j) % 3 === 0) { b.fillStyle = 'rgba(255,107,214,.06)'; for (let px = 8; px < 44; px += 7) for (let py = 8; py < 44; py += 7) b.fillRect(x + px, y + py, 2, 2); }
+    b.fillStyle = 'rgba(255,255,255,.035)'; b.fillRect(x + 2, y + 2, 46, 2); b.fillRect(x + 2, y + 2, 2, 46);
+    b.fillStyle = 'rgba(0,0,0,.38)'; b.fillRect(x, y, 50, 1.5); b.fillRect(x, y, 1.5, 50);
+    if ((i + j) % 3 === 0) { b.fillStyle = 'rgba(255,107,214,.07)'; for (let px = 9; px < 44; px += 7) for (let py = 9; py < 44; py += 7) { b.beginPath(); b.arc(x + px, y + py, 1.3, 0, TAU); b.fill(); } }
   }
-  windowLight(b, ch, .05);
-  // cables along the top wall
-  for (const [col, y0] of [['#3a8fd6', 20], ['#e5484d', 28], ['#ffd166', 36], ['#5ce1c6', 44]]) {
-    b.strokeStyle = col; b.lineWidth = 4; b.beginPath(); b.moveTo(0, TOP + y0);
-    for (let x = 0; x <= W; x += 45) b.quadraticCurveTo(x + 22, TOP + y0 + 10 + R() * 6, x + 45, TOP + y0);
+  // the smart-home emblem on the floor: rings, ticks and a house
+  const [ex, ey] = SRV.emblem;
+  b.save(); b.translate(ex, ey);
+  const eg = b.createRadialGradient(0, 0, 20, 0, 0, 170);
+  eg.addColorStop(0, 'rgba(255,107,214,.12)'); eg.addColorStop(1, 'rgba(255,107,214,0)');
+  b.fillStyle = eg; b.beginPath(); b.arc(0, 0, 170, 0, TAU); b.fill();
+  b.strokeStyle = 'rgba(255,107,214,.22)'; b.lineWidth = 2;
+  for (const rad of [150, 118, 62]) { b.beginPath(); b.arc(0, 0, rad, 0, TAU); b.stroke(); }
+  b.strokeStyle = 'rgba(255,107,214,.3)'; b.lineWidth = 1.5;
+  for (let k = 0; k < 60; k++) { const a = k / 60 * TAU, l = k % 5 ? 6 : 13; b.beginPath(); b.moveTo(Math.cos(a) * 150, Math.sin(a) * 150); b.lineTo(Math.cos(a) * (150 - l), Math.sin(a) * (150 - l)); b.stroke(); }
+  b.strokeStyle = 'rgba(92,225,198,.28)'; b.lineWidth = 3; b.lineJoin = 'round';
+  b.beginPath(); b.moveTo(-34, 8); b.lineTo(0, -26); b.lineTo(34, 8); b.moveTo(-24, -2); b.lineTo(-24, 30); b.lineTo(24, 30); b.lineTo(24, -2); b.stroke();
+  b.beginPath(); b.arc(0, 12, 7, 0, TAU); b.stroke();
+  b.restore();
+  windowLight(b, ch, .04);
+  // cable tray under the ceiling, and the cables sagging out of it
+  b.fillStyle = '#15121f'; b.fillRect(0, TOP + 10, W, 8);
+  b.fillStyle = '#2e2944'; for (let x = 6; x < W; x += 20) b.fillRect(x, TOP + 10, 3, 8);
+  for (const [col, y0] of SRV.cables) {
+    b.strokeStyle = 'rgba(0,0,0,.35)'; b.lineWidth = 6; b.beginPath();
+    for (let x = 0; x <= W; x += 3) b.lineTo(x, SRV.cableY(y0, x) + 3);
+    b.stroke();
+    b.strokeStyle = col; b.lineWidth = 4; b.beginPath();
+    for (let x = 0; x <= W; x += 3) b.lineTo(x, SRV.cableY(y0, x));
+    b.stroke();
+    b.strokeStyle = 'rgba(255,255,255,.25)'; b.lineWidth = 1; b.beginPath();
+    for (let x = 0; x <= W; x += 3) b.lineTo(x, SRV.cableY(y0, x) - 1.2);
     b.stroke();
   }
-  // server racks down both walls
-  for (const x of [0, W - 58]) {
-    b.fillStyle = 'rgba(0,0,0,.4)'; b.fillRect(x + (x ? -6 : 6), TOP + 70, 58, BOT - TOP - 200);
-    b.fillStyle = '#23202f'; b.fillRect(x, TOP + 64, 58, BOT - TOP - 200);
-    b.strokeStyle = '#3a3550'; b.lineWidth = 2; b.strokeRect(x + 1, TOP + 65, 56, BOT - TOP - 202);
-    for (let y = TOP + 76; y < BOT - 144; y += 18) {
-      b.fillStyle = '#15121f'; b.fillRect(x + 6, y, 46, 12);
-      b.fillStyle = 'rgba(255,255,255,.06)'; b.fillRect(x + 6, y, 46, 2);
+  b.fillStyle = '#0d0b16'; for (let x = 45; x < W; x += 90) b.fillRect(x - 2, TOP + 16, 4, 34);
+  // server racks down both walls: rails, and a mix of drive bays, vents and switches
+  for (const x of [0, W - SRV.rackW]) {
+    const h = BOT - TOP - 200;
+    b.fillStyle = 'rgba(0,0,0,.45)'; b.fillRect(x + (x ? -7 : 7), SRV.top + 8, SRV.rackW, h);
+    const rg = b.createLinearGradient(x, 0, x + SRV.rackW, 0);
+    rg.addColorStop(0, '#2b2740'); rg.addColorStop(.5, '#231f35'); rg.addColorStop(1, '#1a1728');
+    b.fillStyle = rg; b.fillRect(x, SRV.top, SRV.rackW, h);
+    b.strokeStyle = '#4a4468'; b.lineWidth = 2; b.strokeRect(x + 1, SRV.top + 1, SRV.rackW - 2, h - 2);
+    b.fillStyle = '#3a3552'; b.fillRect(x + 2, SRV.top + 4, 3, h - 8); b.fillRect(x + SRV.rackW - 5, SRV.top + 4, 3, h - 8);
+    b.fillStyle = '#15121f'; for (let y = SRV.top + 8; y < SRV.top + h - 6; y += 9) { b.fillRect(x + 3, y, 1.5, 3); b.fillRect(x + SRV.rackW - 4.5, y, 1.5, 3); }
+    for (let i = 0; i < SRV.units; i++) {
+      const y = SRV.unitY(i), kind = Math.floor(R() * 3);
+      b.fillStyle = '#15121f'; b.fillRect(x + 7, y, 44, 14);
+      b.fillStyle = 'rgba(255,255,255,.07)'; b.fillRect(x + 7, y, 44, 1.5);
+      if (kind === 0) { b.fillStyle = '#2a2640'; for (let k = 0; k < 5; k++) b.fillRect(x + 9 + k * 6.5, y + 3, 5, 8); }
+      else if (kind === 1) { b.fillStyle = '#0a0812'; for (let k = 0; k < 7; k++) b.fillRect(x + 9 + k * 4.4, y + 4, 2.4, 7); }
+      else { b.fillStyle = '#2f3a52'; for (let k = 0; k < 6; k++) b.fillRect(x + 9 + k * 5.5, y + 5, 4, 4); }
+      b.fillStyle = '#0a0812'; b.beginPath(); b.arc(x + 46, y + 7, 2.6, 0, TAU); b.fill();
     }
+  }
+  // cooling units in the bottom corners, fans painted as housings (the blades spin in the animation)
+  for (const [fx, fy] of SRV.fans) {
+    const bx = fx - 20;
+    b.fillStyle = 'rgba(0,0,0,.4)'; b.fillRect(bx + 3, fy - 48, 40, 104);
+    b.fillStyle = '#26223a'; b.fillRect(bx, fy - 52, 40, 104);
+    b.strokeStyle = '#4a4468'; b.lineWidth = 1.5; b.strokeRect(bx + .5, fy - 51.5, 39, 103);
+    b.fillStyle = '#0d0b16'; b.beginPath(); b.arc(fx, fy, 15, 0, TAU); b.fill();
+    b.strokeStyle = '#3a3552'; b.lineWidth = 2; b.beginPath(); b.arc(fx, fy, 15, 0, TAU); b.stroke();
+    b.fillStyle = '#15121f'; for (let k = 0; k < 4; k++) b.fillRect(bx + 6, fy - 44 + k * 6, 28, 2.5);
   }
   vignette(b, '6,2,12', .7);
   hudBars(b, ch, c => {
@@ -1962,16 +2009,38 @@ function drawRoomUnder(c) {
     const fl = frac(t * .09);
     if (!RM && fl > .97) glowAt(225, TOP + 220, 560, '200,215,255', .18 * Math.sin((fl - .97) / .03 * Math.PI));
   } else if (c === 10) {
-    // blinking server lights on both racks, and a scan line sweeping the floor
-    for (let k = 0; k < 28; k++) {
-      const x = k % 2 ? 44 : W - 14, y = TOP + 82 + Math.floor(k / 2) * 18 * 1.6 % (BOT - TOP - 230);
-      const on = frac(t * (.6 + (k % 5) * .23) + k * .37) < .5, col = k % 3 ? '92,225,198' : '255,107,214';
-      if (on) { glowAt(x, y, 10, col, .5); ctx.fillStyle = `rgba(${col},.95)`; ctx.fillRect(x - 2, y - 2, 4, 4); }
+    // rack LEDs blinking on their own units, each unit with its own rhythm
+    for (const rx of [0, W - SRV.rackW]) for (let i = 0; i < SRV.units; i++) {
+      const k = i + (rx ? 40 : 0), x = rx + 46, y = SRV.unitY(i) + 7;
+      const on = frac(t * (.5 + (k % 7) * .19) + k * .37) < (k % 4 ? .55 : .2);
+      const col = k % 5 === 0 ? '255,107,214' : k % 3 === 0 ? '255,209,102' : '92,225,198';
+      if (on) { glowAt(x, y, 9, col, .55); ctx.fillStyle = `rgba(${col},.95)`; circ(x, y, 2); }
     }
+    // data packets running along the ceiling cables
+    for (const [col, y0] of SRV.cables) for (let k = 0; k < 3; k++) {
+      const x = frac(t * (.08 + y0 * .002) + k / 3 + y0 * .01) * W;
+      glowAt(x, SRV.cableY(y0, x), 10, hexRgb(col), .6);
+      ctx.fillStyle = '#fff'; circ(x, SRV.cableY(y0, x), 1.8);
+    }
+    // the floor hologram turns slowly
+    const [ex, ey] = SRV.emblem;
+    ctx.strokeStyle = 'rgba(255,107,214,.35)'; ctx.lineWidth = 3; ctx.lineCap = 'round';
+    for (let k = 0; k < 3; k++) { const a = t * .4 + k * TAU / 3; ctx.beginPath(); ctx.arc(ex, ey, 134, a, a + .7); ctx.stroke(); }
+    ctx.strokeStyle = 'rgba(92,225,198,.3)';
+    for (let k = 0; k < 4; k++) { const a = -t * .7 + k * TAU / 4; ctx.beginPath(); ctx.arc(ex, ey, 90, a, a + .4); ctx.stroke(); }
+    // cooling fans
+    for (const [fx, fy] of SRV.fans) {
+      ctx.save(); ctx.translate(fx, fy); ctx.rotate(t * 9);
+      ctx.fillStyle = 'rgba(160,150,200,.55)';
+      for (let k = 0; k < 5; k++) { ctx.rotate(TAU / 5); ctx.beginPath(); ctx.ellipse(6, 0, 7, 2.6, .5, 0, TAU); ctx.fill(); }
+      ctx.restore();
+      ctx.fillStyle = '#4a4468'; circ(fx, fy, 3);
+    }
+    // a scan line sweeping the floor
     const sy = TOP + frac(t * .12) * (BOT - TOP);
     const g = ctx.createLinearGradient(0, sy - 30, 0, sy + 4);
     g.addColorStop(0, 'rgba(255,107,214,0)'); g.addColorStop(1, 'rgba(255,107,214,.1)');
-    ctx.fillStyle = g; ctx.fillRect(58, sy - 30, W - 116, 34);
+    ctx.fillStyle = g; ctx.fillRect(SRV.rackW, sy - 30, W - SRV.rackW * 2, 34);
   } else if (c === 9) {
     // fairy lights along the fence and fireflies over the lawn
     for (let k = 0; k < 12; k++) {
@@ -4164,42 +4233,120 @@ function drawMowerBoss(e, r, t) {
   }
 }
 function drawPrinter(e, r, t) {
-  // a 3D printer: a frame with a moving print head over a half-printed mini robot
-  ctx.fillStyle = '#e9e6f5'; rr(-r * .95, -r * .85, r * 1.9, r * 1.7, r * .2); ctx.fill();
-  ctx.strokeStyle = '#6f6893'; ctx.lineWidth = 2.5; rr(-r * .95, -r * .85, r * 1.9, r * 1.7, r * .2); ctx.stroke();
-  ctx.fillStyle = '#1b1830'; rr(-r * .72, -r * .3, r * 1.44, r * .95, r * .1); ctx.fill();
-  ctx.fillStyle = '#c9d3dd'; ctx.beginPath(); ctx.ellipse(0, r * .52, r * .32, r * .1, 0, 0, TAU); ctx.fill();
-  ctx.fillStyle = 'rgba(255,107,214,.8)'; rr(-r * .22, r * .22, r * .44, r * .3, r * .08); ctx.fill();
-  const hx = Math.sin(t * 3) * r * .45;
-  ctx.fillStyle = '#6f6893'; ctx.fillRect(-r * .72, -r * .26, r * 1.44, r * .08);
-  ctx.fillStyle = '#ffd166'; rr(hx - r * .12, -r * .26, r * .24, r * .22, r * .05); ctx.fill();
-  ctx.strokeStyle = '#ff6bd6'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(hx, -r * .04); ctx.lineTo(hx, r * .2); ctx.stroke();
-  angryEyes(0, -r * .58, r * .5, '#ff3b5c');
+  // a 3D printer robot: an LCD face, a filament spool, a hot nozzle and a mini robot printing layer by layer
+  const busy = e.timer <= 1;
+  // the filament spool on its side
+  ctx.save(); ctx.translate(r * .98, -r * .35); ctx.rotate(t * (busy ? 3 : 1.2));
+  ctx.fillStyle = '#ff6bd6'; circ(0, 0, r * .3);
+  ctx.strokeStyle = '#c9459f'; ctx.lineWidth = 1.2; for (const f of [.24, .17]) { ctx.beginPath(); ctx.arc(0, 0, r * f, 0, TAU); ctx.stroke(); }
+  ctx.fillStyle = '#2a2640'; circ(0, 0, r * .1); ctx.fillStyle = '#e9e6f5'; ctx.fillRect(-r * .02, -r * .1, r * .04, r * .2);
+  ctx.restore();
+  // body
+  const g = ctx.createLinearGradient(0, -r, 0, r);
+  g.addColorStop(0, '#f4f2fb'); g.addColorStop(1, '#b9b3d6');
+  ctx.fillStyle = g; rr(-r * .95, -r * .9, r * 1.9, r * 1.8, r * .22); ctx.fill();
+  ctx.strokeStyle = '#6f6893'; ctx.lineWidth = 2.5; rr(-r * .95, -r * .9, r * 1.9, r * 1.8, r * .22); ctx.stroke();
+  // the LCD face
+  ctx.fillStyle = '#1b1830'; rr(-r * .6, -r * .8, r * 1.2, r * .42, r * .1); ctx.fill();
+  ctx.fillStyle = 'rgba(92,225,198,.12)'; ctx.fillRect(-r * .56, -r * .76, r * 1.12, r * .34);
+  angryEyes(0, -r * .6, r * .52, busy ? '#ff3b5c' : '#5ce1c6');
+  // build chamber
+  ctx.fillStyle = '#15121f'; rr(-r * .74, -r * .3, r * 1.48, r * 1.02, r * .1); ctx.fill();
+  ctx.save(); rr(-r * .74, -r * .3, r * 1.48, r * 1.02, r * .1); ctx.clip();
+  ctx.fillStyle = 'rgba(255,107,214,.1)'; ctx.fillRect(-r, -r, r * 2, r * 2);
+  // the mini robot growing layer by layer
+  const prog = RM ? .7 : .25 + .75 * frac(t * .18 + e.ph * .1), top = r * .56 - prog * r * .5;
+  ctx.fillStyle = '#c9d3dd'; ctx.beginPath(); ctx.ellipse(0, r * .58, r * .42, r * .08, 0, 0, TAU); ctx.fill();
+  ctx.save(); ctx.beginPath(); ctx.rect(-r, top, r * 2, r); ctx.clip();
+  ctx.fillStyle = '#ff8fd9'; ctx.beginPath(); ctx.arc(0, r * .56, r * .28, Math.PI, 0); ctx.fill();
+  ctx.fillStyle = '#15121f'; ctx.fillRect(-r * .16, r * .36, r * .1, r * .06); ctx.fillRect(r * .06, r * .36, r * .1, r * .06);
+  ctx.strokeStyle = 'rgba(255,255,255,.25)'; ctx.lineWidth = 1;
+  for (let y = r * .56; y > top; y -= r * .05) { ctx.beginPath(); ctx.moveTo(-r * .3, y); ctx.lineTo(r * .3, y); ctx.stroke(); }
+  ctx.restore();
+  // gantry and the hot nozzle tracing the layer
+  const hx = Math.sin(t * (busy ? 7 : 3.2)) * r * .26;
+  ctx.fillStyle = '#6f6893'; ctx.fillRect(-r * .74, top - r * .2, r * 1.48, r * .07);
+  ctx.fillStyle = '#ffd166'; rr(hx - r * .13, top - r * .24, r * .26, r * .16, r * .04); ctx.fill();
+  ctx.fillStyle = '#c9772e'; ctx.beginPath(); ctx.moveTo(hx - r * .05, top - r * .08); ctx.lineTo(hx + r * .05, top - r * .08); ctx.lineTo(hx, top); ctx.closePath(); ctx.fill();
+  ctx.save(); ctx.globalCompositeOperation = 'lighter'; glowAt(hx, top, r * .22, '255,140,60', .7); ctx.restore();
+  ctx.restore();
+  ctx.strokeStyle = '#6f6893'; ctx.lineWidth = 2; rr(-r * .74, -r * .3, r * 1.48, r * 1.02, r * .1); ctx.stroke();
+  ctx.fillStyle = 'rgba(255,255,255,.18)'; ctx.fillRect(-r * .68, -r * .26, r * .1, r * .9);
+  // filament running from the spool into the head
+  ctx.strokeStyle = '#ff6bd6'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(r * .9, -r * .45); ctx.quadraticCurveTo(r * .6, -r * 1.05, r * .1, -r * .88); ctx.stroke();
+  // status lights
+  for (let k = 0; k < 3; k++) { ctx.fillStyle = k === Math.floor(t * 3) % 3 ? '#5ce1c6' : '#4a4468'; circ(-r * .6 + k * r * .14, r * .8, r * .045); }
 }
+
 function drawHubBoss(e, r, t) {
-  // the smart-home hub: a fabric speaker with a spinning light ring and cables for legs
+  // the smart-home hub: a fabric speaker with a chasing light ring, a glaring light eye,
+  // cable legs ending in plugs and the smart devices it has taken over orbiting it
+  const angry = e.timer <= 1;
   ctx.lineCap = 'round';
-  for (const [a, sw] of [[.5, 1], [1.2, -1], [1.95, 1], [2.65, -1]]) {
-    const ex = Math.cos(a) * r * 1.3, ey = Math.sin(a) * r * .9 + r * .4;
-    ctx.strokeStyle = '#15121f'; ctx.lineWidth = r * .12;
-    ctx.beginPath(); ctx.moveTo(Math.cos(a) * r * .5, r * .4); ctx.quadraticCurveTo(ex * .8 + sw * r * .2, ey - r * .4, ex, ey); ctx.stroke();
-    ctx.fillStyle = '#ffd166'; circ(ex, ey, r * .08);
+  // sound waves before it attacks
+  if (angry || frac(t * .5) < .3) {
+    for (let k = 0; k < 3; k++) {
+      const ph = frac(t * 1.2 + k / 3);
+      ctx.strokeStyle = `rgba(255,107,214,${.45 * (1 - ph)})`; ctx.lineWidth = 3;
+      ctx.beginPath(); ctx.arc(0, 0, r * (1 + ph * .6), 0, TAU); ctx.stroke();
+    }
   }
-  const g = ctx.createRadialGradient(-r * .3, -r * .3, r * .1, 0, 0, r);
-  g.addColorStop(0, '#4a4266'); g.addColorStop(1, '#1d1930');
+  // cable legs with plugs
+  for (const [a, sw] of [[.5, 1], [1.2, -1], [1.95, 1], [2.65, -1]]) {
+    const ex = Math.cos(a) * r * 1.3, ey = Math.sin(a) * r * .9 + r * .4, wob = Math.sin(t * 3 + a * 4) * r * .05;
+    ctx.strokeStyle = '#0d0b16'; ctx.lineWidth = r * .14;
+    ctx.beginPath(); ctx.moveTo(Math.cos(a) * r * .5, r * .4); ctx.quadraticCurveTo(ex * .8 + sw * r * .2, ey - r * .4 + wob, ex, ey); ctx.stroke();
+    ctx.strokeStyle = '#3a3552'; ctx.lineWidth = r * .05; ctx.stroke();
+    ctx.save(); ctx.translate(ex, ey); ctx.rotate(Math.atan2(ey - (ey - r * .4), ex - (ex * .8 + sw * r * .2)) - Math.PI / 2);
+    ctx.fillStyle = '#e9e6f5'; rr(-r * .09, -r * .02, r * .18, r * .16, r * .03); ctx.fill();
+    ctx.fillStyle = '#ffd166'; ctx.fillRect(-r * .06, r * .13, r * .03, r * .08); ctx.fillRect(r * .03, r * .13, r * .03, r * .08);
+    ctx.restore();
+  }
+  // the devices it controls, orbiting
+  for (let k = 0; k < 3; k++) {
+    const a = t * .8 + k * TAU / 3, ox = Math.cos(a) * r * 1.25, oy = Math.sin(a) * r * .5 - r * .75;
+    ctx.save(); ctx.translate(ox, oy);
+    ctx.globalAlpha *= .6 + .4 * Math.sin(a);
+    ctx.fillStyle = '#1d1930'; circ(0, 0, r * .17);
+    ctx.strokeStyle = '#ff6bd6'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(0, 0, r * .17, 0, TAU); ctx.stroke();
+    ctx.fillStyle = '#ffd166'; ctx.strokeStyle = '#ffd166'; ctx.lineWidth = r * .03;
+    if (k === 0) { circ(0, -r * .03, r * .07); ctx.fillRect(-r * .035, r * .03, r * .07, r * .06); }
+    else if (k === 1) { rr(-r * .07, -r * .01, r * .14, r * .1, r * .02); ctx.fill(); ctx.beginPath(); ctx.arc(0, -r * .02, r * .045, Math.PI, 0); ctx.stroke(); }
+    else { ctx.beginPath(); ctx.arc(0, 0, r * .08, .6, TAU - .6); ctx.stroke(); ctx.fillRect(-r * .01, -r * .08, r * .02, r * .08); }
+    ctx.globalAlpha /= Math.max(.01, .6 + .4 * Math.sin(a));
+    ctx.restore();
+  }
+  // fabric body with a mesh of dots
+  const g = ctx.createRadialGradient(-r * .3, -r * .35, r * .1, 0, 0, r * .9);
+  g.addColorStop(0, '#5a5080'); g.addColorStop(1, '#1d1930');
   ctx.fillStyle = g; circ(0, 0, r * .82);
-  ctx.strokeStyle = 'rgba(255,255,255,.06)'; ctx.lineWidth = 1;
-  for (let k = 1; k < 8; k++) { ctx.beginPath(); ctx.arc(0, 0, r * .1 * k, 0, TAU); ctx.stroke(); }
-  // the light ring
+  ctx.save(); ctx.beginPath(); ctx.arc(0, 0, r * .8, 0, TAU); ctx.clip();
+  ctx.fillStyle = 'rgba(0,0,0,.28)';
+  for (let y = -r; y < r; y += r * .09) for (let x = -r + (Math.round(y / (r * .09)) % 2) * r * .045; x < r; x += r * .09) circ(x, y, r * .018);
+  ctx.restore();
+  // the chasing light ring
   for (let k = 0; k < 24; k++) {
-    const a = k / 24 * TAU + t * 1.5;
-    ctx.strokeStyle = `hsla(${(k * 15 + t * 80) % 360},90%,65%,${.4 + .6 * ((k + Math.floor(t * 8)) % 24 < 6)})`;
+    const a = k / 24 * TAU + t * 1.5, lit = (k + Math.floor(t * (angry ? 16 : 8))) % 24 < 6;
+    ctx.strokeStyle = angry ? `rgba(255,${60 + k * 4},${120 + k * 3},${lit ? 1 : .35})` : `hsla(${(k * 15 + t * 80) % 360},90%,65%,${lit ? 1 : .4})`;
     ctx.lineWidth = r * .1; ctx.beginPath(); ctx.arc(0, 0, r * .86, a, a + TAU / 24 * .8); ctx.stroke();
   }
-  // a visor with one wide eye
-  ctx.fillStyle = '#0d0b16'; rr(-r * .5, -r * .2, r, r * .36, r * .18); ctx.fill();
-  ctx.fillStyle = '#ff6bd6'; ctx.shadowColor = '#ff6bd6'; ctx.shadowBlur = 12;
-  rr(-r * .38 + Math.sin(t) * r * .08, -r * .08, r * .76, r * .12, r * .06); ctx.fill(); ctx.shadowBlur = 0;
+  ctx.save(); ctx.globalCompositeOperation = 'lighter'; glowAt(0, 0, r * 1.05, angry ? '255,59,92' : '255,107,214', .18); ctx.restore();
+  // the top cap with mic holes
+  ctx.fillStyle = '#2e2944'; ctx.beginPath(); ctx.ellipse(0, -r * .56, r * .36, r * .11, 0, 0, TAU); ctx.fill();
+  ctx.fillStyle = '#0d0b16'; for (let k = -2; k <= 2; k++) circ(k * r * .12, -r * .56, r * .025);
+  // the light eye glaring under a brow
+  ctx.fillStyle = '#0d0b16'; rr(-r * .52, -r * .22, r * 1.04, r * .4, r * .2); ctx.fill();
+  const eyeX = Math.sin(t * .9) * r * .1;
+  ctx.save(); ctx.shadowColor = angry ? '#ff3b5c' : '#ff6bd6'; ctx.shadowBlur = 16;
+  ctx.fillStyle = angry ? '#ff3b5c' : '#ff6bd6';
+  ctx.beginPath(); ctx.ellipse(eyeX, 0, r * .3, r * .1, 0, 0, TAU); ctx.fill();
+  ctx.restore();
+  ctx.fillStyle = '#fff'; ctx.beginPath(); ctx.ellipse(eyeX, 0, r * .1, r * .05, 0, 0, TAU); ctx.fill();
+  ctx.strokeStyle = '#0d0b16'; ctx.lineWidth = r * .09;
+  ctx.beginPath(); ctx.moveTo(-r * .46, -r * .32); ctx.lineTo(-r * .06, -r * .2); ctx.moveTo(r * .46, -r * .32); ctx.lineTo(r * .06, -r * .2); ctx.stroke();
+  // a little speaker grille smile
+  ctx.strokeStyle = 'rgba(255,107,214,.6)'; ctx.lineWidth = r * .04;
+  ctx.beginPath(); ctx.arc(0, r * .28, r * .22, .2 * Math.PI, .8 * Math.PI); ctx.stroke();
 }
 function drawWeb(x, y, R) {
   ctx.save(); ctx.translate(x, y);
