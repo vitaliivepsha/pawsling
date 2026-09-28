@@ -18,6 +18,7 @@ Everything needed to list the game in Telegram's app catalog and in other catalo
 | `webapp/icon-512.png` | 512×512 | bot avatar (@BotFather → /setuserpic), catalog icon |
 | `webapp/og.jpg` | 1200×630 | link preview of the web page (Open Graph) |
 | `promo/en/*.jpg`, `promo/uk/*.jpg` | 1080×1920 | Mini App media previews and catalog screenshots, in order 1–6 |
+| `promo/welcome-640x360.jpg` | 640×360 | @BotFather → Welcome message → Set Welcome Picture (empty chat); a 1280×720 copy is next to it |
 
 ## Texts
 
