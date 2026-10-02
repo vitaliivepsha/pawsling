@@ -1986,29 +1986,89 @@ function roomServer(b, ch) {
     for (let x = 10; x < W; x += 36) { c.beginPath(); c.moveTo(x, 0); c.lineTo(x, 14); c.lineTo(x + 14, 28); c.lineTo(x + 14, H); c.stroke(); c.beginPath(); c.arc(x + 14, 28, 2.5, 0, TAU); c.stroke(); }
   });
 }
+// shared spots so the animation lines up with the painted room
+const STW = { lamp: [225, TOP + 76], lift: { x: W - 50, y: 168, w: 50, h: 130 }, call: [W - 58, 238], rad: { x: W - 30, y: 336, n: 9 }, num: [225, 392] };
 function roomStairs(b, ch) {
   const R = seeded(173);
-  // terrazzo landing
-  b.fillStyle = '#3a2a28'; b.fillRect(0, TOP, W, BOT - TOP);
-  for (let k = 0; k < 1600; k++) { const c = ['rgba(255,240,220,.07)', 'rgba(0,0,0,.18)', 'rgba(242,95,92,.08)'][k % 3]; b.fillStyle = c; b.fillRect(R() * W, TOP + R() * (BOT - TOP), 2 + R() * 3, 2 + R() * 3); }
-  b.strokeStyle = 'rgba(0,0,0,.3)'; b.lineWidth = 2;
-  for (let y = TOP + 140; y < BOT; y += 140) { b.beginPath(); b.moveTo(0, y); b.lineTo(W, y); b.stroke(); }
+  // metlakh floor tiles: terracotta and cream with little dark diamonds at the corners
+  const S = 30;
+  for (let y = TOP, j = 0; y < BOT; y += S, j++) for (let x = 0, i = 0; x < W; x += S, i++) {
+    b.fillStyle = (i + j) % 2 ? '#47271f' : '#52372d'; b.fillRect(x, y, S, S);
+    b.fillStyle = 'rgba(255,240,220,.04)'; b.fillRect(x + 1.5, y + 1.5, S - 3, 2);
+  }
+  b.fillStyle = 'rgba(0,0,0,.35)';
+  for (let y = TOP; y <= BOT; y += S) b.fillRect(0, y - .75, W, 1.5);
+  for (let x = 0; x <= W; x += S) b.fillRect(x - .75, TOP, 1.5, BOT - TOP);
+  b.fillStyle = '#2e1a16';
+  for (let y = TOP; y <= BOT; y += S) for (let x = 0; x <= W; x += S) { b.beginPath(); b.moveTo(x, y - 5); b.lineTo(x + 5, y); b.lineTo(x, y + 5); b.lineTo(x - 5, y); b.closePath(); b.fill(); }
+  // wear: darker patches along the walking path, a few cracks
+  const wear = b.createLinearGradient(140, 0, 310, 0);
+  wear.addColorStop(0, 'rgba(0,0,0,0)'); wear.addColorStop(.5, 'rgba(0,0,0,.14)'); wear.addColorStop(1, 'rgba(0,0,0,0)');
+  b.fillStyle = wear; b.fillRect(140, TOP + 80, 170, BOT - TOP - 80);
+  b.strokeStyle = 'rgba(0,0,0,.35)'; b.lineWidth = 1.2;
+  for (let k = 0; k < 5; k++) { let x = 70 + R() * 310, y = TOP + 120 + R() * 420; b.beginPath(); b.moveTo(x, y); for (let q = 0; q < 4; q++) { x += (R() - .5) * 26; y += 6 + R() * 10; b.lineTo(x, y); } b.stroke(); }
+  // the floor number, stencilled big
+  const [nx, ny] = STW.num;
+  b.save(); b.textAlign = 'center'; b.textBaseline = 'middle'; b.font = `900 230px ${FD}`;
+  b.fillStyle = 'rgba(255,240,220,.065)'; b.fillText('5', nx, ny);
+  b.strokeStyle = 'rgba(255,240,220,.08)'; b.lineWidth = 3; b.setLineDash([10, 8]); b.strokeText('5', nx, ny); b.setLineDash([]);
+  b.restore();
   windowLight(b, ch, .07);
-  // stairs going up along the top wall
-  for (let k = 0; k < 4; k++) {
-    const y = TOP + k * 14;
-    b.fillStyle = k % 2 ? '#5a4440' : '#6a524c'; b.fillRect(60, y, W - 120, 14);
-    b.fillStyle = 'rgba(0,0,0,.3)'; b.fillRect(60, y + 12, W - 120, 2);
+  // stairs going up along the top wall, with a railing and a wooden handrail
+  for (let k = 0; k < 5; k++) {
+    const y = TOP + k * 13, sh = 70 - k * 9;
+    b.fillStyle = `rgb(${sh + 30},${sh + 8},${sh})`; b.fillRect(66, y, W - 132, 13);
+    b.fillStyle = 'rgba(255,240,220,.12)'; b.fillRect(66, y + 11, W - 132, 2);
   }
-  b.fillStyle = '#2a1e1c'; b.fillRect(52, TOP, 8, 60); b.fillRect(W - 60, TOP, 8, 60);
-  // mailboxes on the left wall, a radiator on the right
+  b.fillStyle = '#1e1412'; b.fillRect(58, TOP, 8, 72); b.fillRect(W - 66, TOP, 8, 72);
+  b.fillStyle = '#6a4a2e'; rr(W - 62, TOP, 10, 76, 5, b); b.fill();
+  b.fillStyle = 'rgba(255,220,180,.25)'; b.fillRect(W - 60, TOP + 2, 2, 70);
+  b.fillStyle = '#1a1110'; for (let y = TOP + 6; y < TOP + 70; y += 9) b.fillRect(W - 66, y, 6, 2.5);
+  // the lamp on the ceiling above the landing
+  b.fillStyle = '#d9d4c8'; rr(STW.lamp[0] - 34, STW.lamp[1] - 5, 68, 10, 5, b); b.fill();
+  b.fillStyle = 'rgba(0,0,0,.35)'; b.fillRect(STW.lamp[0] - 30, STW.lamp[1] + 5, 60, 3);
+  // mailboxes on the left wall, flyers sticking out, and an electrics cupboard below
   for (let i = 0; i < 2; i++) for (let j = 0; j < 5; j++) {
-    const x = 6 + i * 22, y = 220 + j * 30;
-    b.fillStyle = '#5f6b7a'; b.fillRect(x, y, 20, 26);
-    b.fillStyle = '#2a2f38'; b.fillRect(x + 3, y + 4, 14, 4);
+    const x = 4 + i * 24, y = 196 + j * 32;
+    b.fillStyle = 'rgba(0,0,0,.35)'; b.fillRect(x + 2, y + 3, 22, 28);
+    b.fillStyle = j % 2 === i % 2 ? '#5f7487' : '#56697b'; b.fillRect(x, y, 22, 28);
+    b.fillStyle = '#2a2f38'; b.fillRect(x + 3, y + 5, 16, 4);
+    b.fillStyle = '#e9e4d8'; b.fillRect(x + 6, y + 15, 10, 6);
+    b.fillStyle = '#2a2f38'; b.fillRect(x + 8, y + 17, 6, 1.5);
+    if (R() < .4) { b.fillStyle = R() < .5 ? '#ffd166' : '#f4efe6'; b.save(); b.translate(x + 11, y + 6); b.rotate((R() - .5) * .6); b.fillRect(-5, -8, 10, 7); b.restore(); }
   }
-  b.fillStyle = '#b9c3cf';
-  for (let k = 0; k < 9; k++) b.fillRect(W - 26, 300 + k * 14, 20, 10);
+  b.fillStyle = '#6b6f78'; b.fillRect(4, 372, 46, 70);
+  b.strokeStyle = '#3a3d45'; b.lineWidth = 2; b.strokeRect(5, 373, 44, 68);
+  b.fillStyle = '#ffd166'; b.beginPath(); b.moveTo(27, 390); b.lineTo(38, 410); b.lineTo(16, 410); b.closePath(); b.fill();
+  b.fillStyle = '#15121f'; b.beginPath(); b.moveTo(28, 394); b.lineTo(24, 402); b.lineTo(28, 402); b.lineTo(26, 408); b.lineTo(31, 399); b.lineTo(27, 399); b.closePath(); b.fill();
+  // the lift doors on the right wall with a floor display and a call button
+  const L = STW.lift;
+  b.fillStyle = 'rgba(0,0,0,.4)'; b.fillRect(L.x - 6, L.y + 4, L.w + 6, L.h);
+  b.fillStyle = '#3a3d48'; b.fillRect(L.x - 4, L.y - 22, L.w + 4, L.h + 26);
+  const dg = b.createLinearGradient(L.x, 0, L.x + L.w, 0);
+  dg.addColorStop(0, '#8a96a3'); dg.addColorStop(.5, '#c9d3dd'); dg.addColorStop(1, '#8a96a3');
+  b.fillStyle = dg; b.fillRect(L.x, L.y, L.w, L.h);
+  b.fillStyle = '#4a4d57'; b.fillRect(L.x + L.w / 2 - 1, L.y, 2, L.h);
+  b.fillStyle = 'rgba(255,255,255,.18)'; for (let y = L.y + 6; y < L.y + L.h; y += 9) b.fillRect(L.x + 3, y, L.w - 6, 1);
+  b.fillStyle = '#0d0b16'; b.fillRect(L.x + 6, L.y - 18, L.w - 12, 13);
+  b.fillStyle = '#2a2d36'; b.beginPath(); b.arc(STW.call[0], STW.call[1], 7, 0, TAU); b.fill();
+  // the radiator, fins shaded
+  const Rd = STW.rad;
+  b.fillStyle = 'rgba(0,0,0,.35)'; b.fillRect(Rd.x - 2, Rd.y + 4, 28, Rd.n * 14);
+  for (let k = 0; k < Rd.n; k++) {
+    const rg = b.createLinearGradient(Rd.x, 0, Rd.x + 24, 0);
+    rg.addColorStop(0, '#d9e0e8'); rg.addColorStop(1, '#8e98a4');
+    b.fillStyle = rg; rr(Rd.x, Rd.y + k * 14, 24, 11, 4, b); b.fill();
+  }
+  b.fillStyle = '#7a8490'; b.fillRect(Rd.x + 10, Rd.y - 10, 4, 10);
+  // a bucket with a mop (bottom left) and a stack of tied newspapers (bottom right)
+  b.fillStyle = 'rgba(0,0,0,.35)'; b.beginPath(); b.ellipse(26, BOT - 30, 20, 9, 0, 0, TAU); b.fill();
+  b.fillStyle = '#3a8fd6'; b.beginPath(); b.arc(24, BOT - 40, 17, 0, TAU); b.fill();
+  b.fillStyle = '#6ec3ff'; b.beginPath(); b.arc(24, BOT - 40, 12, 0, TAU); b.fill();
+  b.strokeStyle = '#b98a57'; b.lineWidth = 3; b.beginPath(); b.moveTo(24, BOT - 40); b.lineTo(44, BOT - 92); b.stroke();
+  b.strokeStyle = '#ece6da'; b.lineWidth = 2; for (let k = -3; k <= 3; k++) { b.beginPath(); b.moveTo(24, BOT - 40); b.lineTo(24 + k * 4, BOT - 30); b.stroke(); }
+  for (let k = 0; k < 4; k++) { b.fillStyle = k % 2 ? '#d9d4c8' : '#c9c2b0'; b.fillRect(W - 44, BOT - 36 - k * 7, 40, 7); }
+  b.strokeStyle = '#8a5a2e'; b.lineWidth = 1.5; b.beginPath(); b.moveTo(W - 24, BOT - 64); b.lineTo(W - 24, BOT - 8); b.moveTo(W - 44, BOT - 22); b.lineTo(W - 4, BOT - 22); b.stroke();
   vignette(b, '10,4,4', .6);
   hudBars(b, ch, c => {
     c.strokeStyle = 'rgba(242,95,92,.08)'; c.lineWidth = 1.5;
@@ -2094,10 +2154,31 @@ function drawRoomUnder(c) {
     const fl = frac(t * .09);
     if (!RM && fl > .97) glowAt(225, TOP + 220, 560, '200,215,255', .18 * Math.sin((fl - .97) / .03 * Math.PI));
   } else if (c === 11) {
-    // a stairwell lamp that flickers, and the lift's floor light
-    const f = frac(t * .2) > .95 && Math.sin(t * 50) > 0 ? .3 : 1;
-    glowAt(225, TOP + 30, 240, '255,220,170', .14 * f);
-    ctx.fillStyle = `rgba(255,236,200,${.9 * f})`; ctx.fillRect(205, TOP + 2, 40, 4);
+    // the fluorescent lamp flickers now and then, a moth circles it
+    const f = frac(t * .2) > .93 && Math.sin(t * 50) > 0 ? .25 : 1, [lx, ly] = STW.lamp;
+    glowAt(lx, ly, 230, '255,236,200', .15 * f);
+    ctx.fillStyle = `rgba(255,248,225,${.95 * f})`; ctx.fillRect(lx - 30, ly - 2, 60, 4);
+    const ma = t * 3.1, mx = lx + Math.cos(ma) * 42 + Math.sin(t * 7) * 6, my = ly + Math.sin(ma * 1.3) * 18;
+    ctx.fillStyle = 'rgba(220,210,190,.8)';
+    const flap = Math.abs(Math.sin(t * 30)) * 4;
+    ctx.beginPath(); ctx.ellipse(mx - 2, my, 3, flap + 1, -.4, 0, TAU); ctx.ellipse(mx + 2, my, 3, flap + 1, .4, 0, TAU); ctx.fill();
+    // the lift display counts floors with a blinking arrow, the call button pulses
+    const L = STW.lift, fl = 9 - Math.floor(t * .8) % 9, down = frac(t * 1.5) < .6;
+    ctx.fillStyle = '#ff7a3c'; ctx.font = `900 11px ${FD}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    ctx.fillText(String(fl), L.x + L.w / 2 + 6, L.y - 11);
+    if (down) { ctx.beginPath(); ctx.moveTo(L.x + 12, L.y - 15); ctx.lineTo(L.x + 20, L.y - 15); ctx.lineTo(L.x + 16, L.y - 8); ctx.closePath(); ctx.fill(); }
+    const [cx, cy] = STW.call, p = .5 + .5 * Math.sin(t * 3);
+    glowAt(cx, cy, 16, '255,122,60', .35 + .3 * p);
+    ctx.fillStyle = `rgba(255,${140 + 60 * p | 0},80,1)`; circ(cx, cy, 4);
+    // warm air shimmering off the radiator
+    const Rd = STW.rad;
+    ctx.strokeStyle = 'rgba(255,200,170,.09)'; ctx.lineWidth = 1.5;
+    for (let k = 0; k < 4; k++) {
+      const ph = frac(t * .5 + k / 4), x0 = Rd.x - 6 - ph * 26;
+      ctx.beginPath();
+      for (let y = Rd.y + 4; y < Rd.y + Rd.n * 14; y += 6) ctx.lineTo(x0 + Math.sin(y * .15 + t * 4 + k) * 3, y);
+      ctx.globalAlpha = 1 - ph; ctx.stroke(); ctx.globalAlpha = 1;
+    }
   } else if (c === 10) {
     // rack LEDs blinking on their own units, each unit with its own rhythm
     for (const rx of [0, W - SRV.rackW]) for (let i = 0; i < SRV.units; i++) {
@@ -4482,32 +4563,105 @@ function drawHubBoss(e, r, t) {
   ctx.beginPath(); ctx.arc(0, r * .28, r * .22, .2 * Math.PI, .8 * Math.PI); ctx.stroke();
 }
 function drawBomb(e, r, t) {
-  // a round bomb robot with a sparking fuse
-  const g = ctx.createRadialGradient(-r * .3, -r * .3, r * .1, 0, 0, r);
-  g.addColorStop(0, '#4a4a58'); g.addColorStop(1, '#15151c');
+  // a glossy bomb robot on little feet: a hazard band with its countdown, a braided fuse throwing sparks
+  const hot = e.timer <= 1, sp = hot ? 3 : 1;
+  ctx.save();
+  if (hot && !RM) ctx.translate(Math.sin(T * 47) * 1.5, Math.cos(T * 39) * 1);
+  ctx.fillStyle = '#15151c';
+  for (const sd of [-1, 1]) { ctx.beginPath(); ctx.ellipse(sd * r * .45, r * .92, r * .26, r * .14, 0, 0, TAU); ctx.fill(); }
+  const g = ctx.createRadialGradient(-r * .3, -r * .35, r * .1, 0, 0, r);
+  g.addColorStop(0, '#5a5a6a'); g.addColorStop(1, '#121218');
   ctx.fillStyle = g; circ(0, 0, r);
-  ctx.strokeStyle = '#f25f5c'; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.arc(0, 0, r, 0, TAU); ctx.stroke();
-  ctx.fillStyle = '#6b6b78'; rr(-r * .22, -r * 1.12, r * .44, r * .3, r * .06); ctx.fill();
-  ctx.strokeStyle = '#c9a27a'; ctx.lineWidth = 3; ctx.lineCap = 'round';
-  ctx.beginPath(); ctx.moveTo(0, -r * 1.1); ctx.quadraticCurveTo(r * .3, -r * 1.45, r * .5, -r * 1.3); ctx.stroke();
-  const fast = e.timer <= 1 ? 3 : 1;
-  if (frac(t * 4 * fast) < .6) { ctx.save(); ctx.globalCompositeOperation = 'lighter'; glowAt(r * .5, -r * 1.3, r * .4, '255,200,80', .9); ctx.restore(); }
-  ctx.fillStyle = frac(t * 2 * fast) < .5 ? '#ff3b5c' : '#5a1a22'; circ(r * .55, -r * .5, r * .1);
-  angryEyes(0, -r * .05, r * .6, '#ff7a3c');
+  // hazard band with the countdown
+  ctx.save(); ctx.beginPath(); ctx.arc(0, 0, r, 0, TAU); ctx.clip();
+  ctx.fillStyle = '#ffc857'; ctx.fillRect(-r, r * .22, r * 2, r * .38);
+  ctx.fillStyle = '#15151c';
+  for (let x = -r * 1.4; x < r; x += r * .3) { ctx.beginPath(); ctx.moveTo(x, r * .6); ctx.lineTo(x + r * .15, r * .6); ctx.lineTo(x + r * .3, r * .22); ctx.lineTo(x + r * .15, r * .22); ctx.closePath(); ctx.fill(); }
+  ctx.restore();
+  ctx.fillStyle = '#0d0b16'; rr(-r * .26, r * .24, r * .52, r * .34, r * .06); ctx.fill();
+  const blink = !hot || frac(T * 4) < .6;
+  ctx.fillStyle = blink ? '#ff3b5c' : '#5a1a22'; ctx.font = `900 ${Math.round(r * .3)}px ${FD}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillText(String(Math.max(0, e.timer)), 0, r * .42);
+  ctx.fillStyle = 'rgba(255,255,255,.3)'; ctx.beginPath(); ctx.ellipse(-r * .38, -r * .45, r * .26, r * .14, -.6, 0, TAU); ctx.fill();
+  ctx.strokeStyle = '#f25f5c'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(0, 0, r, 0, TAU); ctx.stroke();
+  angryEyes(0, -r * .12, r * .62, '#ff7a3c');
+  // cap with rivets
+  ctx.fillStyle = '#6b6b78'; rr(-r * .26, -r * 1.14, r * .52, r * .3, r * .06); ctx.fill();
+  ctx.fillStyle = '#9aa0ad'; ctx.fillRect(-r * .26, -r * 1.14, r * .52, r * .07);
+  ctx.fillStyle = '#3a3a46'; for (const sd of [-1, 0, 1]) circ(sd * r * .16, -r * .96, r * .035);
+  // the braided fuse and its spark
+  const fx = r * .55, fy = -r * 1.38;
+  ctx.lineCap = 'round';
+  ctx.strokeStyle = '#a07a52'; ctx.lineWidth = r * .14;
+  ctx.beginPath(); ctx.moveTo(0, -r * 1.12); ctx.quadraticCurveTo(r * .2, -r * 1.55, fx, fy); ctx.stroke();
+  ctx.strokeStyle = '#6a4a2e'; ctx.lineWidth = r * .14; ctx.setLineDash([r * .06, r * .08]); ctx.stroke(); ctx.setLineDash([]);
+  ctx.save(); ctx.globalCompositeOperation = 'lighter';
+  glowAt(fx, fy, r * (.45 + .12 * Math.sin(t * 30 * sp)), '255,190,80', .85);
+  ctx.strokeStyle = '#fff3c4'; ctx.lineWidth = 1.5;
+  for (let k = 0; k < 6; k++) { const a = k / 6 * TAU + t * 9 * sp, l = r * (.18 + .1 * Math.sin(t * 40 + k)); ctx.beginPath(); ctx.moveTo(fx, fy); ctx.lineTo(fx + Math.cos(a) * l, fy + Math.sin(a) * l); ctx.stroke(); }
+  for (let k = 0; k < (hot ? 7 : 3); k++) {
+    const ph = frac(t * 1.6 * sp + k * .37), a = -1.9 + k * .55;
+    ctx.fillStyle = `rgba(255,${200 - ph * 100 | 0},80,${1 - ph})`; circ(fx + Math.cos(a) * ph * r * .8, fy + Math.sin(a) * ph * r * .8 + ph * ph * r * .5, 1.6);
+  }
+  ctx.restore();
+  ctx.restore();
 }
+
 function drawLiftBoss(e, r, t) {
-  // an elevator cabin: a floor display on top, sliding doors with a face across the seam
-  ctx.fillStyle = '#2a2d36'; rr(-r * .9, -r * 1.05, r * 1.8, r * 2.05, r * .14); ctx.fill();
-  ctx.strokeStyle = '#f25f5c'; ctx.lineWidth = 3; rr(-r * .9, -r * 1.05, r * 1.8, r * 2.05, r * .14); ctx.stroke();
-  ctx.fillStyle = '#0d0b16'; rr(-r * .45, -r * .98, r * .9, r * .3, r * .06); ctx.fill();
-  ctx.fillStyle = '#ff7a3c'; ctx.font = `900 ${Math.round(r * .24)}px ${FD}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-  ctx.fillText(String(1 + Math.floor(t * 1.5) % 9), 0, -r * .82);
-  const dg = ctx.createLinearGradient(-r * .75, 0, r * .75, 0);
-  dg.addColorStop(0, '#8a96a3'); dg.addColorStop(.5, '#c9d3dd'); dg.addColorStop(1, '#8a96a3');
-  ctx.fillStyle = dg; ctx.fillRect(-r * .75, -r * .6, r * 1.5, r * 1.5);
-  ctx.strokeStyle = '#4a4d57'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(0, -r * .6); ctx.lineTo(0, r * .9); ctx.stroke();
-  angryEyes(0, -r * .15, r * .9, '#ff3b5c');
-  ctx.fillStyle = '#ffd166'; circ(r * .82, -r * .1, r * .06); circ(r * .82, r * .1, r * .06);
+  // an express lift: steel cables and a pulley, a floor display with a down arrow, call buttons,
+  // and doors that part to show a red glow and teeth before it drops
+  const angry = e.timer <= 1;
+  // speed lines streaming down the sides
+  ctx.strokeStyle = 'rgba(242,95,92,.35)'; ctx.lineWidth = 2; ctx.lineCap = 'round';
+  for (let k = 0; k < 6; k++) {
+    const ph = frac(t * (angry ? 2.2 : 1) + k / 6), x = (k % 2 ? 1 : -1) * r * (1.05 + (k % 3) * .1), y = -r * 1.1 + ph * r * 2.4;
+    ctx.globalAlpha = Math.sin(ph * Math.PI); ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x, y + r * .35); ctx.stroke();
+  }
+  ctx.globalAlpha = 1;
+  // cables and pulley
+  ctx.strokeStyle = '#8a96a3'; ctx.lineWidth = 2;
+  for (const dx of [-.22, 0, .22]) { ctx.beginPath(); ctx.moveTo(dx * r, -r * 1.05); ctx.lineTo(dx * r * .5, -r * 1.55); ctx.stroke(); }
+  ctx.fillStyle = '#4a4d57'; circ(0, -r * 1.6, r * .16);
+  ctx.save(); ctx.translate(0, -r * 1.6); ctx.rotate(t * 3);
+  ctx.strokeStyle = '#c9d3dd'; ctx.lineWidth = 1.5; for (let k = 0; k < 3; k++) { ctx.rotate(TAU / 3); ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(r * .13, 0); ctx.stroke(); }
+  ctx.restore();
+  // the cabin frame
+  const fg = ctx.createLinearGradient(-r, 0, r, 0);
+  fg.addColorStop(0, '#2a2d36'); fg.addColorStop(.5, '#3e424e'); fg.addColorStop(1, '#2a2d36');
+  ctx.fillStyle = fg; rr(-r * .92, -r * 1.06, r * 1.84, r * 2.08, r * .14); ctx.fill();
+  ctx.strokeStyle = angry ? '#ff3b5c' : '#f25f5c'; ctx.lineWidth = 3; rr(-r * .92, -r * 1.06, r * 1.84, r * 2.08, r * .14); ctx.stroke();
+  // floor display
+  ctx.fillStyle = '#0d0b16'; rr(-r * .48, -r * .98, r * .96, r * .3, r * .06); ctx.fill();
+  ctx.fillStyle = '#ff7a3c'; ctx.font = `900 ${Math.round(r * .22)}px ${FD}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillText(String(9 - Math.floor(t * (angry ? 4 : 1.5)) % 9), r * .12, -r * .83);
+  if (frac(t * 2) < .6) { ctx.beginPath(); ctx.moveTo(-r * .32, -r * .9); ctx.lineTo(-r * .14, -r * .9); ctx.lineTo(-r * .23, -r * .76); ctx.closePath(); ctx.fill(); }
+  // doors parting over the dark cabin
+  const gap = r * (angry ? .22 + .06 * Math.sin(t * 8) : .05 + .02 * Math.sin(t * 2));
+  const dx0 = -r * .76, dw = r * 1.52, dy = -r * .62, dh = r * 1.5;
+  ctx.fillStyle = '#120a0c'; ctx.fillRect(dx0, dy, dw, dh);
+  if (angry) {
+    ctx.save(); ctx.globalCompositeOperation = 'lighter'; glowAt(0, dy + dh / 2, r * .8, '255,59,92', .55); ctx.restore();
+    ctx.fillStyle = '#fff'; for (let k = 0; k < 6; k++) { const yy = dy + r * .55 + k * r * .12; ctx.beginPath(); ctx.moveTo(-gap, yy); ctx.lineTo(-gap * .2, yy + r * .06); ctx.lineTo(-gap, yy + r * .12); ctx.fill(); ctx.beginPath(); ctx.moveTo(gap, yy + r * .06); ctx.lineTo(gap * .2, yy + r * .12); ctx.lineTo(gap, yy + r * .18); ctx.fill(); }
+  }
+  for (const sd of [-1, 1]) {
+    const x = sd < 0 ? dx0 : gap, w = dw / 2 - gap;
+    const dg = ctx.createLinearGradient(x, 0, x + w, 0);
+    dg.addColorStop(0, '#8a96a3'); dg.addColorStop(.5, '#d4dce5'); dg.addColorStop(1, '#8a96a3');
+    ctx.fillStyle = dg; ctx.fillRect(sd < 0 ? dx0 : gap, dy, w, dh);
+    ctx.fillStyle = 'rgba(255,255,255,.18)'; for (let y = dy + 8; y < dy + dh; y += 10) ctx.fillRect(sd < 0 ? dx0 + 3 : gap + 3, y, w - 6, 1);
+  }
+  ctx.fillStyle = '#4a4d57'; ctx.fillRect(-gap - 1, dy, 2, dh); ctx.fillRect(gap - 1, dy, 2, dh);
+  angryEyes(0, -r * .2, r * .9, angry ? '#ff3b5c' : '#ff7a3c');
+  // call buttons on the side
+  ctx.fillStyle = '#1a1c22'; rr(r * .76, -r * .28, r * .14, r * .42, r * .05); ctx.fill();
+  const b1 = frac(t * 1.3) < .5;
+  ctx.fillStyle = b1 ? '#ffd166' : '#6a5a2a'; circ(r * .83, -r * .16, r * .045);
+  ctx.fillStyle = !b1 || angry ? '#ff7a3c' : '#5a2a1a'; circ(r * .83, r * .02, r * .045);
+  // a hazard threshold
+  ctx.save(); ctx.beginPath(); ctx.rect(-r * .76, r * .88, r * 1.52, r * .12); ctx.clip();
+  ctx.fillStyle = '#ffc857'; ctx.fillRect(-r, r * .88, r * 2, r * .12);
+  ctx.fillStyle = '#15151c'; for (let x = -r; x < r; x += r * .2) { ctx.beginPath(); ctx.moveTo(x, r); ctx.lineTo(x + r * .1, r); ctx.lineTo(x + r * .2, r * .88); ctx.lineTo(x + r * .1, r * .88); ctx.closePath(); ctx.fill(); }
+  ctx.restore();
 }
 function drawWeb(x, y, R) {
   ctx.save(); ctx.translate(x, y);
