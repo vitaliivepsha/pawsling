@@ -28,19 +28,19 @@ Everything needed to list the game in Telegram's app catalog and in other catalo
 **Tagline (EN, ≤ 30):** Slingshot cats vs robot vacuums
 **Tagline (UK):** Коти з рогатки проти пилососів
 
-**Short description (EN, ≤ 120):** Launch cats & raccoons like a slingshot and save the flat from robot vacuums! 60 levels, 11 bosses. Free to play.
+**Short description (EN, ≤ 120):** Launch cats & raccoons like a slingshot and save the flat from robot vacuums! 66 levels, 12 bosses. Free to play.
 
-**Short description (UK):** Запускай котів і єнотів, як з рогатки, і рятуй квартиру від роботів-пилососів! 60 рівнів, 11 босів. Безкоштовно.
+**Short description (UK):** Запускай котів і єнотів, як з рогатки, і рятуй квартиру від роботів-пилососів! 66 рівнів, 12 босів. Безкоштовно.
 
 **Description (EN):**
-Pull back, aim and launch your heroes like a slingshot. Bounce off walls, pierce through robots, cross your yarn to tie exploding knots and beat 11 wild robot bosses across 60 levels, from the kitchen to the server room.
+Pull back, aim and launch your heroes like a slingshot. Bounce off walls, pierce through robots, cross your yarn to tie exploding knots and beat 12 wild robot bosses across 66 levels, from the kitchen to the stairwell.
 - 7 heroes with superpowers that level up
 - Night Shift: endless waves and a weekly tournament with prizes
 - Daily bonus, daily challenges and story comics
 - 5 languages: English, Ukrainian, Polish, German, Spanish
 
 **Опис (UK):**
-Тягни, цілься й запускай героїв, як з рогатки. Відбивайся від стін, прошивай роботів наскрізь, перетинай нитки, щоб в'язати вибухові вузли, і перемагай 11 шалених босів у 60 рівнях, від кухні до серверної.
+Тягни, цілься й запускай героїв, як з рогатки. Відбивайся від стін, прошивай роботів наскрізь, перетинай нитки, щоб в'язати вибухові вузли, і перемагай 12 шалених босів у 66 рівнях, від кухні до під'їзду.
 - 7 героїв із суперсилами, які прокачуються
 - «Нічна зміна»: нескінченні хвилі й турнір тижня з призами
 - Щоденний бонус, завдання дня й комікси
