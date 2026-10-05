@@ -507,28 +507,28 @@ const CHAPTERS = [
   { name: 'Ванна', key: 'bath', col: '#6ec3ff', hp: 1.85, atk: 1.55,
     hud: '#0b1622', line: '#24506e', shade: 'rgba(6,14,24,.92)', fx: ['#bfe6ff', '#6ec3ff', '#ffffff', '#9fe8ff'], shape: 'bubble',
     beam: [[20, 60], [130, 60], [60, 340]], beamCol: '200,235,255' },
-  { name: 'Балкон', key: 'balcony', col: '#9ee06a', hp: 2.05, atk: 1.65,
+  { name: 'Балкон', key: 'balcony', col: '#9ee06a', hp: 2.15, atk: 1.72,
     hud: '#0f1a10', line: '#3c5a2a', shade: 'rgba(8,16,8,.92)', fx: ['#9ee06a', '#ffd166', '#ff8fb1', '#e8ffd0'], shape: 'leaf',
     beam: [[250, 120], [450, 120], [150, 560]], beamCol: '210,225,255' },
-  { name: 'Горище', key: 'attic', col: '#ffb070', hp: 2.3, atk: 1.62,
+  { name: 'Горище', key: 'attic', col: '#ffb070', hp: 2.45, atk: 1.7,
     hud: '#1a120c', line: '#5a3b24', shade: 'rgba(18,12,8,.92)', fx: ['#ffb070', '#e8d2b0', '#c9a27a', '#fff1d6'], shape: 'dust',
     beam: [[170, 60], [290, 60], [110, 470]], beamCol: '255,225,180' },
-  { name: 'Гараж', key: 'garage', col: '#a9c1d9', hp: 2.7, atk: 1.75,
+  { name: 'Гараж', key: 'garage', col: '#a9c1d9', hp: 2.92, atk: 1.85,
     hud: '#121317', line: '#4a4d57', shade: 'rgba(10,10,14,.92)', fx: ['#ffd166', '#c9d3dd', '#ff9f43', '#8a96a3'], shape: 'confetti',
     beam: [[300, 60], [440, 60], [200, 540]], beamCol: '230,240,255' },
-  { name: 'Підвал', key: 'basement', col: '#8fd14f', hp: 3.1, atk: 1.9,
+  { name: 'Підвал', key: 'basement', col: '#8fd14f', hp: 3.39, atk: 2.03,
     hud: '#0e120c', line: '#3a4a2a', shade: 'rgba(8,10,6,.92)', fx: ['#8fd14f', '#c9d3dd', '#e8ecf2', '#6b7a5a'], shape: 'dust',
     beam: [[360, 60], [440, 60], [290, 330]], beamCol: '200,255,170' },
-  { name: 'Дах', key: 'roof', col: '#7aa2ff', hp: 3.45, atk: 2,
+  { name: 'Дах', key: 'roof', col: '#7aa2ff', hp: 3.83, atk: 2.16,
     hud: '#0b0f22', line: '#2c3a6e', shade: 'rgba(6,8,20,.92)', fx: ['#7aa2ff', '#ffe066', '#cfe0ff', '#b18cff'], shape: 'star',
     beam: [[330, 60], [440, 60], [240, 560]], beamCol: '190,210,255' },
-  { name: 'Сад', key: 'garden', col: '#d4e157', hp: 3.6, atk: 2.05,
+  { name: 'Сад', key: 'garden', col: '#d4e157', hp: 4.05, atk: 2.23,
     hud: '#0f1a0c', line: '#3d5a22', shade: 'rgba(8,16,6,.92)', fx: ['#d4e157', '#ff8fb1', '#ffe066', '#ffffff'], shape: 'leaf',
     beam: [[20, 60], [160, 60], [120, 520]], beamCol: '255,210,150' },
-  { name: 'Серверна', key: 'server', col: '#ff6bd6', hp: 3.8, atk: 2.1,
+  { name: 'Серверна', key: 'server', col: '#ff6bd6', hp: 4.33, atk: 2.31,
     hud: '#120c1c', line: '#4a2a5e', shade: 'rgba(12,6,20,.92)', fx: ['#ff6bd6', '#5ce1c6', '#b18cff', '#ffffff'], shape: 'confetti',
     beam: [[180, 60], [270, 60], [150, 560]], beamCol: '255,150,230' },
-  { name: "Під'їзд", key: 'stairs', col: '#f25f5c', hp: 4.05, atk: 2.2,
+  { name: "Під'їзд", key: 'stairs', col: '#f25f5c', hp: 4.68, atk: 2.44,
     hud: '#1a0e0e', line: '#5a2a28', shade: 'rgba(20,8,8,.92)', fx: ['#f25f5c', '#ffd166', '#c9d3dd', '#ffffff'], shape: 'dust',
     beam: [[300, 60], [420, 60], [220, 540]], beamCol: '255,220,170' },
 ];
@@ -644,7 +644,7 @@ const LEVELS = [
     waves: [[['mole', 90, 170], ['mole', 360, 170], ['spray', 225, 250], ['vac', 120, 420], ['vac', 330, 420]]] },
   { ch: 9, par: 16,
     waves: [[['rc', 225, 170], ['mole', 110, 290], ['mole', 340, 290], ['spray', 225, 440]], [['magnet', 110, 200], ['shield', 340, 200], ['mole', 225, 330], ['brush', 225, 460]]] },
-  { ch: 9, par: 22, hpMul: 3.2, atkMul: 1.85,
+  { ch: 9, par: 22, hpMul: 3.6, atkMul: 2.02,
     waves: [[['vac', 90, 160], ['mole', 225, 220], ['vac', 360, 160], ['mop', 225, 380]], [['mole', 100, 190], ['vac', 225, 260], ['mole', 350, 190], ['spray', 225, 440]], [['magnet', 90, 200], ['vac', 360, 200], ['brush', 225, 170], ['mop', 120, 420], ['shield', 330, 420]]] },
   { ch: 9, par: 27, boss: .52, tip: 'mow',
     waves: [[['mole', 110, 300], ['brush', 225, 180], ['mole', 340, 300]], [['split', 100, 220], ['magnet', 225, 330], ['split', 350, 220]], [['boss', 225, 220], ['mole', 100, 430], ['mole', 350, 430]]] },
@@ -653,11 +653,11 @@ const LEVELS = [
     waves: [[['printer', 225, 200], ['vac', 100, 330], ['vac', 350, 330], ['spray', 225, 440]]] },
   { ch: 10, par: 14,
     waves: [[['printer', 110, 190], ['mole', 225, 280], ['printer', 340, 190]], [['magnet', 225, 220], ['split', 110, 330], ['vac', 340, 330], ['brush', 225, 450]]] },
-  { ch: 10, par: 11, atkMul: 1.9,
+  { ch: 10, par: 11, atkMul: 2.09,
     waves: [[['printer', 225, 170], ['vac', 110, 280], ['rc', 340, 280], ['vac', 225, 430]]] },
   { ch: 10, par: 16,
     waves: [[['fan', 225, 170], ['printer', 100, 290], ['printer', 350, 290]], [['mole', 110, 200], ['shield', 340, 200], ['magnet', 225, 330], ['brush', 225, 460]]] },
-  { ch: 10, par: 22, hpMul: 3.4, atkMul: 1.9,
+  { ch: 10, par: 22, hpMul: 3.88, atkMul: 2.09,
     waves: [[['vac', 90, 160], ['printer', 225, 220], ['vac', 360, 160], ['mop', 225, 380]], [['mole', 100, 190], ['rc', 225, 260], ['mole', 350, 190], ['split', 225, 440]], [['printer', 90, 200], ['magnet', 360, 200], ['brush', 225, 170], ['mop', 120, 420], ['shield', 330, 420]]] },
   { ch: 10, par: 27, boss: .55, tip: 'hub',
     waves: [[['printer', 110, 300], ['brush', 225, 180], ['printer', 340, 300]], [['split', 100, 220], ['magnet', 225, 330], ['split', 350, 220]], [['boss', 225, 220], ['vac', 100, 430], ['vac', 350, 430]]] },
@@ -666,11 +666,11 @@ const LEVELS = [
     waves: [[['bomb', 225, 200], ['vac', 110, 320], ['vac', 340, 320], ['spray', 225, 440]]] },
   { ch: 11, par: 15,
     waves: [[['bomb', 150, 200], ['mop', 225, 300], ['bomb', 300, 200]], [['printer', 225, 180], ['magnet', 110, 320], ['split', 340, 320], ['brush', 225, 450]]] },
-  { ch: 11, par: 12, atkMul: 2,
+  { ch: 11, par: 12, atkMul: 2.22,
     waves: [[['bomb', 225, 250], ['shield', 110, 180], ['shield', 340, 180], ['vac', 110, 400], ['vac', 340, 400]]] },
   { ch: 11, par: 17,
     waves: [[['mole', 110, 190], ['bomb', 225, 280], ['mole', 340, 190], ['spray', 225, 430]], [['fan', 225, 170], ['bomb', 110, 300], ['printer', 340, 300], ['rc', 225, 450]]] },
-  { ch: 11, par: 23, hpMul: 3.4, atkMul: 1.9,
+  { ch: 11, par: 23, hpMul: 3.93, atkMul: 2.11,
     waves: [[['vac', 90, 160], ['bomb', 225, 220], ['vac', 360, 160], ['mop', 225, 380]], [['printer', 100, 190], ['shield', 225, 260], ['magnet', 350, 190], ['split', 225, 440]], [['bomb', 90, 200], ['mole', 360, 200], ['brush', 225, 170], ['vac', 120, 420], ['mop', 330, 420]]] },
   { ch: 11, par: 28, boss: .6, tip: 'lift',
     waves: [[['bomb', 110, 300], ['brush', 225, 180], ['bomb', 340, 300]], [['printer', 100, 220], ['magnet', 225, 330], ['split', 350, 220]], [['boss', 225, 200], ['bomb', 100, 430], ['bomb', 350, 430]]] },
@@ -3635,6 +3635,98 @@ function drawHat(kind, r) {
 
 // Each hero is a little character: Mochi a fluffy tabby with a bell, Pixel a cool black cat with shades,
 // Bandit a raccoon in a bandana, Nugget a chubby raccoon crowned with a bottle cap.
+// Rex, the rescue dog: a curled wagging tail, floppy ears, a white blaze, big shiny eyes,
+// a panting tongue and a little rescue barrel with a red cross on his collar
+function drawRex(h, r, o, mood, t) {
+  const cream = '#fff3e2', lk = o.look || [0, 0], lx = lk[0] * r * .07, ly = lk[1] * r * .06;
+  const blink = !mood && !RM && frac(t * .23 + .61) < .035;
+  // tail
+  const wag = Math.sin(t * (mood === 'happy' ? 16 : 9)) * .45;
+  ctx.save(); ctx.translate(r * .62, r * .42); ctx.rotate(-.7 + wag);
+  ctx.fillStyle = h.yarn; ctx.beginPath(); ctx.ellipse(0, -r * .42, r * .22 + 2, r * .46 + 2, 0, 0, TAU); ctx.fill();
+  ctx.fillStyle = h.fur; ctx.beginPath(); ctx.ellipse(0, -r * .42, r * .22, r * .46, 0, 0, TAU); ctx.fill();
+  ctx.fillStyle = cream; ctx.beginPath(); ctx.ellipse(0, -r * .76, r * .14, r * .16, 0, 0, TAU); ctx.fill();
+  ctx.restore();
+  // floppy ears
+  for (const sd of [-1, 1]) {
+    ctx.save(); ctx.translate(sd * r * .7, -r * .55); ctx.rotate(sd * (.32 + Math.sin(t * 3 + sd) * .05));
+    ctx.fillStyle = h.yarn; ctx.beginPath(); ctx.ellipse(0, r * .42, r * .3 + 2, r * .56 + 2, 0, 0, TAU); ctx.fill();
+    ctx.fillStyle = h.dark; ctx.beginPath(); ctx.ellipse(0, r * .42, r * .3, r * .56, 0, 0, TAU); ctx.fill();
+    ctx.fillStyle = 'rgba(255,170,150,.35)'; ctx.beginPath(); ctx.ellipse(sd * -r * .04, r * .46, r * .14, r * .34, 0, 0, TAU); ctx.fill();
+    ctx.restore();
+  }
+  // cheek fluff
+  ctx.fillStyle = h.fur; ctx.strokeStyle = h.yarn; ctx.lineWidth = 2;
+  for (const sd of [-1, 1]) {
+    ctx.beginPath();
+    ctx.moveTo(sd * r * .78, -r * .02); ctx.lineTo(sd * r * 1.1, r * .14); ctx.lineTo(sd * r * .94, r * .26);
+    ctx.lineTo(sd * r * 1.06, r * .42); ctx.lineTo(sd * r * .7, r * .6); ctx.closePath(); ctx.fill(); ctx.stroke();
+  }
+  // head
+  ctx.fillStyle = h.fur; ctx.lineWidth = 2.5;
+  ctx.beginPath(); ctx.ellipse(0, 0, r * .98, r * .92, 0, 0, TAU); ctx.fill(); ctx.stroke();
+  const sg = ctx.createRadialGradient(-r * .35, -r * .45, r * .1, 0, 0, r * 1.05);
+  sg.addColorStop(0, 'rgba(255,255,255,.22)'); sg.addColorStop(.55, 'rgba(255,255,255,0)'); sg.addColorStop(1, 'rgba(0,0,0,.18)');
+  ctx.fillStyle = sg; ctx.beginPath(); ctx.ellipse(0, 0, r * .98, r * .92, 0, 0, TAU); ctx.fill();
+  // white blaze from the forehead down to the muzzle
+  ctx.fillStyle = cream;
+  ctx.beginPath(); ctx.moveTo(-r * .07, -r * .9); ctx.quadraticCurveTo(0, -r * .96, r * .07, -r * .9);
+  ctx.lineTo(r * .17, -r * .12); ctx.lineTo(-r * .17, -r * .12); ctx.closePath(); ctx.fill();
+  // eyebrow dots
+  ctx.fillStyle = '#f3c58a';
+  for (const sd of [-1, 1]) { ctx.beginPath(); ctx.ellipse(sd * r * .36, -r * .43, r * .1, r * .065, sd * .2, 0, TAU); ctx.fill(); }
+  // muzzle and blush
+  ctx.fillStyle = cream; ctx.beginPath(); ctx.ellipse(0, r * .37, r * .5, r * .36, 0, 0, TAU); ctx.fill();
+  ctx.fillStyle = 'rgba(255,110,140,.3)';
+  for (const sd of [-1, 1]) { ctx.beginPath(); ctx.ellipse(sd * r * .62, r * .22, r * .14, r * .08, 0, 0, TAU); ctx.fill(); }
+  // eyes
+  for (const sd of [-1, 1]) {
+    const ex = sd * r * .36, ey = -r * .14;
+    ctx.strokeStyle = '#1b1b22'; ctx.lineWidth = Math.max(1.5, r * .08);
+    if (mood === 'happy') { ctx.beginPath(); ctx.moveTo(ex - r * .15, ey + r * .05); ctx.quadraticCurveTo(ex, ey - r * .16, ex + r * .15, ey + r * .05); ctx.stroke(); continue; }
+    if (blink) { ctx.beginPath(); ctx.moveTo(ex - r * .15, ey); ctx.quadraticCurveTo(ex, ey + r * .09, ex + r * .15, ey); ctx.stroke(); continue; }
+    if (mood === 'hurt') { ctx.beginPath(); ctx.moveTo(ex - sd * r * .13, ey - r * .11); ctx.lineTo(ex + sd * r * .1, ey); ctx.lineTo(ex - sd * r * .13, ey + r * .11); ctx.stroke(); continue; }
+    ctx.fillStyle = '#4a2c18'; circ(ex, ey, r * .2);
+    ctx.fillStyle = '#1b1b22'; circ(ex + lx, ey + ly, r * .12);
+    ctx.fillStyle = '#fff'; circ(ex + lx + r * .07, ey + ly - r * .07, r * .065); circ(ex + lx - r * .06, ey + ly + r * .06, r * .032);
+  }
+  if (mood === 'sad') { ctx.fillStyle = '#7ec8e3'; ctx.beginPath(); ctx.moveTo(r * .42, r * .02); ctx.quadraticCurveTo(r * .52, r * .2, r * .42, r * .24); ctx.quadraticCurveTo(r * .32, r * .2, r * .42, r * .02); ctx.fill(); }
+  // a shiny nose
+  ctx.fillStyle = '#1b1b22';
+  ctx.beginPath(); ctx.moveTo(-r * .16, r * .14); ctx.quadraticCurveTo(0, r * .08, r * .16, r * .14); ctx.quadraticCurveTo(r * .1, r * .3, 0, r * .3); ctx.quadraticCurveTo(-r * .1, r * .3, -r * .16, r * .14); ctx.fill();
+  ctx.fillStyle = 'rgba(255,255,255,.55)'; ctx.beginPath(); ctx.ellipse(-r * .05, r * .15, r * .05, r * .025, -.2, 0, TAU); ctx.fill();
+  // smiling open mouth with a panting tongue
+  ctx.strokeStyle = '#1b1b22'; ctx.lineWidth = Math.max(1.2, r * .05);
+  ctx.beginPath(); ctx.moveTo(0, r * .3); ctx.lineTo(0, r * .38); ctx.stroke();
+  if (mood === 'hurt' || mood === 'sad') {
+    ctx.beginPath(); ctx.moveTo(-r * .16, r * .5); ctx.quadraticCurveTo(0, r * .4, r * .16, r * .5); ctx.stroke();
+  } else {
+    const pant = RM ? 0 : Math.sin(t * 7) * r * .025;
+    ctx.fillStyle = '#5a1e24';
+    ctx.beginPath(); ctx.moveTo(-r * .2, r * .38); ctx.quadraticCurveTo(0, r * .44, r * .2, r * .38); ctx.quadraticCurveTo(r * .16, r * .58, 0, r * .6); ctx.quadraticCurveTo(-r * .16, r * .58, -r * .2, r * .38); ctx.fill();
+    ctx.fillStyle = '#ff7a9c';
+    ctx.beginPath(); ctx.moveTo(-r * .1, r * .46); ctx.quadraticCurveTo(-r * .12, r * .66 + pant, 0, r * .68 + pant); ctx.quadraticCurveTo(r * .12, r * .66 + pant, r * .1, r * .46); ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = '#d9577f'; ctx.lineWidth = Math.max(1, r * .025); ctx.beginPath(); ctx.moveTo(0, r * .5); ctx.lineTo(0, r * .62 + pant); ctx.stroke();
+    ctx.strokeStyle = '#1b1b22'; ctx.lineWidth = Math.max(1.2, r * .05);
+    ctx.beginPath(); ctx.moveTo(-r * .2, r * .38); ctx.quadraticCurveTo(-r * .1, r * .44, 0, r * .38); ctx.quadraticCurveTo(r * .1, r * .44, r * .2, r * .38); ctx.stroke();
+  }
+  // red collar with a little rescue barrel
+  ctx.strokeStyle = '#e5484d'; ctx.lineWidth = r * .14; ctx.beginPath(); ctx.arc(0, 0, r * .9, .26 * Math.PI, .74 * Math.PI); ctx.stroke();
+  ctx.save(); ctx.translate(0, r * .98);
+  ctx.fillStyle = '#a0612c'; rr(-r * .24, -r * .13, r * .48, r * .28, r * .1); ctx.fill();
+  ctx.fillStyle = '#6a3a14'; ctx.fillRect(-r * .16, -r * .13, r * .04, r * .28); ctx.fillRect(r * .12, -r * .13, r * .04, r * .28);
+  ctx.fillStyle = '#fff'; circ(0, 0, r * .09);
+  ctx.fillStyle = '#e5484d'; ctx.fillRect(-r * .02, -r * .065, r * .04, r * .13); ctx.fillRect(-r * .065, -r * .02, r * .13, r * .04);
+  ctx.fillStyle = 'rgba(255,255,255,.3)'; rr(-r * .2, -r * .11, r * .4, r * .06, r * .03); ctx.fill();
+  ctx.restore();
+  // front paws
+  for (const sd of [-1, 1]) {
+    ctx.fillStyle = cream; ctx.strokeStyle = h.yarn; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.ellipse(sd * r * .5, r * .92, r * .2, r * .14, 0, 0, TAU); ctx.fill(); ctx.stroke();
+    ctx.strokeStyle = 'rgba(0,0,0,.3)'; ctx.lineWidth = 1;
+    for (const d of [-.06, .06]) { ctx.beginPath(); ctx.moveTo(sd * r * .5 + r * d, r * .86); ctx.lineTo(sd * r * .5 + r * d, r * .96); ctx.stroke(); }
+  }
+}
 function drawCritter(h, x, y, r, glow, o) {
   const dog = h.kind === 'dog', t = RM ? 0 : T;
   const mood = o.mood || (h.hurt > 0 ? 'hurt' : h.happy > 0 ? 'happy' : null);
@@ -3642,6 +3734,13 @@ function drawCritter(h, x, y, r, glow, o) {
   if (mood === 'hurt' && !RM) ctx.translate(Math.sin(T * 60) * 1.5, 0);
   if (glow) { ctx.fillStyle = glow; ctx.globalAlpha = .35 + .15 * Math.sin(T * 8); circ(0, 0, r * 1.6); ctx.globalAlpha = 1; }
   ctx.lineJoin = 'round'; ctx.lineCap = 'round'; ctx.strokeStyle = h.yarn; ctx.lineWidth = 2;
+  if (dog) {
+    drawRex(h, r, o, mood, t);
+    const hat = heroHat(o);
+    if (hat) drawHat(hat, r);
+    ctx.restore();
+    return;
+  }
   if (dog) {
     // wagging tail, floppy ears
     const wag = Math.sin(t * 10) * r * .15;

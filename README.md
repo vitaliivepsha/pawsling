@@ -14,25 +14,25 @@ worker/             the leaderboard: a Cloudflare Worker with a D1 database
 
 - 66 levels in 12 rooms, each room ends with a boss: Kitchen, Living room, Bedroom (4 levels each),
   Bathroom, Balcony, Attic, Garage, Basement, Roof, Garden, Server room, Stairwell (6 levels each). The map scrolls.
-- The basement mixes every enemy type (toughness ×3.1) and ends with the Web-Spinner: after each
+- The basement mixes every enemy type (toughness ×3.39) and ends with the Web-Spinner: after each
   attack it webs the hero it hit, who skips their next turn unless an ally frees them with a shot.
-- The roof (toughness ×3.45) adds magnets that pull heroes in and bend their shots, and ends with
+- The roof (toughness ×3.83) adds magnets that pull heroes in and bend their shots, and ends with
   the Thunder Drone: its strike jumps as chain lightning to the closest hero within reach, who
   loses a heart too, so it pays to keep the team spread out.
-- The garden (toughness ×3.6) adds moles that dig underground every other turn, when shots roll
+- The garden (toughness ×4.05) adds moles that dig underground every other turn, when shots roll
   right over them, and ends with the Swift Mower: after each attack it charges at the hero it hit
   and shoves aside anyone in its way.
-- The server room (toughness ×3.8) adds 3D printers that print a mini robot after every attack (two
+- The server room (toughness ×4.33) adds 3D printers that print a mini robot after every attack (two
   at most), and ends with the Smart Home Hub: after each attack it overclocks every other robot, so
   their attacks come a turn sooner.
-- The stairwell (toughness ×4.05, the hardest room) adds bomb bots that explode when destroyed,
+- The stairwell (toughness ×4.68, the hardest room) adds bomb bots that explode when destroyed,
   hurting robots nearby (chains are possible) and taking a heart from heroes nearby (never the last),
   and ends with the Express Lift: after each attack it strikes down its shaft, and every hero below it
   loses a heart; the shaft glows red the turn before.
 - Later rooms bring new enemies: a toothbrush heals enemies nearby, a fan blows heroes off course,
   an RC car drives to a new spot every turn; in the garage a shield bot cuts damage to its neighbors
   to 35% and twins split into two minis when destroyed.
-- Each room is tougher than the last (enemy toughness ×1 in the kitchen up to ×4.05 in the stairwell).
+- Each room is tougher than the last (enemy toughness ×1 in the kitchen up to ×4.68 in the stairwell).
 - Stars: 3 for finishing within the par turn count, 2 for up to 1.5×par, 1 otherwise.
 - Guide (the ? button on the map and in a level): Basics, Knots (rules, golden and two-hero knots)
   and Enemies (every robot, unknown ones hidden until met). The first time a robot type shows up in a
