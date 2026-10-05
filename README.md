@@ -33,6 +33,13 @@ worker/             the leaderboard: a Cloudflare Worker with a D1 database
   sideways and box bots that hide in a box (the first hit only tears the box off; they box up again
   after attacking). It ends with the Mega Sorter: after each attack it reverses every belt and
   speeds it up.
+- Raids bring players back: after a few levels the game offers raid alerts once (and the bell on the
+  Daily screen turns them on or off; the game asks Telegram for permission to message the player).
+  About once a day, between 10:00 and 21:00 the player's time and only if they haven't played for
+  3 hours, the bot sends a poster of the raided room (`promo/raid/raid-<room>.jpg`) and a button.
+  The raid is two waves of that room's robots; repelling it within 30 minutes gives +1 heart and
+  +1 quick start, credited by the server. A red card with a countdown shows on the map meanwhile.
+  The owner can send themselves one with `/raidtest`. Players who block the bot are skipped.
 - Knots are easy to read: while aiming, the preview marks where the shot will tie knots and which
   kind (colour), and an exploded knot stays on the floor as a little tied bow for a moment.
 - Later rooms bring new enemies: a toothbrush heals enemies nearby, a fan blows heroes off course,

@@ -12,6 +12,10 @@
 // POST /daily     { initData }  ->  today's login bonus (once a day), streak, invite count, bot name;
 //   a first visit through a friend's link (start_param ref_<id>) gifts both players
 // POST /challenge { initData, reward }  ->  the daily challenge reward, once a day
+// POST /notify    { initData, on, tz, room, lang }  ->  raid alerts on or off (tz: getTimezoneOffset minutes)
+// POST /raid      { initData, id }  ->  { ok, late?, reward, items }  the raid bonus, if the raid was repelled in time
+// cron (every hour): players with alerts on who haven't played for a while get, at most once a day and
+//   between 10:00 and 21:00 their time, a raid alert with a picture and a button; they have 30 minutes
 // POST /share     { initData, lang }  ->  { id }  an invite card (picture, text, Play button with the
 //   player's referral link) prepared for WebApp.shareMessage; t.me Mini App links get no link preview
 // cron (Monday 00:05 UTC): the week's top 3 in Night Shift get prizes and a message from the bot
@@ -41,6 +45,7 @@ const ITEMS = {
 const BOOSTERS = ['heart', 'meter']; // the only items that get used up
 // login bonus by day of the streak (the 7th day restarts the cycle)
 const DAILY = [{ meter: 1 }, { heart: 1 }, { meter: 1 }, { heart: 1 }, { meter: 2 }, { heart: 2 }, { hat_party: 1, heart: 1, meter: 1 }];
+const RAID_GIFT = { heart: 1, meter: 1 }, RAID_MIN = 30, ROOMS_N = 13;
 const REF_GIFT = { heart: 1, meter: 1 }; // for both the inviter and the new player
 const WEEK_PRIZES = [{ heart: 3, meter: 3 }, { heart: 2, meter: 2 }, { heart: 1, meter: 1 }];
 const DAY = 86400000;
@@ -51,35 +56,40 @@ function weekStart(ts = Date.now()) { // Monday 00:00 UTC of the week containing
 }
 const weekKey = (ts = Date.now()) => utcDay(weekStart(ts));
 const TEXT = {
-  uk: { invite: 'Коти та єноти проти роботів-пилососів! Зіграй зі мною в Pawsling 🐾',
+  uk: { rooms: ['Кухня', 'Вітальня', 'Спальня', 'Ванна', 'Балкон', 'Горище', 'Гараж', 'Підвал', 'Дах', 'Сад', 'Серверна', 'Під\'їзд', 'Склад'], raid: room => `🚨 Тривога! Роботи-пилососи напали на кімнату «${room}»!\n\nВідбий нальот за 30 хвилин і отримай бонус: ❤️ +1 серце і ⚡ +1 швидкий старт.`, raidBtn: '🐾 Відбити нальот',
+    invite: 'Коти та єноти проти роботів-пилососів! Зіграй зі мною в Pawsling 🐾',
     sent: 'Дякуємо! Повідомлення передано розробнику.',
     refJoined: n => `${n} прийшов у гру за твоїм запрошенням! Вам обом: +1 серце і +1 швидкий старт.`,
     weekWin: (place, w) => `Тиждень «Нічної зміни» завершено: ти на ${place} місці (${w} хвиль)! Приз уже в магазині.`,
     items: { heart3: ['Серце+ ×3', '+1 серце кожному героєві на 3 рівні.'], meter3: ['Швидкий старт ×3', 'Пів шкали «Бешкету» на старті 3 рівнів.'], hat_party: ['Святковий ковпак', 'Капелюшок для всієї команди, назавжди.'], hat_crown: ['Корона', 'Корона для всієї команди, назавжди.'], hat_bow: ['Бантик', 'Бантик для всієї команди, назавжди.'], rainbow: ['Райдужна нитка', 'Нитки героїв переливаються веселкою, назавжди.'], hero_rex: ['Рекс', 'Новий герой: пес-рятувальник, що лікує друзів, яких зачепить.'], hero_spark: ['Іскра', 'Нова героїня: її удар перескакує блискавкою на найближчого ворога.'] },
     title: 'Друге дихання', desc: 'Продовж рівень: повна міцність квартири й усі герої знову на ногах.',
     start: n => `Привіт, ${n}! Роботи-пилососи захопили квартиру. Запускай котів і єнотів, як з рогатки!`, play: '🐾 Грати' },
-  en: { invite: 'Cats and raccoons vs robot vacuums! Play Pawsling with me 🐾',
+  en: { rooms: ['Kitchen', 'Living room', 'Bedroom', 'Bathroom', 'Balcony', 'Attic', 'Garage', 'Basement', 'Roof', 'Garden', 'Server room', 'Stairwell', 'Warehouse'], raid: room => `🚨 Alert! Robot vacuums are raiding your home: ${room}!\n\nRepel the raid within 30 minutes and get a bonus: ❤️ +1 heart and ⚡ +1 quick start.`, raidBtn: '🐾 Repel the raid',
+    invite: 'Cats and raccoons vs robot vacuums! Play Pawsling with me 🐾',
     sent: 'Thanks! Your message has been sent to the developer.',
     refJoined: n => `${n} joined the game with your invite! You both get +1 heart and +1 quick start.`,
     weekWin: (place, w) => `The Night Shift week is over: you finished #${place} (${w} waves)! Your prize is in the shop.`,
     items: { heart3: ['Heart+ ×3', '+1 heart for every hero, for 3 levels.'], meter3: ['Quick start ×3', 'Half a Mischief meter at the start of 3 levels.'], hat_party: ['Party hat', 'A hat for the whole team, forever.'], hat_crown: ['Crown', 'A crown for the whole team, forever.'], hat_bow: ['Bow', 'A bow for the whole team, forever.'], rainbow: ['Rainbow yarn', 'Hero threads shimmer in rainbow colors, forever.'], hero_rex: ['Rex', 'A new hero: a rescue dog that heals every friend he touches.'], hero_spark: ['Sparky', 'A new hero: her hits arc like lightning to the nearest enemy.'] },
     title: 'Second wind', desc: 'Continue the level: full home strength and every hero back on their feet.',
     start: n => `Hi, ${n}! Robot vacuums have taken over the flat. Launch the cats and raccoons like a slingshot!`, play: '🐾 Play' },
-  pl: { invite: 'Koty i szopy kontra roboty sprzątające! Zagraj ze mną w Pawsling 🐾',
+  pl: { rooms: ['Kuchnia', 'Salon', 'Sypialnia', 'Łazienka', 'Balkon', 'Strych', 'Garaż', 'Piwnica', 'Dach', 'Ogród', 'Serwerownia', 'Klatka schodowa', 'Magazyn'], raid: room => `🚨 Alarm! Roboty sprzątające napadły na pokój: ${room}!\n\nOdeprzyj nalot w 30 minut i zdobądź bonus: ❤️ +1 serce i ⚡ +1 szybki start.`, raidBtn: '🐾 Odeprzyj nalot',
+    invite: 'Koty i szopy kontra roboty sprzątające! Zagraj ze mną w Pawsling 🐾',
     sent: 'Dzięki! Wiadomość trafiła do twórcy gry.',
     refJoined: n => `${n} dołączył(a) do gry z twojego zaproszenia! Oboje dostajecie +1 serce i +1 szybki start.`,
     weekWin: (place, w) => `Tydzień nocnej zmiany zakończony: zajmujesz ${place}. miejsce (${w} fal)! Nagroda czeka w sklepie.`,
     items: { heart3: ['Serce+ ×3', '+1 serce dla każdego bohatera na 3 poziomy.'], meter3: ['Szybki start ×3', 'Pół paska psot na starcie 3 poziomów.'], hat_party: ['Czapeczka imprezowa', 'Czapka dla całej drużyny, na zawsze.'], hat_crown: ['Korona', 'Korona dla całej drużyny, na zawsze.'], hat_bow: ['Kokardka', 'Kokardka dla całej drużyny, na zawsze.'], rainbow: ['Tęczowa włóczka', 'Nitki bohaterów mienią się tęczą, na zawsze.'], hero_rex: ['Reks', 'Nowy bohater: pies ratownik, który leczy przyjaciół, których dotknie.'], hero_spark: ['Iskra', 'Nowa bohaterka: jej ciosy przeskakują piorunem na najbliższego wroga.'] },
     title: 'Drugi oddech', desc: 'Kontynuuj poziom: pełna wytrzymałość mieszkania i wszyscy bohaterowie znów na nogach.',
     start: n => `Cześć, ${n}! Roboty sprzątające przejęły mieszkanie. Wystrzel koty i szopy jak z procy!`, play: '🐾 Graj' },
-  de: { invite: 'Katzen und Waschbären gegen Saugroboter! Spiel Pawsling mit mir 🐾',
+  de: { rooms: ['Küche', 'Wohnzimmer', 'Schlafzimmer', 'Badezimmer', 'Balkon', 'Dachboden', 'Garage', 'Keller', 'Dach', 'Garten', 'Serverraum', 'Treppenhaus', 'Lager'], raid: room => `🚨 Alarm! Saugroboter überfallen den Raum: ${room}!\n\nWehr den Überfall in 30 Minuten ab und hol dir einen Bonus: ❤️ +1 Herz und ⚡ +1 Schnellstart.`, raidBtn: '🐾 Überfall abwehren',
+    invite: 'Katzen und Waschbären gegen Saugroboter! Spiel Pawsling mit mir 🐾',
     sent: 'Danke! Deine Nachricht wurde an den Entwickler weitergeleitet.',
     refJoined: n => `${n} ist über deine Einladung ins Spiel gekommen! Ihr bekommt beide +1 Herz und +1 Schnellstart.`,
     weekWin: (place, w) => `Die Nachtschicht-Woche ist vorbei: Platz ${place} (${w} Wellen)! Dein Preis liegt im Shop.`,
     items: { heart3: ['Herz+ ×3', '+1 Herz für jeden Helden, für 3 Level.'], meter3: ['Schnellstart ×3', 'Halbe Unfug-Leiste zu Beginn von 3 Leveln.'], hat_party: ['Partyhut', 'Ein Hut für das ganze Team, für immer.'], hat_crown: ['Krone', 'Eine Krone für das ganze Team, für immer.'], hat_bow: ['Schleife', 'Eine Schleife für das ganze Team, für immer.'], rainbow: ['Regenbogenwolle', 'Die Fäden der Helden schimmern in Regenbogenfarben, für immer.'], hero_rex: ['Rex', 'Ein neuer Held: ein Rettungshund, der jeden berührten Freund heilt.'], hero_spark: ['Funke', 'Eine neue Heldin: ihre Treffer springen als Blitz zum nächsten Gegner.'] },
     title: 'Zweite Luft', desc: 'Spiel weiter: volle Wohnungsstärke und alle Helden wieder auf den Beinen.',
     start: n => `Hallo, ${n}! Saugroboter haben die Wohnung übernommen. Schieß Katzen und Waschbären wie mit einer Schleuder!`, play: '🐾 Spielen' },
-  es: { invite: '¡Gatos y mapaches contra aspiradoras robot! Juega Pawsling conmigo 🐾',
+  es: { rooms: ['Cocina', 'Salón', 'Dormitorio', 'Baño', 'Balcón', 'Desván', 'Garaje', 'Sótano', 'Tejado', 'Jardín', 'Sala de servidores', 'Escalera', 'Almacén'], raid: room => `🚨 ¡Alerta! ¡Las aspiradoras robot asaltan la habitación: ${room}!\n\nRechaza el asalto en 30 minutos y gana un bonus: ❤️ +1 corazón y ⚡ +1 inicio rápido.`, raidBtn: '🐾 Rechazar el asalto',
+    invite: '¡Gatos y mapaches contra aspiradoras robot! Juega Pawsling conmigo 🐾',
     sent: '¡Gracias! Tu mensaje se ha enviado al desarrollador.',
     refJoined: n => `¡${n} se unió al juego con tu invitación! Los dos recibís +1 corazón y +1 inicio rápido.`,
     weekWin: (place, w) => `Terminó la semana del turno de noche: quedaste en el puesto ${place} (${w} oleadas). ¡Tu premio está en la tienda!`,
@@ -100,7 +110,7 @@ export default {
     const json = (body, status = 200) => new Response(JSON.stringify(body), { status, headers: { ...cors, 'Content-Type': 'application/json' } });
     if (req.method === 'OPTIONS') return new Response(null, { headers: cors });
     const url = new URL(req.url), path = url.pathname;
-    if (req.method !== 'POST' || !['/board', '/invoice', '/inventory', '/use', '/daily', '/challenge', '/share', '/tg'].includes(path)) return json({ error: 'not found' }, 404);
+    if (req.method !== 'POST' || !['/board', '/invoice', '/inventory', '/use', '/daily', '/challenge', '/share', '/notify', '/raid', '/tg'].includes(path)) return json({ error: 'not found' }, 404);
 
     if (path === '/tg') {
       // only Telegram knows the secret we gave it in setWebhook
@@ -137,7 +147,24 @@ export default {
       return json({ ok: r.meta.changes > 0, items: await inventory(env.DB, user.id) });
     }
 
-    if (path === '/daily') return json(await daily(env, user));
+    if (path === '/daily') return json(await daily(env, user, body));
+    if (path === '/notify') {
+      await ensureTables(env.DB);
+      const now = Math.floor(Date.now() / 1000);
+      await env.DB.prepare(`INSERT INTO notify (user_id, enabled, lang, tz, room, last_seen) VALUES (?1, ?2, ?3, ?4, ?5, ?6)
+        ON CONFLICT(user_id) DO UPDATE SET enabled = excluded.enabled, lang = excluded.lang, tz = excluded.tz, room = excluded.room, last_seen = excluded.last_seen, blocked = 0`)
+        .bind(user.id, body.on ? 1 : 0, String(body.lang || user.language_code || '').slice(0, 5), clampTz(body.tz), clampRoom(body.room), now).run();
+      return json({ ok: true, on: !!body.on });
+    }
+    if (path === '/raid') {
+      await ensureTables(env.DB);
+      const now = Math.floor(Date.now() / 1000), id = Math.floor(Number(body.id)) || 0;
+      // a minute of grace for a win that lands just as the timer runs out
+      const r = await env.DB.prepare('UPDATE raids SET done = ?3 WHERE id = ?1 AND user_id = ?2 AND done IS NULL AND expires + 60 >= ?3')
+        .bind(id, user.id, now).run();
+      if (r.meta.changes > 0) await grant(env.DB, user.id, RAID_GIFT);
+      return json({ ok: r.meta.changes > 0, late: r.meta.changes === 0, reward: RAID_GIFT, items: await inventory(env.DB, user.id) });
+    }
     if (path === '/share') {
       if (!botName) { const me = await tg(env, 'getMe', {}); botName = me.ok ? me.result.username : null; }
       const r = await tg(env, 'savePreparedInlineMessage', {
@@ -167,14 +194,19 @@ export default {
     return json(await board(env.DB, body.board, user.id));
   },
 
-  async scheduled(event, env, ctx) { ctx.waitUntil(awardWeek(env)); },
+  async scheduled(event, env, ctx) { ctx.waitUntil(event.cron === '5 0 * * 1' ? awardWeek(env) : sendRaids(env)); },
 };
 
 // ---------- daily bonus, challenge, invites ----------
 let botName = null;
-async function daily(env, user) {
+async function daily(env, user, body = {}) {
   const db = env.DB;
   await ensureTables(db);
+  // remember when this player was last here (raids skip people who are playing anyway)
+  const now = Math.floor(Date.now() / 1000);
+  await db.prepare('UPDATE notify SET last_seen = ?2, tz = ?3, room = ?4 WHERE user_id = ?1').bind(user.id, now, clampTz(body.tz), clampRoom(body.room)).run();
+  const nrow = await db.prepare('SELECT enabled FROM notify WHERE user_id = ?1').bind(user.id).first();
+  const raid = await db.prepare('SELECT id, room, expires FROM raids WHERE user_id = ?1 AND done IS NULL AND expires > ?2 ORDER BY id DESC LIMIT 1').bind(user.id, now).first();
   const today = utcDay(), yesterday = utcDay(Date.now() - DAY);
   const row = await db.prepare('SELECT last_day, streak, challenge_day FROM daily WHERE user_id = ?1').bind(user.id).first();
   const known = row || await db.prepare('SELECT 1 AS x FROM players WHERE id = ?1').bind(user.id).first();
@@ -202,6 +234,7 @@ async function daily(env, user) {
   const inv = await db.prepare('SELECT COUNT(*) AS n FROM referrals WHERE ref_by = ?1').bind(user.id).first();
   if (!botName) { const me = await tg(env, 'getMe', {}); botName = me.ok ? me.result.username : null; }
   return { claimed, streak, reward, gifted, challengeDone: !!row && row.challenge_day === today, invited: inv.n, bot: botName,
+    notify: !!(nrow && nrow.enabled), raid: raid ? { id: raid.id, room: raid.room, expires: raid.expires * 1000 } : null,
     items: await inventory(db, user.id), today, weekEnds: weekStart() + 7 * DAY };
 }
 async function grant(db, id, g) {
@@ -260,7 +293,7 @@ async function ensureHook(env, origin) {
   if (hookReady) return;
   const url = origin + '/tg';
   const info = await tg(env, 'getWebhookInfo', {});
-  const want = ['message', 'pre_checkout_query', 'inline_query'];
+  const want = ['message', 'pre_checkout_query', 'inline_query', 'my_chat_member'];
   const have = (info.ok && info.result.allowed_updates) || [];
   if (!(info.ok && info.result.url === url) || want.some(k => !have.includes(k))) {
     await tg(env, 'setWebhook', { url, secret_token: await hookSecret(env), allowed_updates: want });
@@ -287,6 +320,11 @@ async function ensureTables(db) {
     db.prepare('CREATE INDEX IF NOT EXISTS idx_weekly ON weekly (week, night DESC, at ASC)'),
     db.prepare('CREATE TABLE IF NOT EXISTS week_awards (week TEXT PRIMARY KEY, at INTEGER NOT NULL)'),
     db.prepare('CREATE TABLE IF NOT EXISTS refunds (charge_id TEXT PRIMARY KEY, at INTEGER NOT NULL)'),
+    db.prepare(`CREATE TABLE IF NOT EXISTS notify (user_id INTEGER PRIMARY KEY, enabled INTEGER NOT NULL DEFAULT 0, lang TEXT, tz INTEGER NOT NULL DEFAULT 0,
+      room INTEGER NOT NULL DEFAULT 0, last_seen INTEGER, last_raid INTEGER, blocked INTEGER NOT NULL DEFAULT 0)`),
+    db.prepare(`CREATE TABLE IF NOT EXISTS raids (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER NOT NULL, room INTEGER NOT NULL,
+      created INTEGER NOT NULL, expires INTEGER NOT NULL, done INTEGER)`),
+    db.prepare('CREATE INDEX IF NOT EXISTS idx_raids_user ON raids (user_id, id)'),
   ]);
   tablesReady = true;
 }
@@ -303,6 +341,13 @@ function inviteCard(t, uid) {
     reply_markup: { inline_keyboard: [[{ text: t.play, url: `https://t.me/${botName}?startapp=ref_${uid}` }]] } };
 }
 async function onUpdate(env, u) {
+  if (u.my_chat_member) {
+    // a player who blocks the bot gets no more alerts; unblocking lets them come back
+    const st = u.my_chat_member.new_chat_member && u.my_chat_member.new_chat_member.status;
+    await ensureTables(env.DB);
+    await env.DB.prepare('UPDATE notify SET blocked = ?2 WHERE user_id = ?1').bind(u.my_chat_member.from.id, st === 'kicked' ? 1 : 0).run();
+    return;
+  }
   if (u.inline_query) {
     // typing @the_bot in any chat offers the invite card
     const q = u.inline_query;
@@ -348,6 +393,14 @@ async function onUpdate(env, u) {
     if (g) await env.DB.batch(Object.entries(g).map(([k, n]) => env.DB.prepare(
       'UPDATE inventory SET count = MAX(0, count - ?3) WHERE user_id = ?1 AND item = ?2').bind(row.user_id, k, n)));
     await notifyAdmin(env, `↩️ Повернення: ${p.total_amount} ⭐ ${buyer(m.from)}${row ? ` за «${itemName(row.item)}»` : ''}`);
+    return;
+  }
+  if (typeof m.text === 'string' && /^\/raidtest\b/.test(m.text) && isAdmin(env, m.from)) {
+    // the owner can try a raid alert right away
+    await ensureTables(env.DB);
+    const row = await env.DB.prepare('SELECT lang, room FROM notify WHERE user_id = ?1').bind(m.from.id).first();
+    const ok = await sendRaid(env, m.from.id, (row && row.lang) || (m.from && m.from.language_code), row ? row.room : 0);
+    if (!ok) await tg(env, 'sendMessage', { chat_id: m.chat.id, text: '⚠️ Не вдалося надіслати нальот' });
     return;
   }
   if (typeof m.text === 'string' && /^\/sales\b/.test(m.text) && isAdmin(env, m.from)) {
@@ -408,6 +461,40 @@ async function salesReport(db) {
   if (last.results.length) { out.push('', 'Останні покупки:'); for (const r of last.results) out.push(`• ${when(r.at)} · ${itemName(r.item)} · ${r.stars} ⭐ · ${r.name || 'id ' + r.user_id}`); }
   if (!all.n) out.push('', 'Поки що покупок немає.');
   return out.join('\n');
+}
+
+// ---------- raids: an alert from the bot, 30 minutes to repel it in the game ----------
+const clampTz = v => Math.max(-840, Math.min(840, Math.round(Number(v)) || 0));
+const clampRoom = v => Math.max(0, Math.min(ROOMS_N - 1, Math.floor(Number(v)) || 0));
+async function sendRaid(env, uid, lang, maxRoom) {
+  if (!botName) { const me = await tg(env, 'getMe', {}); botName = me.ok ? me.result.username : null; }
+  const now = Math.floor(Date.now() / 1000), room = Math.floor(Math.random() * (clampRoom(maxRoom) + 1)), t = text(lang);
+  const ins = await env.DB.prepare('INSERT INTO raids (user_id, room, created, expires) VALUES (?1, ?2, ?3, ?4)').bind(uid, room, now, now + RAID_MIN * 60).run();
+  const id = ins.meta.last_row_id;
+  const r = await tg(env, 'sendPhoto', {
+    chat_id: uid, photo: `https://vitaliivepsha.github.io/pawsling/promo/raid/raid-${room}.jpg`, caption: t.raid(t.rooms[room]),
+    reply_markup: { inline_keyboard: [[{ text: t.raidBtn, url: `https://t.me/${botName}?startapp=raid_${id}` }]] },
+  });
+  if (r.ok) await env.DB.prepare('UPDATE notify SET last_raid = ?2 WHERE user_id = ?1').bind(uid, now).run();
+  else {
+    await env.DB.prepare('DELETE FROM raids WHERE id = ?1').bind(id).run();
+    if (r.error_code === 403) await env.DB.prepare('UPDATE notify SET blocked = 1 WHERE user_id = ?1').bind(uid).run();
+  }
+  return !!r.ok;
+}
+async function sendRaids(env) {
+  const db = env.DB;
+  await ensureTables(db);
+  const now = Math.floor(Date.now() / 1000), d = new Date();
+  // alerts are on, not blocked, nothing sent in the last 20 hours, and not playing in the last 3 hours
+  const rows = await db.prepare(`SELECT user_id, lang, tz, room FROM notify WHERE enabled = 1 AND blocked = 0
+    AND (last_raid IS NULL OR last_raid < ?1) AND (last_seen IS NULL OR last_seen < ?2) LIMIT 300`).bind(now - 20 * 3600, now - 3 * 3600).all();
+  for (const r of rows.results) {
+    const local = ((d.getUTCHours() * 60 + d.getUTCMinutes() - r.tz) % 1440 + 1440) % 1440;
+    if (local < 10 * 60 || local >= 21 * 60) continue;
+    if (Math.random() > .3) continue; // spread alerts over the day so they feel like a surprise
+    try { await sendRaid(env, r.user_id, r.lang, r.room); } catch (e) {}
+  }
 }
 
 function clampInt(v, max) {

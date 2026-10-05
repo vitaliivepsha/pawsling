@@ -12,6 +12,6 @@ binding = "DB"
 database_name = "pawsling"
 database_id = "99e9edcc-af34-4d5a-a001-f4699750094d"
 
-# Monday 00:05 UTC: prizes for the week that just ended
+# Monday 00:05 UTC: prizes for the week that just ended; every hour: raid alerts
 [triggers]
-crons = ["5 0 * * 1"]
+crons = ["5 0 * * 1", "0 * * * *"]
