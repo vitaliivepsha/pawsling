@@ -36,7 +36,7 @@ if (TG) {
     if (tgv('6.1')) {
       TG.setHeaderColor('#15122a');
       TG.setBackgroundColor('#110e22');
-      TG.BackButton.onClick(() => { if (SCREEN === 'game') goMap(); else if (SCREEN === 'howto') closeHowto(); else if (SCREEN === 'story') storyNext(true); else if (SCREEN === 'guide') closeGuide(); else if (['lang', 'board', 'shop', 'prep', 'daily', 'heroes'].includes(SCREEN)) setScreen('map'); });
+      TG.BackButton.onClick(() => { if (SCREEN === 'game') goMap(); else if (SCREEN === 'howto') closeHowto(); else if (SCREEN === 'story') storyNext(true); else if (SCREEN === 'guide') closeGuide(); else if (DETAIL) closeDetail(); else if (['lang', 'board', 'shop', 'prep', 'daily', 'heroes'].includes(SCREEN)) setScreen('map'); });
     }
     if (tgv('7.7')) TG.disableVerticalSwipes();
     TG.onEvent('viewportChanged', resize);
@@ -809,6 +809,16 @@ const I18N = {
     'item.hat_pumpkin': 'Гарбузовий капелюх', 'itemd.hat_pumpkin': 'Нагорода Хелловіну', 'item.hat_santa': 'Новорічна шапка', 'itemd.hat_santa': 'Нагорода Нового року',
     'hero.rex.name': 'Рекс', 'hero.rex.skill': 'зачеплені друзі отримують +1 серце', 'hero.rex.combo': 'Рятувальна місія',
     'hero.homa.name': 'Хома', 'hero.homa.skill': 'що довше котиться, то сильніше б\'є', 'hero.homa.combo': 'Горіховий дощ',
+    'stat.power': 'Удар', 'stat.speed': 'Швидкість', 'stat.size': 'Розмір', comboLabel: 'Комбо', perksLabel: 'Бонуси рівнів', detailWhat: 'Що дає',
+    comboWhen: 'Спрацьовує, коли постріл друга зачепить героя: ',
+    'combod.mochi': 'хвиля б\'є всіх ворогів поруч на 350.', 'combod.pixel': 'лазер б\'є найближчого ворога на 550.', 'combod.bandit': 'квартира відновлює 500 міцності.',
+    'combod.nugget': '+12 до шкали «Бешкету».', 'combod.spark': 'три блискавки з неба б\'ють випадкових ворогів, по 300.', 'combod.rex': '+1 серце кожному пораненому героєві.',
+    'combod.homa': 'п\'ять горіхів б\'ють випадкових ворогів, по 150.',
+    'iteml.heart3': 'Увімкни перед рівнем на екрані підсилень: кожен герой отримає +1 серце й витримає на один удар більше. У наборі 3 штуки, одна на рівень.',
+    'iteml.meter3': 'Рівень починається з половиною шкали «Бешкету», тож «Тигидик» (постріл з подвійною силою) лише за кілька влучань. У наборі 3 штуки, одна на рівень.',
+    'iteml.hat': 'Прикраса для всієї команди: її носить кожен герой у кожному рівні. Купується назавжди, вдягнути чи зняти можна будь-коли.',
+    'iteml.hatEvent': 'Нагорода сезонної події, у магазині її не купиш. Носить уся команда, вдягнути чи зняти можна будь-коли.',
+    'iteml.rainbow': 'Нитки, які герої лишають за собою, переливаються всіма кольорами веселки. Лише для краси: на шкоду не впливає. Купується назавжди, вмикається й вимикається будь-коли.',
     'perk.rex.5': 'Дає +2 серця замість +1', 'perk.rex.10': 'Комбо ще й лікує квартиру на 800', 'perk.homa.5': 'Множник до ×3', 'perk.homa.10': '+20% швидкості',
     'item.hero_rex': 'Рекс', 'itemd.hero_rex': 'Лікує друзів, яких зачепить',
     inShop: 'Є в магазині', afterLvl: n => `Відкриється після рівня ${n}`, teamAdd: 'Додати', teamRule: 'У команді 4–5 героїв',
@@ -923,6 +933,16 @@ const I18N = {
     'item.hat_pumpkin': 'Pumpkin hat', 'itemd.hat_pumpkin': 'Halloween reward', 'item.hat_santa': 'Santa hat', 'itemd.hat_santa': 'New Year reward',
     'hero.rex.name': 'Rex', 'hero.rex.skill': 'allies he touches get +1 heart', 'hero.rex.combo': 'Rescue mission',
     'hero.homa.name': 'Hammy', 'hero.homa.skill': 'the longer he rolls, the harder he hits', 'hero.homa.combo': 'Nut shower',
+    'stat.power': 'Power', 'stat.speed': 'Speed', 'stat.size': 'Size', comboLabel: 'Combo', perksLabel: 'Level perks', detailWhat: 'What it does',
+    comboWhen: 'Fires when a friend\'s shot touches this hero: ',
+    'combod.mochi': 'a wave hits every enemy nearby for 350.', 'combod.pixel': 'a laser hits the nearest enemy for 550.', 'combod.bandit': 'the flat regains 500 toughness.',
+    'combod.nugget': '+12 to the Mischief meter.', 'combod.spark': 'three lightning bolts from the sky hit random enemies for 300 each.', 'combod.rex': '+1 heart for every wounded hero.',
+    'combod.homa': 'five nuts hit random enemies for 150 each.',
+    'iteml.heart3': 'Switch it on before a level on the boosters screen: every hero gets +1 heart and survives one more hit. 3 in a pack, one per level.',
+    'iteml.meter3': 'The level starts with the Mischief meter half full, so Zoomies (a shot with double power) is only a few hits away. 3 in a pack, one per level.',
+    'iteml.hat': 'A look for the whole team: every hero wears it in every level. Yours forever, put it on or take it off any time.',
+    'iteml.hatEvent': 'A seasonal event reward, not sold in the shop. The whole team wears it; put it on or take it off any time.',
+    'iteml.rainbow': 'The yarn your heroes leave behind shimmers in every colour of the rainbow. Just for looks: it doesn\'t change damage. Yours forever, switch it on or off any time.',
     'perk.rex.5': '+2 hearts instead of +1', 'perk.rex.10': 'His combo also heals the home by 800', 'perk.homa.5': 'Multiplier up to ×3', 'perk.homa.10': '+20% speed',
     'item.hero_rex': 'Rex', 'itemd.hero_rex': 'Heals friends he touches',
     inShop: 'In the shop', afterLvl: n => `Unlocks after level ${n}`, teamAdd: 'Add', teamRule: 'A team has 4–5 heroes',
@@ -1037,6 +1057,16 @@ const I18N = {
     'item.hat_pumpkin': 'Dyniowa czapka', 'itemd.hat_pumpkin': 'Nagroda z Halloween', 'item.hat_santa': 'Czapka Mikołaja', 'itemd.hat_santa': 'Nagroda noworoczna',
     'hero.rex.name': 'Reks', 'hero.rex.skill': 'dotknięci przyjaciele dostają +1 serce', 'hero.rex.combo': 'Misja ratunkowa',
     'hero.homa.name': 'Tomek', 'hero.homa.skill': 'im dłużej się toczy, tym mocniej bije', 'hero.homa.combo': 'Orzechowy deszcz',
+    'stat.power': 'Siła', 'stat.speed': 'Szybkość', 'stat.size': 'Rozmiar', comboLabel: 'Kombo', perksLabel: 'Bonusy poziomów', detailWhat: 'Co daje',
+    comboWhen: 'Działa, gdy strzał przyjaciela dotknie bohatera: ',
+    'combod.mochi': 'fala trafia wszystkich wrogów w pobliżu za 350.', 'combod.pixel': 'laser trafia najbliższego wroga za 550.', 'combod.bandit': 'mieszkanie odzyskuje 500 wytrzymałości.',
+    'combod.nugget': '+12 do paska Psot.', 'combod.spark': 'trzy pioruny z nieba trafiają losowych wrogów, po 300.', 'combod.rex': '+1 serce dla każdego rannego bohatera.',
+    'combod.homa': 'pięć orzechów trafia losowych wrogów, po 150.',
+    'iteml.heart3': 'Włącz przed poziomem na ekranie wzmocnień: każdy bohater dostaje +1 serce i wytrzyma o jeden cios więcej. 3 sztuki w zestawie, jedna na poziom.',
+    'iteml.meter3': 'Poziom zaczyna się z paskiem Psot w połowie pełnym, więc Szał (strzał z podwójną siłą) jest tylko kilka trafień dalej. 3 sztuki w zestawie, jedna na poziom.',
+    'iteml.hat': 'Ozdoba dla całej drużyny: nosi ją każdy bohater na każdym poziomie. Twoja na zawsze, załóż lub zdejmij w dowolnej chwili.',
+    'iteml.hatEvent': 'Nagroda z wydarzenia sezonowego, nie do kupienia w sklepie. Nosi ją cała drużyna, załóż lub zdejmij w dowolnej chwili.',
+    'iteml.rainbow': 'Nitki, które bohaterowie zostawiają za sobą, mienią się wszystkimi kolorami tęczy. Tylko dla urody: nie zmienia obrażeń. Twoja na zawsze, włącz lub wyłącz w dowolnej chwili.',
     'perk.rex.5': '+2 serca zamiast +1', 'perk.rex.10': 'Jego kombo leczy też mieszkanie o 800', 'perk.homa.5': 'Mnożnik do ×3', 'perk.homa.10': '+20% szybkości',
     'item.hero_rex': 'Reks', 'itemd.hero_rex': 'Leczy dotkniętych przyjaciół',
     inShop: 'W sklepie', afterLvl: n => `Odblokuj po poziomie ${n}`, teamAdd: 'Dodaj', teamRule: 'Drużyna ma 4–5 bohaterów',
@@ -1151,6 +1181,16 @@ const I18N = {
     'item.hat_pumpkin': 'Kürbishut', 'itemd.hat_pumpkin': 'Halloween-Preis', 'item.hat_santa': 'Weihnachtsmütze', 'itemd.hat_santa': 'Neujahrspreis',
     'hero.rex.name': 'Rex', 'hero.rex.skill': 'berührte Freunde bekommen +1 Herz', 'hero.rex.combo': 'Rettungseinsatz',
     'hero.homa.name': 'Hamsti', 'hero.homa.skill': 'je länger er rollt, desto härter trifft er', 'hero.homa.combo': 'Nussregen',
+    'stat.power': 'Kraft', 'stat.speed': 'Tempo', 'stat.size': 'Größe', comboLabel: 'Kombo', perksLabel: 'Stufenboni', detailWhat: 'Was es bringt',
+    comboWhen: 'Löst aus, wenn der Schuss eines Freundes diesen Helden berührt: ',
+    'combod.mochi': 'eine Welle trifft alle Gegner in der Nähe für 350.', 'combod.pixel': 'ein Laser trifft den nächsten Gegner für 550.', 'combod.bandit': 'die Wohnung erhält 500 Stärke zurück.',
+    'combod.nugget': '+12 auf der Unfug-Leiste.', 'combod.spark': 'drei Blitze vom Himmel treffen zufällige Gegner, je 300.', 'combod.rex': '+1 Herz für jeden verletzten Helden.',
+    'combod.homa': 'fünf Nüsse treffen zufällige Gegner, je 150.',
+    'iteml.heart3': 'Vor dem Level auf dem Booster-Bildschirm einschalten: Jeder Held bekommt +1 Herz und hält einen Treffer mehr aus. 3 Stück im Paket, eins pro Level.',
+    'iteml.meter3': 'Das Level beginnt mit halb voller Unfug-Leiste, also ist Flitzen (ein Schuss mit doppelter Kraft) nur ein paar Treffer entfernt. 3 Stück im Paket, eins pro Level.',
+    'iteml.hat': 'Ein Look für das ganze Team: Jeder Held trägt ihn in jedem Level. Gehört dir für immer, jederzeit an- oder ablegen.',
+    'iteml.hatEvent': 'Eine Belohnung aus einem saisonalen Event, nicht im Shop erhältlich. Das ganze Team trägt sie, jederzeit an- oder ablegen.',
+    'iteml.rainbow': 'Das Garn, das deine Helden hinterlassen, schimmert in allen Regenbogenfarben. Nur für die Optik: Es ändert keinen Schaden. Gehört dir für immer, jederzeit ein- oder ausschalten.',
     'perk.rex.5': '+2 Herzen statt +1', 'perk.rex.10': 'Sein Kombo heilt auch die Wohnung um 800', 'perk.homa.5': 'Multiplikator bis ×3', 'perk.homa.10': '+20 % Tempo',
     'item.hero_rex': 'Rex', 'itemd.hero_rex': 'Heilt berührte Freunde',
     inShop: 'Im Shop', afterLvl: n => `Frei nach Level ${n}`, teamAdd: 'Dazu', teamRule: 'Ein Team hat 4–5 Helden',
@@ -1265,6 +1305,16 @@ const I18N = {
     'item.hat_pumpkin': 'Sombrero de calabaza', 'itemd.hat_pumpkin': 'Premio de Halloween', 'item.hat_santa': 'Gorro de Papá Noel', 'itemd.hat_santa': 'Premio de Año Nuevo',
     'hero.rex.name': 'Rex', 'hero.rex.skill': 'los aliados que toca reciben +1 corazón', 'hero.rex.combo': 'Misión de rescate',
     'hero.homa.name': 'Hamy', 'hero.homa.skill': 'cuanto más rueda, más fuerte golpea', 'hero.homa.combo': 'Lluvia de nueces',
+    'stat.power': 'Fuerza', 'stat.speed': 'Velocidad', 'stat.size': 'Tamaño', comboLabel: 'Combo', perksLabel: 'Bonus de nivel', detailWhat: 'Qué hace',
+    comboWhen: 'Se activa cuando el disparo de un amigo toca a este héroe: ',
+    'combod.mochi': 'una onda golpea a todos los enemigos cercanos por 350.', 'combod.pixel': 'un láser golpea al enemigo más cercano por 550.', 'combod.bandit': 'el piso recupera 500 de vida.',
+    'combod.nugget': '+12 a la barra de Travesura.', 'combod.spark': 'tres rayos del cielo golpean a enemigos al azar, 300 cada uno.', 'combod.rex': '+1 corazón para cada héroe herido.',
+    'combod.homa': 'cinco nueces golpean a enemigos al azar, 150 cada una.',
+    'iteml.heart3': 'Actívalo antes de un nivel en la pantalla de potenciadores: cada héroe recibe +1 corazón y aguanta un golpe más. 3 en el paquete, uno por nivel.',
+    'iteml.meter3': 'El nivel empieza con la barra de Travesura a la mitad, así que los Zoomies (un disparo con el doble de fuerza) están a pocos golpes. 3 en el paquete, uno por nivel.',
+    'iteml.hat': 'Un look para todo el equipo: cada héroe lo lleva en cada nivel. Tuyo para siempre, póntelo o quítatelo cuando quieras.',
+    'iteml.hatEvent': 'Premio de un evento de temporada, no se vende en la tienda. Lo lleva todo el equipo; póntelo o quítatelo cuando quieras.',
+    'iteml.rainbow': 'El hilo que dejan tus héroes brilla con todos los colores del arcoíris. Solo estética: no cambia el daño. Tuyo para siempre, actívalo o desactívalo cuando quieras.',
     'perk.rex.5': '+2 corazones en vez de +1', 'perk.rex.10': 'Su combo también cura el piso 800', 'perk.homa.5': 'Multiplicador hasta ×3', 'perk.homa.10': '+20 % de velocidad',
     'item.hero_rex': 'Rex', 'itemd.hero_rex': 'Cura a los amigos que toca',
     inShop: 'En la tienda', afterLvl: n => `Se desbloquea tras el nivel ${n}`, teamAdd: 'Añadir', teamRule: 'Un equipo tiene 4–5 héroes',
@@ -2407,9 +2457,9 @@ function chIcon(c, x, y, s, col) {
 }
 
 // ---------- screens & UI buttons ----------
-let SCREEN = 'map', G = null, drag = null, UI = [];
+let SCREEN = 'map', G = null, drag = null, UI = [], DETAIL = null;
 function setScreen(s) {
-  SCREEN = s; drag = null;
+  SCREEN = s; drag = null; DETAIL = null;
   if (s === 'map') MAP.focus = true;
   if (TG && tgv('6.1')) { try { if (s === 'map') TG.BackButton.hide(); else TG.BackButton.show(); } catch (e) {} }
   if (s === 'game' && G) Amb.start(G.lvl.ch); else Amb.stop();
@@ -6014,6 +6064,8 @@ function drawShop() {
     ctx.textAlign = 'left'; ctx.fillStyle = '#f4efe6'; fitFont(tr('item.' + id), W - 230, 15); ctx.fillText(tr('item.' + id), 78, y + 19);
     const desc = `${tr('itemd.' + id)} · ${tr('owned', a.have)}`;
     ctx.fillStyle = '#b9b2da'; fitFont(desc, W - 230, 11.5, 700, FB); ctx.fillText(desc, 78, y + 40);
+    UI.push({ x: 16, y, w: W - 32, h: 56, cb: () => openDetail('item', id) });
+    infoDot(W - 140, y + 28);
     uiBtn(W - 130, y + 8, 104, 40, a.label, a.cb, a.primary);
   });
 
@@ -6042,6 +6094,8 @@ function drawShop() {
       const ow = ctx.measureText(old).width;
       ctx.strokeStyle = '#ff5d7a'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(bx - ow - 2, y + 49); ctx.lineTo(bx + 2, y + 43); ctx.stroke();
     }
+    UI.push({ x, y, w: cw, h: ch, cb: () => openDetail('hero', h.id) });
+    infoDot(x + 16, y + 16);
     uiBtn(x + 10, y + ch - 40, cw - 20, 32, a.label, a.cb, a.primary);
   });
 
@@ -6064,6 +6118,8 @@ function drawShop() {
       star(cx + 26, cy - 12, 4, '#fff3c4');
     } else drawHero(mochi, cx, cy + 10, 24, null, { hat: id.slice(4), look: [0, .5], mood: a.on ? 'happy' : undefined });
     ctx.textAlign = 'center'; ctx.fillStyle = '#f4efe6'; fitFont(tr('item.' + id), gw - 12, 12); ctx.fillText(tr('item.' + id), cx, y + gh - 48);
+    UI.push({ x, y, w: gw, h: gh, cb: () => openDetail('item', id) });
+    infoDot(x + 13, y + 13);
     uiBtn(x + 8, y + gh - 38, gw - 16, 30, a.label, a.cb, a.primary);
   });
   const note = SHOP.msg || (canPay() ? '' : tr('shopTgOnly'));
@@ -6500,6 +6556,182 @@ function toggleTeam(id) {
   else { Snd.play('locked'); return; }
   saveProg();
 }
+// ---------- details: tap a hero or a shop item to see everything it does ----------
+function openDetail(kind, id) { DETAIL = { kind, id, t0: T }; }
+function closeDetail() { DETAIL = null; }
+const capFirst = t => t.charAt(0).toUpperCase() + t.slice(1);
+const ITEM_COL = id => (id === 'heart3' ? '#ff5d7a' : id === 'meter3' ? '#ff8fb1' : id === 'rainbow' ? '#b18cff' : '#ffc857');
+// the small "i" that tells a card can be opened
+function infoDot(x, y, col = '#8f88b5') {
+  ctx.strokeStyle = col; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(x, y, 7.5, 0, TAU); ctx.stroke();
+  ctx.fillStyle = col; ctx.font = `900 10px ${FD}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('i', x, y + .5);
+}
+function detailHead(text, x, y, x2, col) {
+  ctx.textAlign = 'left'; ctx.textBaseline = 'middle'; ctx.fillStyle = col; ctx.font = `900 12px ${FD}`;
+  const t = text.toUpperCase(); fitFont(t, x2 - x - 30, 12); ctx.fillText(t, x, y);
+  const w = ctx.measureText(t).width;
+  ctx.fillStyle = hexA(col, .22); ctx.fillRect(x + w + 10, y - 1, Math.max(0, x2 - x - w - 10), 2);
+}
+function detailText(text, x, y, maxW, lh, font, col, max) {
+  ctx.font = font; ctx.fillStyle = col; ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+  splitLines(text, maxW).slice(0, max).forEach((ln, i) => ctx.fillText(ln, x, y + i * lh));
+}
+// a row of pills: [text, colour, filled]
+function detailChips(list, cy) {
+  ctx.font = `900 12px ${FD}`;
+  const ws = list.map(([t]) => ctx.measureText(t).width + 24), gap = 8;
+  let x0 = W / 2 - (ws.reduce((a, b) => a + b, 0) + gap * (list.length - 1)) / 2;
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  list.forEach(([t, c, fill], i) => {
+    ctx.fillStyle = fill ? c : hexA(c, .14); rr(x0, cy - 12, ws[i], 24, 12); ctx.fill();
+    if (!fill) { ctx.strokeStyle = hexA(c, .55); ctx.lineWidth = 1.5; rr(x0, cy - 12, ws[i], 24, 12); ctx.stroke(); }
+    ctx.fillStyle = fill ? '#15122a' : c; ctx.fillText(t, x0 + ws[i] / 2, cy + 1);
+    x0 += ws[i] + gap;
+  });
+}
+function drawDetail() {
+  UI = [];
+  const d = DETAIL, t = RM ? 0 : T, k = RM ? 1 : Math.min(1, (T - d.t0) / .28), sc = RM ? 1 : .88 + .12 * easeOutBack(k);
+  const hero = d.kind === 'hero' ? HEROES.find(h => h.id === d.id) : null;
+  const col = hero ? hero.yarn : ITEM_COL(d.id);
+  const ph = hero ? 656 : 500, x = 22, w = W - 44, y = Math.round((H - ph) / 2), cx = W / 2, py = y + 112;
+  UI.push({ x: 0, y: 0, w: W, h: H, cb: closeDetail });
+  UI.push({ x, y, w, h: ph, cb: () => {} }); // a tap on the card itself keeps it open
+  ctx.save();
+  ctx.globalAlpha = Math.min(1, k * 1.6);
+  ctx.fillStyle = 'rgba(8,6,18,.86)'; ctx.fillRect(0, 0, W, H);
+  ctx.translate(cx, y + ph / 2); ctx.scale(sc, sc); ctx.translate(-cx, -(y + ph / 2));
+  // the card: a dark base washed with the hero's or item's colour from the top
+  ctx.fillStyle = 'rgba(0,0,0,.45)'; rr(x, y + 8, w, ph, 26); ctx.fill();
+  ctx.fillStyle = '#1a1636'; rr(x, y, w, ph, 26); ctx.fill();
+  ctx.save(); rr(x, y, w, ph, 26); ctx.clip();
+  const wash = ctx.createLinearGradient(0, y, 0, y + ph * .5);
+  wash.addColorStop(0, hexA(col, .34)); wash.addColorStop(1, hexA(col, 0));
+  ctx.fillStyle = wash; ctx.fillRect(x, y, w, ph);
+  // slow rays and a glow behind the portrait
+  ctx.save(); ctx.translate(cx, py); ctx.rotate(t * .2); ctx.fillStyle = hexA(col, .08);
+  for (let i = 0; i < 12; i++) { ctx.rotate(TAU / 12); ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(-16, -170); ctx.lineTo(16, -170); ctx.closePath(); ctx.fill(); }
+  ctx.restore();
+  ctx.globalCompositeOperation = 'lighter'; glowAt(cx, py, 105, hexRgb(col), .3); ctx.globalCompositeOperation = 'source-over';
+  for (let i = 0; i < 7; i++) {
+    const a = i * 2.4 + t * .5, rad = 72 + 18 * Math.sin(t + i * 1.7);
+    star(cx + Math.cos(a) * rad * 1.3, py + Math.sin(a) * rad * .8, 2.5 + (i % 3), hexA('#fff3c4', .35 + .3 * Math.sin(t * 2 + i)));
+  }
+  ctx.restore();
+  ctx.strokeStyle = hexA(col, .8); ctx.lineWidth = 2.5; rr(x, y, w, ph, 26); ctx.stroke();
+  ctx.strokeStyle = 'rgba(255,255,255,.08)'; ctx.lineWidth = 1; rr(x + 5, y + 5, w - 10, ph - 10, 22); ctx.stroke();
+  if (hero) drawHeroDetail(hero, x, y, w, ph, t); else drawItemDetail(d.id, x, y, w, ph, t, col);
+  // close
+  const bx = x + w - 48, by = y + 14;
+  UI.push({ x: bx - 6, y: by - 6, w: 46, h: 46, cb: closeDetail });
+  ctx.fillStyle = 'rgba(13,11,29,.55)'; circ(bx + 17, by + 17, 17);
+  ctx.strokeStyle = '#f4efe6'; ctx.lineWidth = 2.5; ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.moveTo(bx + 11, by + 11); ctx.lineTo(bx + 23, by + 23); ctx.moveTo(bx + 23, by + 11); ctx.lineTo(bx + 11, by + 23); ctx.stroke();
+  ctx.restore();
+}
+function drawHeroDetail(h, x, y, w, ph, t) {
+  const own = heroOwned(h.id), lv = heroLevel(h.id), cx = W / 2, L = x + 26, R = x + w - 26, py = y + 112;
+  // the hero, big, now and then beaming
+  ctx.fillStyle = 'rgba(0,0,0,.28)'; ctx.beginPath(); ctx.ellipse(cx, py + 66, 48, 9, 0, 0, TAU); ctx.fill();
+  const mood = !RM && frac(t * .18) < .2 ? 'happy' : undefined;
+  drawHero(h, cx, py + 4 + Math.sin(t * 2.4) * 4, 54, null, { look: [Math.sin(t * .7) * .5, .3], mood });
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillStyle = h.yarn;
+  fitFont(h.name, w - 80, 30); ctx.fillText(h.name, cx, y + 204);
+  const tag = tr('tag.' + h.type), chips = [[tag[0], h.yarn, true]];
+  if (own) chips.push([tr('lvl', lv.L), '#ffc857', false]);
+  else if (h.id === 'homa') chips.push([tr('afterLvl', HOMA_UNLOCK), '#8f88b5', false]);
+  else {
+    chips.push([`★ ${PRICES['hero_' + h.id]}`, '#ffc857', false]);
+    if (OLD_PRICES['hero_' + h.id]) chips.push([`−${Math.round((1 - PRICES['hero_' + h.id] / OLD_PRICES['hero_' + h.id]) * 100)}%`, '#ff5d7a', true]);
+  }
+  detailChips(chips, y + 238);
+  ctx.textAlign = 'center'; ctx.fillStyle = '#b9b2da'; fitFont(capFirst(tag[1]), w - 60, 12, 700, FB); ctx.fillText(capFirst(tag[1]), cx, y + 264);
+  // stats: bars against the best hero in each
+  const best = key => Math.max(...HEROES.map(d => d[key]));
+  const power = Math.round(h.dmg * (own ? 1 + .04 * (lv.L - 1) : 1));
+  [[tr('stat.power'), h.dmg / best('dmg'), power], [tr('stat.speed'), h.speed / best('speed')], [tr('stat.size'), h.r / best('r')]].forEach(([lab, f, val], i) => {
+    const ry = y + 294 + i * 22, bx = L + 92, bw = R - bx - 46;
+    ctx.textAlign = 'left'; ctx.fillStyle = '#c9c2e6'; fitFont(lab, 86, 12, 800, FB); ctx.fillText(lab, L, ry);
+    ctx.fillStyle = '#0d0b1d'; rr(bx, ry - 5, bw, 10, 5); ctx.fill();
+    ctx.fillStyle = h.yarn; rr(bx, ry - 5, Math.max(10, bw * f), 10, 5); ctx.fill();
+    ctx.fillStyle = 'rgba(255,255,255,.28)'; rr(bx + 3, ry - 3.5, Math.max(4, bw * f - 6), 3, 1.5); ctx.fill();
+    if (val) { ctx.textAlign = 'right'; ctx.fillStyle = '#ffc857'; ctx.font = `900 13px ${FD}`; ctx.fillText(String(val), R, ry + 1); }
+  });
+  // what the hero does
+  detailHead(tr('skillLabel'), L, y + 372, R, h.yarn);
+  detailText(capFirst(tr(`hero.${h.id}.skill`)), L, y + 396, R - L, 19, `800 15px ${FB}`, '#f4efe6', 2);
+  detailHead(`${tr('comboLabel')} · ${tr(`hero.${h.id}.combo`)}`, L, y + 446, R, h.yarn);
+  detailText(tr('comboWhen') + tr('combod.' + h.id), L, y + 470, R - L, 17, `700 13px ${FB}`, '#c9c2e6', 3);
+  detailHead(tr('perksLabel'), L, y + 530, R, h.yarn);
+  [5, 10].forEach((at, i) => {
+    const open = own && lv.L >= at, ry = y + 554 + i * 21;
+    ctx.fillStyle = open ? '#5ce1c6' : '#2e2859'; circ(L + 8, ry, 8);
+    ctx.fillStyle = open ? '#15122a' : '#8f88b5'; ctx.font = `900 ${open ? 11 : 9}px ${FD}`; ctx.textAlign = 'center'; ctx.fillText(open ? '✓' : String(at), L + 8, ry + 1);
+    const txt = `${tr('lvl', at)}: ${tr(`perk.${h.id}.${at}`)}`;
+    ctx.textAlign = 'left'; ctx.fillStyle = open ? '#5ce1c6' : '#c9c2e6'; fitFont(txt, R - L - 24, 13, 800, FB); ctx.fillText(txt, L + 24, ry);
+  });
+  // what you can do with this hero right now
+  const by = y + ph - 62, bw = R - L;
+  if (own) {
+    const inT = teamDefs().some(d => d.id === h.id);
+    uiBtn(L, by, bw, 46, inT ? tr('inTeam') : tr('teamAdd'), () => toggleTeam(h.id), !inT);
+  } else if (h.id === 'homa') {
+    ctx.fillStyle = '#231e44'; rr(L, by, bw, 46, 14); ctx.fill();
+    ctx.textAlign = 'center'; ctx.fillStyle = '#8f88b5'; fitFont(tr('afterLvl', HOMA_UNLOCK), bw - 20, 14, 900, FD); ctx.fillText(tr('afterLvl', HOMA_UNLOCK), cx, by + 24);
+  } else {
+    const a = shopAction('hero_' + h.id);
+    uiBtn(L, by, bw, 46, a.label, a.cb, a.primary);
+  }
+}
+function drawItemDetail(id, x, y, w, ph, t, col) {
+  const a = shopAction(id), cx = W / 2, L = x + 26, R = x + w - 26, py = y + 112;
+  if (id === 'heart3' || id === 'meter3') {
+    const ts = 112, tx = cx - ts / 2, ty = py - ts / 2 + Math.sin(t * 2.4) * 3;
+    const tg = ctx.createLinearGradient(tx, ty, tx + ts, ty + ts);
+    tg.addColorStop(0, '#d9577f'); tg.addColorStop(1, '#5a2440');
+    ctx.fillStyle = 'rgba(0,0,0,.3)'; rr(tx, ty + 6, ts, ts, 28); ctx.fill();
+    ctx.fillStyle = tg; rr(tx, ty, ts, ts, 28); ctx.fill();
+    ctx.fillStyle = 'rgba(255,255,255,.14)'; rr(tx + 7, ty + 7, ts - 14, ts * .34, 20); ctx.fill();
+    ctx.save(); ctx.translate(cx, ty + ts / 2); ctx.scale(2.4, 2.4); drawShopIcon(id, 0, 0); ctx.restore();
+    ctx.fillStyle = '#ffc857'; circ(tx + ts - 6, ty + 8, 19);
+    ctx.fillStyle = '#15122a'; ctx.font = `900 15px ${FD}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('×3', tx + ts - 6, ty + 9);
+  } else if (id === 'rainbow') {
+    // a hero flying with a rainbow trail behind
+    const hx = cx + 64, hy = py + Math.sin(t * 2.4) * 6;
+    ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    ['#ff5d7a', '#ffd166', '#9ee06a', '#6ec3ff', '#b18cff'].forEach((c, k) => {
+      ctx.strokeStyle = c; ctx.lineWidth = 5; ctx.beginPath();
+      for (let i = 0; i <= 36; i++) {
+        const px = L + 6 + (hx - L - 6) * i / 36, wv = Math.sin(i * .32 - t * 4) * 16 * (1 - i / 50);
+        const yy = hy + wv + (k - 2) * 5.5 * (.4 + .6 * i / 36);
+        if (i) ctx.lineTo(px, yy); else ctx.moveTo(px, yy);
+      }
+      ctx.stroke();
+    });
+    drawHero(HEROES[0], hx, hy, 40, null, { hat: false, look: [1, 0], mood: 'happy' });
+  } else {
+    // the hat on three of the team
+    const kind = id.slice(4);
+    [[HEROES[2], -100, 32, 1.3], [HEROES[1], 100, 32, 2.1], [HEROES[0], 0, 44, 0]].forEach(([hh, dx, r, ph0]) => {
+      const hy = py + 10 + (r < 40 ? 16 : 0) + Math.sin(t * 2.4 + ph0) * 4;
+      ctx.fillStyle = 'rgba(0,0,0,.25)'; ctx.beginPath(); ctx.ellipse(cx + dx, py + 66, r * .9, 7, 0, 0, TAU); ctx.fill();
+      drawHero(hh, cx + dx, hy, r, null, { hat: kind, look: [-dx / 100 * .6, .4], mood: a.on ? 'happy' : undefined });
+    });
+  }
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillStyle = col;
+  fitFont(tr('item.' + id), w - 80, 28); ctx.fillText(tr('item.' + id), cx, y + 214);
+  const chips = [];
+  if (!a.perm) chips.push([tr('owned', a.have), '#5ce1c6', false]);
+  else if (a.have) chips.push([tr('owned', 1).replace(/\d+/, '✓'), '#5ce1c6', true]);
+  if (PRICES[id] && (!a.perm || !a.have)) chips.push([`★ ${PRICES[id]}`, '#ffc857', false]);
+  if (chips.length) detailChips(chips, y + 248);
+  ctx.textAlign = 'center'; ctx.fillStyle = '#b9b2da'; fitFont(tr('itemd.' + id), w - 60, 12, 700, FB); ctx.fillText(tr('itemd.' + id), cx, y + 276);
+  const long = id.startsWith('hat_') ? (PRICES[id] ? 'iteml.hat' : 'iteml.hatEvent') : 'iteml.' + id;
+  detailHead(tr('detailWhat'), L, y + 314, R, col);
+  detailText(tr(long), L, y + 340, R - L, 21, `800 15px ${FB}`, '#f4efe6', 7);
+  uiBtn(L, y + ph - 62, R - L, 46, a.label, a.cb, a.primary);
+}
+
 function drawHeroes() {
   ctx.fillStyle = '#110e22'; ctx.fillRect(0, 0, W, H);
   const g = ctx.createRadialGradient(W / 2, 60, 10, W / 2, 60, 320);
@@ -6514,6 +6746,8 @@ function drawHeroes() {
     const y = 78 + i * 90, own = heroOwned(h.id), inTeam = team.includes(h.id), lv = heroLevel(h.id), max = lv.L >= HERO_MAX;
     ctx.fillStyle = inTeam ? '#231e44' : '#1a1733'; rr(16, y, W - 32, 84, 14); ctx.fill();
     ctx.strokeStyle = inTeam ? h.yarn : '#3b3563'; ctx.lineWidth = inTeam ? 2 : 1.5; rr(16, y, W - 32, 84, 14); ctx.stroke();
+    UI.push({ x: 16, y, w: W - 32, h: 84, cb: () => openDetail('hero', h.id) });
+    infoDot(W - 30, y + 72);
     // a portrait in a coloured circle; heroes you don't have yet are a silhouette with a lock
     const px = 52, py = y + 42;
     const pg = ctx.createRadialGradient(px - 8, py - 10, 4, px, py, 31);
@@ -6535,7 +6769,6 @@ function drawHeroes() {
       ctx.fillStyle = '#6f6893'; fitFont(tr('itemd.hero_' + h.id), W - 236, 11, 700, FB);
       if (shopHero) ctx.fillText(tr('itemd.hero_' + h.id), 94, y + 62);
       if (shopHero) {
-        UI.push({ x: 16, y, w: W - 32, h: 84, cb: () => { SHOP.msg = null; setScreen('shop'); } });
         uiBtn(W - 116, y + 22, 92, 40, `★ ${PRICES['hero_' + h.id]}`, () => { SHOP.msg = null; setScreen('shop'); }, true);
       }
       return;
@@ -7092,6 +7325,7 @@ function draw() {
   else if (SCREEN === 'story') drawStory();
   else if (SCREEN === 'guide') drawGuide();
   else drawMap();
+  if (DETAIL && (SCREEN === 'shop' || SCREEN === 'heroes')) drawDetail();
 }
 
 // ---------- input ----------
@@ -7177,7 +7411,8 @@ cv.addEventListener('wheel', ev => {
   MAP.v = 0; MAP.y = Math.max(0, Math.min(MAP.maxY, MAP.y + ev.deltaY * .6));
 }, { passive: false });
 cv.addEventListener('keydown', ev => {
-  if (ev.key === 'Escape' && SCREEN === 'game') goMap();
+  if (ev.key === 'Escape' && DETAIL) closeDetail();
+  else if (ev.key === 'Escape' && SCREEN === 'game') goMap();
   else if (ev.key === 'Escape' && SCREEN === 'guide') closeGuide();
   if (SCREEN === 'howto' && (ev.key === 'Enter' || ev.key === ' ')) { ev.preventDefault(); closeHowto(); }
   if (SCREEN === 'game' && G && (ev.key === 'z' || ev.key === 'я') && G.state === 'aim' && G.meter >= 100) G.zoomArmed = !G.zoomArmed;
