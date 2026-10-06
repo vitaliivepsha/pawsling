@@ -12,7 +12,7 @@
 // POST /daily     { initData }  ->  today's login bonus (once a day), streak, invite count, bot name;
 //   a first visit through a friend's link (start_param ref_<id>) gifts both players
 // POST /challenge { initData, reward }  ->  the daily challenge reward, once a day
-// POST /notify    { initData, on, tz, room, lang }  ->  raid alerts on or off (tz: getTimezoneOffset minutes)
+// POST /notify    { initData, on, tz, room, lang }  ->  raid alerts on or off (on by default; tz: getTimezoneOffset minutes)
 // POST /raid      { initData, id }  ->  { ok, late?, reward, items }  the raid bonus, if the raid was repelled in time
 // cron (every hour): players with alerts on who haven't played for a while get, at most once a day and
 //   between 10:00 and 21:00 their time, a raid alert with a picture and a button; they have 30 minutes
@@ -204,6 +204,9 @@ async function daily(env, user, body = {}) {
   await ensureTables(db);
   // remember when this player was last here (raids skip people who are playing anyway)
   const now = Math.floor(Date.now() / 1000);
+  // raid alerts are on by default; a player can turn them off with the bell in the game
+  await db.prepare('INSERT OR IGNORE INTO notify (user_id, enabled, lang, tz, room, last_seen) VALUES (?1, 1, ?2, ?3, ?4, ?5)')
+    .bind(user.id, String(body.lang || user.language_code || '').slice(0, 5), clampTz(body.tz), clampRoom(body.room), now).run();
   await db.prepare('UPDATE notify SET last_seen = ?2, tz = ?3, room = ?4 WHERE user_id = ?1').bind(user.id, now, clampTz(body.tz), clampRoom(body.room)).run();
   const nrow = await db.prepare('SELECT enabled FROM notify WHERE user_id = ?1').bind(user.id).first();
   const raid = await db.prepare('SELECT id, room, expires FROM raids WHERE user_id = ?1 AND done IS NULL AND expires > ?2 ORDER BY id DESC LIMIT 1').bind(user.id, now).first();
@@ -406,6 +409,12 @@ async function onUpdate(env, u) {
   if (typeof m.text === 'string' && /^\/sales\b/.test(m.text) && isAdmin(env, m.from)) {
     await tg(env, 'sendMessage', { chat_id: m.chat.id, text: await salesReport(env.DB) });
     return;
+  }
+  // starting the bot or allowing it to write lets alerts through again after a block
+  if (m.write_access_allowed || (typeof m.text === 'string' && /^\/start\b/.test(m.text))) {
+    await ensureTables(env.DB);
+    await env.DB.prepare('UPDATE notify SET blocked = 0 WHERE user_id = ?1').bind(m.from.id).run();
+    if (m.write_access_allowed) return;
   }
   if (typeof m.text === 'string' && /^\/(start|play)\b/.test(m.text) && env.WEBAPP_URL) {
     const t = text(m.from && m.from.language_code);

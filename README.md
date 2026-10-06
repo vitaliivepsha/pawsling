@@ -33,8 +33,9 @@ worker/             the leaderboard: a Cloudflare Worker with a D1 database
   sideways and box bots that hide in a box (the first hit only tears the box off; they box up again
   after attacking). It ends with the Mega Sorter: after each attack it reverses every belt and
   speeds it up.
-- Raids bring players back: after a few levels the game offers raid alerts once (and the bell on the
-  Daily screen turns them on or off; the game asks Telegram for permission to message the player).
+- Raids bring players back: raid alerts are on for every player by default; the bell on the Daily
+  screen turns them off. After the first level the game asks Telegram once for permission to message
+  players who never wrote to the bot; a player who blocks the bot is skipped until they start it again.
   About once a day, between 10:00 and 21:00 the player's time and only if they haven't played for
   3 hours, the bot sends a poster of the raided room (`promo/raid/raid-<room>.jpg`) and a button.
   The raid is two waves of that room's robots; repelling it within 30 minutes gives +1 heart and
