@@ -328,6 +328,8 @@ async function ensureTables(db) {
     db.prepare(`CREATE TABLE IF NOT EXISTS raids (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER NOT NULL, room INTEGER NOT NULL,
       created INTEGER NOT NULL, expires INTEGER NOT NULL, done INTEGER)`),
     db.prepare('CREATE INDEX IF NOT EXISTS idx_raids_user ON raids (user_id, id)'),
+    db.prepare(`CREATE TABLE IF NOT EXISTS raid_runs (at INTEGER PRIMARY KEY, checked INTEGER NOT NULL, sent INTEGER NOT NULL,
+      failed INTEGER NOT NULL, err TEXT)`),
   ]);
   tablesReady = true;
 }
@@ -402,8 +404,13 @@ async function onUpdate(env, u) {
     // the owner can try a raid alert right away
     await ensureTables(env.DB);
     const row = await env.DB.prepare('SELECT lang, room FROM notify WHERE user_id = ?1').bind(m.from.id).first();
-    const ok = await sendRaid(env, m.from.id, (row && row.lang) || (m.from && m.from.language_code), row ? row.room : 0);
-    if (!ok) await tg(env, 'sendMessage', { chat_id: m.chat.id, text: '⚠️ Не вдалося надіслати нальот' });
+    const r = await sendRaid(env, m.from.id, (row && row.lang) || (m.from && m.from.language_code), row ? row.room : 0);
+    if (!r.ok) await tg(env, 'sendMessage', { chat_id: m.chat.id, text: '⚠️ Не вдалося надіслати нальот: ' + (r.description || '') });
+    return;
+  }
+  if (typeof m.text === 'string' && /^\/raidlog\b/.test(m.text) && isAdmin(env, m.from)) {
+    const row = await env.DB.prepare('SELECT tz FROM notify WHERE user_id = ?1').bind(m.from.id).first();
+    await tg(env, 'sendMessage', { chat_id: m.chat.id, text: await raidLog(env.DB, row ? row.tz : 0) });
     return;
   }
   if (typeof m.text === 'string' && /^\/sales\b/.test(m.text) && isAdmin(env, m.from)) {
@@ -489,21 +496,43 @@ async function sendRaid(env, uid, lang, maxRoom) {
     await env.DB.prepare('DELETE FROM raids WHERE id = ?1').bind(id).run();
     if (r.error_code === 403) await env.DB.prepare('UPDATE notify SET blocked = 1 WHERE user_id = ?1').bind(uid).run();
   }
-  return !!r.ok;
+  return r;
 }
 async function sendRaids(env) {
   const db = env.DB;
   await ensureTables(db);
   const now = Math.floor(Date.now() / 1000), d = new Date();
-  // alerts are on, not blocked, nothing sent in the last 20 hours, and not playing in the last 3 hours
+  // alerts are on, not blocked, nothing sent in the last 20 hours, and not playing in the last 2 hours
   const rows = await db.prepare(`SELECT user_id, lang, tz, room FROM notify WHERE enabled = 1 AND blocked = 0
-    AND (last_raid IS NULL OR last_raid < ?1) AND (last_seen IS NULL OR last_seen < ?2) LIMIT 300`).bind(now - 20 * 3600, now - 3 * 3600).all();
+    AND (last_raid IS NULL OR last_raid < ?1) AND (last_seen IS NULL OR last_seen < ?2) LIMIT 300`).bind(now - 20 * 3600, now - 2 * 3600).all();
+  let checked = 0, sent = 0, failed = 0, err = null;
   for (const r of rows.results) {
-    const local = ((d.getUTCHours() * 60 + d.getUTCMinutes() - r.tz) % 1440 + 1440) % 1440;
-    if (local < 10 * 60 || local >= 21 * 60) continue;
-    if (Math.random() > .3) continue; // spread alerts over the day so they feel like a surprise
-    try { await sendRaid(env, r.user_id, r.lang, r.room); } catch (e) {}
+    const hour = Math.floor(((d.getUTCHours() * 60 + d.getUTCMinutes() - r.tz) % 1440 + 1440) % 1440 / 60);
+    if (hour < 10 || hour > 20) continue;
+    checked++;
+    // a surprise hour between 10:00 and 20:00 local; on about a quarter of the days there is no raid at all
+    if (Math.random() > .12) continue;
+    let res;
+    try { res = await sendRaid(env, r.user_id, r.lang, r.room); } catch (e) { res = { description: String(e) }; }
+    if (res.ok) sent++; else { failed++; err = String(res.description || 'error').slice(0, 200); }
   }
+  // a short log of the hourly runs for /raidlog
+  await db.batch([
+    db.prepare('INSERT OR REPLACE INTO raid_runs (at, checked, sent, failed, err) VALUES (?1, ?2, ?3, ?4, ?5)').bind(now, checked, sent, failed, err),
+    db.prepare('DELETE FROM raid_runs WHERE at < ?1').bind(now - 3 * 86400),
+  ]);
+}
+async function raidLog(db, tz) {
+  await ensureTables(db);
+  const runs = await db.prepare('SELECT * FROM raid_runs ORDER BY at DESC LIMIT 24').all();
+  const users = await db.prepare('SELECT enabled, blocked, last_raid FROM notify').all();
+  const hm = (t) => new Date((t - tz * 60) * 1000).toISOString().slice(5, 16).replace('T', ' ');
+  const u = users.results, on = u.filter((x) => x.enabled && !x.blocked).length;
+  const lines = [`🚨 Сигнали: увімкнено ${on} з ${u.length}, заблокували ${u.filter((x) => x.blocked).length}`,
+    `Нальотів за добу: ${(await db.prepare('SELECT count(*) n FROM raids WHERE created > ?1').bind(Math.floor(Date.now() / 1000) - 86400).first()).n}`, ''];
+  if (!runs.results.length) lines.push('Щогодинних запусків ще не було');
+  for (const r of runs.results) lines.push(`${hm(r.at)} — у вікні ${r.checked}, надіслано ${r.sent}${r.failed ? `, помилок ${r.failed}: ${r.err}` : ''}`);
+  return lines.join('\n');
 }
 
 function clampInt(v, max) {
