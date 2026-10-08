@@ -12,27 +12,31 @@ worker/             the leaderboard: a Cloudflare Worker with a D1 database
 
 ## Gameplay
 
-- 72 levels in 13 rooms, each room ends with a boss: Kitchen, Living room, Bedroom (4 levels each),
-  Bathroom, Balcony, Attic, Garage, Basement, Roof, Garden, Server room, Stairwell, Warehouse (6 levels each). The map scrolls.
+- 78 levels in 14 rooms, each room ends with a boss: Kitchen, Living room, Bedroom (4 levels each),
+  Bathroom, Balcony, Attic, Garage, Basement, Roof, Garden, Server room, Stairwell, Warehouse, Factory (6 levels each). The map scrolls.
 - The basement mixes every enemy type (toughness ×3.39) and ends with the Web-Spinner: after each
   attack it webs the hero it hit, who skips their next turn unless an ally frees them with a shot.
-- The roof (toughness ×3.83) adds magnets that pull heroes in and bend their shots, and ends with
+- The roof (toughness ×4.06) adds magnets that pull heroes in and bend their shots, and ends with
   the Thunder Drone: its strike jumps as chain lightning to the closest hero within reach, who
   loses a heart too, so it pays to keep the team spread out.
-- The garden (toughness ×4.05) adds moles that dig underground every other turn, when shots roll
+- The garden (toughness ×4.33) adds moles that dig underground every other turn, when shots roll
   right over them, and ends with the Swift Mower: after each attack it charges at the hero it hit
   and shoves aside anyone in its way.
-- The server room (toughness ×4.33) adds 3D printers that print a mini robot after every attack (two
+- The server room (toughness ×4.68) adds 3D printers that print a mini robot after every attack (two
   at most), and ends with the Smart Home Hub: after each attack it overclocks every other robot, so
   their attacks come a turn sooner.
-- The stairwell (toughness ×4.68) adds bomb bots that explode when destroyed,
+- The stairwell (toughness ×5.1) adds bomb bots that explode when destroyed,
   hurting robots nearby (chains are possible) and taking a heart from heroes nearby (never the last),
   and ends with the Express Lift: after each attack it strikes down its shaft, and every hero below it
   loses a heart; the shaft glows red the turn before.
-- The warehouse (toughness ×5.15, the hardest room) has conveyor belts that push flying heroes
+- The warehouse (toughness ×5.67) has conveyor belts that push flying heroes
   sideways and box bots that hide in a box (the first hit only tears the box off; they box up again
   after attacking). It ends with the Mega Sorter: after each attack it reverses every belt and
   speeds it up.
+- The factory (toughness ×5.8, the hardest room) has laser fences that switch on every other turn
+  and bounce heroes like walls, and turrets that fire along their whole row, hitting every hero
+  level with them (the row glows red the turn before). It ends with Assembler Prime: after each
+  attack it rebuilds the last robot broken in the wave with half its health.
 - Raids bring players back: raid alerts are on for every player by default; the bell on the Daily
   screen turns them off. After the first level the game asks Telegram once for permission to message
   players who never wrote to the bot; a player who blocks the bot is skipped until they start it again.
