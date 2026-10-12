@@ -2503,27 +2503,119 @@ function roomFactory(b, ch) {
   });
 }
 
+// a lab flask silhouette: round-bottom, conical or a test tube, filled with a glowing liquid
+function labFlask(b, kind, x, y, s, col, fill = .55) {
+  b.save(); b.translate(x, y);
+  const path = () => {
+    b.beginPath();
+    if (kind === 0) { b.moveTo(-s * .16, -s); b.lineTo(-s * .16, -s * .45); b.arc(0, 0, s * .5, -Math.PI / 2 - .33, Math.PI * 1.5 + .33, true); b.lineTo(s * .16, -s * .45); b.lineTo(s * .16, -s); b.closePath(); }
+    else if (kind === 1) { b.moveTo(-s * .14, -s); b.lineTo(-s * .14, -s * .45); b.lineTo(-s * .55, s * .45); b.quadraticCurveTo(0, s * .55, s * .55, s * .45); b.lineTo(s * .14, -s * .45); b.lineTo(s * .14, -s); b.closePath(); }
+    else { b.moveTo(-s * .14, -s); b.lineTo(-s * .14, s * .38); b.arc(0, s * .38, s * .14, Math.PI, 0, true); b.lineTo(s * .14, -s); b.closePath(); }
+  };
+  path(); b.fillStyle = 'rgba(210,240,230,.12)'; b.fill();
+  b.save(); path(); b.clip();
+  const ly = s * .5 - fill * s * 1.5;
+  const lg = b.createLinearGradient(0, ly, 0, s * .6);
+  lg.addColorStop(0, col); lg.addColorStop(1, 'rgba(0,0,0,.35)');
+  b.fillStyle = lg; b.fillRect(-s, ly, s * 2, s * 2);
+  b.fillStyle = 'rgba(255,255,255,.35)'; b.fillRect(-s, ly, s * 2, 1.5);
+  b.restore();
+  path(); b.strokeStyle = 'rgba(220,245,235,.55)'; b.lineWidth = 1.2; b.stroke();
+  b.fillStyle = 'rgba(255,255,255,.4)'; b.fillRect(-s * .3, -s * .2, s * .08, s * .4);
+  b.fillStyle = '#7a5a3a'; b.fillRect(-s * .18, -s - 3, s * .36, 4);
+  b.restore();
+}
+const LAB = { tanks: [110, 225, 340], vat: [30, BOT - 52], cart: [W - 30, BOT - 40] };
 function roomLab(b, ch) {
   const R = seeded(277);
-  // white lab tiles gone dim, with a green tint
-  b.fillStyle = '#1a2416'; b.fillRect(0, TOP, W, BOT - TOP);
-  for (let y = TOP; y < BOT; y += 45) for (let x = 0; x < W; x += 45) { b.fillStyle = (x / 45 + y / 45) % 2 < 1 ? '#202c1b' : '#1d2818'; b.fillRect(x + 1, y + 1, 43, 43); }
-  for (let k = 0; k < 900; k++) { b.fillStyle = `rgba(${R() < .5 ? '180,255,57' : '0,0,0'},${.02 + R() * .04})`; b.fillRect(R() * W, TOP + R() * (BOT - TOP), 2, 2); }
+  // glossy lab tiles gone dim and green, with grout, stains and a floor drain
+  b.fillStyle = '#18221a'; b.fillRect(0, TOP, W, BOT - TOP);
+  const S = 45;
+  for (let y = TOP, j = 0; y < BOT; y += S, j++) for (let x = 0, i = 0; x < W; x += S, i++) {
+    const tg = b.createLinearGradient(x, y, x + S, y + S);
+    const c0 = (i + j) % 2 ? [36, 50, 38] : [31, 44, 33];
+    tg.addColorStop(0, `rgb(${c0[0] + 10},${c0[1] + 14},${c0[2] + 10})`); tg.addColorStop(1, `rgb(${c0.join(',')})`);
+    b.fillStyle = tg; b.fillRect(x + 1.5, y + 1.5, S - 3, S - 3);
+    b.fillStyle = 'rgba(230,255,220,.06)'; b.fillRect(x + 3, y + 3, S - 6, 2); b.fillRect(x + 3, y + 3, 2, S - 6);
+  }
+  b.fillStyle = 'rgba(0,0,0,.45)';
+  for (let y = TOP; y <= BOT; y += S) b.fillRect(0, y - 1.5, W, 3);
+  for (let x = 0; x <= W; x += S) b.fillRect(x - 1.5, TOP, 3, BOT - TOP);
+  for (let k = 0; k < 1100; k++) { b.fillStyle = `rgba(${R() < .5 ? '210,255,180' : '0,0,0'},${.02 + R() * .04})`; b.fillRect(R() * W, TOP + R() * (BOT - TOP), 1.5, 1.5); }
+  for (let k = 0; k < 7; k++) {
+    const x = 70 + R() * 310, y = TOP + 120 + R() * 420, rad = 8 + R() * 18, col = R() < .6 ? '120,200,20' : '160,90,220';
+    const g = b.createRadialGradient(x, y, 0, x, y, rad);
+    g.addColorStop(0, `rgba(${col},.16)`); g.addColorStop(1, `rgba(${col},0)`);
+    b.fillStyle = g; b.fillRect(x - rad, y - rad, rad * 2, rad * 2);
+  }
+  b.save(); b.translate(225, 560);
+  b.fillStyle = '#0d140e'; b.beginPath(); b.arc(0, 0, 15, 0, TAU); b.fill();
+  b.strokeStyle = '#4a5a48'; b.lineWidth = 2.5; b.beginPath(); b.arc(0, 0, 15, 0, TAU); b.stroke();
+  b.lineWidth = 2; for (let k = -2; k <= 2; k++) { b.beginPath(); b.moveTo(k * 5, -13 + Math.abs(k) * 1.5); b.lineTo(k * 5, 13 - Math.abs(k) * 1.5); b.stroke(); }
+  b.restore();
+  // a hazard symbol stencilled on the floor
+  b.save(); b.translate(225, 400); b.globalAlpha = .07; b.fillStyle = '#b4ff39';
+  for (let k = 0; k < 3; k++) { b.save(); b.rotate(k * TAU / 3); b.beginPath(); b.arc(0, -46, 34, 0, TAU); b.arc(0, -58, 22, 0, TAU, true); b.fill('evenodd'); b.restore(); }
+  b.beginPath(); b.arc(0, 0, 16, 0, TAU); b.arc(0, 0, 9, 0, TAU, true); b.fill('evenodd');
+  b.globalAlpha = .09; b.textAlign = 'center'; b.textBaseline = 'middle'; b.font = `900 40px ${FD}`; b.fillText('15', 0, 92);
+  b.restore();
   windowLight(b, ch, .05);
+  // the top wall: specimen tanks in a row, joined by pipes, with lime light strips
+  b.fillStyle = '#0e1610'; b.fillRect(0, TOP, W, 70);
+  b.fillStyle = 'rgba(180,255,57,.4)'; b.fillRect(0, TOP + 66, W, 2);
+  b.fillStyle = '#2c3a2c'; b.fillRect(0, TOP + 16, W, 6);
+  b.fillStyle = 'rgba(255,255,255,.12)'; b.fillRect(0, TOP + 16, W, 1.5);
+  for (const tx of LAB.tanks) {
+    b.fillStyle = 'rgba(0,0,0,.45)'; b.fillRect(tx - 26, TOP + 4, 52, 66);
+    b.fillStyle = '#3a4a3a'; rr(tx - 24, TOP, 48, 10, 3, b); b.fill(); rr(tx - 24, TOP + 56, 48, 12, 3, b); b.fill();
+    b.fillStyle = '#5a6a58'; for (const sd of [-1, 1]) b.fillRect(tx + sd * 20 - 1.5, TOP + 56, 3, 12);
+    const gg = b.createLinearGradient(tx - 20, 0, tx + 20, 0);
+    gg.addColorStop(0, 'rgba(140,220,60,.35)'); gg.addColorStop(.5, 'rgba(190,255,90,.55)'); gg.addColorStop(1, 'rgba(110,190,40,.35)');
+    b.fillStyle = gg; b.fillRect(tx - 20, TOP + 10, 40, 46);
+    b.fillStyle = 'rgba(255,255,255,.3)'; b.fillRect(tx - 15, TOP + 12, 4, 42);
+    b.strokeStyle = 'rgba(220,255,200,.5)'; b.lineWidth = 1.5; b.strokeRect(tx - 20, TOP + 10, 40, 46);
+  }
   // shelves of flasks on both walls
-  for (const x of [0, W - 40]) {
-    b.fillStyle = '#2a3324'; b.fillRect(x, TOP + 30, 40, BOT - TOP - 200);
-    for (let y = TOP + 60; y < BOT - 180; y += 70) {
-      b.fillStyle = '#4a5a3a'; b.fillRect(x, y + 20, 40, 4);
-      for (let k = 0; k < 2; k++) { b.fillStyle = ['#b4ff39', '#c77dff', '#5ce1c6'][(k + y) % 3]; b.beginPath(); b.arc(x + 11 + k * 18, y + 12, 7, 0, Math.PI * 2); b.fill(); b.fillRect(x + 9 + k * 18, y, 4, 8); }
+  const cols = ['rgba(180,255,57,.85)', 'rgba(199,125,255,.85)', 'rgba(92,225,198,.85)', 'rgba(255,143,177,.8)'];
+  for (const side of [0, 1]) {
+    const x = side ? W - 44 : 0;
+    b.fillStyle = '#1f2a20'; b.fillRect(x, TOP + 80, 44, BOT - TOP - 210);
+    b.fillStyle = 'rgba(0,0,0,.35)'; b.fillRect(side ? x - 10 : x + 44, TOP + 80, 10, BOT - TOP - 210);
+    for (let y = TOP + 130, n = 0; y < BOT - 130; y += 64, n++) {
+      let fx = x + 9;
+      for (let k = 0; k < 2; k++) {
+        const kind = Math.floor(R() * 3), sz = kind === 2 ? 14 : 12 + R() * 4;
+        labFlask(b, kind, fx + 4, y - 10 - sz * .45, sz, cols[Math.floor(R() * 4)], .3 + R() * .5);
+        fx += 20;
+      }
+      b.fillStyle = '#56664e'; b.fillRect(x, y, 44, 4);
+      b.fillStyle = 'rgba(255,255,255,.18)'; b.fillRect(x, y, 44, 1.2);
+      b.fillStyle = 'rgba(0,0,0,.4)'; b.fillRect(x, y + 4, 44, 2);
     }
   }
+  // bottom left: a vat of bubbling brew; bottom right: a cart with beakers and a test tube rack
+  const [vx, vy] = LAB.vat;
+  b.fillStyle = 'rgba(0,0,0,.4)'; b.beginPath(); b.ellipse(vx, vy + 34, 30, 7, 0, 0, TAU); b.fill();
+  const vg = b.createLinearGradient(vx - 28, 0, vx + 28, 0);
+  vg.addColorStop(0, '#3a4a40'); vg.addColorStop(.4, '#7a8a80'); vg.addColorStop(1, '#2a3a30');
+  b.fillStyle = vg; b.fillRect(vx - 28, vy - 8, 56, 42);
+  b.fillStyle = '#56664e'; b.fillRect(vx - 30, vy - 10, 60, 5); b.fillRect(vx - 30, vy + 14, 60, 3);
+  b.fillStyle = '#9ee06a'; b.beginPath(); b.ellipse(vx, vy - 9, 27, 6, 0, 0, TAU); b.fill();
+  const [cx, cy] = LAB.cart;
+  b.fillStyle = 'rgba(0,0,0,.35)'; b.fillRect(cx - 28, cy + 30, 58, 6);
+  b.fillStyle = '#8a969e'; b.fillRect(cx - 28, cy, 56, 4); b.fillRect(cx - 28, cy + 22, 56, 4);
+  b.fillStyle = '#5a666e'; b.fillRect(cx - 26, cy, 3, 30); b.fillRect(cx + 23, cy, 3, 30);
+  b.fillStyle = '#15151a'; for (const wx of [cx - 24, cx + 24]) { b.beginPath(); b.arc(wx, cy + 33, 3, 0, TAU); b.fill(); }
+  labFlask(b, 1, cx - 12, cy - 12, 13, cols[1], .5); labFlask(b, 0, cx + 12, cy - 12, 12, cols[0], .6);
+  b.fillStyle = '#7a5a3a'; b.fillRect(cx - 22, cy + 12, 44, 4);
+  for (let k = 0; k < 4; k++) labFlask(b, 2, cx - 15 + k * 10, cy + 12, 9, cols[(k + 2) % 4], .5);
   vignette(b, '4,10,2', .6);
   hudBars(b, ch, c => {
     c.fillStyle = 'rgba(180,255,57,.1)';
     for (let x = 12; x < W; x += 30) { c.beginPath(); c.arc(x, 22 + Math.sin(x) * 6, 4 + (x % 3), 0, Math.PI * 2); c.fill(); }
   });
 }
+
 const ROOMS = [roomKitchen, roomLiving, roomBedroom, roomBath, roomBalcony, roomAttic, roomGarage, roomBasement, roomRoof, roomGarden, roomServer, roomStairs, roomStore, roomFactory, roomLab];
 // Each room is painted the first time it is needed (the rest are warmed up after start),
 // so the game opens without painting all ten rooms first.
@@ -2603,9 +2695,22 @@ function drawRoomUnder(c) {
     const fl = frac(t * .09);
     if (!RM && fl > .97) glowAt(225, TOP + 220, 560, '200,215,255', .18 * Math.sin((fl - .97) / .03 * Math.PI));
   } else if (c === 14) {
-    // a green glow from the vats, pulsing slowly
-    glowAt(225, BOT - 120, 300, '180,255,57', .07 + .03 * Math.sin((RM ? 0 : t) * 1.3));
-    glowAt(225, TOP + 90, 240, '220,255,200', .09);
+    // the tanks glow and bubble, the vat simmers and throws a green light on the floor
+    glowAt(225, BOT - 120, 300, '180,255,57', .06 + .03 * Math.sin(t * 1.3));
+    glowAt(225, TOP + 90, 240, '220,255,200', .07);
+    LAB.tanks.forEach((tx, k) => {
+      glowAt(tx, TOP + 34, 46, '180,255,57', .22 + .08 * Math.sin(t * 2 + k));
+      ctx.fillStyle = 'rgba(235,255,210,.7)';
+      for (let q = 0; q < 4; q++) { const ph = frac(t * .5 + q / 4 + k * .3); circ(tx - 10 + ((q * 7 + k * 5) % 20), TOP + 54 - ph * 42, 1.2 + q % 2); }
+    });
+    const [vx, vy] = LAB.vat;
+    glowAt(vx, vy - 9, 60, '180,255,57', .3 + .1 * Math.sin(t * 3));
+    ctx.globalCompositeOperation = 'source-over';
+    for (let q = 0; q < 5; q++) {
+      const ph = frac(t * .9 + q / 5), bx = vx - 18 + q * 9;
+      ctx.strokeStyle = `rgba(220,255,180,${.8 * (1 - ph)})`; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.arc(bx, vy - 10, 1.5 + ph * 4, Math.PI, 0); ctx.stroke();
+      ctx.fillStyle = `rgba(200,255,150,${.25 * (1 - ph)})`; circ(bx + Math.sin(ph * 5 + q) * 4, vy - 16 - ph * 40, 3 + ph * 6);
+    }
   } else if (c === 13) {
     // a red warning light turning over the floor
     const a = RM ? 0 : t * .8;
@@ -5405,52 +5510,173 @@ function drawLiftBoss(e, r, t) {
   ctx.restore();
 }
 function drawAcid() {
-  // acid pools: bubbling green puddles
+  // acid pools: a burnt rim etched into the tiles, a bubbling lime puddle with fumes, a dashed hazard ring
+  // at the pool's real edge and a skull in the middle: it reads as "don't stop here". Fresh spills splash in.
   for (const a of G.acid || []) {
     const t = RM ? 0 : T;
+    if (a.born == null) a.born = T;
+    const k = a.spill && !RM ? Math.min(1, (T - a.born) / .45) : 1, R = a.r * (k < 1 ? easeOutBack(k) : 1);
     ctx.save(); ctx.translate(a.x, a.y);
-    ctx.fillStyle = 'rgba(0,0,0,.25)'; ctx.beginPath(); ctx.ellipse(2, 4, a.r, a.r * .7, 0, 0, TAU); ctx.fill();
-    ctx.fillStyle = 'rgba(120,200,20,.75)'; ctx.beginPath();
-    for (let i = 0; i <= 24; i++) { const q = i / 24 * TAU, w = 1 + .08 * Math.sin(q * 3 + a.ph) + .04 * Math.sin(t * 2 + q * 5); ctx.lineTo(Math.cos(q) * a.r * w, Math.sin(q) * a.r * .7 * w); }
-    ctx.closePath(); ctx.fill();
-    ctx.fillStyle = 'rgba(180,255,57,.6)'; ctx.beginPath(); ctx.ellipse(-3, -3, a.r * .7, a.r * .42, 0, 0, TAU); ctx.fill();
-    for (let k = 0; k < 4; k++) {
-      const ph = frac(t * .6 + k / 4 + a.ph);
-      ctx.strokeStyle = `rgba(230,255,200,${.8 * (1 - ph)})`; ctx.lineWidth = 1.3;
-      ctx.beginPath(); ctx.arc(Math.cos(k * 2.1 + a.ph) * a.r * .45, Math.sin(k * 1.7) * a.r * .25, 2 + ph * 6, 0, TAU); ctx.stroke();
+    const rim = ctx.createRadialGradient(0, 0, R * .6, 0, 0, R * 1.2);
+    rim.addColorStop(0, 'rgba(10,20,0,.55)'); rim.addColorStop(.7, 'rgba(20,30,0,.3)'); rim.addColorStop(1, 'rgba(20,30,0,0)');
+    ctx.fillStyle = rim; ctx.beginPath(); ctx.arc(0, 0, R * 1.2, 0, TAU); ctx.fill();
+    const blob = sc => { ctx.beginPath(); for (let i = 0; i <= 28; i++) { const q = i / 28 * TAU, w = 1 + .07 * Math.sin(q * 3 + a.ph) + .05 * Math.sin(q * 5 + a.ph * 2) + .025 * Math.sin(t * 2 + q * 4); ctx.lineTo(Math.cos(q) * R * sc * w, Math.sin(q) * R * sc * w); } ctx.closePath(); };
+    const pg = ctx.createRadialGradient(-R * .2, -R * .25, R * .05, 0, 0, R);
+    pg.addColorStop(0, '#e2ff7a'); pg.addColorStop(.5, '#9ee022'); pg.addColorStop(1, '#3f7a10');
+    blob(.9); ctx.fillStyle = pg; ctx.fill();
+    ctx.strokeStyle = 'rgba(40,70,0,.8)'; ctx.lineWidth = 2; ctx.stroke();
+    ctx.save(); ctx.globalCompositeOperation = 'lighter'; glowAt(0, 0, R * 1.25, '180,255,57', .22 + .08 * Math.sin(t * 2.5 + a.ph)); ctx.restore();
+    ctx.fillStyle = 'rgba(255,255,230,.35)';
+    ctx.beginPath(); ctx.ellipse(-R * .32, -R * .36, R * .28, R * .08, -.4, 0, TAU); ctx.fill();
+    ctx.beginPath(); ctx.ellipse(R * .3, R * .3, R * .14, R * .04, -.4, 0, TAU); ctx.fill();
+    for (let q = 0; q < 6; q++) {
+      const ph = frac(t * .7 + q / 6 + a.ph), bx = Math.cos(q * 2.3 + a.ph) * R * .55, by = Math.sin(q * 1.9 + a.ph) * R * .45;
+      ctx.strokeStyle = `rgba(240,255,210,${.85 * (1 - ph)})`; ctx.lineWidth = 1.3;
+      ctx.beginPath(); ctx.arc(bx, by, 1.5 + ph * 5, 0, TAU); ctx.stroke();
     }
+    // the hazard ring at the real edge, slowly turning
+    ctx.strokeStyle = 'rgba(199,125,255,.75)'; ctx.lineWidth = 2; ctx.setLineDash([7, 6]); ctx.lineDashOffset = -t * 12;
+    ctx.beginPath(); ctx.arc(0, 0, a.r, 0, TAU); ctx.stroke(); ctx.setLineDash([]);
+    // a skull
+    ctx.globalAlpha = .7;
+    ctx.fillStyle = '#f4ffe8'; circ(0, -2, 7.5); ctx.fillRect(-4.5, 2, 9, 5);
+    ctx.fillStyle = '#3f7a10'; circ(-2.8, -2.5, 2); circ(2.8, -2.5, 2); ctx.fillRect(-.6, 1, 1.2, 2);
+    ctx.fillRect(-2.5, 5, 1, 2); ctx.fillRect(1.5, 5, 1, 2);
+    ctx.globalAlpha = 1;
+    // fumes
+    for (let q = 0; q < 3; q++) {
+      const ph = frac(t * .35 + q / 3 + a.ph * .1);
+      ctx.fillStyle = `rgba(190,255,120,${.16 * Math.sin(ph * Math.PI)})`;
+      circ(Math.sin(ph * 4 + q * 2) * R * .3 + (q - 1) * R * .3, -ph * R * 1.1, R * (.12 + ph * .2));
+    }
+    if (k < 1) { ctx.strokeStyle = `rgba(220,255,150,${1 - k})`; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(0, 0, a.r * (.6 + k * .8), 0, TAU); ctx.stroke(); }
     ctx.restore();
   }
 }
 function drawTesla(e, r, t) {
-  // a coil on a squat base; sparks crawl around it, brighter before it discharges
-  const hot = e.timer <= 1 ? .6 + .4 * Math.sin(t * 10) : .2;
-  ctx.fillStyle = '#3f5a1f'; rr(-r * .8, r * .2, r * 1.6, r * .6, r * .15); ctx.fill();
-  ctx.fillStyle = '#c9a27a';
-  for (let k = 0; k < 5; k++) { ctx.fillRect(-r * .45, -r * .7 + k * r * .2, r * .9, r * .12); }
-  ctx.fillStyle = '#e8ffd0'; circ(0, -r * .85, r * .3);
-  ctx.strokeStyle = `rgba(180,255,57,${hot})`; ctx.lineWidth = 2;
-  for (let k = 0; k < 3; k++) {
-    const a = t * 3 + k * 2.1; ctx.beginPath(); ctx.moveTo(0, -r * .85);
-    for (let j = 1; j <= 4; j++) ctx.lineTo(Math.cos(a) * r * .3 * j + Math.sin(t * 20 + j) * 4, -r * .85 + Math.sin(a) * r * .3 * j);
-    ctx.stroke();
+  // a tesla bot: a squat base with a face, a ceramic insulator stack, a copper coil and a polished torus;
+  // arcs crawl over the torus and lash down to the floor before it discharges
+  const hot = e.timer <= 1, k = hot ? .6 + .4 * Math.sin(t * 10) : .25;
+  ctx.fillStyle = 'rgba(0,0,0,.3)'; ctx.beginPath(); ctx.ellipse(0, r * .95, r * .85, r * .16, 0, 0, TAU); ctx.fill();
+  const bg2 = ctx.createLinearGradient(0, r * .15, 0, r * .9);
+  bg2.addColorStop(0, '#5a7a30'); bg2.addColorStop(1, '#25360f');
+  ctx.fillStyle = bg2; rr(-r * .82, r * .15, r * 1.64, r * .75, r * .18); ctx.fill();
+  ctx.strokeStyle = '#b4ff39'; ctx.lineWidth = 2; rr(-r * .82, r * .15, r * 1.64, r * .75, r * .18); ctx.stroke();
+  ctx.fillStyle = '#0d1408'; rr(-r * .55, r * .3, r * 1.1, r * .32, r * .12); ctx.fill();
+  angryEyes(0, r * .46, r * .55, hot ? '#ff3b5c' : '#ff7a3c');
+  ctx.fillStyle = '#15151a'; for (const sd of [-1, 1]) circ(sd * r * .6, r * .88, r * .12);
+  // insulators and coil
+  for (let q = 0; q < 3; q++) {
+    const y = r * .1 - q * r * .14;
+    ctx.fillStyle = '#e8e2d4'; ctx.beginPath(); ctx.ellipse(0, y, r * .3, r * .07, 0, 0, TAU); ctx.fill();
+    ctx.fillStyle = '#b8b2a4'; ctx.beginPath(); ctx.ellipse(0, y + r * .03, r * .3, r * .05, 0, 0, Math.PI); ctx.fill();
   }
-  angryEyes(0, r * .45, r * .55, '#ff3b5c');
+  const cg = ctx.createLinearGradient(-r * .2, 0, r * .2, 0);
+  cg.addColorStop(0, '#8a4a1a'); cg.addColorStop(.45, '#f0a060'); cg.addColorStop(1, '#7a3a10');
+  ctx.fillStyle = cg; ctx.fillRect(-r * .18, -r * .78, r * .36, r * .5);
+  ctx.strokeStyle = 'rgba(60,25,5,.6)'; ctx.lineWidth = 1;
+  for (let y = -r * .76; y < -r * .3; y += r * .055) { ctx.beginPath(); ctx.moveTo(-r * .18, y); ctx.lineTo(r * .18, y + r * .02); ctx.stroke(); }
+  // the torus
+  const tg = ctx.createLinearGradient(0, -r * 1.02, 0, -r * .74);
+  tg.addColorStop(0, '#f4f8fa'); tg.addColorStop(.5, '#9aa6ae'); tg.addColorStop(1, '#4a565e');
+  ctx.fillStyle = tg; ctx.beginPath(); ctx.ellipse(0, -r * .88, r * .5, r * .17, 0, 0, TAU); ctx.fill();
+  ctx.fillStyle = '#2a343a'; ctx.beginPath(); ctx.ellipse(0, -r * .9, r * .22, r * .06, 0, 0, TAU); ctx.fill();
+  ctx.save(); ctx.globalCompositeOperation = 'lighter';
+  glowAt(0, -r * .88, r * (hot ? 1.1 : .6), hot ? '220,180,255' : '180,255,57', hot ? .55 * k + .2 : .25);
+  // arcs over the torus, and down to the floor when charged
+  const seed = Math.floor((RM ? 0 : t) * 16);
+  const arc = (x0, y0, x1, y1, n, col, w) => {
+    ctx.strokeStyle = col; ctx.lineWidth = w; ctx.beginPath(); ctx.moveTo(x0, y0);
+    for (let q = 1; q < n; q++) { const f = q / n, j = (frac(Math.sin(seed * 7.3 + q * 13.1 + x1) * 431.7) - .5) * r * .3; ctx.lineTo(x0 + (x1 - x0) * f + j, y0 + (y1 - y0) * f + j * .5); }
+    ctx.lineTo(x1, y1); ctx.stroke();
+  };
+  for (let q = 0; q < (hot ? 4 : 2); q++) {
+    const a = (RM ? 0 : t) * 3 + q * 1.6, x1 = Math.cos(a) * r * .9, y1 = -r * .88 + Math.sin(a) * r * .35;
+    arc(Math.cos(a) * r * .45, -r * .88 + Math.sin(a) * r * .14, x1, y1, 4, hot ? 'rgba(235,210,255,.95)' : 'rgba(200,255,140,.7)', hot ? 2 : 1.4);
+  }
+  if (hot && !RM) for (const sd of [-1, 1]) arc(sd * r * .45, -r * .86, sd * r * 1.1, r * .9, 6, 'rgba(220,190,255,.8)', 1.6);
+  ctx.restore();
 }
 function drawProfessorBoss(e, r, t) {
-  // a big flask on legs with a bubbling brew and goggles
-  ctx.fillStyle = '#c9ced6'; ctx.fillRect(-r * .2, -r * 1.05, r * .4, r * .45);
-  ctx.fillStyle = 'rgba(220,240,255,.35)'; ctx.beginPath();
-  ctx.moveTo(-r * .22, -r * .6); ctx.lineTo(-r * .9, r * .6); ctx.quadraticCurveTo(0, r * .9, r * .9, r * .6); ctx.lineTo(r * .22, -r * .6); ctx.closePath(); ctx.fill();
-  ctx.save(); ctx.clip();
-  ctx.fillStyle = '#b4ff39'; ctx.fillRect(-r, -r * .1 + Math.sin(t * 2) * r * .04, r * 2, r * 1.2);
-  ctx.fillStyle = 'rgba(232,255,208,.8)';
-  for (let k = 0; k < 6; k++) { const ph = frac(t * .5 + k / 6); circ(-r * .5 + k * r * .2, r * .6 - ph * r * .7, r * .05 * (1 - ph) + 1); }
+  // PROFESSOR FLASK: a robot in a lab coat with a round-bottom flask for a head, full of boiling brew,
+  // big brass goggles over angry eyes, a bow tie, pens in the pocket and two arms working with glassware
+  const angry = e.timer <= 1, sp = angry ? 2 : 1;
+  ctx.fillStyle = 'rgba(0,0,0,.3)'; ctx.beginPath(); ctx.ellipse(0, r * 1.02, r * 1.0, r * .17, 0, 0, TAU); ctx.fill();
+  // arms behind the coat: right pours from a beaker, left shakes a test tube
+  for (const sd of [-1, 1]) {
+    const a1 = -sd * (1.15 + .15 * Math.sin(t * 2 * sp + sd)), a2 = sd * (.95 + .2 * Math.sin(t * 2.6 * sp + sd * 2));
+    ctx.save(); ctx.translate(sd * r * .62, r * .12); ctx.rotate(a1);
+    ctx.fillStyle = '#e8ecf2'; rr(-r * .12, 0, r * .24, r * .5, r * .1); ctx.fill();
+    ctx.strokeStyle = '#9aa3ad'; ctx.lineWidth = 1.5; rr(-r * .12, 0, r * .24, r * .5, r * .1); ctx.stroke();
+    ctx.translate(0, r * .48); ctx.rotate(a2);
+    ctx.fillStyle = '#5a6a58'; rr(-r * .07, 0, r * .14, r * .4, r * .05); ctx.fill();
+    ctx.fillStyle = '#3a4a3a'; circ(0, 0, r * .08);
+    ctx.translate(0, r * .42);
+    ctx.fillStyle = '#3a4a3a'; for (const f of [-1, 1]) ctx.fillRect(f * r * .07 - r * .02, -r * .02, r * .04, r * .1);
+    if (sd > 0) {
+      ctx.save(); ctx.translate(0, r * .14); ctx.rotate(-.9);
+      ctx.fillStyle = 'rgba(220,240,255,.35)'; ctx.fillRect(-r * .13, -r * .14, r * .26, r * .3);
+      ctx.fillStyle = '#c77dff'; ctx.fillRect(-r * .13, 0, r * .26, r * .16);
+      ctx.strokeStyle = 'rgba(230,245,255,.8)'; ctx.lineWidth = 1.5; ctx.strokeRect(-r * .13, -r * .14, r * .26, r * .3);
+      ctx.restore();
+      if (!RM) for (let q = 0; q < 3; q++) { const ph = frac(t * 1.5 * sp + q / 3); ctx.fillStyle = `rgba(199,125,255,${1 - ph})`; circ(r * .2 + ph * r * .05, r * .1 + ph * r * .5, r * .035); }
+    } else {
+      const sh = RM ? 0 : Math.sin(t * 14 * sp) * .25;
+      ctx.save(); ctx.translate(0, r * .12); ctx.rotate(sh);
+      ctx.fillStyle = 'rgba(220,240,255,.35)'; rr(-r * .06, -r * .12, r * .12, r * .32, r * .06); ctx.fill();
+      ctx.fillStyle = '#5ce1c6'; rr(-r * .06, r * .04, r * .12, r * .16, r * .06); ctx.fill();
+      ctx.strokeStyle = 'rgba(230,245,255,.8)'; ctx.lineWidth = 1.2; rr(-r * .06, -r * .12, r * .12, r * .32, r * .06); ctx.stroke();
+      ctx.restore();
+    }
+    ctx.restore();
+  }
+  // the lab coat with lapels, shirt, bow tie and a pocket of pens
+  const cg = ctx.createLinearGradient(-r * .8, 0, r * .8, 0);
+  cg.addColorStop(0, '#c9d0d8'); cg.addColorStop(.35, '#f4f7fa'); cg.addColorStop(1, '#b9c0c8');
+  ctx.fillStyle = cg; ctx.beginPath(); ctx.moveTo(-r * .55, -r * .1); ctx.lineTo(r * .55, -r * .1); ctx.lineTo(r * .82, r * .95); ctx.lineTo(-r * .82, r * .95); ctx.closePath(); ctx.fill();
+  ctx.strokeStyle = '#8a939d'; ctx.lineWidth = 2; ctx.stroke();
+  ctx.fillStyle = '#2a3a2a'; ctx.beginPath(); ctx.moveTo(-r * .22, -r * .1); ctx.lineTo(r * .22, -r * .1); ctx.lineTo(0, r * .5); ctx.closePath(); ctx.fill();
+  ctx.fillStyle = '#dfe5ea'; for (const sd of [-1, 1]) { ctx.beginPath(); ctx.moveTo(sd * r * .22, -r * .1); ctx.lineTo(sd * r * .36, -r * .1); ctx.lineTo(sd * r * .05, r * .55); ctx.lineTo(0, r * .5); ctx.closePath(); ctx.fill(); }
+  ctx.strokeStyle = '#8a939d'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(0, r * .5); ctx.lineTo(0, r * .95); ctx.stroke();
+  ctx.fillStyle = '#9aa3ad'; for (const y of [r * .62, r * .8]) circ(-r * .06, y, r * .03);
+  ctx.fillStyle = '#e5484d'; ctx.beginPath(); ctx.moveTo(0, -r * .04); ctx.lineTo(-r * .14, -r * .12); ctx.lineTo(-r * .14, r * .04); ctx.closePath(); ctx.fill();
+  ctx.beginPath(); ctx.moveTo(0, -r * .04); ctx.lineTo(r * .14, -r * .12); ctx.lineTo(r * .14, r * .04); ctx.closePath(); ctx.fill(); circ(0, -r * .04, r * .04);
+  ctx.fillStyle = '#d0d6dc'; ctx.fillRect(r * .3, r * .3, r * .26, r * .2);
+  ctx.fillStyle = '#b4ff39'; ctx.fillRect(r * .34, r * .18, r * .04, r * .16);
+  ctx.fillStyle = '#c77dff'; ctx.fillRect(r * .42, r * .2, r * .04, r * .14);
+  ctx.fillStyle = '#5ce1c6'; ctx.fillRect(r * .5, r * .22, r * .03, r * .12);
+  ctx.strokeStyle = '#8a939d'; ctx.lineWidth = 1; ctx.strokeRect(r * .3, r * .3, r * .26, r * .2);
+  // the flask head: a neck with a cork, a round bulb of boiling brew
+  const hy = -r * .55, hr = r * .5;
+  ctx.fillStyle = 'rgba(220,240,255,.25)'; ctx.fillRect(-r * .13, -r * 1.25, r * .26, r * .4);
+  ctx.fillStyle = '#9a6a3a'; rr(-r * .16, -r * 1.33, r * .32, r * .12, r * .03); ctx.fill();
+  ctx.fillStyle = 'rgba(220,240,255,.22)'; circ(0, hy, hr);
+  ctx.save(); ctx.beginPath(); ctx.arc(0, hy, hr, 0, TAU); ctx.clip();
+  const ly = hy - hr * .15 + Math.sin(t * 2 * sp) * r * .03;
+  const lg = ctx.createLinearGradient(0, ly, 0, hy + hr);
+  lg.addColorStop(0, angry ? '#d6ff5a' : '#b4ff39'); lg.addColorStop(1, '#3f7a10');
+  ctx.fillStyle = lg; ctx.fillRect(-hr, ly, hr * 2, hr * 2);
+  ctx.fillStyle = 'rgba(255,255,230,.5)'; ctx.fillRect(-hr, ly, hr * 2, 2);
+  ctx.fillStyle = 'rgba(240,255,210,.85)';
+  for (let q = 0; q < 7; q++) { const ph = frac(t * .6 * sp + q / 7); circ(-hr * .7 + q * hr * .23, hy + hr * .9 - ph * hr * 1.1, r * .045 * (1 - ph) + 1); }
   ctx.restore();
-  ctx.strokeStyle = '#e8ecf2'; ctx.lineWidth = 3; ctx.beginPath();
-  ctx.moveTo(-r * .22, -r * .6); ctx.lineTo(-r * .9, r * .6); ctx.quadraticCurveTo(0, r * .9, r * .9, r * .6); ctx.lineTo(r * .22, -r * .6); ctx.stroke();
-  ctx.fillStyle = '#3f5a1f'; rr(-r * .6, -r * .32, r * 1.2, r * .34, r * .15); ctx.fill();
-  angryEyes(0, -r * .15, r * .8, '#ff3b5c');
+  ctx.save(); ctx.globalCompositeOperation = 'lighter'; glowAt(0, hy + hr * .3, hr * 1.2, '180,255,57', .3); ctx.restore();
+  ctx.strokeStyle = 'rgba(235,245,255,.85)'; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.arc(0, hy, hr, -Math.PI / 2 + .27, Math.PI * 1.5 - .27); ctx.stroke();
+  ctx.beginPath(); ctx.moveTo(-r * .13, hy - hr + 1); ctx.lineTo(-r * .13, -r * 1.22); ctx.moveTo(r * .13, hy - hr + 1); ctx.lineTo(r * .13, -r * 1.22); ctx.stroke();
+  ctx.fillStyle = 'rgba(255,255,255,.45)'; ctx.beginPath(); ctx.ellipse(-hr * .5, hy - hr * .35, hr * .12, hr * .3, .5, 0, TAU); ctx.fill();
+  // goggles with angry eyes
+  ctx.strokeStyle = '#3a2a1a'; ctx.lineWidth = r * .06; ctx.beginPath(); ctx.moveTo(-hr * .98, hy - r * .08); ctx.lineTo(hr * .98, hy - r * .08); ctx.stroke();
+  for (const sd of [-1, 1]) {
+    ctx.fillStyle = '#c99a3a'; circ(sd * r * .22, hy - r * .08, r * .19);
+    ctx.fillStyle = '#0d1408'; circ(sd * r * .22, hy - r * .08, r * .14);
+    ctx.fillStyle = 'rgba(255,255,255,.3)'; circ(sd * r * .22 - r * .05, hy - r * .13, r * .035);
+  }
+  ctx.fillStyle = '#c99a3a'; ctx.fillRect(-r * .05, hy - r * .1, r * .1, r * .04);
+  angryEyes(0, hy - r * .08, r * .62, angry ? '#ff3b5c' : '#ff7a3c');
+  if (angry && !RM) for (let q = 0; q < 4; q++) {
+    const ph = frac(t * 1.2 + q * .25);
+    ctx.fillStyle = `rgba(200,255,150,${.35 * (1 - ph)})`; circ(Math.sin(ph * 6 + q) * r * .1, -r * 1.35 - ph * r * .6, r * (.06 + ph * .14));
+  }
 }
 function drawFences() {
   // laser fences between two emitters. On: a hot red beam with a glow, pulses running along it and a crackle.
@@ -6467,10 +6693,14 @@ function drawNode(c, x, y, r, col, open) {
     ctx.lineTo(-r * .12, r * .6); ctx.lineTo(r * .34, -r * .1); ctx.lineTo(r * .04, -r * .1); ctx.closePath(); ctx.fill();
     ctx.restore();
   } else if (c === 14) {
-    // a petri dish node
-    ctx.fillStyle = 'rgba(180,255,57,.25)'; ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fill();
-    ctx.strokeStyle = col; ctx.lineWidth = 2; ctx.stroke();
-    ctx.fillStyle = col; for (const [dx, dy, q] of [[-.3, -.2, .18], [.25, .1, .14], [-.05, .35, .1]]) { ctx.beginPath(); ctx.arc(x + dx * r, y + dy * r, q * r, 0, TAU); ctx.fill(); }
+    // a petri dish node: agar, colonies in two colours, a glass rim with a glint
+    const pg = ctx.createRadialGradient(x - r * .3, y - r * .3, r * .1, x, y, r);
+    pg.addColorStop(0, 'rgba(210,255,140,.45)'); pg.addColorStop(1, 'rgba(60,110,20,.55)');
+    ctx.fillStyle = pg; ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.fill();
+    for (const [dx, dy, q, cc] of [[-.35, -.25, .16, col], [.3, .05, .13, '#c77dff'], [-.05, .38, .1, col], [.38, -.38, .07, '#c77dff'], [-.45, .2, .06, col]]) { ctx.fillStyle = cc; ctx.beginPath(); ctx.arc(x + dx * r, y + dy * r, q * r, 0, TAU); ctx.fill(); }
+    ctx.strokeStyle = 'rgba(235,255,230,.8)'; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.arc(x, y, r, 0, TAU); ctx.stroke();
+    ctx.strokeStyle = col; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(x, y, r - 3, 0, TAU); ctx.stroke();
+    ctx.strokeStyle = 'rgba(255,255,255,.7)'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(x, y, r * .82, -2.6, -1.9); ctx.stroke();
   } else if (c === 13) {
     // a hex nut node: shaded steel with a bevel and a threaded hole
     const hex = rad => { ctx.beginPath(); for (let k = 0; k < 6; k++) { const a = k / 6 * TAU + Math.PI / 6; ctx.lineTo(x + Math.cos(a) * rad, y + Math.sin(a) * rad); } ctx.closePath(); };
