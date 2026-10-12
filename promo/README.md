@@ -28,19 +28,19 @@ Everything needed to list the game in Telegram's app catalog and in other catalo
 **Tagline (EN, ≤ 30):** Slingshot cats vs robot vacuums
 **Tagline (UK):** Коти з рогатки проти пилососів
 
-**Short description (EN, ≤ 120):** Launch cats & raccoons like a slingshot and save the flat from robot vacuums! 78 levels, 14 bosses. Free to play.
+**Short description (EN, ≤ 120):** Launch cats & raccoons like a slingshot and save the flat from robot vacuums! 84 levels, 15 bosses. Free to play.
 
-**Short description (UK):** Запускай котів і єнотів, як з рогатки, і рятуй квартиру від роботів-пилососів! 78 рівнів, 14 босів. Безкоштовно.
+**Short description (UK):** Запускай котів і єнотів, як з рогатки, і рятуй квартиру від роботів-пилососів! 84 рівні, 15 босів. Безкоштовно.
 
 **Description (EN):**
-Pull back, aim and launch your heroes like a slingshot. Bounce off walls, pierce through robots, cross your yarn to tie exploding knots and beat 14 wild robot bosses across 78 levels, from the kitchen to the factory.
+Pull back, aim and launch your heroes like a slingshot. Bounce off walls, pierce through robots, cross your yarn to tie exploding knots and beat 15 wild robot bosses across 84 levels, from the kitchen to the lab.
 - 7 heroes with superpowers that level up
 - Night Shift: endless waves and a weekly tournament with prizes
 - Daily bonus, daily challenges and story comics
 - 5 languages: English, Ukrainian, Polish, German, Spanish
 
 **Опис (UK):**
-Тягни, цілься й запускай героїв, як з рогатки. Відбивайся від стін, прошивай роботів наскрізь, перетинай нитки, щоб в'язати вибухові вузли, і перемагай 14 шалених босів у 78 рівнях, від кухні до фабрики.
+Тягни, цілься й запускай героїв, як з рогатки. Відбивайся від стін, прошивай роботів наскрізь, перетинай нитки, щоб в'язати вибухові вузли, і перемагай 15 шалених босів у 84 рівнях, від кухні до лабораторії.
 - 7 героїв із суперсилами, які прокачуються
 - «Нічна зміна»: нескінченні хвилі й турнір тижня з призами
 - Щоденний бонус, завдання дня й комікси
