@@ -4182,6 +4182,8 @@ function hazardBand(y, h, off) {
   }
   ctx.restore();
 }
+// how far above its centre each boss reaches, in radii (only the ones taller than usual)
+const BOSS_TOP = { 11: 1.66, 12: 1.32, 13: 1.38, 14: 1.36 };
 function drawBossIntro() {
   const I = G.intro;
   if (!I || G.state !== 'bossintro') return;
@@ -4214,7 +4216,9 @@ function drawBossIntro() {
     }
   }
   ctx.fillStyle = 'rgba(0,0,0,.45)'; ctx.beginPath(); ctx.ellipse(W / 2, by + R * 1.0, R * (.5 + .45 * k), R * .22 * k, 0, 0, TAU); ctx.fill();
-  ctx.save(); ctx.translate(W / 2, y); drawBoss(e, R, RM ? 0 : T); ctx.restore();
+  // tall bosses (a pulley, a gantry, a flask neck) shrink a little so they stay clear of the warning line, feet in place
+  const tall = BOSS_TOP[e.kind] || 1, bs = Math.min(1, 1.12 / tall);
+  ctx.save(); ctx.translate(W / 2, y + R * (1 - bs)); drawBoss(e, R * bs, RM ? 0 : T); ctx.restore();
   // name, nickname and catchphrase
   const nameK = ease((t - 1.05) / .35);
   if (nameK > 0) {
