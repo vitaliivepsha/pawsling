@@ -12,8 +12,8 @@ worker/             the leaderboard: a Cloudflare Worker with a D1 database
 
 ## Gameplay
 
-- 84 levels in 15 rooms, each room ends with a boss: Kitchen, Living room, Bedroom (4 levels each),
-  Bathroom, Balcony, Attic, Garage, Basement, Roof, Garden, Server room, Stairwell, Warehouse, Factory, Lab (6 levels each). The map scrolls.
+- 90 levels in 16 rooms, each room ends with a boss: Kitchen, Living room, Bedroom (4 levels each),
+  Bathroom, Balcony, Attic, Garage, Basement, Roof, Garden, Server room, Stairwell, Warehouse, Factory, Lab, Space station (6 levels each). The map scrolls.
 - The basement mixes every enemy type (toughness ×3.39) and ends with the Web-Spinner: after each
   attack it webs the hero it hit, who skips their next turn unless an ally frees them with a shot.
 - The roof (toughness ×4.06) adds magnets that pull heroes in and bend their shots, and ends with
@@ -37,10 +37,14 @@ worker/             the leaderboard: a Cloudflare Worker with a D1 database
   and bounce heroes like walls, and turrets that fire along their whole row, hitting every hero
   level with them (the row glows red the turn before). It ends with Assembler Prime: after each
   attack it rebuilds the last robot broken in the wave with half its health.
-- The lab (toughness ×6.05, the hardest room) has acid pools: a hero standing in one after the
+- The lab (toughness ×6.05) has acid pools: a hero standing in one after the
   robots' turn loses a heart (never the last). Tesla bots zap every hero within reach (the area
   glows red the turn before). It ends with Professor Flask: after each attack it spills a new acid
   pool under the hero it hit (three spills at most, the oldest dries up).
+- The space station (toughness ×6.3, the hardest room) has meteor strikes: markers appear a turn
+  ahead, and a meteor takes a heart from heroes inside (never the last) and a chunk of health from
+  robots. Warp bots blink to a new spot after every shot that hits them. It ends with Commander
+  Orbit: after each attack it marks meteors right on two heroes, landing two turns later.
 - Raids bring players back: raid alerts are on for every player by default; the bell on the Daily
   screen turns them off. After the first level the game asks Telegram once for permission to message
   players who never wrote to the bot; a player who blocks the bot is skipped until they start it again.
