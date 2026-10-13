@@ -25,12 +25,12 @@ Everything needed to list the game in Telegram's app catalog and in other catalo
 
 **Name:** Pawsling
 
-**Tagline (EN, ≤ 30):** Slingshot cats vs robot vacuums
-**Tagline (UK):** Коти з рогатки проти пилососів
+**Tagline (EN, ≤ 30):** Slingshot cats vs rebel robots
+**Tagline (UK):** Коти з рогатки проти роботів
 
-**Short description (EN, ≤ 120):** Launch cats & raccoons like a slingshot and save the flat from robot vacuums! 90 levels, 16 bosses. Free to play.
+**Short description (EN, ≤ 120):** Launch cats & raccoons like a slingshot and save the flat from rebel robots! 90 levels, 16 bosses. Free to play.
 
-**Short description (UK):** Запускай котів і єнотів, як з рогатки, і рятуй квартиру від роботів-пилососів! 90 рівнів, 16 босів. Безкоштовно.
+**Short description (UK):** Запускай котів і єнотів, як з рогатки, і рятуй квартиру від збунтованої техніки! 90 рівнів, 16 босів. Безкоштовно.
 
 **Description (EN):**
 Pull back, aim and launch your heroes like a slingshot. Bounce off walls, pierce through robots, cross your yarn to tie exploding knots and beat 16 wild robot bosses across 90 levels, from the kitchen to outer space.

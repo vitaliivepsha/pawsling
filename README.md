@@ -1,6 +1,6 @@
 # Pawsling
 
-A slingshot game for Telegram (Mini App): cats and raccoons against an uprising of robot vacuums.
+A slingshot game for Telegram (Mini App): cats and raccoons against an uprising of household robots and gadgets.
 
 ```
 webapp/index.html   a tiny loader that fetches the game past Telegram's cache
