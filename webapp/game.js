@@ -7780,10 +7780,13 @@ function drawFoeCard() {
   ctx.globalAlpha = Math.min(1, f.t / .2);
   ctx.fillStyle = 'rgba(8,6,18,.82)'; ctx.fillRect(0, 0, W, H);
   ctx.translate(W / 2, 400); ctx.scale(sc, sc); ctx.translate(-W / 2, -400);
-  const cg = ctx.createLinearGradient(0, 220, 0, 580);
+  // the card grows with the description; the "tap to continue" hint sits inside it, at the bottom
+  ctx.font = `800 15px ${FB}`;
+  const lines = splitLines(desc, W - 120), cb = Math.max(580, 462 + lines.length * 21 + 46);
+  const cg = ctx.createLinearGradient(0, 220, 0, cb);
   cg.addColorStop(0, G.ch.hud); cg.addColorStop(1, '#15122a');
-  ctx.fillStyle = cg; rr(40, 220, W - 80, 360, 24); ctx.fill();
-  ctx.strokeStyle = col; ctx.lineWidth = 2.5; rr(40, 220, W - 80, 360, 24); ctx.stroke();
+  ctx.fillStyle = cg; rr(40, 220, W - 80, cb - 220, 24); ctx.fill();
+  ctx.strokeStyle = col; ctx.lineWidth = 2.5; rr(40, 220, W - 80, cb - 220, 24); ctx.stroke();
   ctx.font = `900 14px ${FD}`; const lw = ctx.measureText(tr('foeNew')).width + 30;
   ctx.fillStyle = col; rr(W / 2 - lw / 2, 204, lw, 32, 16); ctx.fill();
   ctx.fillStyle = '#15122a'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText(tr('foeNew'), W / 2, 221);
@@ -7791,9 +7794,9 @@ function drawFoeCard() {
   drawFoe(f.type, W / 2, 326 + (RM ? 0 : Math.sin(T * 3) * 4), 46);
   ctx.fillStyle = col; fitFont(name, W - 120, 28); ctx.fillText(name, W / 2, 422);
   ctx.fillStyle = '#e6e1f5'; ctx.font = `800 15px ${FB}`;
-  splitLines(desc, W - 120).slice(0, 4).forEach((ln, i) => ctx.fillText(ln, W / 2, 462 + i * 21));
+  lines.forEach((ln, i) => ctx.fillText(ln, W / 2, 462 + i * 21));
+  if (f.t > .6) { ctx.globalAlpha *= .55 + .45 * Math.sin(T * 4); ctx.fillStyle = '#c9c2e6'; ctx.font = `800 13px ${FB}`; ctx.fillText(tr('storyTap'), W / 2, cb - 22); }
   ctx.restore();
-  if (f.t > .6) { ctx.globalAlpha = .55 + .45 * Math.sin(T * 4); ctx.fillStyle = '#c9c2e6'; ctx.font = `800 13px ${FB}`; ctx.textAlign = 'center'; ctx.fillText(tr('storyTap'), W / 2, 612); ctx.globalAlpha = 1; }
 }
 
 const GUIDE = { tab: 0, y: 0, v: 0, maxY: 0, from: 'map' };
@@ -8643,23 +8646,33 @@ function drawStory() {
   const fill = pn.who ? '#fbf7ee' : '#ffe08a';
   ctx.fillStyle = '#15122a'; rr(px + 5, by + 6, bw, bh, 14); ctx.fill();
   ctx.fillStyle = fill; rr(px, by, bw, bh, 14); ctx.fill();
+  // the name plate sits on the left; the tail points at the speaker but never runs into the plate
+  // (with a long name it moves past the plate, or the plate moves to the right)
+  let sx = 0, nx = 14, name = '', nw = 0;
   if (pn.who) {
-    const sx = pn.who === 'boss' ? 205 : (pn.actors.find(a => a.h === pn.who) || pn.actors[0]).x;
+    name = pn.who === 'boss' ? bossName({ kind: pn.kind }) : HEROES.find(d => d.id === pn.who).name;
+    ctx.font = `900 14px ${FD}`; nw = Math.min(bw - 60, ctx.measureText(name).width + 22);
+    sx = pn.who === 'boss' ? 205 : (pn.actors.find(a => a.h === pn.who) || pn.actors[0]).x;
+    if (sx - 16 < nx + nw + 10) {
+      if (nx + nw + 36 <= bw - 30) sx = nx + nw + 36;
+      else { nx = bw - 14 - nw; sx = Math.min(sx, nx - 22); }
+    }
+  }
+  if (pn.who) {
     ctx.fillStyle = fill; ctx.strokeStyle = '#15122a'; ctx.lineWidth = 3;
     ctx.beginPath(); ctx.moveTo(px + sx - 16, by + 1); ctx.lineTo(px + sx + 4, by - 24); ctx.lineTo(px + sx + 12, by + 1); ctx.fill();
     ctx.beginPath(); ctx.moveTo(px + sx - 16, by); ctx.lineTo(px + sx + 4, by - 24); ctx.lineTo(px + sx + 12, by); ctx.stroke();
   }
   ctx.strokeStyle = '#15122a'; ctx.lineWidth = 3; rr(px, by, bw, bh, 14); ctx.stroke();
   if (pn.who) {
-    ctx.fillStyle = fill; ctx.fillRect(px + (pn.who === 'boss' ? 205 : (pn.actors.find(a => a.h === pn.who) || pn.actors[0]).x) - 14, by - 1, 24, 4);
+    ctx.fillStyle = fill; ctx.fillRect(px + sx - 14, by - 1, 24, 4);
   }
   ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
   let ty = by + 26;
   if (pn.who) {
-    const name = pn.who === 'boss' ? bossName({ kind: pn.kind }) : HEROES.find(d => d.id === pn.who).name;
     const col = pn.who === 'boss' ? BOSS_COL[pn.kind] : HEROES.find(d => d.id === pn.who).yarn;
-    ctx.font = `900 14px ${FD}`; const nw = Math.min(bw - 60, ctx.measureText(name).width + 22);
-    ctx.save(); ctx.translate(px + 14, by - 12); ctx.rotate(-.04);
+    ctx.font = `900 14px ${FD}`;
+    ctx.save(); ctx.translate(px + nx, by - 12); ctx.rotate(-.04);
     ctx.fillStyle = col; rr(0, 0, nw, 26, 7); ctx.fill();
     ctx.strokeStyle = '#15122a'; ctx.lineWidth = 3; rr(0, 0, nw, 26, 7); ctx.stroke();
     ctx.fillStyle = '#15122a'; fitFont(name, nw - 18, 14); ctx.fillText(name, 11, 14);
@@ -9076,7 +9089,7 @@ loadDaily();
 // #dev: timer-driven loop (keeps running in hidden tabs) plus a state hook for testing
 const DEV = location.hash === '#dev';
 const nextFrame = DEV ? cb => setTimeout(() => cb(performance.now()), 16) : requestAnimationFrame;
-if (DEV) window.__pawsling = { get G() { return G; }, set G(v) { G = v; }, get SCREEN() { return SCREEN; }, get DAILY() { return DAILY; }, startLevel, startEndless, launch, PROG: () => PROG, MAP, BOARD, setScreen, secondWind, setInv, get INV() { return INV; }, prepLevel, setupWave, step: dt => update(dt), LEVELS, CHAPTERS, ENEMY, bg, BGS,
+if (DEV) window.__pawsling = { get G() { return G; }, set G(v) { G = v; }, get SCREEN() { return SCREEN; }, get DAILY() { return DAILY; }, startLevel, startEndless, launch, PROG: () => PROG, MAP, BOARD, setScreen, secondWind, setInv, get INV() { return INV; }, prepLevel, setupWave, showStory, step: dt => update(dt), LEVELS, CHAPTERS, ENEMY, bg, BGS,
   // store art: pause the loop, size the canvas, then draw with the game's own painters
   draw, art: { get ctx() { return ctx; }, cv, drawHero, drawBoss, drawEnemy, drawFoe, chIcon, star, heart, rr, glowAt, drawHat, hexRgb, HEROES, BOSS_COL, FD, FB, W, H, TOP, BOT },
   size(w, h, k) { cv.width = w; cv.height = h; scale = k; dpr = 1; } };
