@@ -59,11 +59,12 @@ const TEXT = {
   uk: { rooms: ['Кухня', 'Вітальня', 'Спальня', 'Ванна', 'Балкон', 'Горище', 'Гараж', 'Підвал', 'Дах', 'Сад', 'Серверна', 'Під\'їзд', 'Склад', 'Фабрика', 'Лабораторія', 'Космостанція'], raid: room => `🚨 Тривога! Збунтована техніка напала на кімнату «${room}»!\n\nВідбий нальот за 30 хвилин і отримай бонус: ❤️ +1 серце і ⚡ +1 швидкий старт.`, raidBtn: '🐾 Відбити нальот',
     invite: 'Коти та єноти проти збунтованої техніки! Зіграй зі мною в Pawsling 🐾',
     sent: 'Дякуємо! Повідомлення передано розробнику.',
-    refJoined: n => `${n} прийшов у гру за твоїм запрошенням! Вам обом: +1 серце і +1 швидкий старт.`,
+    refJoined: n => `${n} тепер у грі за твоїм запрошенням! Вам обом: +1 серце і +1 швидкий старт.`,
     weekWin: (place, w) => `Тиждень «Нічної зміни» завершено: ти на ${place} місці (${w} хвиль)! Приз уже в магазині.`,
     items: { heart3: ['Серце+ ×3', '+1 серце кожному героєві на 3 рівні.'], meter3: ['Швидкий старт ×3', 'Пів шкали «Бешкету» на старті 3 рівнів.'], hat_party: ['Святковий ковпак', 'Капелюшок для всієї команди, назавжди.'], hat_crown: ['Корона', 'Корона для всієї команди, назавжди.'], hat_bow: ['Бантик', 'Бантик для всієї команди, назавжди.'], rainbow: ['Райдужна нитка', 'Нитки героїв переливаються веселкою, назавжди.'], hero_rex: ['Рекс', 'Новий герой: пес-рятувальник, що лікує друзів, яких зачепить.'], hero_spark: ['Іскра', 'Нова героїня: її удар перескакує блискавкою на найближчого ворога.'] },
     title: 'Друге дихання', desc: 'Продовж рівень: повна міцність квартири й усі герої знову на ногах.',
-    start: n => `Привіт, ${n}! Збунтована техніка захопила квартиру. Запускай котів і єнотів, як з рогатки!`, play: '🐾 Грати' },
+    start: n => `Привіт, ${n}! Збунтована техніка захопила квартиру. Запускай котів і єнотів, як з рогатки!`, play: '🐾 Грати',
+    cardTitle: 'Запросити в Pawsling', cardDesc: 'Картка з кнопкою «Грати» і твоїм запрошенням: обом по бонусу', textTitle: 'Запрошення текстом', textDesc: 'Те саме, але без картинки', recTitle: 'Кинути виклик', recDesc: 'Покажи свій рекорд і запроси побити його', rec: (st, w) => `🏆 Мій рекорд у Pawsling: ⭐ ${st}${w ? ` · 🌙 «Нічна зміна»: ${w}` : ''}. Спробуєш побити?`, share: '📨 Запросити друга', shareText: 'Обери чат, і я надішлю туди картку з запрошенням. Коли друг зайде за нею в гру, ви обидва отримаєте +1 серце і +1 швидкий старт.', startQ: 'Кого запросимо?' },
   en: { rooms: ['Kitchen', 'Living room', 'Bedroom', 'Bathroom', 'Balcony', 'Attic', 'Garage', 'Basement', 'Roof', 'Garden', 'Server room', 'Stairwell', 'Warehouse', 'Factory', 'Lab', 'Space station'], raid: room => `🚨 Alert! Rebel robots are raiding your home: ${room}!\n\nRepel the raid within 30 minutes and get a bonus: ❤️ +1 heart and ⚡ +1 quick start.`, raidBtn: '🐾 Repel the raid',
     invite: 'Cats and raccoons vs rebel robots! Play Pawsling with me 🐾',
     sent: 'Thanks! Your message has been sent to the developer.',
@@ -71,7 +72,8 @@ const TEXT = {
     weekWin: (place, w) => `The Night Shift week is over: you finished #${place} (${w} waves)! Your prize is in the shop.`,
     items: { heart3: ['Heart+ ×3', '+1 heart for every hero, for 3 levels.'], meter3: ['Quick start ×3', 'Half a Mischief meter at the start of 3 levels.'], hat_party: ['Party hat', 'A hat for the whole team, forever.'], hat_crown: ['Crown', 'A crown for the whole team, forever.'], hat_bow: ['Bow', 'A bow for the whole team, forever.'], rainbow: ['Rainbow yarn', 'Hero threads shimmer in rainbow colors, forever.'], hero_rex: ['Rex', 'A new hero: a rescue dog that heals every friend he touches.'], hero_spark: ['Sparky', 'A new hero: her hits arc like lightning to the nearest enemy.'] },
     title: 'Second wind', desc: 'Continue the level: full home strength and every hero back on their feet.',
-    start: n => `Hi, ${n}! Rebel robots have taken over the flat. Launch the cats and raccoons like a slingshot!`, play: '🐾 Play' },
+    start: n => `Hi, ${n}! Rebel robots have taken over the flat. Launch the cats and raccoons like a slingshot!`, play: '🐾 Play',
+    cardTitle: 'Invite to Pawsling', cardDesc: 'A card with a Play button and your invite: a bonus for you both', textTitle: 'Invite as text', textDesc: 'The same, without the picture', recTitle: 'Challenge a friend', recDesc: 'Show your record and dare them to beat it', rec: (st, w) => `🏆 My Pawsling record: ⭐ ${st}${w ? ` · 🌙 Night Shift: ${w}` : ''}. Can you beat it?`, share: '📨 Invite a friend', shareText: 'Pick a chat and I will send an invite card there. When your friend joins through it, you both get +1 heart and +1 quick start.', startQ: 'Who shall we invite?' },
   pl: { rooms: ['Kuchnia', 'Salon', 'Sypialnia', 'Łazienka', 'Balkon', 'Strych', 'Garaż', 'Piwnica', 'Dach', 'Ogród', 'Serwerownia', 'Klatka schodowa', 'Magazyn', 'Fabryka', 'Laboratorium', 'Stacja kosmiczna'], raid: room => `🚨 Alarm! Zbuntowane roboty napadły na pokój: ${room}!\n\nOdeprzyj nalot w 30 minut i zdobądź bonus: ❤️ +1 serce i ⚡ +1 szybki start.`, raidBtn: '🐾 Odeprzyj nalot',
     invite: 'Koty i szopy kontra zbuntowane roboty! Zagraj ze mną w Pawsling 🐾',
     sent: 'Dzięki! Wiadomość trafiła do twórcy gry.',
@@ -79,7 +81,8 @@ const TEXT = {
     weekWin: (place, w) => `Tydzień nocnej zmiany zakończony: zajmujesz ${place}. miejsce (${w} fal)! Nagroda czeka w sklepie.`,
     items: { heart3: ['Serce+ ×3', '+1 serce dla każdego bohatera na 3 poziomy.'], meter3: ['Szybki start ×3', 'Pół paska psot na starcie 3 poziomów.'], hat_party: ['Czapeczka imprezowa', 'Czapka dla całej drużyny, na zawsze.'], hat_crown: ['Korona', 'Korona dla całej drużyny, na zawsze.'], hat_bow: ['Kokardka', 'Kokardka dla całej drużyny, na zawsze.'], rainbow: ['Tęczowa włóczka', 'Nitki bohaterów mienią się tęczą, na zawsze.'], hero_rex: ['Reks', 'Nowy bohater: pies ratownik, który leczy przyjaciół, których dotknie.'], hero_spark: ['Iskra', 'Nowa bohaterka: jej ciosy przeskakują piorunem na najbliższego wroga.'] },
     title: 'Drugi oddech', desc: 'Kontynuuj poziom: pełna wytrzymałość mieszkania i wszyscy bohaterowie znów na nogach.',
-    start: n => `Cześć, ${n}! Zbuntowane roboty przejęły mieszkanie. Wystrzel koty i szopy jak z procy!`, play: '🐾 Graj' },
+    start: n => `Cześć, ${n}! Zbuntowane roboty przejęły mieszkanie. Wystrzel koty i szopy jak z procy!`, play: '🐾 Graj',
+    cardTitle: 'Zaproś do Pawsling', cardDesc: 'Karta z przyciskiem Graj i twoim zaproszeniem: bonus dla was obojga', textTitle: 'Zaproszenie tekstem', textDesc: 'To samo, ale bez obrazka', recTitle: 'Rzuć wyzwanie', recDesc: 'Pokaż swój rekord i zaproś do jego pobicia', rec: (st, w) => `🏆 Mój rekord w Pawsling: ⭐ ${st}${w ? ` · 🌙 Nocna zmiana: ${w}` : ''}. Pobijesz go?`, share: '📨 Zaproś znajomego', shareText: 'Wybierz czat, a wyślę tam kartę z zaproszeniem. Gdy znajomy dołączy przez nią, oboje dostaniecie +1 serce i +1 szybki start.', startQ: 'Kogo zapraszamy?' },
   de: { rooms: ['Küche', 'Wohnzimmer', 'Schlafzimmer', 'Badezimmer', 'Balkon', 'Dachboden', 'Garage', 'Keller', 'Dach', 'Garten', 'Serverraum', 'Treppenhaus', 'Lager', 'Fabrik', 'Labor', 'Raumstation'], raid: room => `🚨 Alarm! Rebellische Roboter überfallen den Raum: ${room}!\n\nWehr den Überfall in 30 Minuten ab und hol dir einen Bonus: ❤️ +1 Herz und ⚡ +1 Schnellstart.`, raidBtn: '🐾 Überfall abwehren',
     invite: 'Katzen und Waschbären gegen rebellische Roboter! Spiel Pawsling mit mir 🐾',
     sent: 'Danke! Deine Nachricht wurde an den Entwickler weitergeleitet.',
@@ -87,7 +90,8 @@ const TEXT = {
     weekWin: (place, w) => `Die Nachtschicht-Woche ist vorbei: Platz ${place} (${w} Wellen)! Dein Preis liegt im Shop.`,
     items: { heart3: ['Herz+ ×3', '+1 Herz für jeden Helden, für 3 Level.'], meter3: ['Schnellstart ×3', 'Halbe Unfug-Leiste zu Beginn von 3 Leveln.'], hat_party: ['Partyhut', 'Ein Hut für das ganze Team, für immer.'], hat_crown: ['Krone', 'Eine Krone für das ganze Team, für immer.'], hat_bow: ['Schleife', 'Eine Schleife für das ganze Team, für immer.'], rainbow: ['Regenbogenwolle', 'Die Fäden der Helden schimmern in Regenbogenfarben, für immer.'], hero_rex: ['Rex', 'Ein neuer Held: ein Rettungshund, der jeden berührten Freund heilt.'], hero_spark: ['Funke', 'Eine neue Heldin: ihre Treffer springen als Blitz zum nächsten Gegner.'] },
     title: 'Zweite Luft', desc: 'Spiel weiter: volle Wohnungsstärke und alle Helden wieder auf den Beinen.',
-    start: n => `Hallo, ${n}! Rebellische Roboter haben die Wohnung übernommen. Schieß Katzen und Waschbären wie mit einer Schleuder!`, play: '🐾 Spielen' },
+    start: n => `Hallo, ${n}! Rebellische Roboter haben die Wohnung übernommen. Schieß Katzen und Waschbären wie mit einer Schleuder!`, play: '🐾 Spielen',
+    cardTitle: 'Zu Pawsling einladen', cardDesc: 'Eine Karte mit Spielen-Knopf und deiner Einladung: ein Bonus für euch beide', textTitle: 'Einladung als Text', textDesc: 'Dasselbe ohne Bild', recTitle: 'Herausfordern', recDesc: 'Zeig deinen Rekord und fordere zum Schlagen heraus', rec: (st, w) => `🏆 Mein Pawsling-Rekord: ⭐ ${st}${w ? ` · 🌙 Nachtschicht: ${w}` : ''}. Schaffst du mehr?`, share: '📨 Freund einladen', shareText: 'Wähl einen Chat, und ich schicke dort eine Einladungskarte hin. Kommt dein Freund darüber ins Spiel, bekommt ihr beide +1 Herz und +1 Schnellstart.', startQ: 'Wen laden wir ein?' },
   es: { rooms: ['Cocina', 'Salón', 'Dormitorio', 'Baño', 'Balcón', 'Desván', 'Garaje', 'Sótano', 'Tejado', 'Jardín', 'Sala de servidores', 'Escalera', 'Almacén', 'Fábrica', 'Laboratorio', 'Estación espacial'], raid: room => `🚨 ¡Alerta! ¡Los robots rebeldes asaltan la habitación: ${room}!\n\nRechaza el asalto en 30 minutos y gana un bonus: ❤️ +1 corazón y ⚡ +1 inicio rápido.`, raidBtn: '🐾 Rechazar el asalto',
     invite: '¡Gatos y mapaches contra robots rebeldes! Juega Pawsling conmigo 🐾',
     sent: '¡Gracias! Tu mensaje se ha enviado al desarrollador.',
@@ -95,7 +99,8 @@ const TEXT = {
     weekWin: (place, w) => `Terminó la semana del turno de noche: quedaste en el puesto ${place} (${w} oleadas). ¡Tu premio está en la tienda!`,
     items: { heart3: ['Corazón+ ×3', '+1 corazón para cada héroe durante 3 niveles.'], meter3: ['Inicio rápido ×3', 'Media barra de travesura al empezar 3 niveles.'], hat_party: ['Gorro de fiesta', 'Un gorro para todo el equipo, para siempre.'], hat_crown: ['Corona', 'Una corona para todo el equipo, para siempre.'], hat_bow: ['Lazo', 'Un lazo para todo el equipo, para siempre.'], rainbow: ['Hilo arcoíris', 'Los hilos de los héroes brillan con los colores del arcoíris, para siempre.'], hero_rex: ['Rex', 'Un nuevo héroe: un perro de rescate que cura a cada amigo que toca.'], hero_spark: ['Chispa', 'Una nueva heroína: sus golpes saltan como un rayo al enemigo más cercano.'] },
     title: 'Segundo aliento', desc: 'Continúa el nivel: resistencia completa y todos los héroes de nuevo en pie.',
-    start: n => `¡Hola, ${n}! Los robots rebeldes han tomado el piso. ¡Lanza a los gatos y mapaches como con un tirachinas!`, play: '🐾 Jugar' },
+    start: n => `¡Hola, ${n}! Los robots rebeldes han tomado el piso. ¡Lanza a los gatos y mapaches como con un tirachinas!`, play: '🐾 Jugar',
+    cardTitle: 'Invitar a Pawsling', cardDesc: 'Una tarjeta con botón Jugar y tu invitación: un bonus para los dos', textTitle: 'Invitación en texto', textDesc: 'Lo mismo, sin imagen', recTitle: 'Lanzar un reto', recDesc: 'Muestra tu récord y reta a superarlo', rec: (st, w) => `🏆 Mi récord en Pawsling: ⭐ ${st}${w ? ` · 🌙 Turno de noche: ${w}` : ''}. ¿Lo superas?`, share: '📨 Invitar a un amigo', shareText: 'Elige un chat y enviaré allí una tarjeta de invitación. Cuando tu amigo entre por ella, los dos recibiréis +1 corazón y +1 inicio rápido.', startQ: '¿A quién invitamos?' },
 };
 const text = code => TEXT[(code || '').slice(0, 2)] || TEXT.en;
 
@@ -339,12 +344,25 @@ async function inventory(db, id) {
   return Object.fromEntries(rows.results.map(r => [r.item, r.count]));
 }
 // the invite: a picture, a line of text and a Play button carrying the sender's referral link
-function inviteCard(t, uid) {
-  const art = 'https://vitaliivepsha.github.io/pawsling/promo/';
-  return { type: 'photo', id: 'invite-' + uid, photo_url: art + 'welcome-1280x720.jpg', thumbnail_url: art + 'welcome-640x360.jpg',
-    photo_width: 1280, photo_height: 720, caption: t.invite,
-    reply_markup: { inline_keyboard: [[{ text: t.play, url: `https://t.me/${botName}?startapp=ref_${uid}` }]] } };
+const ART = 'https://vitaliivepsha.github.io/pawsling/promo/', CARD = 'welcome-1280x720.jpg', CARD_THUMB = 'welcome-640x360.jpg';
+const playKb = (t, uid) => ({ inline_keyboard: [[{ text: t.play, url: `https://t.me/${botName}?startapp=ref_${uid}` }]] });
+function inviteCard(t, uid, caption = t.invite, id = 'invite-' + uid) {
+  return { type: 'photo', id, photo_url: ART + CARD, thumbnail_url: ART + CARD_THUMB, photo_width: 1280, photo_height: 720,
+    title: t.cardTitle, description: t.cardDesc, caption, reply_markup: playKb(t, uid) };
 }
+// typing @the_bot in any chat: the invite card, the player's record as a challenge, and a text-only invite
+async function inlineResults(env, from) {
+  const t = text(from && from.language_code), uid = from.id;
+  await ensureTables(env.DB);
+  const p = await env.DB.prepare('SELECT night, stars FROM players WHERE id = ?1').bind(uid).first();
+  const out = [inviteCard(t, uid)];
+  if (p && (p.stars || p.night)) out.push({ ...inviteCard(t, uid, t.rec(p.stars, p.night), 'record-' + uid), title: t.recTitle, description: t.recDesc });
+  out.push({ type: 'article', id: 'text-' + uid, title: t.textTitle, description: t.textDesc, thumbnail_url: ART + CARD_THUMB,
+    input_message_content: { message_text: t.invite }, reply_markup: playKb(t, uid) });
+  return out;
+}
+// a button that opens the chat picker with the invite ready (works once inline mode is on in @BotFather)
+const shareKb = t => [{ text: t.share, switch_inline_query_chosen_chat: { query: '', allow_user_chats: true, allow_group_chats: true, allow_channel_chats: false, allow_bot_chats: false } }];
 async function onUpdate(env, u) {
   if (u.my_chat_member) {
     // a player who blocks the bot gets no more alerts; unblocking lets them come back
@@ -354,11 +372,9 @@ async function onUpdate(env, u) {
     return;
   }
   if (u.inline_query) {
-    // typing @the_bot in any chat offers the invite card
     const q = u.inline_query;
     if (!botName) { const me = await tg(env, 'getMe', {}); botName = me.ok ? me.result.username : null; }
-    await tg(env, 'answerInlineQuery', { inline_query_id: q.id, is_personal: true, cache_time: 300,
-      results: [inviteCard(text(q.from && q.from.language_code), q.from.id)] });
+    await tg(env, 'answerInlineQuery', { inline_query_id: q.id, is_personal: true, cache_time: 60, results: await inlineResults(env, q.from) });
     return;
   }
   if (u.pre_checkout_query) {
@@ -427,8 +443,13 @@ async function onUpdate(env, u) {
     const t = text(m.from && m.from.language_code);
     await tg(env, 'sendMessage', {
       chat_id: m.chat.id, text: t.start((m.from && m.from.first_name) || ''),
-      reply_markup: { inline_keyboard: [[{ text: t.play, web_app: { url: env.WEBAPP_URL } }]] },
+      reply_markup: { inline_keyboard: [[{ text: t.play, web_app: { url: env.WEBAPP_URL } }], shareKb(t)] },
     });
+    return;
+  }
+  if (typeof m.text === 'string' && /^\/invite\b/.test(m.text)) {
+    const t = text(m.from && m.from.language_code);
+    await tg(env, 'sendMessage', { chat_id: m.chat.id, text: t.shareText, reply_markup: { inline_keyboard: [shareKb(t)] } });
     return;
   }
   // support: players write to the bot, the owner gets the message and answers by replying to it
