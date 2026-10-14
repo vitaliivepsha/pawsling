@@ -352,7 +352,7 @@ async function inventory(db, id) {
   return Object.fromEntries(rows.results.map(r => [r.item, r.count]));
 }
 // the invite: a picture, a line of text and a Play button carrying the sender's referral link
-const ART = 'https://vitaliivepsha.github.io/pawsling/promo/', CARD = 'welcome-1280x720.jpg', CARD_THUMB = 'welcome-640x360.jpg';
+const ART = 'https://vitaliivepsha.github.io/pawsling/promo/', CARD = 'invite-card-1280x720.jpg', CARD_THUMB = 'invite-card-640x360.jpg';
 const playKb = (t, uid) => ({ inline_keyboard: [[{ text: t.play, url: `https://t.me/${botName}?startapp=ref_${uid}` }]] });
 function inviteCard(t, uid, caption = t.invite, id = 'invite-' + uid) {
   return { type: 'photo', id, photo_url: ART + CARD, thumbnail_url: ART + CARD_THUMB, photo_width: 1280, photo_height: 720,
