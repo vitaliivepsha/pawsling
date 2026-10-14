@@ -7952,7 +7952,7 @@ const challengeDone = () => DAILY.challengeDone || lsGet('pawsling-ch') === (DAI
 async function loadDaily() {
   if (!serverOn()) return;
   try {
-    const d = await api('/daily', { tz: new Date().getTimezoneOffset(), room: maxRoom() });
+    const d = await api('/daily', { tz: new Date().getTimezoneOffset(), room: maxRoom(), lang: LANG });
     Object.assign(DAILY, { loaded: true, streak: d.streak, claimed: d.claimed, challengeDone: d.challengeDone, invited: d.invited, bot: d.bot, today: d.today });
     if (d.challengeDone && d.today) lsSet('pawsling-ch', d.today);
     if (d.items) setInv(d.items);

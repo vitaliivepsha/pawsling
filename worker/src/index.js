@@ -103,6 +103,12 @@ const TEXT = {
     cardTitle: 'Invitar a Pawsling', cardDesc: 'Una tarjeta con botón Jugar y tu invitación: un bonus para los dos', textTitle: 'Invitación en texto', textDesc: 'Lo mismo, sin imagen', recTitle: 'Lanzar un reto', recDesc: 'Muestra tu récord y reta a superarlo', rec: (st, w) => `🏆 Mi récord en Pawsling: ⭐ ${st}${w ? ` · 🌙 Turno de noche: ${w}` : ''}. ¿Lo superas?`, share: '📨 Invitar a un amigo', shareText: 'Elige un chat y enviaré allí una tarjeta de invitación. Cuando tu amigo entre por ella, los dos recibiréis +1 corazón y +1 inicio rápido.', startQ: '¿A quién invitamos?' },
 };
 const text = code => TEXT[(code || '').slice(0, 2)] || TEXT.en;
+// texts in the language the player chose in the game, or their Telegram app language before they have played
+async function userText(env, from) {
+  await ensureTables(env.DB);
+  const row = from ? await env.DB.prepare('SELECT lang FROM notify WHERE user_id = ?1').bind(from.id).first() : null;
+  return text((row && row.lang) || (from && from.language_code));
+}
 
 export default {
   async fetch(req, env) {
@@ -212,7 +218,9 @@ async function daily(env, user, body = {}) {
   // raid alerts are on by default; a player can turn them off with the bell in the game
   await db.prepare('INSERT OR IGNORE INTO notify (user_id, enabled, lang, tz, room, last_seen) VALUES (?1, 1, ?2, ?3, ?4, ?5)')
     .bind(user.id, String(body.lang || user.language_code || '').slice(0, 5), clampTz(body.tz), clampRoom(body.room), now).run();
-  await db.prepare('UPDATE notify SET last_seen = ?2, tz = ?3, room = ?4 WHERE user_id = ?1').bind(user.id, now, clampTz(body.tz), clampRoom(body.room)).run();
+  // the game's language wins over the Telegram app's, so the bot follows a language switch in the game
+  await db.prepare("UPDATE notify SET last_seen = ?2, tz = ?3, room = ?4, lang = COALESCE(NULLIF(?5, ''), lang) WHERE user_id = ?1")
+    .bind(user.id, now, clampTz(body.tz), clampRoom(body.room), String(body.lang || '').slice(0, 5)).run();
   const nrow = await db.prepare('SELECT enabled FROM notify WHERE user_id = ?1').bind(user.id).first();
   const raid = await db.prepare('SELECT id, room, expires FROM raids WHERE user_id = ?1 AND done IS NULL AND expires > ?2 ORDER BY id DESC LIMIT 1').bind(user.id, now).first();
   const today = utcDay(), yesterday = utcDay(Date.now() - DAY);
@@ -352,8 +360,7 @@ function inviteCard(t, uid, caption = t.invite, id = 'invite-' + uid) {
 }
 // typing @the_bot in any chat: the invite card, the player's record as a challenge, and a text-only invite
 async function inlineResults(env, from) {
-  const t = text(from && from.language_code), uid = from.id;
-  await ensureTables(env.DB);
+  const t = await userText(env, from), uid = from.id;
   const p = await env.DB.prepare('SELECT night, stars FROM players WHERE id = ?1').bind(uid).first();
   const out = [inviteCard(t, uid)];
   if (p && (p.stars || p.night)) out.push({ ...inviteCard(t, uid, t.rec(p.stars, p.night), 'record-' + uid), title: t.recTitle, description: t.recDesc });
@@ -440,7 +447,7 @@ async function onUpdate(env, u) {
     if (m.write_access_allowed) return;
   }
   if (typeof m.text === 'string' && /^\/(start|play)\b/.test(m.text) && env.WEBAPP_URL) {
-    const t = text(m.from && m.from.language_code);
+    const t = await userText(env, m.from);
     await tg(env, 'sendMessage', {
       chat_id: m.chat.id, text: t.start((m.from && m.from.first_name) || ''),
       reply_markup: { inline_keyboard: [[{ text: t.play, web_app: { url: env.WEBAPP_URL } }], shareKb(t)] },
@@ -448,7 +455,7 @@ async function onUpdate(env, u) {
     return;
   }
   if (typeof m.text === 'string' && /^\/invite\b/.test(m.text)) {
-    const t = text(m.from && m.from.language_code);
+    const t = await userText(env, m.from);
     await tg(env, 'sendMessage', { chat_id: m.chat.id, text: t.shareText, reply_markup: { inline_keyboard: [shareKb(t)] } });
     return;
   }
