@@ -9064,8 +9064,6 @@ function drawStory() {
   ctx.save(); ctx.globalAlpha = bk;
   ctx.translate(W / 2, by + bh / 2); ctx.rotate(-tilt * .6); ctx.scale(pop, pop); ctx.translate(-W / 2, -(by + bh / 2));
   const fill = pn.who ? '#fbf7ee' : '#ffe08a';
-  ctx.fillStyle = '#15122a'; rr(px + 5, by + 6, bw, bh, 14); ctx.fill();
-  ctx.fillStyle = fill; rr(px, by, bw, bh, 14); ctx.fill();
   // the name plate sits on the left; the tail points at the speaker but never runs into the plate
   // (with a long name it moves past the plate, or the plate moves to the right)
   let sx = 0, nx = 14, name = '', nw = 0;
@@ -9078,15 +9076,18 @@ function drawStory() {
       else { nx = bw - 14 - nw; sx = Math.min(sx, nx - 22); }
     }
   }
-  if (pn.who) {
-    ctx.fillStyle = fill; ctx.strokeStyle = '#15122a'; ctx.lineWidth = 3;
-    ctx.beginPath(); ctx.moveTo(px + sx - 16, by + 1); ctx.lineTo(px + sx + 4, by - 24); ctx.lineTo(px + sx + 12, by + 1); ctx.fill();
-    ctx.beginPath(); ctx.moveTo(px + sx - 16, by); ctx.lineTo(px + sx + 4, by - 24); ctx.lineTo(px + sx + 12, by); ctx.stroke();
-  }
-  ctx.strokeStyle = '#15122a'; ctx.lineWidth = 3; rr(px, by, bw, bh, 14); ctx.stroke();
-  if (pn.who) {
-    ctx.fillStyle = fill; ctx.fillRect(px + sx - 14, by - 1, 24, 4);
-  }
+  // one outline for the box and its tail, so there is no seam; the tail tip touches the picture's frame
+  const tip = pn.who ? by - 30 : by;
+  const speech = (ox, oy) => {
+    const x = px + ox, y = by + oy, r = 14, w = bw, h = bh;
+    ctx.beginPath(); ctx.moveTo(x + r, y);
+    if (pn.who) { ctx.lineTo(x + sx - 14, y); ctx.lineTo(x + sx + 4, tip + oy); ctx.lineTo(x + sx + 12, y); }
+    ctx.arcTo(x + w, y, x + w, y + h, r); ctx.arcTo(x + w, y + h, x, y + h, r);
+    ctx.arcTo(x, y + h, x, y, r); ctx.arcTo(x, y, x + w, y, r); ctx.closePath();
+  };
+  ctx.fillStyle = '#15122a'; speech(5, 6); ctx.fill();
+  ctx.fillStyle = fill; speech(0, 0); ctx.fill();
+  ctx.strokeStyle = '#15122a'; ctx.lineWidth = 3; ctx.lineJoin = 'round'; speech(0, 0); ctx.stroke();
   ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
   let ty = by + 26;
   if (pn.who) {
