@@ -28,19 +28,19 @@ Everything needed to list the game in Telegram's app catalog and in other catalo
 **Tagline (EN, ≤ 30):** Slingshot cats vs rebel robots
 **Tagline (UK):** Коти з рогатки проти роботів
 
-**Short description (EN, ≤ 120):** Launch cats & raccoons like a slingshot and save the flat from rebel robots! 90 levels, 16 bosses. Free to play.
+**Short description (EN, ≤ 120):** Launch cats & raccoons like a slingshot and save the flat from rebel robots! 96 levels, 17 bosses. Free to play.
 
-**Short description (UK):** Запускай котів і єнотів, як з рогатки, і рятуй квартиру від збунтованої техніки! 90 рівнів, 16 босів. Безкоштовно.
+**Short description (UK):** Запускай котів і єнотів, як з рогатки, і рятуй квартиру від збунтованої техніки! 96 рівнів, 17 босів. Безкоштовно.
 
 **Description (EN):**
-Pull back, aim and launch your heroes like a slingshot. Bounce off walls, pierce through robots, cross your yarn to tie exploding knots and beat 16 wild robot bosses across 90 levels, from the kitchen to outer space.
+Pull back, aim and launch your heroes like a slingshot. Bounce off walls, pierce through robots, cross your yarn to tie exploding knots and beat 17 wild robot bosses across 96 levels, from the kitchen to the polar ice.
 - 7 heroes with superpowers that level up
 - Night Shift: endless waves and a weekly tournament with prizes
 - Daily bonus, daily challenges and story comics
 - 5 languages: English, Ukrainian, Polish, German, Spanish
 
 **Опис (UK):**
-Тягни, цілься й запускай героїв, як з рогатки. Відбивайся від стін, прошивай роботів наскрізь, перетинай нитки, щоб в'язати вибухові вузли, і перемагай 16 шалених босів у 90 рівнях, від кухні до космосу.
+Тягни, цілься й запускай героїв, як з рогатки. Відбивайся від стін, прошивай роботів наскрізь, перетинай нитки, щоб в'язати вибухові вузли, і перемагай 17 шалених босів у 96 рівнях, від кухні до полярної криги.
 - 7 героїв із суперсилами, які прокачуються
 - «Нічна зміна»: нескінченні хвилі й турнір тижня з призами
 - Щоденний бонус, завдання дня й комікси
