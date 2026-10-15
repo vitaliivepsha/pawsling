@@ -971,6 +971,17 @@ const I18N = {
     'st.16.0': 'З космосу ви повернулися просто в мій сніг. Тут холодно, і буде ще холодніше!',
     'st.16.1': 'Шерсть — найкращий пуховик. Вперед, поки лапи не змерзли!',
     'st.end.0': 'Квартиру врятовано. Уся техніка знову мирно працює.',
+    'storyArc': 'Тим часом…',
+    'st.arc3.0': 'Блендер, телевізор, будильник… Вони не просто збунтувалися. Хтось їх кличе!',
+    'st.arc3.1': 'Чуєш дзижчання з ванної? Ходімо подивимося, тільки лапи не намочи.',
+    'st.arc6.0': 'На горищі лежали креслення: усі наші роботи, а ще купа нових!',
+    'st.arc6.1': 'Значить, хтось їх креслить. Слід веде в гараж.',
+    'st.arc9.0': 'З даху видно все місто. Техніка бунтує не лише в нашій квартирі!',
+    'st.arc9.1': 'Тоді й рятувати будемо не лише її. Гав! Тобто — вперед!',
+    'st.arc12.0': 'Сервер видав адресу: склад на околиці. Звідти роботів розвозять по квартирах.',
+    'st.arc12.1': 'Зупинимо поставки — і нових роботів не буде. Ну, майже.',
+    'st.arc15.0': 'У лабораторії лежав журнал: усі накази приходять з орбіти!',
+    'st.arc15.1': 'Тоді летимо туди. Коти завжди мріяли про космос.',
     'st.end.1': 'А крихти під диваном — це вже традиція.',
     storySkip: 'Пропустити', storyTap: 'торкнись, щоб продовжити',
     'ev.halloween': 'Хелловін', 'ev.newyear': 'Новий рік', evSub: (d, n) => `Подія: ${d}/${n} рівнів · нагорода — капелюх`, evLevel: (e, n) => `${e} · ${n}/3`,
@@ -1104,6 +1115,17 @@ const I18N = {
     'st.16.0': 'From space you came down right into my snow. It is cold here, and it is getting colder!',
     'st.16.1': 'Fur is the best down jacket. Let\'s go before our paws freeze!',
     'st.end.0': 'The flat is saved. Every gadget is back to its chores.',
+    'storyArc': 'Meanwhile…',
+    'st.arc3.0': 'Blender, TV, alarm clock… They didn\'t just rebel. Someone is calling them!',
+    'st.arc3.1': 'Hear that buzzing from the bathroom? Let\'s go and look, just keep your paws dry.',
+    'st.arc6.0': 'There were blueprints in the attic: all our robots, and a pile of new ones!',
+    'st.arc6.1': 'So someone is drawing them up. The trail leads to the garage.',
+    'st.arc9.0': 'From the roof you can see the whole city. The gadgets are rebelling in more than our flat!',
+    'st.arc9.1': 'Then we\'ll save more than our flat. Woof! I mean, let\'s go!',
+    'st.arc12.0': 'The server gave up an address: a warehouse on the edge of town. That\'s where the robots are shipped from.',
+    'st.arc12.1': 'Stop the deliveries and there will be no new robots. Well, almost.',
+    'st.arc15.0': 'There was a logbook in the lab: every order comes from orbit!',
+    'st.arc15.1': 'Then we fly up there. Cats have always dreamed of space.',
     'st.end.1': 'The crumbs under the couch stay, though. It\'s tradition.',
     storySkip: 'Skip', storyTap: 'tap to continue',
     'ev.halloween': 'Halloween', 'ev.newyear': 'New Year', evSub: (d, n) => `Event: ${d}/${n} levels · reward: a hat`, evLevel: (e, n) => `${e} · ${n}/3`,
@@ -1237,6 +1259,17 @@ const I18N = {
     'st.16.0': 'Z kosmosu wróciliście prosto w mój śnieg. Tu jest zimno i będzie jeszcze zimniej!',
     'st.16.1': 'Futro to najlepsza kurtka puchowa. Naprzód, zanim zmarzną łapy!',
     'st.end.0': 'Mieszkanie uratowane. Cały sprzęt znowu spokojnie pracuje.',
+    'storyArc': 'Tymczasem…',
+    'st.arc3.0': 'Blender, telewizor, budzik… One nie tylko się zbuntowały. Ktoś je wzywa!',
+    'st.arc3.1': 'Słyszysz to brzęczenie z łazienki? Chodźmy zobaczyć, tylko nie zmocz łap.',
+    'st.arc6.0': 'Na strychu leżały plany: wszystkie nasze roboty i masa nowych!',
+    'st.arc6.1': 'Czyli ktoś je projektuje. Trop prowadzi do garażu.',
+    'st.arc9.0': 'Z dachu widać całe miasto. Sprzęt buntuje się nie tylko w naszym mieszkaniu!',
+    'st.arc9.1': 'To uratujemy nie tylko je. Hau! To znaczy: naprzód!',
+    'st.arc12.0': 'Serwer wydał adres: magazyn na obrzeżach. Stamtąd roboty jadą do mieszkań.',
+    'st.arc12.1': 'Zatrzymamy dostawy i nowych robotów nie będzie. No, prawie.',
+    'st.arc15.0': 'W laboratorium leżał dziennik: wszystkie rozkazy przychodzą z orbity!',
+    'st.arc15.1': 'To lecimy tam. Koty zawsze marzyły o kosmosie.',
     'st.end.1': 'A okruchy pod kanapą to już tradycja.',
     storySkip: 'Pomiń', storyTap: 'dotknij, aby kontynuować',
     'ev.halloween': 'Halloween', 'ev.newyear': 'Nowy Rok', evSub: (d, n) => `Wydarzenie: ${d}/${n} poziomów · nagroda: czapka`, evLevel: (e, n) => `${e} · ${n}/3`,
@@ -1370,6 +1403,17 @@ const I18N = {
     'st.16.0': 'Aus dem All seid ihr direkt in meinen Schnee gefallen. Hier ist es kalt, und es wird noch kälter!',
     'st.16.1': 'Fell ist die beste Daunenjacke. Los, bevor die Pfoten frieren!',
     'st.end.0': 'Die Wohnung ist gerettet. Alle Geräte machen wieder brav ihre Arbeit.',
+    'storyArc': 'Inzwischen…',
+    'st.arc3.0': 'Mixer, Fernseher, Wecker… Die haben nicht einfach rebelliert. Jemand ruft sie!',
+    'st.arc3.1': 'Hörst du das Summen aus dem Bad? Lass uns nachsehen, aber halt die Pfoten trocken.',
+    'st.arc6.0': 'Auf dem Dachboden lagen Baupläne: all unsere Roboter und noch ein Haufen neuer!',
+    'st.arc6.1': 'Also entwirft sie jemand. Die Spur führt in die Garage.',
+    'st.arc9.0': 'Vom Dach sieht man die ganze Stadt. Die Geräte rebellieren nicht nur in unserer Wohnung!',
+    'st.arc9.1': 'Dann retten wir eben mehr als nur sie. Wuff! Ich meine: los!',
+    'st.arc12.0': 'Der Server hat eine Adresse verraten: ein Lager am Stadtrand. Von dort werden die Roboter verschickt.',
+    'st.arc12.1': 'Stoppen wir die Lieferungen, gibt es keine neuen Roboter. Na ja, fast.',
+    'st.arc15.0': 'Im Labor lag ein Logbuch: alle Befehle kommen aus dem Orbit!',
+    'st.arc15.1': 'Dann fliegen wir hin. Katzen haben schon immer vom Weltall geträumt.',
     'st.end.1': 'Die Krümel unterm Sofa bleiben aber. Tradition.',
     storySkip: 'Überspringen', storyTap: 'tippen zum Fortfahren',
     'ev.halloween': 'Halloween', 'ev.newyear': 'Neujahr', evSub: (d, n) => `Event: ${d}/${n} Level · Preis: ein Hut`, evLevel: (e, n) => `${e} · ${n}/3`,
@@ -1503,6 +1547,17 @@ const I18N = {
     'st.16.0': 'Del espacio habéis caído directos en mi nieve. ¡Aquí hace frío y hará más!',
     'st.16.1': 'El pelo es el mejor abrigo. ¡Vamos antes de que se nos congelen las patas!',
     'st.end.0': 'El piso está a salvo. Todos los aparatos vuelven a sus tareas.',
+    'storyArc': 'Mientras tanto…',
+    'st.arc3.0': 'Batidora, tele, despertador… No solo se rebelaron. ¡Alguien los llama!',
+    'st.arc3.1': '¿Oyes ese zumbido en el baño? Vamos a ver, pero no te mojes las patas.',
+    'st.arc6.0': 'En el desván había planos: todos nuestros robots ¡y un montón de nuevos!',
+    'st.arc6.1': 'Entonces alguien los diseña. El rastro lleva al garaje.',
+    'st.arc9.0': 'Desde el tejado se ve toda la ciudad. ¡Los aparatos se rebelan en más pisos que el nuestro!',
+    'st.arc9.1': 'Pues salvaremos algo más que nuestro piso. ¡Guau! Digo… ¡adelante!',
+    'st.arc12.0': 'El servidor soltó una dirección: un almacén en las afueras. De ahí salen los robots hacia los pisos.',
+    'st.arc12.1': 'Si paramos los envíos, no habrá robots nuevos. Bueno, casi.',
+    'st.arc15.0': 'En el laboratorio había un diario: ¡todas las órdenes vienen de la órbita!',
+    'st.arc15.1': 'Pues volamos allí. Los gatos siempre han soñado con el espacio.',
     'st.end.1': 'Las migas bajo el sofá se quedan. Es tradición.',
     storySkip: 'Saltar', storyTap: 'toca para continuar',
     'ev.halloween': 'Halloween', 'ev.newyear': 'Año Nuevo', evSub: (d, n) => `Evento: ${d}/${n} niveles · premio: un sombrero`, evLevel: (e, n) => `${e} · ${n}/3`,
@@ -3448,8 +3503,11 @@ function advanceHero() {
   G.cur = n;
 }
 // onStart runs once the run exists, which may be after the room's comic
+// a story beat after every three rooms, before the next room's own comic
+const ARC_BEFORE = { 3: 'arc3', 6: 'arc6', 9: 'arc9', 12: 'arc12', 15: 'arc15' };
 function startLevel(li, noStory, onStart) {
-  const c = LEVELS[li].ch;
+  const c = LEVELS[li].ch, arc = ARC_BEFORE[c];
+  if (!noStory && CH_LEVELS[c][0] === li && arc && !(PROG.story && PROG.story[arc])) { showStory(arc, () => startLevel(li, false, onStart)); return; }
   if (!noStory && CH_LEVELS[c][0] === li && STORY[c] && !(PROG.story && PROG.story[c])) { showStory(c, () => startLevel(li, true, onStart)); return; }
   newRun(li); setScreen('game'); setupWave(0);
   if (onStart) onStart();
@@ -9229,6 +9287,11 @@ const STORY = {
       { bg: 15, actors: [{ h: 'nugget', x: 140, y: 250, r: 60 }, { h: 'mochi', x: 290, y: 262, r: 58, mood: 'happy' }], who: 'mochi' }],
   16: [{ bg: 16, actors: [BOSS_AT(16)], who: 'boss', kind: 16 },
       { bg: 16, actors: [{ h: 'rex', x: 140, y: 258, r: 60 }, { h: 'pixel', x: 290, y: 262, r: 58 }], who: 'rex' }],
+  arc3: [{ bg: 2, actors: [{ h: 'mochi', x: 140, y: 258, r: 60 }, { h: 'pixel', x: 290, y: 262, r: 58 }], who: 'mochi' }, { bg: 2, actors: [{ h: 'mochi', x: 140, y: 258, r: 60 }, { h: 'pixel', x: 290, y: 262, r: 58 }], who: 'pixel' }],
+  arc6: [{ bg: 5, actors: [{ h: 'bandit', x: 140, y: 258, r: 60 }, { h: 'nugget', x: 290, y: 262, r: 58 }], who: 'bandit' }, { bg: 5, actors: [{ h: 'bandit', x: 140, y: 258, r: 60 }, { h: 'nugget', x: 290, y: 262, r: 58 }], who: 'nugget' }],
+  arc9: [{ bg: 8, actors: [{ h: 'homa', x: 140, y: 258, r: 60 }, { h: 'rex', x: 290, y: 262, r: 58 }], who: 'homa' }, { bg: 8, actors: [{ h: 'homa', x: 140, y: 258, r: 60 }, { h: 'rex', x: 290, y: 262, r: 58 }], who: 'rex' }],
+  arc12: [{ bg: 10, actors: [{ h: 'pixel', x: 140, y: 258, r: 60 }, { h: 'bandit', x: 290, y: 262, r: 58 }], who: 'pixel' }, { bg: 10, actors: [{ h: 'pixel', x: 140, y: 258, r: 60 }, { h: 'bandit', x: 290, y: 262, r: 58 }], who: 'bandit' }],
+  arc15: [{ bg: 14, actors: [{ h: 'nugget', x: 140, y: 258, r: 60 }, { h: 'mochi', x: 290, y: 262, r: 58 }], who: 'nugget' }, { bg: 14, actors: [{ h: 'nugget', x: 140, y: 258, r: 60 }, { h: 'mochi', x: 290, y: 262, r: 58 }], who: 'mochi' }],
   end: [{ bg: 0, actors: [{ h: 'mochi', x: 70, y: 250, r: 44, mood: 'happy' }, { h: 'pixel', x: 160, y: 244, r: 44, mood: 'happy' }, { h: 'bandit', x: 250, y: 252, r: 46, mood: 'happy' }, { h: 'nugget', x: 340, y: 256, r: 46, mood: 'happy' }], who: null },
         { bg: 1, actors: [{ e: 'vac', x: 130, y: 250, r: 52 }, { h: 'nugget', x: 290, y: 250, r: 64, mood: 'happy' }], who: 'nugget' }],
 };
@@ -9259,7 +9322,7 @@ function drawStory() {
   halftone(0, 0, W, H, hexA(ch.col, .12), 14, 4, W, 0);
   UI.push({ x: 0, y: 0, w: W, h: H, cb: () => storyNext(false) });
   // chapter label like a comic's title strip
-  const label = st.key === 'end' ? '★ ★ ★' : ch.name;
+  const label = st.key === 'end' ? '★ ★ ★' : String(st.key).startsWith('arc') ? tr('storyArc') : ch.name;
   ctx.save(); ctx.translate(W / 2, 52); ctx.rotate(-.03);
   ctx.font = `900 20px ${FD}`; const lw = ctx.measureText(label).width + 36;
   ctx.fillStyle = '#15122a'; rr(-lw / 2 + 4, -18 + 4, lw, 36, 8); ctx.fill();
