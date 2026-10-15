@@ -2806,24 +2806,109 @@ function roomSpace(b, ch) {
   });
 }
 
+const POL = { sky: 118, dome: [370, TOP + 74], mast: [64, TOP + 30], barrels: [26, BOT - 40], sled: [W - 34, BOT - 36] };
 function roomPolar(b, ch) {
-  const R = seeded(353);
-  // a snowy deck under a dark polar sky, ice blocks along the walls
-  const g = b.createLinearGradient(0, TOP, 0, BOT);
-  g.addColorStop(0, '#0e1f2e'); g.addColorStop(1, '#1d3446');
-  b.fillStyle = g; b.fillRect(0, TOP, W, BOT - TOP);
-  for (let k = 0; k < 500; k++) { b.fillStyle = `rgba(255,255,255,${.05 + R() * .12})`; const z = 1 + R() * 2; b.beginPath(); b.arc(R() * W, TOP + R() * (BOT - TOP), z, 0, Math.PI * 2); b.fill(); }
-  for (const x of [0, W - 46]) for (let y = TOP + 40; y < BOT - 120; y += 60) {
-    b.fillStyle = 'rgba(159,232,255,.25)'; b.fillRect(x + 4, y, 40, 54);
-    b.strokeStyle = 'rgba(220,245,255,.45)'; b.lineWidth = 2; b.strokeRect(x + 4, y, 40, 54);
+  const R = seeded(353), SK = TOP + POL.sky;
+  // the polar night at the top: a deep sky, stars, still aurora bands, icy peaks, a radar dome and a mast
+  const sky = b.createLinearGradient(0, TOP, 0, SK);
+  sky.addColorStop(0, '#050d1a'); sky.addColorStop(1, '#14304a');
+  b.fillStyle = sky; b.fillRect(0, TOP, W, SK - TOP);
+  for (let k = 0; k < 80; k++) { b.fillStyle = `rgba(255,255,255,${.3 + R() * .6})`; const z = R() < .1 ? 1.8 : 1; b.fillRect(R() * W, TOP + R() * (SK - TOP - 30), z, z); }
+  for (const [cy, col, a] of [[TOP + 34, '120,255,200', .16], [TOP + 50, '140,180,255', .1]]) {
+    b.save(); b.globalCompositeOperation = 'lighter';
+    for (let x = 0; x < W; x += 3) {
+      const yy = cy + Math.sin(x * .02) * 12 + Math.sin(x * .053) * 6, h = 26 + Math.sin(x * .031) * 10;
+      const g = b.createLinearGradient(0, yy - h, 0, yy + 6);
+      g.addColorStop(0, `rgba(${col},0)`); g.addColorStop(1, `rgba(${col},${a})`);
+      b.fillStyle = g; b.fillRect(x, yy - h, 3, h + 6);
+    }
+    b.restore();
   }
-  windowLight(b, ch, .05);
-  vignette(b, '2,8,14', .55);
+  b.fillStyle = '#1d3a52'; b.beginPath(); b.moveTo(0, SK);
+  for (const [px, py] of [[0, SK - 26], [50, SK - 44], [96, SK - 22], [150, SK - 52], [210, SK - 18], [260, SK - 40], [320, SK - 26], [380, SK - 56], [450, SK - 24]]) b.lineTo(px, py);
+  b.lineTo(W, SK); b.closePath(); b.fill();
+  b.fillStyle = 'rgba(230,248,255,.55)';
+  for (const [px, py] of [[50, SK - 44], [150, SK - 52], [260, SK - 40], [380, SK - 56]]) { b.beginPath(); b.moveTo(px, py); b.lineTo(px - 12, py + 12); b.lineTo(px + 12, py + 12); b.closePath(); b.fill(); }
+  const [dx, dy] = POL.dome;
+  b.fillStyle = '#2a3e50'; b.fillRect(dx - 20, dy, 40, SK - dy);
+  const dg = b.createRadialGradient(dx - 8, dy - 12, 3, dx, dy, 26);
+  dg.addColorStop(0, '#ffffff'); dg.addColorStop(1, '#9fb6c8');
+  b.fillStyle = dg; b.beginPath(); b.arc(dx, dy, 24, Math.PI, 0); b.fill();
+  b.strokeStyle = 'rgba(80,110,140,.5)'; b.lineWidth = 1; for (const a of [.6, 1.2, 1.9, 2.5]) { b.beginPath(); b.moveTo(dx + Math.cos(Math.PI + a) * 24, dy + Math.sin(Math.PI + a) * 24); b.lineTo(dx, dy); b.stroke(); }
+  const [mx, my] = POL.mast;
+  b.strokeStyle = '#ff7a3c'; b.lineWidth = 3; b.beginPath(); b.moveTo(mx, SK); b.lineTo(mx, my); b.stroke();
+  b.lineWidth = 1; b.strokeStyle = 'rgba(255,122,60,.6)'; for (let y = my + 10; y < SK; y += 12) { b.beginPath(); b.moveTo(mx - 5, y); b.lineTo(mx + 5, y + 10); b.stroke(); }
+  // the snowy deck: soft drifts, steel plates peeking through, frost, paw prints
+  const fg = b.createLinearGradient(0, SK, 0, BOT);
+  fg.addColorStop(0, '#cfe4f0'); fg.addColorStop(1, '#a9c6d8');
+  b.fillStyle = fg; b.fillRect(0, SK, W, BOT - SK);
+  for (let k = 0; k < 9; k++) {
+    const x = 60 + R() * 330, y = SK + 60 + R() * 420, w = 30 + R() * 50, h = 18 + R() * 24;
+    b.save(); b.beginPath(); b.ellipse(x + w / 2, y + h / 2, w * .5, h * .45, 0, 0, TAU); b.clip();
+    b.fillStyle = 'rgba(70,100,125,.16)'; b.fillRect(x, y, w, h);
+    b.fillStyle = 'rgba(40,60,80,.18)'; for (let q = x + 4; q < x + w; q += 8) b.fillRect(q, y, 1.5, h);
+    b.restore();
+  }
+  for (let k = 0; k < 14; k++) {
+    const x = R() * W, y = SK + R() * (BOT - SK), rr2 = 30 + R() * 70;
+    const g = b.createRadialGradient(x, y - rr2 * .2, 0, x, y, rr2);
+    g.addColorStop(0, 'rgba(255,255,255,.45)'); g.addColorStop(1, 'rgba(255,255,255,0)');
+    b.fillStyle = g; b.beginPath(); b.ellipse(x, y, rr2, rr2 * .45, 0, 0, TAU); b.fill();
+    b.fillStyle = 'rgba(110,150,180,.12)'; b.beginPath(); b.ellipse(x + rr2 * .2, y + rr2 * .25, rr2 * .7, rr2 * .14, 0, 0, TAU); b.fill();
+  }
+  for (let k = 0; k < 900; k++) { b.fillStyle = `rgba(${R() < .7 ? '255,255,255' : '120,160,190'},${.2 + R() * .4})`; b.fillRect(R() * W, SK + R() * (BOT - SK), 1.5, 1.5); }
+  b.fillStyle = 'rgba(80,120,150,.22)';
+  for (let k = 0; k < 7; k++) {
+    const x = 120 + k * 32 + Math.sin(k) * 8, y = BOT - 110 - k * 46;
+    b.beginPath(); b.ellipse(x, y, 5, 6, 0, 0, TAU); b.fill();
+    for (let q = 0; q < 3; q++) { b.beginPath(); b.arc(x - 5 + q * 5, y - 8, 2, 0, TAU); b.fill(); }
+  }
+  // a big snowflake stencilled faint in the middle, and the room number
+  b.save(); b.translate(225, 400); b.strokeStyle = 'rgba(80,140,180,.14)'; b.lineWidth = 6; b.lineCap = 'round';
+  for (let k = 0; k < 6; k++) { b.rotate(Math.PI / 3); b.beginPath(); b.moveTo(0, 0); b.lineTo(0, -92); b.moveTo(0, -56); b.lineTo(-20, -74); b.moveTo(0, -56); b.lineTo(20, -74); b.stroke(); }
+  b.fillStyle = 'rgba(80,140,180,.14)'; b.textAlign = 'center'; b.textBaseline = 'middle'; b.font = `900 40px ${FD}`; b.fillText('17', 0, 128);
+  b.restore();
+  windowLight(b, ch, .04);
+  // ice blocks stacked along both walls, with icicles and snow caps
+  for (const side of [0, 1]) {
+    const x0 = side ? W - 44 : 0;
+    for (let y = SK + 6, n = 0; y < BOT - 130; y += 48, n++) {
+      const bx = x0 + (n % 2 ? 2 : 0), bw = 42, bh = 44;
+      const ig = b.createLinearGradient(bx, y, bx + bw, y + bh);
+      ig.addColorStop(0, 'rgba(210,245,255,.85)'); ig.addColorStop(1, 'rgba(110,180,215,.75)');
+      b.fillStyle = ig; rr(bx, y, bw, bh, 5, b); b.fill();
+      b.strokeStyle = 'rgba(255,255,255,.85)'; b.lineWidth = 1.5; rr(bx, y, bw, bh, 5, b); b.stroke();
+      b.strokeStyle = 'rgba(80,140,180,.35)'; b.lineWidth = 1; b.beginPath(); b.moveTo(bx + 8, y + 10); b.lineTo(bx + 20, y + 22); b.lineTo(bx + 16, y + 34); b.stroke();
+      b.fillStyle = 'rgba(255,255,255,.6)'; b.fillRect(bx + 5, y + 4, 4, bh - 10);
+      b.fillStyle = '#ffffff'; b.beginPath(); b.ellipse(bx + bw / 2, y + 1, bw / 2 + 2, 5, 0, 0, TAU); b.fill();
+      b.fillStyle = 'rgba(200,240,255,.85)';
+      for (let q = 0; q < 3; q++) { const ix = bx + 8 + q * 12 + (n % 3) * 2, il = 6 + ((q + n) % 3) * 4; b.beginPath(); b.moveTo(ix - 3, y + bh); b.lineTo(ix + 3, y + bh); b.lineTo(ix, y + bh + il); b.closePath(); b.fill(); }
+    }
+  }
+  // bottom corners: fuel barrels with snow caps, a sled with a crate
+  const [bx, by] = POL.barrels;
+  for (const [ox, oy] of [[-8, 0], [14, 8]]) {
+    b.fillStyle = 'rgba(0,0,0,.18)'; b.beginPath(); b.ellipse(bx + ox, by + oy + 26, 16, 5, 0, 0, TAU); b.fill();
+    const g = b.createLinearGradient(bx + ox - 14, 0, bx + ox + 14, 0);
+    g.addColorStop(0, '#b8481e'); g.addColorStop(.4, '#ff7a3c'); g.addColorStop(1, '#8a3414');
+    b.fillStyle = g; b.fillRect(bx + ox - 14, by + oy - 14, 28, 40);
+    b.fillStyle = 'rgba(0,0,0,.25)'; b.fillRect(bx + ox - 14, by + oy - 2, 28, 3); b.fillRect(bx + ox - 14, by + oy + 14, 28, 3);
+    b.fillStyle = '#ffffff'; b.beginPath(); b.ellipse(bx + ox, by + oy - 15, 16, 6, 0, 0, TAU); b.fill();
+  }
+  const [sx, sy] = POL.sled;
+  b.fillStyle = 'rgba(0,0,0,.18)'; b.fillRect(sx - 30, sy + 26, 62, 5);
+  b.strokeStyle = '#6a4a2e'; b.lineWidth = 3; b.beginPath(); b.moveTo(sx - 30, sy + 24); b.lineTo(sx + 26, sy + 24); b.quadraticCurveTo(sx + 34, sy + 24, sx + 32, sy + 14); b.stroke();
+  b.fillStyle = '#9a7448'; b.fillRect(sx - 28, sy + 14, 54, 6);
+  b.fillStyle = '#5a7a8a'; b.fillRect(sx - 22, sy - 12, 40, 26);
+  b.strokeStyle = '#2a3e50'; b.lineWidth = 1.5; b.strokeRect(sx - 22, sy - 12, 40, 26);
+  b.fillStyle = '#ffffff'; b.beginPath(); b.ellipse(sx - 2, sy - 12, 22, 5, 0, 0, TAU); b.fill();
+  vignette(b, '2,8,14', .45);
   hudBars(b, ch, c => {
     c.fillStyle = 'rgba(220,245,255,.18)';
     for (let x = 8; x < W; x += 26) { c.beginPath(); c.arc(x, 16 + (x * 13) % 22, 2.2, 0, Math.PI * 2); c.fill(); }
   });
 }
+
 const ROOMS = [roomKitchen, roomLiving, roomBedroom, roomBath, roomBalcony, roomAttic, roomGarage, roomBasement, roomRoof, roomGarden, roomServer, roomStairs, roomStore, roomFactory, roomLab, roomSpace, roomPolar];
 // Each room is painted the first time it is needed (the rest are warmed up after start),
 // so the game opens without painting all ten rooms first.
@@ -2903,9 +2988,24 @@ function drawRoomUnder(c) {
     const fl = frac(t * .09);
     if (!RM && fl > .97) glowAt(225, TOP + 220, 560, '200,215,255', .18 * Math.sin((fl - .97) / .03 * Math.PI));
   } else if (c === 16) {
-    // a cold aurora shimmer across the top of the room
-    glowAt(225 + Math.sin((RM ? 0 : t) * .25) * 140, TOP + 120, 320, '120,255,200', .07);
-    glowAt(225, TOP + 300, 300, '200,235,255', .06);
+    // aurora curtains waving across the sky, the radar dome blinking, a red light on the mast
+    glowAt(225 + Math.sin(t * .25) * 140, TOP + 120, 320, '120,255,200', .06);
+    ctx.save(); ctx.beginPath(); ctx.rect(0, TOP, W, POL.sky - 20); ctx.clip();
+    for (const [cy, col, sp, amp] of [[TOP + 40, '120,255,200', .5, .22], [TOP + 30, '190,140,255', .35, .14]]) {
+      for (let x = 0; x < W; x += 4) {
+        const yy = cy + Math.sin(x * .018 + t * sp) * 14 + Math.sin(x * .05 - t * sp * 1.7) * 6, h = 30 + Math.sin(x * .03 + t * sp * 2) * 14;
+        const a = amp * (.5 + .5 * Math.sin(x * .011 + t * sp * 1.3));
+        const g = ctx.createLinearGradient(0, yy - h, 0, yy + 4);
+        g.addColorStop(0, `rgba(${col},0)`); g.addColorStop(1, `rgba(${col},${a})`);
+        ctx.fillStyle = g; ctx.fillRect(x, yy - h, 4, h + 4);
+      }
+    }
+    ctx.restore();
+    const [dx, dy] = POL.dome, [mx, my] = POL.mast;
+    const on = RM || frac(t * .6) < .15;
+    if (on) glowAt(mx, my, 16, '255,90,60', .8);
+    ctx.fillStyle = on ? '#ff5a3c' : '#6a2a1a'; circ(mx, my, 3);
+    glowAt(dx, dy - 24, 10, '159,232,255', .5 + .4 * Math.sin(t * 3));
   } else if (c === 15) {
     // a slow sweep of light from the planet, twinkling stars, a shooting star now and then, blinking deck lights
     glowAt(225 + Math.sin(t * .2) * 120, TOP + 200, 300, '160,140,255', .08);
@@ -4460,7 +4560,7 @@ function hazardBand(y, h, off) {
   ctx.restore();
 }
 // how far above its centre each boss reaches, in radii (only the ones taller than usual)
-const BOSS_TOP = { 11: 1.66, 12: 1.32, 13: 1.38, 14: 1.36, 15: 1.2 };
+const BOSS_TOP = { 11: 1.66, 12: 1.32, 13: 1.38, 14: 1.36, 15: 1.2, 16: 1.3 };
 function drawBossIntro() {
   const I = G.intro;
   if (!I || G.state !== 'bossintro') return;
@@ -5791,46 +5891,169 @@ function drawLiftBoss(e, r, t) {
   ctx.restore();
 }
 function drawWind() {
-  // the blizzard: snow streaks drifting the way the wind blows, and an arrow at the top
+  // the blizzard: long gusts and snowflakes racing across the field the way the wind blows, and a compass
+  // at the top with a big arrow, so the direction reads at a glance before the shot; more chevrons = stronger
   if (!G.wind) return;
-  const t = RM ? 0 : T, ca = Math.cos(G.wind.a), sa = Math.sin(G.wind.a);
-  ctx.save(); ctx.strokeStyle = 'rgba(230,248,255,.35)'; ctx.lineWidth = 1.5; ctx.lineCap = 'round';
-  for (let k = 0; k < 40; k++) {
-    const u = frac(k * .6180339 + t * .35), v = frac(k * .4142135 + t * .12);
-    const x = ((k * 97 + u * 900) % (W + 80)) - 40, y = TOP + ((k * 53 + v * 700) % (BOT - TOP));
-    ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + ca * 16, y + sa * 16); ctx.stroke();
+  const t = RM ? 0 : T, a = G.wind.a, ca = Math.cos(a), sa = Math.sin(a), pw = G.wind.f / WIND_F || 1;
+  ctx.save(); ctx.beginPath(); ctx.rect(0, TOP, W, BOT - TOP); ctx.clip();
+  ctx.lineCap = 'round';
+  // gusts: soft streaks with a bright head, drifting along the wind
+  for (let k = 0; k < 22; k++) {
+    const u = frac(k * .6180339 + t * .45 * pw), px = frac(k * .4142135) * (W + 200) - 100, py = TOP + frac(k * .7548776) * (BOT - TOP);
+    const d = (u - .5) * 520, x = px + ca * d, y = py + sa * d, L = 46 + (k % 4) * 14;
+    const al = Math.sin(u * Math.PI) * .45;
+    const g = ctx.createLinearGradient(x - ca * L, y - sa * L, x, y);
+    g.addColorStop(0, 'rgba(70,130,175,0)'); g.addColorStop(1, `rgba(70,130,175,${al * 1.3})`);
+    ctx.strokeStyle = g; ctx.lineWidth = 2;
+    ctx.beginPath(); ctx.moveTo(x - ca * L, y - sa * L); ctx.quadraticCurveTo(x - ca * L * .5 - sa * 6, y - sa * L * .5 + ca * 6, x, y); ctx.stroke();
   }
-  ctx.translate(W / 2, TOP + 26); ctx.rotate(G.wind.a);
-  ctx.fillStyle = 'rgba(10,20,28,.6)'; rr(-30, -13, 60, 26, 13); ctx.fill();
-  ctx.fillStyle = '#dff6ff'; ctx.beginPath(); ctx.moveTo(18, 0); ctx.lineTo(4, -9); ctx.lineTo(4, -3); ctx.lineTo(-18, -3); ctx.lineTo(-18, 3); ctx.lineTo(4, 3); ctx.lineTo(4, 9); ctx.closePath(); ctx.fill();
+  // snowflakes riding the wind
+  for (let k = 0; k < 46; k++) {
+    const u = frac(k * .3819660 + t * (.3 + (k % 3) * .08) * pw), px = frac(k * .7071) * (W + 160) - 80, py = TOP + frac(k * .5772) * (BOT - TOP);
+    const d = (u - .5) * 600, x = px + ca * d + Math.sin(t * 2 + k) * 4, y = py + sa * d + Math.cos(t * 2.3 + k) * 4;
+    const fr = 1.4 + (k % 3) * .6; ctx.fillStyle = 'rgba(60,110,150,.45)'; circ(x + .8, y + .8, fr + .6); ctx.fillStyle = `rgba(255,255,255,${.6 + .4 * Math.sin(u * Math.PI)})`; circ(x, y, fr);
+  }
+  ctx.restore();
+  // the compass
+  const cx = W / 2, cy = TOP + 30;
+  ctx.save(); ctx.translate(cx, cy);
+  ctx.fillStyle = 'rgba(8,18,28,.72)'; circ(0, 0, 25);
+  ctx.strokeStyle = 'rgba(159,232,255,.8)'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(0, 0, 25, 0, TAU); ctx.stroke();
+  ctx.fillStyle = 'rgba(159,232,255,.5)';
+  for (let k = 0; k < 8; k++) { const q = k * Math.PI / 4; circ(Math.cos(q) * 20, Math.sin(q) * 20, k % 2 ? 1.3 : 2); }
+  ctx.rotate(a);
+  ctx.save(); ctx.globalCompositeOperation = 'lighter'; glowAt(8, 0, 22, '159,232,255', .45); ctx.restore();
+  ctx.fillStyle = '#ffffff'; ctx.strokeStyle = '#0a1a26'; ctx.lineWidth = 2; ctx.lineJoin = 'round';
+  ctx.beginPath(); ctx.moveTo(19, 0); ctx.lineTo(3, -10); ctx.lineTo(3, -4); ctx.lineTo(-17, -4); ctx.lineTo(-17, 4); ctx.lineTo(3, 4); ctx.lineTo(3, 10); ctx.closePath(); ctx.stroke(); ctx.fill();
+  // strength chevrons trailing out past the dial, running with the wind
+  const n = pw >= 1.35 ? 3 : pw >= 1.15 ? 2 : 1;
+  ctx.strokeStyle = '#9fe8ff'; ctx.lineWidth = 3; ctx.lineCap = 'round';
+  for (let k = 0; k < n; k++) {
+    const ox = 34 + k * 11 + frac(t * 1.5) * 6;
+    ctx.globalAlpha = .9 - k * .2;
+    ctx.beginPath(); ctx.moveTo(ox - 5, -7); ctx.lineTo(ox + 2, 0); ctx.lineTo(ox - 5, 7); ctx.stroke();
+  }
   ctx.restore();
 }
 function drawIce(x, y, R) {
-  // a frozen hero: a translucent ice block with a shine
+  // a frozen hero: a faceted block of ice with frost spikes on top, cracks, glints and a couple of icicles
+  const t = RM ? 0 : T;
   ctx.save(); ctx.translate(x, y);
-  ctx.fillStyle = 'rgba(159,232,255,.35)'; rr(-R, -R, R * 2, R * 2, R * .25); ctx.fill();
-  ctx.strokeStyle = 'rgba(230,248,255,.85)'; ctx.lineWidth = 2; rr(-R, -R, R * 2, R * 2, R * .25); ctx.stroke();
-  ctx.strokeStyle = 'rgba(255,255,255,.7)'; ctx.beginPath(); ctx.moveTo(-R * .6, -R * .2); ctx.lineTo(-R * .2, -R * .6); ctx.stroke();
+  const g = ctx.createLinearGradient(-R, -R, R, R);
+  g.addColorStop(0, 'rgba(225,250,255,.55)'); g.addColorStop(.5, 'rgba(159,232,255,.32)'); g.addColorStop(1, 'rgba(90,170,215,.5)');
+  ctx.fillStyle = g;
+  ctx.beginPath(); ctx.moveTo(-R * .85, -R); ctx.lineTo(R * .7, -R * 1.05); ctx.lineTo(R * 1.02, -R * .6); ctx.lineTo(R, R * .85); ctx.lineTo(R * .6, R * 1.02); ctx.lineTo(-R * .95, R * .95); ctx.lineTo(-R * 1.05, -R * .5); ctx.closePath(); ctx.fill();
+  ctx.strokeStyle = 'rgba(240,252,255,.95)'; ctx.lineWidth = 2.5; ctx.stroke();
+  ctx.strokeStyle = 'rgba(255,255,255,.5)'; ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.moveTo(-R * .85, -R); ctx.lineTo(-R * .4, -R * .55); ctx.lineTo(R * .7, -R * 1.05); ctx.moveTo(-R * .4, -R * .55); ctx.lineTo(-R * .95, R * .95); ctx.moveTo(-R * .4, -R * .55); ctx.lineTo(R, R * .85); ctx.stroke();
+  ctx.strokeStyle = 'rgba(60,120,160,.45)'; ctx.lineWidth = 1.2;
+  ctx.beginPath(); ctx.moveTo(R * .2, -R * .1); ctx.lineTo(R * .45, R * .2); ctx.lineTo(R * .3, R * .5); ctx.moveTo(R * .45, R * .2); ctx.lineTo(R * .75, R * .3); ctx.stroke();
+  ctx.fillStyle = 'rgba(255,255,255,.55)'; ctx.beginPath(); ctx.moveTo(-R * .7, -R * .7); ctx.lineTo(-R * .55, -R * .75); ctx.lineTo(-R * .75, R * .3); ctx.lineTo(-R * .88, R * .25); ctx.closePath(); ctx.fill();
+  ctx.fillStyle = 'rgba(240,252,255,.95)';
+  for (const [sx, h] of [[-R * .5, R * .35], [-R * .1, R * .5], [R * .3, R * .3]]) { ctx.beginPath(); ctx.moveTo(sx - R * .1, -R * .98); ctx.lineTo(sx, -R * .98 - h); ctx.lineTo(sx + R * .1, -R * .98); ctx.closePath(); ctx.fill(); }
+  ctx.fillStyle = 'rgba(200,240,255,.85)';
+  for (const [sx, h] of [[-R * .4, R * .25], [R * .25, R * .35]]) { ctx.beginPath(); ctx.moveTo(sx - R * .07, R * .98); ctx.lineTo(sx, R * .98 + h); ctx.lineTo(sx + R * .07, R * .98); ctx.closePath(); ctx.fill(); }
+  ctx.save(); ctx.globalCompositeOperation = 'lighter';
+  for (let k = 0; k < 2; k++) { const ph = frac(t * .5 + k * .5), gx = -R * .5 + k * R * .9, gy = -R * .5 + k * R * .7; const s = Math.sin(ph * Math.PI) * R * .25; ctx.strokeStyle = `rgba(255,255,255,${Math.sin(ph * Math.PI)})`; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(gx - s, gy); ctx.lineTo(gx + s, gy); ctx.moveTo(gx, gy - s); ctx.lineTo(gx, gy + s); ctx.stroke(); }
+  ctx.restore();
   ctx.restore();
 }
 function drawCryo(e, r, t) {
-  // a frosty robot with a snowflake vent
-  const g = ctx.createRadialGradient(-r * .3, -r * .3, r * .1, 0, 0, r);
-  g.addColorStop(0, '#e8f8ff'); g.addColorStop(1, '#3a6a84');
-  ctx.fillStyle = g; circ(0, 0, r * .85);
-  ctx.strokeStyle = '#9fe8ff'; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.arc(0, 0, r * .85, 0, TAU); ctx.stroke();
-  ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 2;
-  for (let k = 0; k < 3; k++) { const a = k * Math.PI / 3 + t * .5; ctx.beginPath(); ctx.moveTo(Math.cos(a) * r * .3, r * .38 + Math.sin(a) * r * .3); ctx.lineTo(-Math.cos(a) * r * .3, r * .38 - Math.sin(a) * r * .3); ctx.stroke(); }
-  angryEyes(0, -r * .2, r * .55, '#4fd6ff');
+  // a cryo bot: a frosted dome with a glass visor and a snowflake badge, two cryo nozzles breathing cold mist,
+  // icicles hanging from its rim; the nozzles glow and the mist thickens before it attacks
+  const hot = e.timer <= 1;
+  ctx.fillStyle = 'rgba(0,30,50,.25)'; ctx.beginPath(); ctx.ellipse(0, r * .95, r * .8, r * .15, 0, 0, TAU); ctx.fill();
+  for (const sd of [-1, 1]) {
+    ctx.fillStyle = '#5a7a8a'; rr(sd > 0 ? r * .6 : -r * 1.02, -r * .02, r * .42, r * .22, r * .08); ctx.fill();
+    ctx.fillStyle = '#2a3e50'; ctx.fillRect(sd > 0 ? r * .96 : -r * 1.04, -r * .06, r * .08, r * .3);
+    const nx = sd * r * 1.04;
+    ctx.save(); ctx.globalCompositeOperation = 'lighter'; glowAt(nx, r * .09, r * (hot ? .5 : .25), '159,232,255', hot ? .8 : .4); ctx.restore();
+    for (let k = 0; k < (hot ? 5 : 3); k++) {
+      const ph = RM ? .4 : frac(t * .9 + k / (hot ? 5 : 3) + (sd > 0 ? .5 : 0));
+      ctx.fillStyle = `rgba(225,248,255,${.45 * (1 - ph)})`; circ(nx + sd * ph * r * .7, r * .09 - ph * r * .25 + Math.sin(ph * 6 + k) * r * .05, r * (.06 + ph * .16));
+    }
+  }
+  const bg2 = ctx.createLinearGradient(0, r * .1, 0, r * .85);
+  bg2.addColorStop(0, '#7a9aac'); bg2.addColorStop(1, '#3a5668');
+  ctx.fillStyle = bg2; rr(-r * .72, r * .15, r * 1.44, r * .68, r * .2); ctx.fill();
+  ctx.fillStyle = '#9fe8ff'; for (let q = -2; q <= 2; q++) circ(q * r * .24, r * .62, r * .04);
+  const g = ctx.createRadialGradient(-r * .3, -r * .45, r * .08, 0, -r * .1, r * .85);
+  g.addColorStop(0, '#ffffff'); g.addColorStop(.5, '#bfe6f6'); g.addColorStop(1, '#5a8aa4');
+  ctx.fillStyle = g; ctx.beginPath(); ctx.arc(0, r * .2, r * .74, Math.PI, 0); ctx.closePath(); ctx.fill();
+  ctx.strokeStyle = '#9fe8ff'; ctx.lineWidth = 2.5; ctx.stroke();
+  ctx.fillStyle = 'rgba(255,255,255,.75)';
+  for (const [fx, fy] of [[-.5, -.15], [.42, -.3], [-.15, -.5]]) { ctx.beginPath(); ctx.arc(fx * r, r * .2 + fy * r, r * .06, 0, TAU); ctx.fill(); }
+  ctx.fillStyle = '#0a1a26'; rr(-r * .5, -r * .3, r * 1.0, r * .3, r * .14); ctx.fill();
+  ctx.save(); ctx.globalCompositeOperation = 'lighter'; glowAt(0, -r * .15, r * .4, '79,214,255', hot ? .6 : .3); ctx.restore();
+  angryEyes(0, -r * .15, r * .55, hot ? '#ff3b5c' : '#4fd6ff');
+  ctx.save(); ctx.translate(0, r * .42); ctx.rotate(RM ? 0 : t * .4);
+  ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 1.8; ctx.lineCap = 'round';
+  for (let k = 0; k < 6; k++) { ctx.rotate(Math.PI / 3); ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(0, -r * .14); ctx.moveTo(0, -r * .09); ctx.lineTo(-r * .04, -r * .13); ctx.moveTo(0, -r * .09); ctx.lineTo(r * .04, -r * .13); ctx.stroke(); }
+  ctx.restore();
+  ctx.fillStyle = 'rgba(220,248,255,.9)';
+  for (const [ix, il] of [[-.5, .14], [-.2, .22], [.15, .12], [.45, .2]]) { ctx.beginPath(); ctx.moveTo(ix * r - r * .05, r * .83); ctx.lineTo(ix * r, r * (.83 + il)); ctx.lineTo(ix * r + r * .05, r * .83); ctx.closePath(); ctx.fill(); }
 }
 function drawPloughBoss(e, r, t) {
-  // a snowplough with a big blade in front and spinning augers
-  ctx.fillStyle = '#c9ced6'; rr(-r * .8, -r * .7, r * 1.6, r * 1.1, r * .2); ctx.fill();
-  ctx.fillStyle = '#9fe8ff'; rr(-r * .5, -r * .55, r, r * .4, r * .12); ctx.fill();
-  ctx.fillStyle = '#ff9f43'; ctx.beginPath(); ctx.moveTo(-r * 1.05, r * .35); ctx.lineTo(r * 1.05, r * .35); ctx.lineTo(r * .9, r * .85); ctx.lineTo(-r * .9, r * .85); ctx.closePath(); ctx.fill();
-  ctx.strokeStyle = '#5a3d24'; ctx.lineWidth = 3;
-  for (let k = -2; k <= 2; k++) { const x = k * r * .38, a = t * 6 + k; ctx.beginPath(); ctx.moveTo(x - Math.cos(a) * r * .14, r * .6 - Math.sin(a) * r * .1); ctx.lineTo(x + Math.cos(a) * r * .14, r * .6 + Math.sin(a) * r * .1); ctx.stroke(); }
-  angryEyes(0, -r * .35, r * .8, '#ff3b5c');
+  // BLIZZARD SNOWPLOUGH: a truck cab with a windshield of angry eyes and amber beacons on the roof, an exhaust
+  // puffing smoke, a big orange V-blade with hazard stripes and a steel edge, snowblower augers spraying snow
+  const angry = e.timer <= 1, sp = angry ? 2 : 1;
+  ctx.fillStyle = 'rgba(0,30,50,.3)'; ctx.beginPath(); ctx.ellipse(0, r * 1.02, r * 1.15, r * .17, 0, 0, TAU); ctx.fill();
+  // tracks with chains
+  for (const sd of [-1, 1]) {
+    ctx.fillStyle = '#1c2630'; rr(sd * r * .9 - r * .2, r * .2, r * .4, r * .76, r * .12); ctx.fill();
+    ctx.strokeStyle = '#8a96a3'; ctx.lineWidth = 1.5;
+    const off = RM ? 0 : (t * 40 * sp) % (r * .12);
+    for (let y = r * .24 + off; y < r * .94; y += r * .12) { ctx.beginPath(); ctx.moveTo(sd * r * .9 - r * .18, y); ctx.lineTo(sd * r * .9 + r * .18, y); ctx.stroke(); }
+  }
+  // exhaust and smoke
+  ctx.fillStyle = '#3a4048'; ctx.fillRect(r * .5, -r * 1.12, r * .1, r * .5);
+  if (!RM) for (let k = 0; k < 4; k++) { const ph = frac(t * .8 * sp + k / 4); ctx.fillStyle = `rgba(90,100,110,${.4 * (1 - ph)})`; circ(r * .55 + ph * r * .3, -r * 1.15 - ph * r * .5, r * (.07 + ph * .14)); }
+  // the cab
+  const cg = ctx.createLinearGradient(-r * .7, 0, r * .7, 0);
+  cg.addColorStop(0, '#d6dce2'); cg.addColorStop(.4, '#ffffff'); cg.addColorStop(1, '#a9b2bc');
+  ctx.fillStyle = cg; rr(-r * .72, -r * .9, r * 1.44, r * 1.15, r * .16); ctx.fill();
+  ctx.strokeStyle = '#6a7480'; ctx.lineWidth = 2; rr(-r * .72, -r * .9, r * 1.44, r * 1.15, r * .16); ctx.stroke();
+  ctx.fillStyle = '#ff9f43'; ctx.fillRect(-r * .72, -r * .02, r * 1.44, r * .09);
+  ctx.fillStyle = '#ffffff'; ctx.beginPath(); ctx.ellipse(0, -r * .9, r * .74, r * .1, 0, 0, TAU); ctx.fill();
+  for (const sd of [-1, 1]) {
+    const on = RM || frac(t * 2 * sp + (sd > 0 ? .5 : 0)) < .5;
+    ctx.fillStyle = '#2a3036'; rr(sd * r * .42 - r * .1, -r * 1.04, r * .2, r * .08, r * .02); ctx.fill();
+    ctx.fillStyle = on ? '#ffb000' : '#7a5410'; ctx.beginPath(); ctx.arc(sd * r * .42, -r * 1.04, r * .09, Math.PI, 0); ctx.fill();
+    if (on) { ctx.save(); ctx.globalCompositeOperation = 'lighter'; glowAt(sd * r * .42, -r * 1.08, r * .35, '255,176,0', .7); ctx.restore(); }
+  }
+  // the windshield with angry eyes, frosted at the corners
+  ctx.fillStyle = '#0a1a26'; rr(-r * .56, -r * .78, r * 1.12, r * .5, r * .1); ctx.fill();
+  ctx.fillStyle = 'rgba(159,232,255,.18)'; ctx.beginPath(); ctx.moveTo(-r * .5, -r * .76); ctx.lineTo(-r * .2, -r * .76); ctx.lineTo(-r * .5, -r * .45); ctx.closePath(); ctx.fill();
+  ctx.fillStyle = 'rgba(255,255,255,.6)'; for (const [fx, fy] of [[-.5, -.32], [.48, -.32], [.5, -.72]]) circ(fx * r, fy * r, r * .05);
+  angryEyes(0, -r * .53, r * .8, angry ? '#ff3b5c' : '#ff7a3c');
+  // headlights on the grille
+  for (const sd of [-1, 1]) { ctx.fillStyle = '#fff3c4'; circ(sd * r * .5, r * .16, r * .08); ctx.save(); ctx.globalCompositeOperation = 'lighter'; glowAt(sd * r * .5, r * .16, r * .3, '255,240,190', .5); ctx.restore(); }
+  // the blade: an orange V with stripes, snow piled on it and a steel edge
+  const by = r * .3;
+  ctx.fillStyle = '#ff7a1a'; ctx.beginPath(); ctx.moveTo(-r * 1.15, by); ctx.lineTo(0, by + r * .2); ctx.lineTo(r * 1.15, by); ctx.lineTo(r * 1.05, by + r * .5); ctx.lineTo(0, by + r * .66); ctx.lineTo(-r * 1.05, by + r * .5); ctx.closePath(); ctx.fill();
+  ctx.save(); ctx.clip();
+  ctx.fillStyle = 'rgba(21,21,28,.85)';
+  for (let x = -r * 1.4; x < r * 1.2; x += r * .26) { ctx.beginPath(); ctx.moveTo(x, by + r * .7); ctx.lineTo(x + r * .13, by + r * .7); ctx.lineTo(x + r * .33, by); ctx.lineTo(x + r * .2, by); ctx.closePath(); ctx.fill(); }
+  ctx.fillStyle = 'rgba(255,255,255,.25)'; ctx.fillRect(-r * 1.2, by, r * 2.4, r * .08);
+  ctx.restore();
+  ctx.strokeStyle = '#c9d3dd'; ctx.lineWidth = 4; ctx.beginPath(); ctx.moveTo(-r * 1.05, by + r * .5); ctx.lineTo(0, by + r * .66); ctx.lineTo(r * 1.05, by + r * .5); ctx.stroke();
+  ctx.strokeStyle = '#8a3a0a'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(-r * 1.15, by); ctx.lineTo(0, by + r * .2); ctx.lineTo(r * 1.15, by); ctx.stroke();
+  ctx.fillStyle = '#ffffff';
+  for (const [sx, sw] of [[-.8, .3], [-.35, .26], [.3, .28], [.8, .3]]) { ctx.beginPath(); ctx.ellipse(sx * r, by + r * (.06 + Math.abs(sx) * -.04 + .08), sw * r, r * .09, 0, Math.PI, 0); ctx.fill(); }
+  // augers under the blade, spraying snow
+  for (const sd of [-1, 1]) {
+    ctx.save(); ctx.translate(sd * r * .5, by + r * .62);
+    ctx.fillStyle = '#4a5560'; rr(-r * .32, -r * .07, r * .64, r * .14, r * .06); ctx.fill();
+    ctx.strokeStyle = '#c9d3dd'; ctx.lineWidth = 2;
+    const off = RM ? 0 : (t * 8 * sp) % 1;
+    for (let k = -2; k <= 2; k++) { const x = (k + off - .5) * r * .13; ctx.beginPath(); ctx.moveTo(x - r * .04, -r * .07); ctx.lineTo(x + r * .04, r * .07); ctx.stroke(); }
+    ctx.restore();
+  }
+  if (!RM) for (let k = 0; k < (angry ? 12 : 7); k++) {
+    const ph = frac(t * 1.4 * sp + k * .137), sd = k % 2 ? 1 : -1, a = -Math.PI / 2 + sd * (.6 + (k % 3) * .25);
+    ctx.fillStyle = `rgba(255,255,255,${.9 * (1 - ph)})`;
+    circ(sd * r * 1.1 + Math.cos(a) * ph * r * .7, by + r * .4 + Math.sin(a) * ph * r * .6 + ph * ph * r * .5, r * (.04 + (k % 3) * .015));
+  }
 }
 function drawMeteors() {
   // meteor markers. Lands after this turn (t <= 1): a hot red target with a filled pulsing disc, arrows closing in,
@@ -7211,10 +7434,16 @@ function drawNode(c, x, y, r, col, open) {
     ctx.lineTo(-r * .12, r * .6); ctx.lineTo(r * .34, -r * .1); ctx.lineTo(r * .04, -r * .1); ctx.closePath(); ctx.fill();
     ctx.restore();
   } else if (c === 16) {
-    // an ice crystal node
-    ctx.fillStyle = 'rgba(159,232,255,.35)'; ctx.beginPath();
-    for (let k = 0; k < 6; k++) { const a = k / 6 * TAU; ctx.lineTo(x + Math.cos(a) * r, y + Math.sin(a) * r); }
-    ctx.closePath(); ctx.fill(); ctx.strokeStyle = col; ctx.lineWidth = 2; ctx.stroke();
+    // an ice crystal node: a faceted hexagon, lit from the top left, with a glint
+    const hexP = rad => { ctx.beginPath(); for (let k = 0; k < 6; k++) { const a = k / 6 * TAU; ctx.lineTo(x + Math.cos(a) * rad, y + Math.sin(a) * rad); } ctx.closePath(); };
+    const ig = ctx.createLinearGradient(x - r, y - r, x + r, y + r);
+    ig.addColorStop(0, 'rgba(235,252,255,.75)'); ig.addColorStop(.5, 'rgba(159,232,255,.45)'); ig.addColorStop(1, 'rgba(70,140,190,.6)');
+    ctx.fillStyle = ig; hexP(r); ctx.fill();
+    ctx.strokeStyle = 'rgba(255,255,255,.45)'; ctx.lineWidth = 1.2; ctx.beginPath();
+    for (let k = 0; k < 6; k++) { const a = k / 6 * TAU; ctx.moveTo(x, y); ctx.lineTo(x + Math.cos(a) * r, y + Math.sin(a) * r); }
+    ctx.stroke();
+    ctx.strokeStyle = col; ctx.lineWidth = 2; hexP(r); ctx.stroke();
+    ctx.strokeStyle = 'rgba(255,255,255,.9)'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(x - r * .55, y - r * .2); ctx.lineTo(x - r * .3, y - r * .6); ctx.stroke();
   } else if (c === 15) {
     // a planet node: a shaded globe with bands, the ring passing behind and in front of it
     const ringHalf = front => { ctx.save(); ctx.translate(x, y); ctx.rotate(-.4); ctx.beginPath(); ctx.ellipse(0, 0, r * 1.15, r * .36, 0, front ? 0 : Math.PI, front ? Math.PI : TAU); ctx.strokeStyle = col; ctx.lineWidth = 2.5; ctx.stroke(); ctx.restore(); };
