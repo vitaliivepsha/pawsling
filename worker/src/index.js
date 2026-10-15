@@ -66,7 +66,10 @@ const TEXT = {
     items: { heart3: ['Серце+ ×3', '+1 серце кожному героєві на 3 рівні.'], meter3: ['Швидкий старт ×3', 'Пів шкали «Бешкету» на старті 3 рівнів.'], hat_party: ['Святковий ковпак', 'Капелюшок для всієї команди, назавжди.'], hat_crown: ['Корона', 'Корона для всієї команди, назавжди.'], hat_bow: ['Бантик', 'Бантик для всієї команди, назавжди.'], rainbow: ['Райдужна нитка', 'Нитки героїв переливаються веселкою, назавжди.'], hero_rex: ['Рекс', 'Новий герой: пес-рятувальник, що лікує друзів, яких зачепить.'], hero_spark: ['Іскра', 'Нова героїня: її удар перескакує блискавкою на найближчого ворога.'] },
     title: 'Друге дихання', desc: 'Продовж рівень: повна міцність квартири й усі герої знову на ногах.',
     start: n => `Привіт, ${n}! Збунтована техніка захопила квартиру. Запускай котів і єнотів, як з рогатки!`, play: '🐾 Грати',
-    cardTitle: 'Запросити в Pawsling', cardDesc: 'Картка з кнопкою «Грати» і твоїм запрошенням: обом по бонусу', textTitle: 'Запрошення текстом', textDesc: 'Те саме, але без картинки', recTitle: 'Кинути виклик', recDesc: 'Покажи свій рекорд і запроси побити його', rec: (st, w) => `🏆 Мій рекорд у Pawsling: ⭐ ${st}${w ? ` · 🌙 «Нічна зміна»: ${w}` : ''}. Спробуєш побити?`, share: '📨 Запросити друга', shareText: 'Обери чат, і я надішлю туди картку з запрошенням. Коли друг зайде за нею в гру, ви обидва отримаєте +1 серце і +1 швидкий старт.', startQ: 'Кого запросимо?' },
+    cardTitle: 'Запросити в Pawsling', cardDesc: 'Картка з кнопкою «Грати» і твоїм запрошенням: обом по бонусу', textTitle: 'Запрошення текстом', textDesc: 'Те саме, але без картинки', recTitle: 'Кинути виклик', recDesc: 'Покажи свій рекорд і запроси побити його', rec: (st, w) => `🏆 Мій рекорд у Pawsling: ⭐ ${st}${w ? ` · 🌙 «Нічна зміна»: ${w}` : ''}. Спробуєш побити?`, share: '📨 Запросити друга', shareText: 'Обери чат, і я надішлю туди картку з запрошенням. Коли друг зайде за нею в гру, ви обидва отримаєте +1 серце і +1 швидкий старт.', startQ: 'Кого запросимо?',
+    streakEnds: (n, h) => `🔥 Твоя серія ${n} дн. згорить через ${h} год! Зайди в Pawsling і забери бонус дня.`,
+    passNight: (name, me, them) => `🌙 ${name} випереджає тебе в «Нічній зміні»: ${me} проти твоїх ${them}. Відіграєшся?`,
+    passStars: (name, me, them) => `⭐ ${name} випереджає тебе за зірками: ${me} проти твоїх ${them}. Наздоженеш?`, friendsBtn: '🏆 Рейтинг друзів' },
   en: { rooms: ['Kitchen', 'Living room', 'Bedroom', 'Bathroom', 'Balcony', 'Attic', 'Garage', 'Basement', 'Roof', 'Garden', 'Server room', 'Stairwell', 'Warehouse', 'Factory', 'Lab', 'Space station', 'Polar station'], raid: room => `🚨 Alert! Rebel robots are raiding your home: ${room}!\n\nRepel the raid within 30 minutes and get a bonus: ❤️ +1 heart and ⚡ +1 quick start.`, raidBtn: '🐾 Repel the raid',
     invite: 'Cats and raccoons vs rebel robots! Play Pawsling with me 🐾',
     sent: 'Thanks! Your message has been sent to the developer.',
@@ -75,7 +78,10 @@ const TEXT = {
     items: { heart3: ['Heart+ ×3', '+1 heart for every hero, for 3 levels.'], meter3: ['Quick start ×3', 'Half a Mischief meter at the start of 3 levels.'], hat_party: ['Party hat', 'A hat for the whole team, forever.'], hat_crown: ['Crown', 'A crown for the whole team, forever.'], hat_bow: ['Bow', 'A bow for the whole team, forever.'], rainbow: ['Rainbow yarn', 'Hero threads shimmer in rainbow colors, forever.'], hero_rex: ['Rex', 'A new hero: a rescue dog that heals every friend he touches.'], hero_spark: ['Sparky', 'A new hero: her hits arc like lightning to the nearest enemy.'] },
     title: 'Second wind', desc: 'Continue the level: full home strength and every hero back on their feet.',
     start: n => `Hi, ${n}! Rebel robots have taken over the flat. Launch the cats and raccoons like a slingshot!`, play: '🐾 Play',
-    cardTitle: 'Invite to Pawsling', cardDesc: 'A card with a Play button and your invite: a bonus for you both', textTitle: 'Invite as text', textDesc: 'The same, without the picture', recTitle: 'Challenge a friend', recDesc: 'Show your record and dare them to beat it', rec: (st, w) => `🏆 My Pawsling record: ⭐ ${st}${w ? ` · 🌙 Night Shift: ${w}` : ''}. Can you beat it?`, share: '📨 Invite a friend', shareText: 'Pick a chat and I will send an invite card there. When your friend joins through it, you both get +1 heart and +1 quick start.', startQ: 'Who shall we invite?' },
+    cardTitle: 'Invite to Pawsling', cardDesc: 'A card with a Play button and your invite: a bonus for you both', textTitle: 'Invite as text', textDesc: 'The same, without the picture', recTitle: 'Challenge a friend', recDesc: 'Show your record and dare them to beat it', rec: (st, w) => `🏆 My Pawsling record: ⭐ ${st}${w ? ` · 🌙 Night Shift: ${w}` : ''}. Can you beat it?`, share: '📨 Invite a friend', shareText: 'Pick a chat and I will send an invite card there. When your friend joins through it, you both get +1 heart and +1 quick start.', startQ: 'Who shall we invite?',
+    streakEnds: (n, h) => `🔥 Your ${n}-day streak ends in ${h}h! Open Pawsling and grab today's bonus.`,
+    passNight: (name, me, them) => `🌙 ${name} is ahead of you in Night Shift: ${me} against your ${them}. Going to win it back?`,
+    passStars: (name, me, them) => `⭐ ${name} is ahead of you in stars: ${me} against your ${them}. Can you catch up?`, friendsBtn: '🏆 Friends board' },
   pl: { rooms: ['Kuchnia', 'Salon', 'Sypialnia', 'Łazienka', 'Balkon', 'Strych', 'Garaż', 'Piwnica', 'Dach', 'Ogród', 'Serwerownia', 'Klatka schodowa', 'Magazyn', 'Fabryka', 'Laboratorium', 'Stacja kosmiczna', 'Stacja polarna'], raid: room => `🚨 Alarm! Zbuntowane roboty napadły na pokój: ${room}!\n\nOdeprzyj nalot w 30 minut i zdobądź bonus: ❤️ +1 serce i ⚡ +1 szybki start.`, raidBtn: '🐾 Odeprzyj nalot',
     invite: 'Koty i szopy kontra zbuntowane roboty! Zagraj ze mną w Pawsling 🐾',
     sent: 'Dzięki! Wiadomość trafiła do twórcy gry.',
@@ -84,7 +90,10 @@ const TEXT = {
     items: { heart3: ['Serce+ ×3', '+1 serce dla każdego bohatera na 3 poziomy.'], meter3: ['Szybki start ×3', 'Pół paska psot na starcie 3 poziomów.'], hat_party: ['Czapeczka imprezowa', 'Czapka dla całej drużyny, na zawsze.'], hat_crown: ['Korona', 'Korona dla całej drużyny, na zawsze.'], hat_bow: ['Kokardka', 'Kokardka dla całej drużyny, na zawsze.'], rainbow: ['Tęczowa włóczka', 'Nitki bohaterów mienią się tęczą, na zawsze.'], hero_rex: ['Reks', 'Nowy bohater: pies ratownik, który leczy przyjaciół, których dotknie.'], hero_spark: ['Iskra', 'Nowa bohaterka: jej ciosy przeskakują piorunem na najbliższego wroga.'] },
     title: 'Drugi oddech', desc: 'Kontynuuj poziom: pełna wytrzymałość mieszkania i wszyscy bohaterowie znów na nogach.',
     start: n => `Cześć, ${n}! Zbuntowane roboty przejęły mieszkanie. Wystrzel koty i szopy jak z procy!`, play: '🐾 Graj',
-    cardTitle: 'Zaproś do Pawsling', cardDesc: 'Karta z przyciskiem Graj i twoim zaproszeniem: bonus dla was obojga', textTitle: 'Zaproszenie tekstem', textDesc: 'To samo, ale bez obrazka', recTitle: 'Rzuć wyzwanie', recDesc: 'Pokaż swój rekord i zaproś do jego pobicia', rec: (st, w) => `🏆 Mój rekord w Pawsling: ⭐ ${st}${w ? ` · 🌙 Nocna zmiana: ${w}` : ''}. Pobijesz go?`, share: '📨 Zaproś znajomego', shareText: 'Wybierz czat, a wyślę tam kartę z zaproszeniem. Gdy znajomy dołączy przez nią, oboje dostaniecie +1 serce i +1 szybki start.', startQ: 'Kogo zapraszamy?' },
+    cardTitle: 'Zaproś do Pawsling', cardDesc: 'Karta z przyciskiem Graj i twoim zaproszeniem: bonus dla was obojga', textTitle: 'Zaproszenie tekstem', textDesc: 'To samo, ale bez obrazka', recTitle: 'Rzuć wyzwanie', recDesc: 'Pokaż swój rekord i zaproś do jego pobicia', rec: (st, w) => `🏆 Mój rekord w Pawsling: ⭐ ${st}${w ? ` · 🌙 Nocna zmiana: ${w}` : ''}. Pobijesz go?`, share: '📨 Zaproś znajomego', shareText: 'Wybierz czat, a wyślę tam kartę z zaproszeniem. Gdy znajomy dołączy przez nią, oboje dostaniecie +1 serce i +1 szybki start.', startQ: 'Kogo zapraszamy?',
+    streakEnds: (n, h) => `🔥 Twoja seria ${n} dni przepadnie za ${h} godz.! Wejdź do Pawsling i odbierz dzisiejszy bonus.`,
+    passNight: (name, me, them) => `🌙 ${name} wyprzedza cię w Nocnej zmianie: ${me} wobec twoich ${them}. Odegrasz się?`,
+    passStars: (name, me, them) => `⭐ ${name} wyprzedza cię w gwiazdkach: ${me} wobec twoich ${them}. Dogonisz?`, friendsBtn: '🏆 Ranking znajomych' },
   de: { rooms: ['Küche', 'Wohnzimmer', 'Schlafzimmer', 'Badezimmer', 'Balkon', 'Dachboden', 'Garage', 'Keller', 'Dach', 'Garten', 'Serverraum', 'Treppenhaus', 'Lager', 'Fabrik', 'Labor', 'Raumstation', 'Polarstation'], raid: room => `🚨 Alarm! Rebellische Roboter überfallen den Raum: ${room}!\n\nWehr den Überfall in 30 Minuten ab und hol dir einen Bonus: ❤️ +1 Herz und ⚡ +1 Schnellstart.`, raidBtn: '🐾 Überfall abwehren',
     invite: 'Katzen und Waschbären gegen rebellische Roboter! Spiel Pawsling mit mir 🐾',
     sent: 'Danke! Deine Nachricht wurde an den Entwickler weitergeleitet.',
@@ -93,7 +102,10 @@ const TEXT = {
     items: { heart3: ['Herz+ ×3', '+1 Herz für jeden Helden, für 3 Level.'], meter3: ['Schnellstart ×3', 'Halbe Unfug-Leiste zu Beginn von 3 Leveln.'], hat_party: ['Partyhut', 'Ein Hut für das ganze Team, für immer.'], hat_crown: ['Krone', 'Eine Krone für das ganze Team, für immer.'], hat_bow: ['Schleife', 'Eine Schleife für das ganze Team, für immer.'], rainbow: ['Regenbogenwolle', 'Die Fäden der Helden schimmern in Regenbogenfarben, für immer.'], hero_rex: ['Rex', 'Ein neuer Held: ein Rettungshund, der jeden berührten Freund heilt.'], hero_spark: ['Funke', 'Eine neue Heldin: ihre Treffer springen als Blitz zum nächsten Gegner.'] },
     title: 'Zweite Luft', desc: 'Spiel weiter: volle Wohnungsstärke und alle Helden wieder auf den Beinen.',
     start: n => `Hallo, ${n}! Rebellische Roboter haben die Wohnung übernommen. Schieß Katzen und Waschbären wie mit einer Schleuder!`, play: '🐾 Spielen',
-    cardTitle: 'Zu Pawsling einladen', cardDesc: 'Eine Karte mit Spielen-Knopf und deiner Einladung: ein Bonus für euch beide', textTitle: 'Einladung als Text', textDesc: 'Dasselbe ohne Bild', recTitle: 'Herausfordern', recDesc: 'Zeig deinen Rekord und fordere zum Schlagen heraus', rec: (st, w) => `🏆 Mein Pawsling-Rekord: ⭐ ${st}${w ? ` · 🌙 Nachtschicht: ${w}` : ''}. Schaffst du mehr?`, share: '📨 Freund einladen', shareText: 'Wähl einen Chat, und ich schicke dort eine Einladungskarte hin. Kommt dein Freund darüber ins Spiel, bekommt ihr beide +1 Herz und +1 Schnellstart.', startQ: 'Wen laden wir ein?' },
+    cardTitle: 'Zu Pawsling einladen', cardDesc: 'Eine Karte mit Spielen-Knopf und deiner Einladung: ein Bonus für euch beide', textTitle: 'Einladung als Text', textDesc: 'Dasselbe ohne Bild', recTitle: 'Herausfordern', recDesc: 'Zeig deinen Rekord und fordere zum Schlagen heraus', rec: (st, w) => `🏆 Mein Pawsling-Rekord: ⭐ ${st}${w ? ` · 🌙 Nachtschicht: ${w}` : ''}. Schaffst du mehr?`, share: '📨 Freund einladen', shareText: 'Wähl einen Chat, und ich schicke dort eine Einladungskarte hin. Kommt dein Freund darüber ins Spiel, bekommt ihr beide +1 Herz und +1 Schnellstart.', startQ: 'Wen laden wir ein?',
+    streakEnds: (n, h) => `🔥 Deine Serie von ${n} Tagen endet in ${h} Std.! Öffne Pawsling und hol dir den Tagesbonus.`,
+    passNight: (name, me, them) => `🌙 ${name} liegt in der Nachtschicht vor dir: ${me} gegen deine ${them}. Holst du dir das zurück?`,
+    passStars: (name, me, them) => `⭐ ${name} liegt bei den Sternen vor dir: ${me} gegen deine ${them}. Holst du auf?`, friendsBtn: '🏆 Freunde-Rangliste' },
   es: { rooms: ['Cocina', 'Salón', 'Dormitorio', 'Baño', 'Balcón', 'Desván', 'Garaje', 'Sótano', 'Tejado', 'Jardín', 'Sala de servidores', 'Escalera', 'Almacén', 'Fábrica', 'Laboratorio', 'Estación espacial', 'Estación polar'], raid: room => `🚨 ¡Alerta! ¡Los robots rebeldes asaltan la habitación: ${room}!\n\nRechaza el asalto en 30 minutos y gana un bonus: ❤️ +1 corazón y ⚡ +1 inicio rápido.`, raidBtn: '🐾 Rechazar el asalto',
     invite: '¡Gatos y mapaches contra robots rebeldes! Juega Pawsling conmigo 🐾',
     sent: '¡Gracias! Tu mensaje se ha enviado al desarrollador.',
@@ -102,7 +114,10 @@ const TEXT = {
     items: { heart3: ['Corazón+ ×3', '+1 corazón para cada héroe durante 3 niveles.'], meter3: ['Inicio rápido ×3', 'Media barra de travesura al empezar 3 niveles.'], hat_party: ['Gorro de fiesta', 'Un gorro para todo el equipo, para siempre.'], hat_crown: ['Corona', 'Una corona para todo el equipo, para siempre.'], hat_bow: ['Lazo', 'Un lazo para todo el equipo, para siempre.'], rainbow: ['Hilo arcoíris', 'Los hilos de los héroes brillan con los colores del arcoíris, para siempre.'], hero_rex: ['Rex', 'Un nuevo héroe: un perro de rescate que cura a cada amigo que toca.'], hero_spark: ['Chispa', 'Una nueva heroína: sus golpes saltan como un rayo al enemigo más cercano.'] },
     title: 'Segundo aliento', desc: 'Continúa el nivel: resistencia completa y todos los héroes de nuevo en pie.',
     start: n => `¡Hola, ${n}! Los robots rebeldes han tomado el piso. ¡Lanza a los gatos y mapaches como con un tirachinas!`, play: '🐾 Jugar',
-    cardTitle: 'Invitar a Pawsling', cardDesc: 'Una tarjeta con botón Jugar y tu invitación: un bonus para los dos', textTitle: 'Invitación en texto', textDesc: 'Lo mismo, sin imagen', recTitle: 'Lanzar un reto', recDesc: 'Muestra tu récord y reta a superarlo', rec: (st, w) => `🏆 Mi récord en Pawsling: ⭐ ${st}${w ? ` · 🌙 Turno de noche: ${w}` : ''}. ¿Lo superas?`, share: '📨 Invitar a un amigo', shareText: 'Elige un chat y enviaré allí una tarjeta de invitación. Cuando tu amigo entre por ella, los dos recibiréis +1 corazón y +1 inicio rápido.', startQ: '¿A quién invitamos?' },
+    cardTitle: 'Invitar a Pawsling', cardDesc: 'Una tarjeta con botón Jugar y tu invitación: un bonus para los dos', textTitle: 'Invitación en texto', textDesc: 'Lo mismo, sin imagen', recTitle: 'Lanzar un reto', recDesc: 'Muestra tu récord y reta a superarlo', rec: (st, w) => `🏆 Mi récord en Pawsling: ⭐ ${st}${w ? ` · 🌙 Turno de noche: ${w}` : ''}. ¿Lo superas?`, share: '📨 Invitar a un amigo', shareText: 'Elige un chat y enviaré allí una tarjeta de invitación. Cuando tu amigo entre por ella, los dos recibiréis +1 corazón y +1 inicio rápido.', startQ: '¿A quién invitamos?',
+    streakEnds: (n, h) => `🔥 ¡Tu racha de ${n} días termina en ${h} h! Entra en Pawsling y recoge el bonus de hoy.`,
+    passNight: (name, me, them) => `🌙 ${name} te supera en el Turno de noche: ${me} frente a tus ${them}. ¿Lo recuperas?`,
+    passStars: (name, me, them) => `⭐ ${name} te supera en estrellas: ${me} frente a tus ${them}. ¿Lo alcanzas?`, friendsBtn: '🏆 Clasificación de amigos' },
 };
 const text = code => TEXT[(code || '').slice(0, 2)] || TEXT.en;
 // texts in the language the player chose in the game, or their Telegram app language before they have played
@@ -199,15 +214,16 @@ export default {
 
     await ensureTables(env.DB);
     const night = clampInt(body.night, LIMITS.night), stars = clampInt(body.stars, LIMITS.stars), week = clampInt(body.week, LIMITS.night);
-    if (night || stars) await save(env.DB, user, night, stars);
+    if (night || stars) await save(env, user, night, stars);
     if (week) await saveWeek(env.DB, user, week);
 
     if (body.board === 'week') return json(await weekBoard(env.DB, user.id));
+    if (body.board === 'friends') return json(await friendsBoard(env.DB, user.id));
     if (body.board !== 'night' && body.board !== 'stars') return json({ ok: true });
     return json(await board(env.DB, body.board, user.id));
   },
 
-  async scheduled(event, env, ctx) { ctx.waitUntil(event.cron === '5 0 * * 1' ? awardWeek(env) : sendRaids(env)); },
+  async scheduled(event, env, ctx) { ctx.waitUntil(event.cron === '5 0 * * 1' ? awardWeek(env) : Promise.all([sendRaids(env), sendStreakReminders(env)])); },
 };
 
 // ---------- daily bonus, challenge, invites ----------
@@ -351,6 +367,8 @@ async function ensureTables(db) {
     db.prepare('CREATE TABLE IF NOT EXISTS refunds (charge_id TEXT PRIMARY KEY, at INTEGER NOT NULL)'),
     // days in a row, uncapped (daily.streak only cycles through the seven login rewards)
     db.prepare('CREATE TABLE IF NOT EXISTS streaks (user_id INTEGER PRIMARY KEY, run INTEGER NOT NULL DEFAULT 0)'),
+    // the day a player last got a streak reminder, and the day they last got a friend note (one of each a day at most)
+    db.prepare('CREATE TABLE IF NOT EXISTS pings (user_id INTEGER PRIMARY KEY, streak_day TEXT, friend_day TEXT)'),
     db.prepare(`CREATE TABLE IF NOT EXISTS notify (user_id INTEGER PRIMARY KEY, enabled INTEGER NOT NULL DEFAULT 0, lang TEXT, tz INTEGER NOT NULL DEFAULT 0,
       room INTEGER NOT NULL DEFAULT 0, last_seen INTEGER, last_raid INTEGER, blocked INTEGER NOT NULL DEFAULT 0)`),
     db.prepare(`CREATE TABLE IF NOT EXISTS raids (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER NOT NULL, room INTEGER NOT NULL,
@@ -589,8 +607,9 @@ function displayName(u) {
   return [...name].slice(0, 24).join('');
 }
 
-async function save(db, user, night, stars) {
-  const now = Math.floor(Date.now() / 1000);
+async function save(env, user, night, stars) {
+  const db = env.DB, now = Math.floor(Date.now() / 1000);
+  const old = await db.prepare('SELECT night, stars FROM players WHERE id = ?1').bind(user.id).first();
   // SQLite evaluates every SET expression against the old row, so the *_at columns
   // compare with the previous best before it is replaced.
   await db.prepare(`
@@ -604,6 +623,67 @@ async function save(db, user, night, stars) {
       stars = MAX(players.stars, excluded.stars),
       updated_at = excluded.updated_at
   `).bind(user.id, displayName(user), night, stars, now).run();
+  // friends this player has just passed hear about it
+  const was = { night: old ? old.night : 0, stars: old ? old.stars : 0 };
+  if (night > was.night || stars > was.stars) {
+    try { await tellPassedFriends(env, user, was, { night: Math.max(night, was.night), stars: Math.max(stars, was.stars) }); } catch (e) {}
+  }
+}
+// friends are the people a player invited and the one who invited them
+async function friendIds(db, id) {
+  const r = await db.prepare('SELECT ref_by AS f FROM referrals WHERE user_id = ?1 UNION SELECT user_id AS f FROM referrals WHERE ref_by = ?1').bind(id).all();
+  return r.results.map(x => x.f).filter(f => f !== id).slice(0, 200);
+}
+async function friendsBoard(db, id) {
+  const ids = [id, ...await friendIds(db, id)];
+  const rows = await db.prepare(`SELECT id, name, stars, night FROM players WHERE id IN (${ids.map(() => '?').join(',')})`).bind(...ids).all();
+  const list = rows.results.sort((a, b) => b.stars - a.stars || b.night - a.night);
+  return { board: 'friends', friends: ids.length - 1, top: list.map((r, i) => ({ rank: i + 1, name: r.name, value: r.stars, night: r.night, me: r.id === id })), me: null };
+}
+// a friend who was ahead and now is behind gets one note a day
+async function tellPassedFriends(env, user, was, now) {
+  const db = env.DB, ids = await friendIds(db, user.id);
+  if (!ids.length) return;
+  const rows = await db.prepare(`SELECT p.id, p.night, p.stars, n.lang, n.enabled, n.blocked, g.friend_day FROM players p
+    LEFT JOIN notify n ON n.user_id = p.id LEFT JOIN pings g ON g.user_id = p.id WHERE p.id IN (${ids.map(() => '?').join(',')})`).bind(...ids).all();
+  const today = utcDay(), name = displayName(user);
+  if (!botName) { const me = await tg(env, 'getMe', {}); botName = me.ok ? me.result.username : null; }
+  for (const f of rows.results) {
+    if (f.enabled === 0 || f.blocked === 1 || f.friend_day === today) continue;
+    const t = text(f.lang);
+    let msg = null;
+    if (was.night <= f.night && now.night > f.night) msg = t.passNight(name, now.night, f.night);
+    else if (was.stars <= f.stars && now.stars > f.stars) msg = t.passStars(name, now.stars, f.stars);
+    if (!msg) continue;
+    await db.prepare('INSERT INTO pings (user_id, friend_day) VALUES (?1, ?2) ON CONFLICT(user_id) DO UPDATE SET friend_day = excluded.friend_day').bind(f.id, today).run();
+    const r = await tg(env, 'sendMessage', { chat_id: f.id, text: msg,
+      reply_markup: { inline_keyboard: [[{ text: t.friendsBtn, url: `https://t.me/${botName}?startapp=friends` }]] } });
+    if (r.error_code === 403) await db.prepare('UPDATE notify SET blocked = 1 WHERE user_id = ?1').bind(f.id).run();
+  }
+}
+// evening reminder: a streak of 5+ days that will end at the next UTC day change unless the player opens the game
+async function sendStreakReminders(env) {
+  const db = env.DB;
+  await ensureTables(db);
+  const d = new Date(), left = 24 - d.getUTCHours(), today = utcDay(), yesterday = utcDay(Date.now() - DAY);
+  if (left < 2 || left > 5) return;
+  const rows = await db.prepare(`SELECT s.user_id, s.run, n.lang, n.tz FROM streaks s JOIN daily y ON y.user_id = s.user_id
+    JOIN notify n ON n.user_id = s.user_id LEFT JOIN pings g ON g.user_id = s.user_id
+    WHERE s.run >= 5 AND y.last_day = ?1 AND n.enabled = 1 AND n.blocked = 0 AND (g.streak_day IS NULL OR g.streak_day <> ?2) LIMIT 300`)
+    .bind(yesterday, today).all();
+  if (!rows.results.length) return;
+  if (!botName) { const me = await tg(env, 'getMe', {}); botName = me.ok ? me.result.username : null; }
+  for (const r of rows.results) {
+    const hour = Math.floor(((d.getUTCHours() * 60 - r.tz) % 1440 + 1440) % 1440 / 60);
+    if (hour < 9 || hour > 22) continue; // not at night
+    await db.prepare('INSERT INTO pings (user_id, streak_day) VALUES (?1, ?2) ON CONFLICT(user_id) DO UPDATE SET streak_day = excluded.streak_day').bind(r.user_id, today).run();
+    const t = text(r.lang);
+    try {
+      const res = await tg(env, 'sendMessage', { chat_id: r.user_id, text: t.streakEnds(r.run, left),
+        reply_markup: { inline_keyboard: [[{ text: t.play, url: `https://t.me/${botName}?startapp=streak` }]] } });
+      if (res.error_code === 403) await db.prepare('UPDATE notify SET blocked = 1 WHERE user_id = ?1').bind(r.user_id).run();
+    } catch (e) {}
+  }
 }
 
 async function board(db, col, id) {

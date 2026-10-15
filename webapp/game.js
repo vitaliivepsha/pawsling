@@ -1015,7 +1015,7 @@ const I18N = {
     'item.rainbow': 'Райдужна нитка', 'itemd.rainbow': 'Нитки переливаються веселкою',
     'hero.spark.name': 'Іскра', 'hero.spark.skill': 'удар перескакує блискавкою на найближчого ворога', 'hero.spark.combo': 'Грозова хмара', secondWind: 'Друге дихання', secondWindSub: 'Повна міцність і всі герої на ногах', secondWindGo: 'Друге дихання!', almostWon: p => `Перемога була зовсім близько: роботам лишилося ${p}%!`, robotsLeft: p => `Роботам лишилося ${p}% міцності`, windFree: n => `безкоштовно${n > 1 ? ` (${n})` : ''}`, payWait: 'Відкриваю оплату…', payFailed: 'Оплата не пройшла. Спробуй ще раз', langAuto: 'Автоматично',
     aria: 'Гра Pawsling. Потягни від героя назад і відпусти, щоб запустити його, як з рогатки.',
-    board: 'Рейтинг', boardNight: 'Нічна зміна', boardStars: 'Зірки', boardYou: 'ти', boardEmpty: 'Поки що нікого. Будь першим!',
+    board: 'Рейтинг', boardNight: 'Нічна зміна', boardStars: 'Зірки', boardFriends: 'Друзі', boardFriendsEmpty: 'Тут з\'являться друзі, яких ти запросиш, і той, хто запросив тебе. Змагайтеся за зірки й хвилі «Нічної зміни»!', boardYou: 'ти', boardEmpty: 'Поки що нікого. Займи перше місце!',
     boardLoading: 'Завантаження…', boardError: 'Не вдалося завантажити рейтинг. Перевір інтернет і спробуй ще.',
     boardTgOnly: 'Рейтинг працює, коли гра відкрита в Telegram.', boardRetry: 'Оновити', boardPlayer: 'Гравець',
   },
@@ -1148,7 +1148,7 @@ const I18N = {
     'item.rainbow': 'Rainbow yarn', 'itemd.rainbow': 'Threads shimmer like a rainbow',
     'hero.spark.name': 'Sparky', 'hero.spark.skill': 'each hit arcs like lightning to the nearest enemy', 'hero.spark.combo': 'Thundercloud', secondWind: 'Second wind', secondWindSub: 'Full home strength, every hero back up', secondWindGo: 'Second wind!', almostWon: p => `So close: the robots had only ${p}% left!`, robotsLeft: p => `The robots have ${p}% of their strength left`, windFree: n => `free${n > 1 ? ` (${n})` : ''}`, payWait: 'Opening payment…', payFailed: 'Payment failed. Try again', langAuto: 'Automatic',
     aria: 'Pawsling. Pull back from a hero and let go to launch it like a slingshot.',
-    board: 'Leaderboard', boardNight: 'Night Shift', boardStars: 'Stars', boardYou: 'you', boardEmpty: 'Nobody here yet. Be the first!',
+    board: 'Leaderboard', boardNight: 'Night Shift', boardStars: 'Stars', boardFriends: 'Friends', boardFriendsEmpty: 'Friends you invite, and whoever invited you, show up here. Race each other for stars and Night Shift waves!', boardYou: 'you', boardEmpty: 'Nobody here yet. Be the first!',
     boardLoading: 'Loading…', boardError: 'Could not load the leaderboard. Check your connection and try again.',
     boardTgOnly: 'The leaderboard works when the game is opened in Telegram.', boardRetry: 'Refresh', boardPlayer: 'Player',
   },
@@ -1281,7 +1281,7 @@ const I18N = {
     'item.rainbow': 'Tęczowa włóczka', 'itemd.rainbow': 'Nitki mienią się tęczą',
     'hero.spark.name': 'Iskra', 'hero.spark.skill': 'każde trafienie przeskakuje piorunem na najbliższego wroga', 'hero.spark.combo': 'Chmura burzowa', secondWind: 'Drugi oddech', secondWindSub: 'Pełna wytrzymałość i wszyscy bohaterowie na nogach', secondWindGo: 'Drugi oddech!', almostWon: p => `Tak blisko: robotom zostało tylko ${p}%!`, robotsLeft: p => `Robotom zostało ${p}% wytrzymałości`, windFree: n => `za darmo${n > 1 ? ` (${n})` : ''}`, payWait: 'Otwieram płatność…', payFailed: 'Płatność nie powiodła się. Spróbuj ponownie', langAuto: 'Automatycznie',
     aria: 'Pawsling. Pociągnij od bohatera do tyłu i puść, żeby wystrzelić go jak z procy.',
-    board: 'Ranking', boardNight: 'Nocna zmiana', boardStars: 'Gwiazdki', boardYou: 'ty', boardEmpty: 'Jeszcze nikogo tu nie ma. Bądź pierwszy!',
+    board: 'Ranking', boardNight: 'Nocna zmiana', boardStars: 'Gwiazdki', boardFriends: 'Znajomi', boardFriendsEmpty: 'Tu pojawią się znajomi, których zaprosisz, i osoba, która zaprosiła ciebie. Ścigajcie się o gwiazdki i fale Nocnej zmiany!', boardYou: 'ty', boardEmpty: 'Jeszcze nikogo tu nie ma. Bądź pierwszy!',
     boardLoading: 'Ładowanie…', boardError: 'Nie udało się wczytać rankingu. Sprawdź internet i spróbuj ponownie.',
     boardTgOnly: 'Ranking działa, gdy gra jest otwarta w Telegramie.', boardRetry: 'Odśwież', boardPlayer: 'Gracz',
   },
@@ -1414,7 +1414,7 @@ const I18N = {
     'item.rainbow': 'Regenbogenwolle', 'itemd.rainbow': 'Fäden schimmern wie ein Regenbogen',
     'hero.spark.name': 'Funke', 'hero.spark.skill': 'jeder Treffer springt als Blitz auf den nächsten Gegner über', 'hero.spark.combo': 'Gewitterwolke', secondWind: 'Zweite Luft', secondWindSub: 'Volle Stärke und alle Helden wieder auf den Beinen', secondWindGo: 'Zweite Luft!', almostWon: p => `So knapp: die Roboter hatten nur noch ${p} %!`, robotsLeft: p => `Die Roboter haben noch ${p} % Stärke`, windFree: n => `gratis${n > 1 ? ` (${n})` : ''}`, payWait: 'Zahlung wird geöffnet…', payFailed: 'Zahlung fehlgeschlagen. Versuch es nochmal', langAuto: 'Automatisch',
     aria: 'Pawsling. Zieh vom Helden zurück und lass los, um ihn wie mit einer Schleuder abzufeuern.',
-    board: 'Rangliste', boardNight: 'Nachtschicht', boardStars: 'Sterne', boardYou: 'du', boardEmpty: 'Noch niemand hier. Sei der Erste!',
+    board: 'Rangliste', boardNight: 'Nachtschicht', boardStars: 'Sterne', boardFriends: 'Freunde', boardFriendsEmpty: 'Hier erscheinen Freunde, die du einlädst, und wer dich eingeladen hat. Messt euch bei Sternen und Wellen der Nachtschicht!', boardYou: 'du', boardEmpty: 'Noch niemand hier. Sei der Erste!',
     boardLoading: 'Wird geladen…', boardError: 'Rangliste konnte nicht geladen werden. Prüfe die Verbindung und versuch es nochmal.',
     boardTgOnly: 'Die Rangliste funktioniert, wenn das Spiel in Telegram geöffnet ist.', boardRetry: 'Aktualisieren', boardPlayer: 'Spieler',
   },
@@ -1547,7 +1547,7 @@ const I18N = {
     'item.rainbow': 'Hilo arcoíris', 'itemd.rainbow': 'Los hilos brillan como un arcoíris',
     'hero.spark.name': 'Chispa', 'hero.spark.skill': 'cada golpe salta como un rayo al enemigo más cercano', 'hero.spark.combo': 'Nube de tormenta', secondWind: 'Segundo aliento', secondWindSub: 'Resistencia completa y todos los héroes en pie', secondWindGo: '¡Segundo aliento!', almostWon: p => `¡Casi: a los robots solo les quedaba un ${p}%!`, robotsLeft: p => `A los robots les queda un ${p}% de fuerza`, windFree: n => `gratis${n > 1 ? ` (${n})` : ''}`, payWait: 'Abriendo el pago…', payFailed: 'El pago falló. Inténtalo de nuevo', langAuto: 'Automático',
     aria: 'Pawsling. Tira hacia atrás desde un héroe y suelta para lanzarlo como con un tirachinas.',
-    board: 'Clasificación', boardNight: 'Turno de noche', boardStars: 'Estrellas', boardYou: 'tú', boardEmpty: 'Aún no hay nadie. ¡Sé el primero!',
+    board: 'Clasificación', boardNight: 'Turno de noche', boardStars: 'Estrellas', boardFriends: 'Amigos', boardFriendsEmpty: 'Aquí aparecerán los amigos que invites y quien te invitó a ti. ¡Competid por estrellas y oleadas del Turno de noche!', boardYou: 'tú', boardEmpty: 'Aún no hay nadie. ¡Sé el primero!',
     boardLoading: 'Cargando…', boardError: 'No se pudo cargar la clasificación. Revisa la conexión e inténtalo de nuevo.',
     boardTgOnly: 'La clasificación funciona cuando el juego se abre en Telegram.', boardRetry: 'Actualizar', boardPlayer: 'Jugador',
   },
@@ -7559,9 +7559,14 @@ function drawBoardRow(r, y) {
   ctx.textAlign = 'left'; ctx.fillStyle = r.me ? '#ffc857' : '#f4efe6';
   fitFont(r.name, w - 170, 14, 800, FB); ctx.fillText(r.name, x + 46, y + h / 2 + 1);
   ctx.textAlign = 'right'; ctx.fillStyle = '#f4efe6';
-  if (tab === 'stars') {
+  if (tab === 'stars' || tab === 'friends') {
     ctx.font = `900 15px ${FD}`; ctx.fillText(String(r.value), x + w - 30, y + h / 2 + 1);
     star(x + w - 16, y + h / 2, 7, '#ffc857');
+    if (tab === 'friends' && r.night) {
+      // their Night Shift best next to the stars
+      const sw = ctx.measureText(String(r.value)).width;
+      ctx.fillStyle = '#9fa8ff'; ctx.font = `800 13px ${FB}`; ctx.fillText(`🌙 ${r.night}`, x + w - 46 - sw, y + h / 2 + 1);
+    }
   } else {
     fitFont(wavesWord(r.value), 110, 14, 800, FB); ctx.fillText(wavesWord(r.value), x + w - 12, y + h / 2 + 1);
   }
@@ -7574,15 +7579,22 @@ function drawBoard() {
   iconBtn(12, 13, 'back', () => setScreen('map'));
   ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
   ctx.fillStyle = '#ffc857'; fitFont(tr('board'), W - 120, 30); ctx.fillText(tr('board'), W / 2, 32);
-  uiBtn(16, 72, 132, 44, tr('boardWeek'), () => openBoard('week'), BOARD.tab === 'week');
-  uiBtn(159, 72, 132, 44, tr('boardNight'), () => openBoard('night'), BOARD.tab === 'night');
-  uiBtn(302, 72, 132, 44, tr('boardStars'), () => openBoard('stars'), BOARD.tab === 'stars');
+  [['week', 'boardWeek'], ['night', 'boardNight'], ['stars', 'boardStars'], ['friends', 'boardFriends']].forEach(([k, label], i) =>
+    uiBtn(16 + i * 106, 72, 100, 44, tr(label), () => openBoard(k), BOARD.tab === k));
   const d = BOARD.data[BOARD.tab];
   const msg = t => { ctx.textAlign = 'center'; ctx.fillStyle = '#c9c2e6'; ctx.font = `800 15px ${FB}`; wrap(t, W / 2, 330, W - 90, 22); };
   if (BOARD.status === 'tgOnly') { msg(tr('boardTgOnly')); return; }
   if (!d) {
     msg(tr(BOARD.status === 'error' ? 'boardError' : 'boardLoading'));
     if (BOARD.status === 'error') uiBtn(75, 736, W - 150, 46, tr('boardRetry'), () => openBoard(BOARD.tab), false);
+    return;
+  }
+  if (BOARD.tab === 'friends' && !d.friends) {
+    // nobody yet: the friends board fills up with people you invite and the one who invited you
+    if (d.top.length) drawBoardRow(d.top[0], 140);
+    msg(tr('boardFriendsEmpty'));
+    colorBtn(75, 420, W - 150, 50, tr('inviteBtn'), inviteFriend, '#7ff0d6', '#2fb39a', '#0d2b27');
+    uiBtn(75, 736, W - 150, 46, tr('boardRetry'), () => openBoard(BOARD.tab), false);
     return;
   }
   if (!d.top.length) msg(tr('boardEmpty'));
@@ -8344,6 +8356,7 @@ async function loadDaily() {
     // opened from a raid alert: straight into the raid
     const sp = TG && TG.initDataUnsafe && TG.initDataUnsafe.start_param;
     if (DAILY.raid && sp === 'raid_' + DAILY.raid.id && !DAILY.raidAuto && (SCREEN === 'map' || SCREEN === 'howto')) { DAILY.raidAuto = true; startRaid(); return; }
+    if (sp === 'friends' && !DAILY.friendsAuto && (SCREEN === 'map' || SCREEN === 'howto')) { DAILY.friendsAuto = true; openBoard('friends'); return; }
     // open the daily screen once when today's bonus has just been given
     if ((d.claimed || d.gifted) && SCREEN === 'map' && !DAILY.shown) { DAILY.shown = true; setScreen('daily'); }
     // after a few levels, offer raid alerts once

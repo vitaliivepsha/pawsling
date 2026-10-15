@@ -49,6 +49,12 @@ worker/             the leaderboard: a Cloudflare Worker with a D1 database
   a new side every turn (an arrow at the top shows it) and pushes flying heroes. Cryo bots freeze the
   hero they hit, who skips a turn unless a friend's shot breaks the ice. It ends with the Blizzard
   Snowplough: after each attack it sweeps every hero 110 px the way the wind blows.
+- Friends: the board has a Friends tab (people you invited and whoever invited you, by stars, with
+  their Night Shift best). When a player passes a friend in Night Shift or stars, the bot tells that
+  friend (once a day at most) with a button that opens the Friends tab (`startapp=friends`).
+- Streak reminder: in the evening (2-5 hours before the UTC day change, between 9:00 and 22:00 local
+  time) the bot reminds players with a login streak of 5+ days who haven't opened the game today.
+  Every 30 days in a row gives the party hat (or a free Second wind once they have it).
 - Raids bring players back: raid alerts are on for every player by default; the bell on the Daily
   screen turns them off. After the first level the game asks Telegram once for permission to message
   players who never wrote to the bot; a player who blocks the bot is skipped until they start it again.
