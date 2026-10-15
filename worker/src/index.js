@@ -49,6 +49,9 @@ const BOOSTERS = ['heart', 'meter', 'wind']; // the only items that get used up 
 // the robot album: each card's tiers (10 / 50 / 200 wins) pay out once
 const ALBUM_TYPES = ['vac', 'spray', 'mop', 'brush', 'fan', 'rc', 'shield', 'split', 'magnet', 'mole', 'printer', 'bomb', 'mimic', 'turret', 'tesla', 'warp', 'cryo', 'boss'];
 const ALBUM_GIFTS = [null, { meter: 1 }, { heart: 1 }, { wind: 1 }];
+// weekly quests: three a week; each pays once, all three add a free Second wind
+const QUEST_GIFTS = { knots: { meter: 1 }, robots: { heart: 1 }, bosses: { heart: 1 }, noko: { meter: 1 }, stars3: { heart: 1 }, night: { meter: 1 }, combos: { meter: 1 }, lasers: { meter: 1 } };
+const QUESTS_ALL = { wind: 1 };
 const CHEST_HOURS = 6;
 const rollChest = () => { const r = Math.random(); return r < .1 ? { wind: 1 } : r < .55 ? { heart: 1 } : { meter: 1 }; };
 const MISS_GIFT = { heart: 1, meter: 1 }; // for a player back after 3+ days away
@@ -155,7 +158,7 @@ export default {
     const json = (body, status = 200) => new Response(JSON.stringify(body), { status, headers: { ...cors, 'Content-Type': 'application/json' } });
     if (req.method === 'OPTIONS') return new Response(null, { headers: cors });
     const url = new URL(req.url), path = url.pathname;
-    if (req.method !== 'POST' || !['/board', '/invoice', '/inventory', '/use', '/daily', '/challenge', '/share', '/notify', '/raid', '/chest', '/album', '/tg'].includes(path)) return json({ error: 'not found' }, 404);
+    if (req.method !== 'POST' || !['/board', '/invoice', '/inventory', '/use', '/daily', '/challenge', '/share', '/notify', '/raid', '/chest', '/album', '/quest', '/tg'].includes(path)) return json({ error: 'not found' }, 404);
 
     if (path === '/tg') {
       // only Telegram knows the secret we gave it in setWebhook
@@ -193,6 +196,21 @@ export default {
     }
 
     if (path === '/daily') return json(await daily(env, user, body));
+    if (path === '/quest') {
+      // a weekly quest is done: its gift, once; the third one of the week adds the bonus
+      const id = String(body.id || ''), week = weekKey();
+      if (!QUEST_GIFTS[id] || body.week !== week) return json({ error: 'bad quest' }, 400);
+      await ensureTables(env.DB);
+      const had = await env.DB.prepare('SELECT COUNT(*) AS n FROM quests WHERE user_id = ?1 AND week = ?2').bind(user.id, week).first();
+      if (had.n >= 3) return json({ ok: false, items: await inventory(env.DB, user.id) });
+      const r = await env.DB.prepare('INSERT OR IGNORE INTO quests (user_id, week, quest) VALUES (?1, ?2, ?3)').bind(user.id, week, id).run();
+      let bonus = null;
+      if (r.meta.changes > 0) {
+        await grant(env.DB, user.id, QUEST_GIFTS[id]);
+        if (had.n + 1 === 3) { bonus = QUESTS_ALL; await grant(env.DB, user.id, bonus); }
+      }
+      return json({ ok: r.meta.changes > 0, bonus, items: await inventory(env.DB, user.id) });
+    }
     if (path === '/album') {
       // a card reached a new tier: its gift, once
       const type = String(body.type || ''), tier = Math.floor(Number(body.tier));
@@ -411,6 +429,7 @@ async function ensureTables(db) {
     // when a player away for days was last sent the 'we miss you' gift
     db.prepare('CREATE TABLE IF NOT EXISTS comebacks (user_id INTEGER PRIMARY KEY, at INTEGER NOT NULL)'),
     db.prepare('CREATE TABLE IF NOT EXISTS album (user_id INTEGER NOT NULL, card TEXT NOT NULL, PRIMARY KEY (user_id, card))'),
+    db.prepare('CREATE TABLE IF NOT EXISTS quests (user_id INTEGER NOT NULL, week TEXT NOT NULL, quest TEXT NOT NULL, PRIMARY KEY (user_id, week, quest))'),
     db.prepare(`CREATE TABLE IF NOT EXISTS notify (user_id INTEGER PRIMARY KEY, enabled INTEGER NOT NULL DEFAULT 0, lang TEXT, tz INTEGER NOT NULL DEFAULT 0,
       room INTEGER NOT NULL DEFAULT 0, last_seen INTEGER, last_raid INTEGER, blocked INTEGER NOT NULL DEFAULT 0)`),
     db.prepare(`CREATE TABLE IF NOT EXISTS raids (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER NOT NULL, room INTEGER NOT NULL,
