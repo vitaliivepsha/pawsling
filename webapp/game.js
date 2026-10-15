@@ -3611,7 +3611,7 @@ function setupWave(n) {
   G.state = 'banner';
   const sub = endless ? (n > 0 && n % 5 === 0 ? tr('newRoom', ch.name) : tr('record', wavesWord(PROG.endless || 0)))
     : n === 0 && G.lvl.tip ? G.lvl.tip : tr('waveOf', n + 1, waves.length);
-  G.banner = { title: G.lvl.raid ? tr('raid') : endless ? tr('nightWave', n + 1) : G.lvl.event ? tr('evLevel', tr('ev.' + G.lvl.event.id), G.lvl.evIdx + 1) : tr('levelRoom', G.li + 1, ch.name), sub, t: n === 0 && G.lvl.tip ? 2.2 : 1.5, max: n === 0 && G.lvl.tip ? 2.2 : 1.5, done: afterIntro };
+  G.banner = { title: G.lvl.raid ? tr('raid') : endless ? tr('nightWave', n + 1) : G.lvl.event ? tr('evLevel', tr('ev.' + G.lvl.event.id), G.lvl.evIdx + 1) : tr('levelRoom', G.li + 1, ch.name), sub, t: bannerTime(n === 0 && G.lvl.tip ? sub : ''), max: bannerTime(n === 0 && G.lvl.tip ? sub : ''), done: afterIntro };
   Snd.play('wave');
 }
 
@@ -7297,6 +7297,8 @@ function chTrim(c, x, y, w, col) {
   ctx.restore();
 }
 
+// a tip gets about a second per 30 letters (between 2.2 and 6 seconds); plain banners stay 1.5 s
+const bannerTime = tip => tip ? Math.max(2.2, Math.min(6, tip.length / 30)) : 1.5;
 function drawBanner() {
   const b = G.banner;
   if (!b) return;
@@ -7305,12 +7307,17 @@ function drawBanner() {
   const a = Math.min(kin * 2, kout, 1), sc = RM ? 1 : .75 + .25 * easeOutBack(kin);
   ctx.globalAlpha = a * .35; ctx.fillStyle = '#000'; ctx.fillRect(0, TOP, W, BOT - TOP);
   ctx.globalAlpha = a;
-  ctx.save(); ctx.translate(W / 2, 368); ctx.scale(sc, sc); ctx.translate(-W / 2, -368);
-  const g = ctx.createLinearGradient(0, 312, 0, 424);
+  // the box grows with the tip: one or two lines fit the classic size, a long tip makes it taller (and the text a bit smaller)
+  ctx.font = `800 14px ${FB}`;
+  let fs = 14, lines = splitLines(b.sub || '', W - 100);
+  if (lines.length > 4) { fs = 13; ctx.font = `800 13px ${FB}`; lines = splitLines(b.sub || '', W - 96); }
+  const lh = fs + 4, bh = Math.max(112, 74 + lines.length * lh + 12);
+  ctx.save(); ctx.translate(W / 2, 312 + bh / 2); ctx.scale(sc, sc); ctx.translate(-W / 2, -(312 + bh / 2));
+  const g = ctx.createLinearGradient(0, 312, 0, 312 + bh);
   g.addColorStop(0, ch.hud); g.addColorStop(1, 'rgba(12,10,26,.96)');
-  ctx.fillStyle = g; rr(30, 312, W - 60, 112, 20); ctx.fill();
-  ctx.save(); rr(30, 312, W - 60, 112, 20); ctx.clip(); chTrim(c, 30, 312, W - 60, ch.col + '55'); chTrim(c, 30, 414, W - 60, ch.col + '55'); ctx.restore();
-  ctx.strokeStyle = ch.col; ctx.lineWidth = 2; rr(30, 312, W - 60, 112, 20); ctx.stroke();
+  ctx.fillStyle = g; rr(30, 312, W - 60, bh, 20); ctx.fill();
+  ctx.save(); rr(30, 312, W - 60, bh, 20); ctx.clip(); chTrim(c, 30, 312, W - 60, ch.col + '55'); chTrim(c, 30, 302 + bh, W - 60, ch.col + '55'); ctx.restore();
+  ctx.strokeStyle = ch.col; ctx.lineWidth = 2; rr(30, 312, W - 60, bh, 20); ctx.stroke();
   ctx.shadowColor = ch.col; ctx.shadowBlur = 18;
   ctx.fillStyle = ch.hud; circ(W / 2, 312, 24);
   ctx.shadowBlur = 0;
@@ -7318,7 +7325,7 @@ function drawBanner() {
   chIcon(c, W / 2, 313, 26, ch.col);
   ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
   ctx.fillStyle = '#ffc857'; fitFont(b.title, W - 90, 26); ctx.fillText(b.title, W / 2, 352);
-  ctx.fillStyle = '#f4efe6'; ctx.font = `800 14px ${FB}`; wrap(b.sub, W / 2, 386, W - 100, 18);
+  ctx.fillStyle = '#f4efe6'; ctx.font = `800 ${fs}px ${FB}`; lines.forEach((l, i) => ctx.fillText(l, W / 2, 386 + i * lh));
   ctx.restore();
   ctx.globalAlpha = 1;
 }
