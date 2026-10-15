@@ -46,6 +46,9 @@ const ITEMS = {
 const BOOSTERS = ['heart', 'meter', 'wind']; // the only items that get used up (wind: a free Second wind)
 // login bonus by day of the streak (the 7th day restarts the cycle)
 // the chest ripens every 6 hours; inside: a heart or a quick start, and now and then a free Second wind
+// the robot album: each card's tiers (10 / 50 / 200 wins) pay out once
+const ALBUM_TYPES = ['vac', 'spray', 'mop', 'brush', 'fan', 'rc', 'shield', 'split', 'magnet', 'mole', 'printer', 'bomb', 'mimic', 'turret', 'tesla', 'warp', 'cryo', 'boss'];
+const ALBUM_GIFTS = [null, { meter: 1 }, { heart: 1 }, { wind: 1 }];
 const CHEST_HOURS = 6;
 const rollChest = () => { const r = Math.random(); return r < .1 ? { wind: 1 } : r < .55 ? { heart: 1 } : { meter: 1 }; };
 const MISS_GIFT = { heart: 1, meter: 1 }; // for a player back after 3+ days away
@@ -152,7 +155,7 @@ export default {
     const json = (body, status = 200) => new Response(JSON.stringify(body), { status, headers: { ...cors, 'Content-Type': 'application/json' } });
     if (req.method === 'OPTIONS') return new Response(null, { headers: cors });
     const url = new URL(req.url), path = url.pathname;
-    if (req.method !== 'POST' || !['/board', '/invoice', '/inventory', '/use', '/daily', '/challenge', '/share', '/notify', '/raid', '/chest', '/tg'].includes(path)) return json({ error: 'not found' }, 404);
+    if (req.method !== 'POST' || !['/board', '/invoice', '/inventory', '/use', '/daily', '/challenge', '/share', '/notify', '/raid', '/chest', '/album', '/tg'].includes(path)) return json({ error: 'not found' }, 404);
 
     if (path === '/tg') {
       // only Telegram knows the secret we gave it in setWebhook
@@ -190,6 +193,15 @@ export default {
     }
 
     if (path === '/daily') return json(await daily(env, user, body));
+    if (path === '/album') {
+      // a card reached a new tier: its gift, once
+      const type = String(body.type || ''), tier = Math.floor(Number(body.tier));
+      if (!ALBUM_TYPES.includes(type) || !(tier >= 1 && tier <= 3)) return json({ error: 'bad card' }, 400);
+      await ensureTables(env.DB);
+      const r = await env.DB.prepare('INSERT OR IGNORE INTO album (user_id, card) VALUES (?1, ?2)').bind(user.id, type + ':' + tier).run();
+      if (r.meta.changes > 0) await grant(env.DB, user.id, ALBUM_GIFTS[tier]);
+      return json({ ok: r.meta.changes > 0, reward: r.meta.changes > 0 ? ALBUM_GIFTS[tier] : null, items: await inventory(env.DB, user.id) });
+    }
     if (path === '/chest') {
       // open the chest if it is ripe; either way answer with when the next one is ready
       await ensureTables(env.DB);
@@ -398,6 +410,7 @@ async function ensureTables(db) {
     db.prepare('CREATE TABLE IF NOT EXISTS chests (user_id INTEGER PRIMARY KEY, ready_at INTEGER NOT NULL, ping_day TEXT)'),
     // when a player away for days was last sent the 'we miss you' gift
     db.prepare('CREATE TABLE IF NOT EXISTS comebacks (user_id INTEGER PRIMARY KEY, at INTEGER NOT NULL)'),
+    db.prepare('CREATE TABLE IF NOT EXISTS album (user_id INTEGER NOT NULL, card TEXT NOT NULL, PRIMARY KEY (user_id, card))'),
     db.prepare(`CREATE TABLE IF NOT EXISTS notify (user_id INTEGER PRIMARY KEY, enabled INTEGER NOT NULL DEFAULT 0, lang TEXT, tz INTEGER NOT NULL DEFAULT 0,
       room INTEGER NOT NULL DEFAULT 0, last_seen INTEGER, last_raid INTEGER, blocked INTEGER NOT NULL DEFAULT 0)`),
     db.prepare(`CREATE TABLE IF NOT EXISTS raids (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER NOT NULL, room INTEGER NOT NULL,

@@ -49,6 +49,9 @@ worker/             the leaderboard: a Cloudflare Worker with a D1 database
   a new side every turn (an arrow at the top shows it) and pushes flying heroes. Cryo bots freeze the
   hero they hit, who skips a turn unless a friend's shot breaks the ice. It ends with the Blizzard
   Snowplough: after each attack it sweeps every hero 110 px the way the wind blows.
+- Robot album: the guide's Enemies tab counts wins over each robot (bosses as one card). 10, 50 and 200
+  wins make a card bronze, silver and gold and give a quick start, a heart and a Second wind; the
+  server pays each tier once (`/album`).
 - Chest: a chest on the map's bottom bar ripens every 6 hours (a heart or a quick start, 10% a free
   Second wind). A chest that has waited 2+ hours for a player away 8+ hours gets one bot note a day
   (12:00-20:00 local, `startapp=chest` opens it).
