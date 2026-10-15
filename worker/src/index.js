@@ -45,6 +45,10 @@ const ITEMS = {
 };
 const BOOSTERS = ['heart', 'meter', 'wind']; // the only items that get used up (wind: a free Second wind)
 // login bonus by day of the streak (the 7th day restarts the cycle)
+// the chest ripens every 6 hours; inside: a heart or a quick start, and now and then a free Second wind
+const CHEST_HOURS = 6;
+const rollChest = () => { const r = Math.random(); return r < .1 ? { wind: 1 } : r < .55 ? { heart: 1 } : { meter: 1 }; };
+const MISS_GIFT = { heart: 1, meter: 1 }; // for a player back after 3+ days away
 const STREAK_GIFT_DAYS = 30; // every 30 days in a row: the party hat, or a free Second wind for those who have it
 const DAILY = [{ meter: 1 }, { heart: 1 }, { meter: 1 }, { heart: 1 }, { meter: 2 }, { heart: 2 }, { wind: 1, heart: 1, meter: 1 }];
 const RAID_GIFT = { heart: 1, meter: 1 }, RAID_MIN = 30, ROOMS_N = 17;
@@ -69,7 +73,9 @@ const TEXT = {
     cardTitle: 'Запросити в Pawsling', cardDesc: 'Картка з кнопкою «Грати» і твоїм запрошенням: обом по бонусу', textTitle: 'Запрошення текстом', textDesc: 'Те саме, але без картинки', recTitle: 'Кинути виклик', recDesc: 'Покажи свій рекорд і запроси побити його', rec: (st, w) => `🏆 Мій рекорд у Pawsling: ⭐ ${st}${w ? ` · 🌙 «Нічна зміна»: ${w}` : ''}. Спробуєш побити?`, share: '📨 Запросити друга', shareText: 'Обери чат, і я надішлю туди картку з запрошенням. Коли друг зайде за нею в гру, ви обидва отримаєте +1 серце і +1 швидкий старт.', startQ: 'Кого запросимо?',
     streakEnds: (n, h) => `🔥 Твоя серія ${n} дн. згорить через ${h} год! Зайди в Pawsling і забери бонус дня.`,
     passNight: (name, me, them) => `🌙 ${name} випереджає тебе в «Нічній зміні»: ${me} проти твоїх ${them}. Відіграєшся?`,
-    passStars: (name, me, them) => `⭐ ${name} випереджає тебе за зірками: ${me} проти твоїх ${them}. Наздоженеш?`, friendsBtn: '🏆 Рейтинг друзів' },
+    passStars: (name, me, them) => `⭐ ${name} випереджає тебе за зірками: ${me} проти твоїх ${them}. Наздоженеш?`, friendsBtn: '🏆 Рейтинг друзів',
+    chestReady: '🎁 Твоя скриня в Pawsling дозріла й чекає! Відкрий і забери подарунок.',
+    missYou: '🐾 Ми скучили! Коти та єноти тримають для тебе подарунок: ❤️ +1 серце і ⚡ +1 швидкий старт. Вони вже в грі.' },
   en: { rooms: ['Kitchen', 'Living room', 'Bedroom', 'Bathroom', 'Balcony', 'Attic', 'Garage', 'Basement', 'Roof', 'Garden', 'Server room', 'Stairwell', 'Warehouse', 'Factory', 'Lab', 'Space station', 'Polar station'], raid: room => `🚨 Alert! Rebel robots are raiding your home: ${room}!\n\nRepel the raid within 30 minutes and get a bonus: ❤️ +1 heart and ⚡ +1 quick start.`, raidBtn: '🐾 Repel the raid',
     invite: 'Cats and raccoons vs rebel robots! Play Pawsling with me 🐾',
     sent: 'Thanks! Your message has been sent to the developer.',
@@ -81,7 +87,9 @@ const TEXT = {
     cardTitle: 'Invite to Pawsling', cardDesc: 'A card with a Play button and your invite: a bonus for you both', textTitle: 'Invite as text', textDesc: 'The same, without the picture', recTitle: 'Challenge a friend', recDesc: 'Show your record and dare them to beat it', rec: (st, w) => `🏆 My Pawsling record: ⭐ ${st}${w ? ` · 🌙 Night Shift: ${w}` : ''}. Can you beat it?`, share: '📨 Invite a friend', shareText: 'Pick a chat and I will send an invite card there. When your friend joins through it, you both get +1 heart and +1 quick start.', startQ: 'Who shall we invite?',
     streakEnds: (n, h) => `🔥 Your ${n}-day streak ends in ${h}h! Open Pawsling and grab today's bonus.`,
     passNight: (name, me, them) => `🌙 ${name} is ahead of you in Night Shift: ${me} against your ${them}. Going to win it back?`,
-    passStars: (name, me, them) => `⭐ ${name} is ahead of you in stars: ${me} against your ${them}. Can you catch up?`, friendsBtn: '🏆 Friends board' },
+    passStars: (name, me, them) => `⭐ ${name} is ahead of you in stars: ${me} against your ${them}. Can you catch up?`, friendsBtn: '🏆 Friends board',
+    chestReady: '🎁 Your Pawsling chest is ripe and waiting! Open it and grab the gift.',
+    missYou: '🐾 We miss you! The cats and raccoons saved you a gift: ❤️ +1 heart and ⚡ +1 quick start. It is already in the game.' },
   pl: { rooms: ['Kuchnia', 'Salon', 'Sypialnia', 'Łazienka', 'Balkon', 'Strych', 'Garaż', 'Piwnica', 'Dach', 'Ogród', 'Serwerownia', 'Klatka schodowa', 'Magazyn', 'Fabryka', 'Laboratorium', 'Stacja kosmiczna', 'Stacja polarna'], raid: room => `🚨 Alarm! Zbuntowane roboty napadły na pokój: ${room}!\n\nOdeprzyj nalot w 30 minut i zdobądź bonus: ❤️ +1 serce i ⚡ +1 szybki start.`, raidBtn: '🐾 Odeprzyj nalot',
     invite: 'Koty i szopy kontra zbuntowane roboty! Zagraj ze mną w Pawsling 🐾',
     sent: 'Dzięki! Wiadomość trafiła do twórcy gry.',
@@ -93,7 +101,9 @@ const TEXT = {
     cardTitle: 'Zaproś do Pawsling', cardDesc: 'Karta z przyciskiem Graj i twoim zaproszeniem: bonus dla was obojga', textTitle: 'Zaproszenie tekstem', textDesc: 'To samo, ale bez obrazka', recTitle: 'Rzuć wyzwanie', recDesc: 'Pokaż swój rekord i zaproś do jego pobicia', rec: (st, w) => `🏆 Mój rekord w Pawsling: ⭐ ${st}${w ? ` · 🌙 Nocna zmiana: ${w}` : ''}. Pobijesz go?`, share: '📨 Zaproś znajomego', shareText: 'Wybierz czat, a wyślę tam kartę z zaproszeniem. Gdy znajomy dołączy przez nią, oboje dostaniecie +1 serce i +1 szybki start.', startQ: 'Kogo zapraszamy?',
     streakEnds: (n, h) => `🔥 Twoja seria ${n} dni przepadnie za ${h} godz.! Wejdź do Pawsling i odbierz dzisiejszy bonus.`,
     passNight: (name, me, them) => `🌙 ${name} wyprzedza cię w Nocnej zmianie: ${me} wobec twoich ${them}. Odegrasz się?`,
-    passStars: (name, me, them) => `⭐ ${name} wyprzedza cię w gwiazdkach: ${me} wobec twoich ${them}. Dogonisz?`, friendsBtn: '🏆 Ranking znajomych' },
+    passStars: (name, me, them) => `⭐ ${name} wyprzedza cię w gwiazdkach: ${me} wobec twoich ${them}. Dogonisz?`, friendsBtn: '🏆 Ranking znajomych',
+    chestReady: '🎁 Twoja skrzynia w Pawsling dojrzała i czeka! Otwórz ją i odbierz prezent.',
+    missYou: '🐾 Tęsknimy! Koty i szopy mają dla ciebie prezent: ❤️ +1 serce i ⚡ +1 szybki start. Już czeka w grze.' },
   de: { rooms: ['Küche', 'Wohnzimmer', 'Schlafzimmer', 'Badezimmer', 'Balkon', 'Dachboden', 'Garage', 'Keller', 'Dach', 'Garten', 'Serverraum', 'Treppenhaus', 'Lager', 'Fabrik', 'Labor', 'Raumstation', 'Polarstation'], raid: room => `🚨 Alarm! Rebellische Roboter überfallen den Raum: ${room}!\n\nWehr den Überfall in 30 Minuten ab und hol dir einen Bonus: ❤️ +1 Herz und ⚡ +1 Schnellstart.`, raidBtn: '🐾 Überfall abwehren',
     invite: 'Katzen und Waschbären gegen rebellische Roboter! Spiel Pawsling mit mir 🐾',
     sent: 'Danke! Deine Nachricht wurde an den Entwickler weitergeleitet.',
@@ -105,7 +115,9 @@ const TEXT = {
     cardTitle: 'Zu Pawsling einladen', cardDesc: 'Eine Karte mit Spielen-Knopf und deiner Einladung: ein Bonus für euch beide', textTitle: 'Einladung als Text', textDesc: 'Dasselbe ohne Bild', recTitle: 'Herausfordern', recDesc: 'Zeig deinen Rekord und fordere zum Schlagen heraus', rec: (st, w) => `🏆 Mein Pawsling-Rekord: ⭐ ${st}${w ? ` · 🌙 Nachtschicht: ${w}` : ''}. Schaffst du mehr?`, share: '📨 Freund einladen', shareText: 'Wähl einen Chat, und ich schicke dort eine Einladungskarte hin. Kommt dein Freund darüber ins Spiel, bekommt ihr beide +1 Herz und +1 Schnellstart.', startQ: 'Wen laden wir ein?',
     streakEnds: (n, h) => `🔥 Deine Serie von ${n} Tagen endet in ${h} Std.! Öffne Pawsling und hol dir den Tagesbonus.`,
     passNight: (name, me, them) => `🌙 ${name} liegt in der Nachtschicht vor dir: ${me} gegen deine ${them}. Holst du dir das zurück?`,
-    passStars: (name, me, them) => `⭐ ${name} liegt bei den Sternen vor dir: ${me} gegen deine ${them}. Holst du auf?`, friendsBtn: '🏆 Freunde-Rangliste' },
+    passStars: (name, me, them) => `⭐ ${name} liegt bei den Sternen vor dir: ${me} gegen deine ${them}. Holst du auf?`, friendsBtn: '🏆 Freunde-Rangliste',
+    chestReady: '🎁 Deine Pawsling-Truhe ist reif und wartet! Öffne sie und hol dir das Geschenk.',
+    missYou: '🐾 Wir vermissen dich! Die Katzen und Waschbären haben ein Geschenk für dich: ❤️ +1 Herz und ⚡ +1 Schnellstart. Es liegt schon im Spiel.' },
   es: { rooms: ['Cocina', 'Salón', 'Dormitorio', 'Baño', 'Balcón', 'Desván', 'Garaje', 'Sótano', 'Tejado', 'Jardín', 'Sala de servidores', 'Escalera', 'Almacén', 'Fábrica', 'Laboratorio', 'Estación espacial', 'Estación polar'], raid: room => `🚨 ¡Alerta! ¡Los robots rebeldes asaltan la habitación: ${room}!\n\nRechaza el asalto en 30 minutos y gana un bonus: ❤️ +1 corazón y ⚡ +1 inicio rápido.`, raidBtn: '🐾 Rechazar el asalto',
     invite: '¡Gatos y mapaches contra robots rebeldes! Juega Pawsling conmigo 🐾',
     sent: '¡Gracias! Tu mensaje se ha enviado al desarrollador.',
@@ -117,7 +129,9 @@ const TEXT = {
     cardTitle: 'Invitar a Pawsling', cardDesc: 'Una tarjeta con botón Jugar y tu invitación: un bonus para los dos', textTitle: 'Invitación en texto', textDesc: 'Lo mismo, sin imagen', recTitle: 'Lanzar un reto', recDesc: 'Muestra tu récord y reta a superarlo', rec: (st, w) => `🏆 Mi récord en Pawsling: ⭐ ${st}${w ? ` · 🌙 Turno de noche: ${w}` : ''}. ¿Lo superas?`, share: '📨 Invitar a un amigo', shareText: 'Elige un chat y enviaré allí una tarjeta de invitación. Cuando tu amigo entre por ella, los dos recibiréis +1 corazón y +1 inicio rápido.', startQ: '¿A quién invitamos?',
     streakEnds: (n, h) => `🔥 ¡Tu racha de ${n} días termina en ${h} h! Entra en Pawsling y recoge el bonus de hoy.`,
     passNight: (name, me, them) => `🌙 ${name} te supera en el Turno de noche: ${me} frente a tus ${them}. ¿Lo recuperas?`,
-    passStars: (name, me, them) => `⭐ ${name} te supera en estrellas: ${me} frente a tus ${them}. ¿Lo alcanzas?`, friendsBtn: '🏆 Clasificación de amigos' },
+    passStars: (name, me, them) => `⭐ ${name} te supera en estrellas: ${me} frente a tus ${them}. ¿Lo alcanzas?`, friendsBtn: '🏆 Clasificación de amigos',
+    chestReady: '🎁 ¡Tu cofre de Pawsling ya está listo y te espera! Ábrelo y recoge el regalo.',
+    missYou: '🐾 ¡Te echamos de menos! Los gatos y mapaches te guardan un regalo: ❤️ +1 corazón y ⚡ +1 inicio rápido. Ya está en el juego.' },
 };
 const text = code => TEXT[(code || '').slice(0, 2)] || TEXT.en;
 // texts in the language the player chose in the game, or their Telegram app language before they have played
@@ -138,7 +152,7 @@ export default {
     const json = (body, status = 200) => new Response(JSON.stringify(body), { status, headers: { ...cors, 'Content-Type': 'application/json' } });
     if (req.method === 'OPTIONS') return new Response(null, { headers: cors });
     const url = new URL(req.url), path = url.pathname;
-    if (req.method !== 'POST' || !['/board', '/invoice', '/inventory', '/use', '/daily', '/challenge', '/share', '/notify', '/raid', '/tg'].includes(path)) return json({ error: 'not found' }, 404);
+    if (req.method !== 'POST' || !['/board', '/invoice', '/inventory', '/use', '/daily', '/challenge', '/share', '/notify', '/raid', '/chest', '/tg'].includes(path)) return json({ error: 'not found' }, 404);
 
     if (path === '/tg') {
       // only Telegram knows the secret we gave it in setWebhook
@@ -176,6 +190,16 @@ export default {
     }
 
     if (path === '/daily') return json(await daily(env, user, body));
+    if (path === '/chest') {
+      // open the chest if it is ripe; either way answer with when the next one is ready
+      await ensureTables(env.DB);
+      const now = Math.floor(Date.now() / 1000), next = now + CHEST_HOURS * 3600;
+      const r = await env.DB.prepare('UPDATE chests SET ready_at = ?3 WHERE user_id = ?1 AND ready_at <= ?2').bind(user.id, now, next).run();
+      let reward = null;
+      if (r.meta.changes > 0) { reward = rollChest(); await grant(env.DB, user.id, reward); }
+      const row = await env.DB.prepare('SELECT ready_at FROM chests WHERE user_id = ?1').bind(user.id).first();
+      return json({ ok: !!reward, reward, readyAt: (row ? row.ready_at : now) * 1000, items: await inventory(env.DB, user.id) });
+    }
     if (path === '/notify') {
       await ensureTables(env.DB);
       const now = Math.floor(Date.now() / 1000);
@@ -223,7 +247,7 @@ export default {
     return json(await board(env.DB, body.board, user.id));
   },
 
-  async scheduled(event, env, ctx) { ctx.waitUntil(event.cron === '5 0 * * 1' ? awardWeek(env) : Promise.all([sendRaids(env), sendStreakReminders(env)])); },
+  async scheduled(event, env, ctx) { ctx.waitUntil(event.cron === '5 0 * * 1' ? awardWeek(env) : Promise.all([sendRaids(env), sendStreakReminders(env), sendChestPings(env), sendMissYou(env)])); },
 };
 
 // ---------- daily bonus, challenge, invites ----------
@@ -241,6 +265,8 @@ async function daily(env, user, body = {}) {
     .bind(user.id, now, clampTz(body.tz), clampRoom(body.room), String(body.lang || '').slice(0, 5)).run();
   const nrow = await db.prepare('SELECT enabled FROM notify WHERE user_id = ?1').bind(user.id).first();
   const raid = await db.prepare('SELECT id, room, expires FROM raids WHERE user_id = ?1 AND done IS NULL AND expires > ?2 ORDER BY id DESC LIMIT 1').bind(user.id, now).first();
+  await db.prepare('INSERT OR IGNORE INTO chests (user_id, ready_at) VALUES (?1, ?2)').bind(user.id, now).run();
+  const chest = await db.prepare('SELECT ready_at FROM chests WHERE user_id = ?1').bind(user.id).first();
   const today = utcDay(), yesterday = utcDay(Date.now() - DAY);
   const row = await db.prepare('SELECT last_day, streak, challenge_day FROM daily WHERE user_id = ?1').bind(user.id).first();
   const known = row || await db.prepare('SELECT 1 AS x FROM players WHERE id = ?1').bind(user.id).first();
@@ -278,7 +304,7 @@ async function daily(env, user, body = {}) {
   }
   const inv = await db.prepare('SELECT COUNT(*) AS n FROM referrals WHERE ref_by = ?1').bind(user.id).first();
   if (!botName) { const me = await tg(env, 'getMe', {}); botName = me.ok ? me.result.username : null; }
-  return { claimed, streak, run, bonus, reward, gifted, challengeDone: !!row && row.challenge_day === today, invited: inv.n, bot: botName,
+  return { claimed, streak, run, bonus, chestAt: chest.ready_at * 1000, reward, gifted, challengeDone: !!row && row.challenge_day === today, invited: inv.n, bot: botName,
     notify: !!(nrow && nrow.enabled), raid: raid ? { id: raid.id, room: raid.room, expires: raid.expires * 1000 } : null,
     items: await inventory(db, user.id), today, weekEnds: weekStart() + 7 * DAY };
 }
@@ -369,6 +395,9 @@ async function ensureTables(db) {
     db.prepare('CREATE TABLE IF NOT EXISTS streaks (user_id INTEGER PRIMARY KEY, run INTEGER NOT NULL DEFAULT 0)'),
     // the day a player last got a streak reminder, and the day they last got a friend note (one of each a day at most)
     db.prepare('CREATE TABLE IF NOT EXISTS pings (user_id INTEGER PRIMARY KEY, streak_day TEXT, friend_day TEXT)'),
+    db.prepare('CREATE TABLE IF NOT EXISTS chests (user_id INTEGER PRIMARY KEY, ready_at INTEGER NOT NULL, ping_day TEXT)'),
+    // when a player away for days was last sent the 'we miss you' gift
+    db.prepare('CREATE TABLE IF NOT EXISTS comebacks (user_id INTEGER PRIMARY KEY, at INTEGER NOT NULL)'),
     db.prepare(`CREATE TABLE IF NOT EXISTS notify (user_id INTEGER PRIMARY KEY, enabled INTEGER NOT NULL DEFAULT 0, lang TEXT, tz INTEGER NOT NULL DEFAULT 0,
       room INTEGER NOT NULL DEFAULT 0, last_seen INTEGER, last_raid INTEGER, blocked INTEGER NOT NULL DEFAULT 0)`),
     db.prepare(`CREATE TABLE IF NOT EXISTS raids (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER NOT NULL, room INTEGER NOT NULL,
@@ -659,6 +688,51 @@ async function tellPassedFriends(env, user, was, now) {
     const r = await tg(env, 'sendMessage', { chat_id: f.id, text: msg,
       reply_markup: { inline_keyboard: [[{ text: t.friendsBtn, url: `https://t.me/${botName}?startapp=friends` }]] } });
     if (r.error_code === 403) await db.prepare('UPDATE notify SET blocked = 1 WHERE user_id = ?1').bind(f.id).run();
+  }
+}
+// a ripe chest that has waited 2+ hours for a player who hasn't played for 8 hours: one note a day, in the afternoon
+async function sendChestPings(env) {
+  const db = env.DB;
+  await ensureTables(db);
+  const now = Math.floor(Date.now() / 1000), d = new Date(), today = utcDay();
+  const rows = await db.prepare(`SELECT c.user_id, n.lang, n.tz FROM chests c JOIN notify n ON n.user_id = c.user_id
+    WHERE c.ready_at <= ?1 AND n.last_seen < ?2 AND n.last_seen > ?3 AND n.enabled = 1 AND n.blocked = 0 AND (c.ping_day IS NULL OR c.ping_day <> ?4) LIMIT 300`)
+    .bind(now - 2 * 3600, now - 8 * 3600, now - 3 * DAY / 1000, today).all();
+  if (!rows.results.length) return;
+  if (!botName) { const me = await tg(env, 'getMe', {}); botName = me.ok ? me.result.username : null; }
+  for (const r of rows.results) {
+    const hour = Math.floor(((d.getUTCHours() * 60 - r.tz) % 1440 + 1440) % 1440 / 60);
+    if (hour < 12 || hour > 20) continue;
+    await db.prepare('UPDATE chests SET ping_day = ?2 WHERE user_id = ?1').bind(r.user_id, today).run();
+    const t = text(r.lang);
+    try {
+      const res = await tg(env, 'sendMessage', { chat_id: r.user_id, text: t.chestReady,
+        reply_markup: { inline_keyboard: [[{ text: t.play, url: `https://t.me/${botName}?startapp=chest` }]] } });
+      if (res.error_code === 403) await db.prepare('UPDATE notify SET blocked = 1 WHERE user_id = ?1').bind(r.user_id).run();
+    } catch (e) {}
+  }
+}
+// away 3 to 30 days: a small gift goes straight into the inventory, with a note; at most once a week
+async function sendMissYou(env) {
+  const db = env.DB;
+  await ensureTables(db);
+  const now = Math.floor(Date.now() / 1000), d = new Date(), wk = 7 * 24 * 3600;
+  const rows = await db.prepare(`SELECT n.user_id, n.lang, n.tz FROM notify n LEFT JOIN comebacks b ON b.user_id = n.user_id
+    WHERE n.last_seen < ?1 AND n.last_seen > ?2 AND n.enabled = 1 AND n.blocked = 0 AND (b.at IS NULL OR b.at < ?3) LIMIT 300`)
+    .bind(now - 3 * 24 * 3600, now - 30 * 24 * 3600, now - wk).all();
+  if (!rows.results.length) return;
+  if (!botName) { const me = await tg(env, 'getMe', {}); botName = me.ok ? me.result.username : null; }
+  for (const r of rows.results) {
+    const hour = Math.floor(((d.getUTCHours() * 60 - r.tz) % 1440 + 1440) % 1440 / 60);
+    if (hour < 12 || hour > 20) continue;
+    await db.prepare('INSERT INTO comebacks (user_id, at) VALUES (?1, ?2) ON CONFLICT(user_id) DO UPDATE SET at = excluded.at').bind(r.user_id, now).run();
+    const t = text(r.lang);
+    try {
+      const res = await tg(env, 'sendMessage', { chat_id: r.user_id, text: t.missYou,
+        reply_markup: { inline_keyboard: [[{ text: t.play, url: `https://t.me/${botName}?startapp=back` }]] } });
+      if (res.ok) await grant(db, r.user_id, MISS_GIFT);
+      else if (res.error_code === 403) await db.prepare('UPDATE notify SET blocked = 1 WHERE user_id = ?1').bind(r.user_id).run();
+    } catch (e) {}
   }
 }
 // evening reminder: a streak of 5+ days that will end at the next UTC day change unless the player opens the game

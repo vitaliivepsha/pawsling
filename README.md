@@ -49,6 +49,11 @@ worker/             the leaderboard: a Cloudflare Worker with a D1 database
   a new side every turn (an arrow at the top shows it) and pushes flying heroes. Cryo bots freeze the
   hero they hit, who skips a turn unless a friend's shot breaks the ice. It ends with the Blizzard
   Snowplough: after each attack it sweeps every hero 110 px the way the wind blows.
+- Chest: a chest on the map's bottom bar ripens every 6 hours (a heart or a quick start, 10% a free
+  Second wind). A chest that has waited 2+ hours for a player away 8+ hours gets one bot note a day
+  (12:00-20:00 local, `startapp=chest` opens it).
+- We miss you: a player away 3-30 days gets +1 heart and +1 quick start with a bot note, at most once
+  a week (12:00-20:00 local).
 - Friends: the board has a Friends tab (people you invited and whoever invited you, by stars, with
   their Night Shift best). When a player passes a friend in Night Shift or stars, the bot tells that
   friend (once a day at most) with a button that opens the Friends tab (`startapp=friends`).

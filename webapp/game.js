@@ -992,7 +992,7 @@ const I18N = {
     'item.hero_rex': 'Рекс', 'itemd.hero_rex': 'Лікує друзів, яких зачепить',
     inShop: 'Є в магазині', afterLvl: n => `Відкриється після рівня ${n}`, teamAdd: 'Додати', teamRule: 'У команді 4–5 героїв',
     heroes: 'Герої', lvl: n => `Рів. ${n}`, xpOf: (a, b) => `${a} / ${b} досвіду`, maxLvl: 'Максимальний рівень', perAll: 'Кожен рівень героя: +4% шкоди', xpGain: n => `+${n} досвіду кожному герою`, lvlUp: s => `новий рівень: ${s}`, 'knot.fire': 'Вогняний вузол!', 'knot.purr': 'Мурчальний вузол!', 'knot.trash': 'Сміттєвий вузол!', hardName: 'Випробування', hardDesc: n => `Вороги +40% міцності, лише ${n} ходів. Подвійний досвід і корона`, hardLeft: n => `Випробування: лишилось ${n} ходів`, hardTurns: 'Ходи скінчились. Спробуй ще раз', hardDone: n => `Випробування ${n} пройдено!`, 'perk.mochi.5': '+20% за кожен відскок', 'perk.mochi.10': '+25% за кожен відскок', 'perk.pixel.5': '+15% шкоди, пролітаючи наскрізь', 'perk.pixel.10': 'Лазерний погляд: 800 шкоди', 'perk.bandit.5': 'Нічний перекус лікує на 700', 'perk.bandit.10': 'Удар відкладає атаку на 2 ходи', 'perk.nugget.5': 'Більший радіус вибуху', 'perk.nugget.10': 'Вибухи б\'ють на 320', 'perk.spark.5': 'Блискавка б\'є на 70%', 'perk.spark.10': 'Блискавка б\'є двох ворогів',
-    daily: 'Щодня', dailyBonus: 'Бонус за вхід', streak: n => `Серія: ${n} дн.`, dayShort: n => `Д${n}`, streak30Hat: n => `30 днів поспіль: святковий капелюх · ще ${n} дн.`, streak30Wind: n => `30 днів поспіль: друге дихання · ще ${n} дн.`, streakHat: n => `${n} днів поспіль! Тримай святковий капелюх 🎉`, streakWind: n => `${n} днів поспіль! Тримай безкоштовне друге дихання`, challenge: 'Завдання дня', 'ch.knots': n => `Пройди рівень і зав'яжи ${n} вузли`, 'ch.lasers': n => `Пройди рівень і спіймай лазер ${n} рази`, 'ch.noko': () => 'Пройди рівень без жодного нокауту', 'ch.par': n => `Пройди рівень за ${n} ходів або швидше`, 'ch.portals': n => `Пройди рівень і пролети крізь коробки ${n} рази`, reward: 'Нагорода', chDone: 'Виконано ✓', chWon: r => `Завдання дня виконано! +1 ${r}`, invite: 'Запроси друга', inviteDesc: 'Коли друг зайде в гру за твоїм посиланням, ви обидва отримаєте +1 серце і +1 швидкий старт', invited: n => `Запрошено: ${n}`, inviteBtn: 'Запросити', inviteText: 'Коти та єноти проти збунтованої техніки! Зіграй зі мною в Pawsling 🐾', giftedMsg: 'Тебе запросив друг: +1 серце і +1 швидкий старт!', dailyTgOnly: 'Бонуси й нагороди працюють, коли гра відкрита в Telegram', boardWeek: 'Тиждень', weekLeft: (d, h) => `До кінця: ${d} д ${h} год`, weekPrizes: 'топ-3 отримають призи в понеділок',
+    daily: 'Щодня', dailyBonus: 'Бонус за вхід', streak: n => `Серія: ${n} дн.`, dayShort: n => `Д${n}`, chest: 'Скриня', chestReadyT: 'Скриня дозріла!', chestWaitT: 'Скриня дозріває', chestGot: 'У скрині було…', chestInfo: 'Кожні 6 годин скриня дозріває знову. Усередині серце або швидкий старт, а іноді й друге дихання.', chestOpen: 'Відкрити', chestOk: 'Чудово', chestLeft: (h, m) => `Ще ${h} год ${m} хв`, streak30Hat: n => `30 днів поспіль: святковий капелюх · ще ${n} дн.`, streak30Wind: n => `30 днів поспіль: друге дихання · ще ${n} дн.`, streakHat: n => `${n} днів поспіль! Тримай святковий капелюх 🎉`, streakWind: n => `${n} днів поспіль! Тримай безкоштовне друге дихання`, challenge: 'Завдання дня', 'ch.knots': n => `Пройди рівень і зав'яжи ${n} вузли`, 'ch.lasers': n => `Пройди рівень і спіймай лазер ${n} рази`, 'ch.noko': () => 'Пройди рівень без жодного нокауту', 'ch.par': n => `Пройди рівень за ${n} ходів або швидше`, 'ch.portals': n => `Пройди рівень і пролети крізь коробки ${n} рази`, reward: 'Нагорода', chDone: 'Виконано ✓', chWon: r => `Завдання дня виконано! +1 ${r}`, invite: 'Запроси друга', inviteDesc: 'Коли друг зайде в гру за твоїм посиланням, ви обидва отримаєте +1 серце і +1 швидкий старт', invited: n => `Запрошено: ${n}`, inviteBtn: 'Запросити', inviteText: 'Коти та єноти проти збунтованої техніки! Зіграй зі мною в Pawsling 🐾', giftedMsg: 'Тебе запросив друг: +1 серце і +1 швидкий старт!', dailyTgOnly: 'Бонуси й нагороди працюють, коли гра відкрита в Telegram', boardWeek: 'Тиждень', weekLeft: (d, h) => `До кінця: ${d} д ${h} год`, weekPrizes: 'топ-3 отримають призи в понеділок',
     shop: 'Магазин',
     shopBoosts: 'Бустери', shopHeroes: 'Герої', shopLooks: 'Прикраси', shopTgOnly: 'Магазин працює, коли гра відкрита в Telegram',
     equip: 'Вдягнути',
@@ -1125,7 +1125,7 @@ const I18N = {
     'item.hero_rex': 'Rex', 'itemd.hero_rex': 'Heals friends he touches',
     inShop: 'In the shop', afterLvl: n => `Unlocks after level ${n}`, teamAdd: 'Add', teamRule: 'A team has 4–5 heroes',
     heroes: 'Heroes', lvl: n => `Lv ${n}`, xpOf: (a, b) => `${a} / ${b} XP`, maxLvl: 'Max level', perAll: 'Every hero level: +4% damage', xpGain: n => `+${n} XP for every hero`, lvlUp: s => `level up: ${s}`, 'knot.fire': 'Fire knot!', 'knot.purr': 'Purring knot!', 'knot.trash': 'Trash knot!', hardName: 'Challenge mode', hardDesc: n => `Enemies +40% tougher, only ${n} turns. Double XP and a crown`, hardLeft: n => `Challenge: ${n} turns left`, hardTurns: 'Out of turns. Try again', hardDone: n => `Challenge ${n} complete!`, 'perk.mochi.5': '+20% per wall bounce', 'perk.mochi.10': '+25% per wall bounce', 'perk.pixel.5': '+15% damage when piercing', 'perk.pixel.10': 'Laser Stare: 800 damage', 'perk.bandit.5': 'Midnight Snack heals 700', 'perk.bandit.10': 'Hits delay attacks by 2 turns', 'perk.nugget.5': 'Bigger blast radius', 'perk.nugget.10': 'Blasts deal 320', 'perk.spark.5': 'Lightning deals 70%', 'perk.spark.10': 'Lightning hits two enemies',
-    daily: 'Daily', dailyBonus: 'Login bonus', streak: n => `Streak: ${n} days`, dayShort: n => `D${n}`, streak30Hat: n => `30 days in a row: the party hat · ${n} to go`, streak30Wind: n => `30 days in a row: a free Second wind · ${n} to go`, streakHat: n => `${n} days in a row! Here is the party hat 🎉`, streakWind: n => `${n} days in a row! Here is a free Second wind`, challenge: 'Daily challenge', 'ch.knots': n => `Win the level and tie ${n} knots`, 'ch.lasers': n => `Win the level and catch the laser ${n} times`, 'ch.noko': () => 'Win the level without a single knockout', 'ch.par': n => `Win the level in ${n} turns or fewer`, 'ch.portals': n => `Win the level and fly through boxes ${n} times`, reward: 'Reward', chDone: 'Done ✓', chWon: r => `Daily challenge done! +1 ${r}`, invite: 'Invite a friend', inviteDesc: 'When a friend joins through your link, you both get +1 heart and +1 quick start', invited: n => `Invited: ${n}`, inviteBtn: 'Invite', inviteText: 'Cats and raccoons vs rebel robots! Play Pawsling with me 🐾', giftedMsg: 'A friend invited you: +1 heart and +1 quick start!', dailyTgOnly: 'Bonuses and rewards work when the game is opened in Telegram', boardWeek: 'Week', weekLeft: (d, h) => `Ends in ${d}d ${h}h`, weekPrizes: 'the top 3 get prizes on Monday',
+    daily: 'Daily', dailyBonus: 'Login bonus', streak: n => `Streak: ${n} days`, dayShort: n => `D${n}`, chest: 'Chest', chestReadyT: 'The chest is ripe!', chestWaitT: 'The chest is ripening', chestGot: 'Inside the chest…', chestInfo: 'Every 6 hours the chest ripens again. Inside: a heart or a quick start, and now and then a Second wind.', chestOpen: 'Open', chestOk: 'Great', chestLeft: (h, m) => `${h} h ${m} min to go`, streak30Hat: n => `30 days in a row: the party hat · ${n} to go`, streak30Wind: n => `30 days in a row: a free Second wind · ${n} to go`, streakHat: n => `${n} days in a row! Here is the party hat 🎉`, streakWind: n => `${n} days in a row! Here is a free Second wind`, challenge: 'Daily challenge', 'ch.knots': n => `Win the level and tie ${n} knots`, 'ch.lasers': n => `Win the level and catch the laser ${n} times`, 'ch.noko': () => 'Win the level without a single knockout', 'ch.par': n => `Win the level in ${n} turns or fewer`, 'ch.portals': n => `Win the level and fly through boxes ${n} times`, reward: 'Reward', chDone: 'Done ✓', chWon: r => `Daily challenge done! +1 ${r}`, invite: 'Invite a friend', inviteDesc: 'When a friend joins through your link, you both get +1 heart and +1 quick start', invited: n => `Invited: ${n}`, inviteBtn: 'Invite', inviteText: 'Cats and raccoons vs rebel robots! Play Pawsling with me 🐾', giftedMsg: 'A friend invited you: +1 heart and +1 quick start!', dailyTgOnly: 'Bonuses and rewards work when the game is opened in Telegram', boardWeek: 'Week', weekLeft: (d, h) => `Ends in ${d}d ${h}h`, weekPrizes: 'the top 3 get prizes on Monday',
     shop: 'Shop',
     shopBoosts: 'Boosters', shopHeroes: 'Heroes', shopLooks: 'Style', shopTgOnly: 'The shop works when the game is opened in Telegram',
     equip: 'Wear',
@@ -1258,7 +1258,7 @@ const I18N = {
     'item.hero_rex': 'Reks', 'itemd.hero_rex': 'Leczy dotkniętych przyjaciół',
     inShop: 'W sklepie', afterLvl: n => `Odblokuj po poziomie ${n}`, teamAdd: 'Dodaj', teamRule: 'Drużyna ma 4–5 bohaterów',
     heroes: 'Bohaterowie', lvl: n => `Poz. ${n}`, xpOf: (a, b) => `${a} / ${b} PD`, maxLvl: 'Maksymalny poziom', perAll: 'Każdy poziom bohatera: +4% obrażeń', xpGain: n => `+${n} PD dla każdego bohatera`, lvlUp: s => `awans: ${s}`, 'knot.fire': 'Ognisty supeł!', 'knot.purr': 'Mruczący supeł!', 'knot.trash': 'Śmieciowy supeł!', hardName: 'Wyzwanie', hardDesc: n => `Wrogowie +40% wytrzymalsi, tylko ${n} tur. Podwójne PD i korona`, hardLeft: n => `Wyzwanie: zostało ${n} tur`, hardTurns: 'Skończyły się tury. Spróbuj ponownie', hardDone: n => `Wyzwanie ${n} ukończone!`, 'perk.mochi.5': '+20% za każde odbicie', 'perk.mochi.10': '+25% za każde odbicie', 'perk.pixel.5': '+15% obrażeń przy przebiciu', 'perk.pixel.10': 'Laserowe spojrzenie: 800', 'perk.bandit.5': 'Nocna przekąska leczy 700', 'perk.bandit.10': 'Ciosy opóźniają atak o 2 tury', 'perk.nugget.5': 'Większy zasięg wybuchu', 'perk.nugget.10': 'Wybuchy zadają 320', 'perk.spark.5': 'Piorun zadaje 70%', 'perk.spark.10': 'Piorun trafia dwóch wrogów',
-    daily: 'Codziennie', dailyBonus: 'Bonus za logowanie', streak: n => `Seria: ${n} dni`, dayShort: n => `D${n}`, streak30Hat: n => `30 dni z rzędu: imprezowa czapka · zostało ${n}`, streak30Wind: n => `30 dni z rzędu: darmowy Drugi oddech · zostało ${n}`, streakHat: n => `${n} dni z rzędu! Masz imprezową czapkę 🎉`, streakWind: n => `${n} dni z rzędu! Masz darmowy Drugi oddech`, challenge: 'Zadanie dnia', 'ch.knots': n => `Wygraj poziom i zawiąż ${n} supły`, 'ch.lasers': n => `Wygraj poziom i złap laser ${n} razy`, 'ch.noko': () => 'Wygraj poziom bez żadnego nokautu', 'ch.par': n => `Wygraj poziom w ${n} tur lub mniej`, 'ch.portals': n => `Wygraj poziom i przeleć przez pudełka ${n} razy`, reward: 'Nagroda', chDone: 'Zrobione ✓', chWon: r => `Zadanie dnia wykonane! +1 ${r}`, invite: 'Zaproś znajomego', inviteDesc: 'Gdy znajomy dołączy z twojego linku, oboje dostaniecie +1 serce i +1 szybki start', invited: n => `Zaproszono: ${n}`, inviteBtn: 'Zaproś', inviteText: 'Koty i szopy kontra zbuntowane roboty! Zagraj ze mną w Pawsling 🐾', giftedMsg: 'Zaprosił cię znajomy: +1 serce i +1 szybki start!', dailyTgOnly: 'Bonusy i nagrody działają, gdy gra jest otwarta w Telegramie', boardWeek: 'Tydzień', weekLeft: (d, h) => `Koniec za ${d} d ${h} godz.`, weekPrizes: 'top 3 dostanie nagrody w poniedziałek',
+    daily: 'Codziennie', dailyBonus: 'Bonus za logowanie', streak: n => `Seria: ${n} dni`, dayShort: n => `D${n}`, chest: 'Skrzynia', chestReadyT: 'Skrzynia dojrzała!', chestWaitT: 'Skrzynia dojrzewa', chestGot: 'W skrzyni było…', chestInfo: 'Co 6 godzin skrzynia dojrzewa znowu. W środku serce albo szybki start, a czasem nawet Drugi oddech.', chestOpen: 'Otwórz', chestOk: 'Super', chestLeft: (h, m) => `Jeszcze ${h} godz. ${m} min`, streak30Hat: n => `30 dni z rzędu: imprezowa czapka · zostało ${n}`, streak30Wind: n => `30 dni z rzędu: darmowy Drugi oddech · zostało ${n}`, streakHat: n => `${n} dni z rzędu! Masz imprezową czapkę 🎉`, streakWind: n => `${n} dni z rzędu! Masz darmowy Drugi oddech`, challenge: 'Zadanie dnia', 'ch.knots': n => `Wygraj poziom i zawiąż ${n} supły`, 'ch.lasers': n => `Wygraj poziom i złap laser ${n} razy`, 'ch.noko': () => 'Wygraj poziom bez żadnego nokautu', 'ch.par': n => `Wygraj poziom w ${n} tur lub mniej`, 'ch.portals': n => `Wygraj poziom i przeleć przez pudełka ${n} razy`, reward: 'Nagroda', chDone: 'Zrobione ✓', chWon: r => `Zadanie dnia wykonane! +1 ${r}`, invite: 'Zaproś znajomego', inviteDesc: 'Gdy znajomy dołączy z twojego linku, oboje dostaniecie +1 serce i +1 szybki start', invited: n => `Zaproszono: ${n}`, inviteBtn: 'Zaproś', inviteText: 'Koty i szopy kontra zbuntowane roboty! Zagraj ze mną w Pawsling 🐾', giftedMsg: 'Zaprosił cię znajomy: +1 serce i +1 szybki start!', dailyTgOnly: 'Bonusy i nagrody działają, gdy gra jest otwarta w Telegramie', boardWeek: 'Tydzień', weekLeft: (d, h) => `Koniec za ${d} d ${h} godz.`, weekPrizes: 'top 3 dostanie nagrody w poniedziałek',
     shop: 'Sklep',
     shopBoosts: 'Wzmocnienia', shopHeroes: 'Bohaterowie', shopLooks: 'Ozdoby', shopTgOnly: 'Sklep działa, gdy gra jest otwarta w Telegramie',
     equip: 'Załóż',
@@ -1391,7 +1391,7 @@ const I18N = {
     'item.hero_rex': 'Rex', 'itemd.hero_rex': 'Heilt berührte Freunde',
     inShop: 'Im Shop', afterLvl: n => `Frei nach Level ${n}`, teamAdd: 'Dazu', teamRule: 'Ein Team hat 4–5 Helden',
     heroes: 'Helden', lvl: n => `Lv. ${n}`, xpOf: (a, b) => `${a} / ${b} EP`, maxLvl: 'Höchststufe', perAll: 'Jede Heldenstufe: +4 % Schaden', xpGain: n => `+${n} EP für jeden Helden`, lvlUp: s => `Aufstieg: ${s}`, 'knot.fire': 'Feuerknoten!', 'knot.purr': 'Schnurrknoten!', 'knot.trash': 'Müllknoten!', hardName: 'Herausforderung', hardDesc: n => `Gegner +40 % stärker, nur ${n} Züge. Doppelte EP und eine Krone`, hardLeft: n => `Herausforderung: noch ${n} Züge`, hardTurns: 'Keine Züge mehr. Versuch es nochmal', hardDone: n => `Herausforderung ${n} geschafft!`, 'perk.mochi.5': '+20 % pro Abprall', 'perk.mochi.10': '+25 % pro Abprall', 'perk.pixel.5': '+15 % Schaden beim Durchschlag', 'perk.pixel.10': 'Laserblick: 800 Schaden', 'perk.bandit.5': 'Mitternachtssnack heilt 700', 'perk.bandit.10': 'Treffer verzögern Angriffe um 2 Züge', 'perk.nugget.5': 'Größerer Explosionsradius', 'perk.nugget.10': 'Explosionen machen 320', 'perk.spark.5': 'Blitz macht 70 %', 'perk.spark.10': 'Blitz trifft zwei Gegner',
-    daily: 'Täglich', dailyBonus: 'Login-Bonus', streak: n => `Serie: ${n} Tage`, dayShort: n => `T${n}`, streak30Hat: n => `30 Tage am Stück: der Partyhut · noch ${n}`, streak30Wind: n => `30 Tage am Stück: Zweite Luft gratis · noch ${n}`, streakHat: n => `${n} Tage am Stück! Hier ist der Partyhut 🎉`, streakWind: n => `${n} Tage am Stück! Hier ist eine gratis Zweite Luft`, challenge: 'Tagesaufgabe', 'ch.knots': n => `Gewinne das Level und knüpfe ${n} Knoten`, 'ch.lasers': n => `Gewinne das Level und fang den Laser ${n}-mal`, 'ch.noko': () => 'Gewinne das Level ohne ein einziges K.o.', 'ch.par': n => `Gewinne das Level in ${n} Zügen oder weniger`, 'ch.portals': n => `Gewinne das Level und flieg ${n}-mal durch Kartons`, reward: 'Belohnung', chDone: 'Erledigt ✓', chWon: r => `Tagesaufgabe geschafft! +1 ${r}`, invite: 'Freund einladen', inviteDesc: 'Kommt ein Freund über deinen Link, bekommt ihr beide +1 Herz und +1 Schnellstart', invited: n => `Eingeladen: ${n}`, inviteBtn: 'Einladen', inviteText: 'Katzen und Waschbären gegen rebellische Roboter! Spiel Pawsling mit mir 🐾', giftedMsg: 'Ein Freund hat dich eingeladen: +1 Herz und +1 Schnellstart!', dailyTgOnly: 'Boni und Belohnungen funktionieren, wenn das Spiel in Telegram geöffnet ist', boardWeek: 'Woche', weekLeft: (d, h) => `Endet in ${d} T ${h} Std.`, weekPrizes: 'die Top 3 bekommen am Montag Preise',
+    daily: 'Täglich', dailyBonus: 'Login-Bonus', streak: n => `Serie: ${n} Tage`, dayShort: n => `T${n}`, chest: 'Truhe', chestReadyT: 'Die Truhe ist reif!', chestWaitT: 'Die Truhe reift', chestGot: 'In der Truhe war…', chestInfo: 'Alle 6 Stunden reift die Truhe neu. Darin: ein Herz oder ein Schnellstart, und ab und zu eine Zweite Luft.', chestOpen: 'Öffnen', chestOk: 'Super', chestLeft: (h, m) => `Noch ${h} Std. ${m} Min.`, streak30Hat: n => `30 Tage am Stück: der Partyhut · noch ${n}`, streak30Wind: n => `30 Tage am Stück: Zweite Luft gratis · noch ${n}`, streakHat: n => `${n} Tage am Stück! Hier ist der Partyhut 🎉`, streakWind: n => `${n} Tage am Stück! Hier ist eine gratis Zweite Luft`, challenge: 'Tagesaufgabe', 'ch.knots': n => `Gewinne das Level und knüpfe ${n} Knoten`, 'ch.lasers': n => `Gewinne das Level und fang den Laser ${n}-mal`, 'ch.noko': () => 'Gewinne das Level ohne ein einziges K.o.', 'ch.par': n => `Gewinne das Level in ${n} Zügen oder weniger`, 'ch.portals': n => `Gewinne das Level und flieg ${n}-mal durch Kartons`, reward: 'Belohnung', chDone: 'Erledigt ✓', chWon: r => `Tagesaufgabe geschafft! +1 ${r}`, invite: 'Freund einladen', inviteDesc: 'Kommt ein Freund über deinen Link, bekommt ihr beide +1 Herz und +1 Schnellstart', invited: n => `Eingeladen: ${n}`, inviteBtn: 'Einladen', inviteText: 'Katzen und Waschbären gegen rebellische Roboter! Spiel Pawsling mit mir 🐾', giftedMsg: 'Ein Freund hat dich eingeladen: +1 Herz und +1 Schnellstart!', dailyTgOnly: 'Boni und Belohnungen funktionieren, wenn das Spiel in Telegram geöffnet ist', boardWeek: 'Woche', weekLeft: (d, h) => `Endet in ${d} T ${h} Std.`, weekPrizes: 'die Top 3 bekommen am Montag Preise',
     shop: 'Shop',
     shopBoosts: 'Booster', shopHeroes: 'Helden', shopLooks: 'Deko', shopTgOnly: 'Der Shop funktioniert, wenn das Spiel in Telegram geöffnet ist',
     equip: 'Anziehen',
@@ -1524,7 +1524,7 @@ const I18N = {
     'item.hero_rex': 'Rex', 'itemd.hero_rex': 'Cura a los amigos que toca',
     inShop: 'En la tienda', afterLvl: n => `Se desbloquea tras el nivel ${n}`, teamAdd: 'Añadir', teamRule: 'Un equipo tiene 4–5 héroes',
     heroes: 'Héroes', lvl: n => `Nv. ${n}`, xpOf: (a, b) => `${a} / ${b} XP`, maxLvl: 'Nivel máximo', perAll: 'Cada nivel de héroe: +4 % de daño', xpGain: n => `+${n} XP para cada héroe`, lvlUp: s => `sube de nivel: ${s}`, 'knot.fire': '¡Nudo de fuego!', 'knot.purr': '¡Nudo ronroneante!', 'knot.trash': '¡Nudo de basura!', hardName: 'Desafío', hardDesc: n => `Enemigos +40 % más duros, solo ${n} turnos. XP doble y una corona`, hardLeft: n => `Desafío: quedan ${n} turnos`, hardTurns: 'Sin turnos. Inténtalo de nuevo', hardDone: n => `¡Desafío ${n} completado!`, 'perk.mochi.5': '+20 % por rebote', 'perk.mochi.10': '+25 % por rebote', 'perk.pixel.5': '+15 % de daño al perforar', 'perk.pixel.10': 'Mirada láser: 800 de daño', 'perk.bandit.5': 'Tentempié nocturno cura 700', 'perk.bandit.10': 'Los golpes retrasan ataques 2 turnos', 'perk.nugget.5': 'Mayor radio de explosión', 'perk.nugget.10': 'Las explosiones hacen 320', 'perk.spark.5': 'El rayo hace 70 %', 'perk.spark.10': 'El rayo alcanza a dos enemigos',
-    daily: 'Diario', dailyBonus: 'Bono diario', streak: n => `Racha: ${n} días`, dayShort: n => `D${n}`, streak30Hat: n => `30 días seguidos: el gorro de fiesta · faltan ${n}`, streak30Wind: n => `30 días seguidos: Segundo aliento gratis · faltan ${n}`, streakHat: n => `¡${n} días seguidos! Toma el gorro de fiesta 🎉`, streakWind: n => `¡${n} días seguidos! Toma un Segundo aliento gratis`, challenge: 'Reto del día', 'ch.knots': n => `Gana el nivel y ata ${n} nudos`, 'ch.lasers': n => `Gana el nivel y atrapa el láser ${n} veces`, 'ch.noko': () => 'Gana el nivel sin ningún K.O.', 'ch.par': n => `Gana el nivel en ${n} turnos o menos`, 'ch.portals': n => `Gana el nivel y atraviesa cajas ${n} veces`, reward: 'Premio', chDone: 'Hecho ✓', chWon: r => `¡Reto del día cumplido! +1 ${r}`, invite: 'Invita a un amigo', inviteDesc: 'Cuando un amigo entre con tu enlace, los dos recibiréis +1 corazón y +1 inicio rápido', invited: n => `Invitados: ${n}`, inviteBtn: 'Invitar', inviteText: '¡Gatos y mapaches contra robots rebeldes! Juega Pawsling conmigo 🐾', giftedMsg: '¡Te invitó un amigo: +1 corazón y +1 inicio rápido!', dailyTgOnly: 'Los bonos y premios funcionan cuando el juego se abre en Telegram', boardWeek: 'Semana', weekLeft: (d, h) => `Termina en ${d} d ${h} h`, weekPrizes: 'el top 3 recibe premios el lunes',
+    daily: 'Diario', dailyBonus: 'Bono diario', streak: n => `Racha: ${n} días`, dayShort: n => `D${n}`, chest: 'Cofre', chestReadyT: '¡El cofre está listo!', chestWaitT: 'El cofre se está preparando', chestGot: 'Dentro del cofre…', chestInfo: 'Cada 6 horas el cofre vuelve a prepararse. Dentro: un corazón o un inicio rápido, y a veces un Segundo aliento.', chestOpen: 'Abrir', chestOk: 'Genial', chestLeft: (h, m) => `Faltan ${h} h ${m} min`, streak30Hat: n => `30 días seguidos: el gorro de fiesta · faltan ${n}`, streak30Wind: n => `30 días seguidos: Segundo aliento gratis · faltan ${n}`, streakHat: n => `¡${n} días seguidos! Toma el gorro de fiesta 🎉`, streakWind: n => `¡${n} días seguidos! Toma un Segundo aliento gratis`, challenge: 'Reto del día', 'ch.knots': n => `Gana el nivel y ata ${n} nudos`, 'ch.lasers': n => `Gana el nivel y atrapa el láser ${n} veces`, 'ch.noko': () => 'Gana el nivel sin ningún K.O.', 'ch.par': n => `Gana el nivel en ${n} turnos o menos`, 'ch.portals': n => `Gana el nivel y atraviesa cajas ${n} veces`, reward: 'Premio', chDone: 'Hecho ✓', chWon: r => `¡Reto del día cumplido! +1 ${r}`, invite: 'Invita a un amigo', inviteDesc: 'Cuando un amigo entre con tu enlace, los dos recibiréis +1 corazón y +1 inicio rápido', invited: n => `Invitados: ${n}`, inviteBtn: 'Invitar', inviteText: '¡Gatos y mapaches contra robots rebeldes! Juega Pawsling conmigo 🐾', giftedMsg: '¡Te invitó un amigo: +1 corazón y +1 inicio rápido!', dailyTgOnly: 'Los bonos y premios funcionan cuando el juego se abre en Telegram', boardWeek: 'Semana', weekLeft: (d, h) => `Termina en ${d} d ${h} h`, weekPrizes: 'el top 3 recibe premios el lunes',
     shop: 'Tienda',
     shopBoosts: 'Potenciadores', shopHeroes: 'Héroes', shopLooks: 'Estilo', shopTgOnly: 'La tienda funciona cuando el juego se abre en Telegram',
     equip: 'Poner',
@@ -3330,9 +3330,9 @@ function chIcon(c, x, y, s, col) {
 }
 
 // ---------- screens & UI buttons ----------
-let SCREEN = 'map', G = null, drag = null, UI = [], DETAIL = null;
+let SCREEN = 'map', G = null, drag = null, UI = [], DETAIL = null, CHEST = null;
 function setScreen(s) {
-  SCREEN = s; drag = null; DETAIL = null;
+  SCREEN = s; drag = null; DETAIL = null; CHEST = null;
   if (s === 'map') MAP.focus = true;
   if (TG && tgv('6.1')) { try { if (s === 'map') TG.BackButton.hide(); else TG.BackButton.show(); } catch (e) {} }
   if (s === 'game' && G) Amb.start(G.lvl.ch); else Amb.stop();
@@ -7743,7 +7743,10 @@ function drawMap() {
   ctx.fillStyle = fade; ctx.fillRect(0, MAP_VIEW - 26, W, 34);
   ctx.fillStyle = '#110e22'; ctx.fillRect(0, MAP_VIEW + 8, W, H - MAP_VIEW - 8);
   uiBtn(16, 736, 46, 46, '?', () => openGuide(0), false);
-  uiBtn(70, 736, 170, 46, tr('daily'), () => { DAILY.msg = null; setScreen('daily'); }, false);
+  uiBtn(70, 736, 46, 46, '', openChest, false);
+  chestIcon(93, 761, 15, false, chestReady());
+  if (chestReady()) { ctx.fillStyle = '#ff5d7a'; circ(110, 740, 6); ctx.strokeStyle = '#110e22'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(110, 740, 6, 0, TAU); ctx.stroke(); }
+  uiBtn(124, 736, 116, 46, tr('daily'), () => { DAILY.msg = null; setScreen('daily'); }, false);
   // in Telegram, wait for the server's answer: this device may not know the challenge was done elsewhere
   if ((DAILY.loaded || !serverOn()) && !challengeDone()) { ctx.fillStyle = '#ff5d7a'; circ(232, 740, 6); ctx.strokeStyle = '#110e22'; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(232, 740, 6, 0, TAU); ctx.stroke(); }
   const nightOpen = PROG.unlocked >= ENDLESS_UNLOCK;
@@ -8331,7 +8334,7 @@ function weekKey(ts = Date.now()) {
   return utcDay(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate() - back));
 }
 const DAILY_REWARDS = [{ meter: 1 }, { heart: 1 }, { meter: 1 }, { heart: 1 }, { meter: 2 }, { heart: 2 }, { wind: 1, heart: 1, meter: 1 }]; // = DAILY in the worker
-const DAILY = { notify: false, raid: null, loaded: false, streak: 0, run: 0, claimed: false, challengeDone: false, invited: 0, bot: null, today: null, msg: null, shown: false };
+const DAILY = { notify: false, raid: null, loaded: false, streak: 0, run: 0, chestAt: 0, claimed: false, challengeDone: false, invited: 0, bot: null, today: null, msg: null, shown: false };
 // what "win the level" also has to include; picked by date, same for everyone at the same progress
 const CHALLENGES = {
   knots: { n: 4, ok: g => g.stats.knots >= 4 },
@@ -8354,7 +8357,7 @@ async function loadDaily() {
   if (!serverOn()) return;
   try {
     const d = await api('/daily', { tz: new Date().getTimezoneOffset(), room: maxRoom(), lang: LANG });
-    Object.assign(DAILY, { loaded: true, streak: d.streak, run: d.run || d.streak, claimed: d.claimed, challengeDone: d.challengeDone, invited: d.invited, bot: d.bot, today: d.today });
+    Object.assign(DAILY, { loaded: true, streak: d.streak, run: d.run || d.streak, chestAt: d.chestAt || 0, claimed: d.claimed, challengeDone: d.challengeDone, invited: d.invited, bot: d.bot, today: d.today });
     if (d.challengeDone && d.today) lsSet('pawsling-ch', d.today);
     if (d.items) setInv(d.items);
     if (d.gifted) DAILY.msg = tr('giftedMsg');
@@ -8364,6 +8367,7 @@ async function loadDaily() {
     const sp = TG && TG.initDataUnsafe && TG.initDataUnsafe.start_param;
     if (DAILY.raid && sp === 'raid_' + DAILY.raid.id && !DAILY.raidAuto && (SCREEN === 'map' || SCREEN === 'howto')) { DAILY.raidAuto = true; startRaid(); return; }
     if (sp === 'friends' && !DAILY.friendsAuto && (SCREEN === 'map' || SCREEN === 'howto')) { DAILY.friendsAuto = true; openBoard('friends'); return; }
+    if (sp === 'chest' && !DAILY.chestAuto && SCREEN === 'map') { DAILY.chestAuto = true; openChest(); return; }
     // open the daily screen once when today's bonus has just been given
     if ((d.claimed || d.gifted) && SCREEN === 'map' && !DAILY.shown) { DAILY.shown = true; setScreen('daily'); }
     // after a few levels, offer raid alerts once
@@ -8616,6 +8620,70 @@ function toggleTeam(id) {
   saveProg();
 }
 // ---------- details: tap a hero or a shop item to see everything it does ----------
+// ---------- the chest: ripe every 6 hours, a heart or a quick start inside (now and then a free Second wind) ----------
+const chestOn = () => serverOn() || !!(DEV && window.__fakeChest);
+const chestReady = () => chestOn() && DAILY.chestAt > 0 && Date.now() >= DAILY.chestAt;
+function openChest() { CHEST = { t0: T, reward: null, busy: false, msg: null }; }
+function takeChest() {
+  if (!CHEST || CHEST.busy || !chestReady()) return;
+  CHEST.busy = true;
+  const call = DEV && window.__fakeChest ? Promise.resolve({ reward: window.__fakeChest, readyAt: Date.now() + 6 * 3600000 }) : api('/chest', {});
+  call.then(r => {
+    if (r.items) setInv(r.items);
+    if (r.readyAt) DAILY.chestAt = r.readyAt;
+    if (!CHEST) return;
+    CHEST.busy = false;
+    if (r.reward) { CHEST.reward = r.reward; CHEST.t1 = T; Snd.play('zoom'); haptic('success'); }
+  }).catch(() => { if (CHEST) { CHEST.busy = false; CHEST.msg = tr('payFailed'); } });
+}
+function chestIcon(x, y, s, open, glow) {
+  ctx.save(); ctx.translate(x, y);
+  if (glow && !RM) { ctx.save(); ctx.globalCompositeOperation = 'lighter'; glowAt(0, 0, s * 2.2, '255,200,87', .3 + .12 * Math.sin(T * 4)); ctx.restore(); }
+  // the box
+  ctx.fillStyle = '#8a5a30'; rr(-s, -s * .2, s * 2, s * 1.1, s * .2); ctx.fill();
+  ctx.fillStyle = '#ffc857'; ctx.fillRect(-s, s * .25, s * 2, s * .14);
+  // the lid, tipped back when open
+  ctx.save(); ctx.translate(0, -s * .2); if (open) ctx.rotate(-.5);
+  ctx.fillStyle = '#a86e3c'; ctx.beginPath(); ctx.moveTo(-s, 0); ctx.quadraticCurveTo(-s, -s * .75, 0, -s * .8); ctx.quadraticCurveTo(s, -s * .75, s, 0); ctx.closePath(); ctx.fill();
+  ctx.fillStyle = '#ffc857'; ctx.fillRect(-s, -s * .14, s * 2, s * .14);
+  ctx.restore();
+  ctx.fillStyle = '#ffe08a'; rr(-s * .18, -s * .1, s * .36, s * .42, s * .08); ctx.fill();
+  ctx.restore();
+}
+function drawChest() {
+  UI = [];
+  const c = CHEST, k = RM ? 1 : Math.min(1, (T - c.t0) / .25), ready = chestReady(), x = 40, w = W - 80, y = 220, h = 380;
+  UI.push({ x: 0, y: 0, w: W, h: H, cb: () => { CHEST = null; } });
+  UI.push({ x, y, w, h, cb: () => {} });
+  ctx.save(); ctx.globalAlpha = Math.min(1, k * 1.6);
+  ctx.fillStyle = 'rgba(8,6,18,.86)'; ctx.fillRect(0, 0, W, H);
+  ctx.fillStyle = 'rgba(0,0,0,.45)'; rr(x, y + 8, w, h, 24); ctx.fill();
+  ctx.fillStyle = '#1a1636'; rr(x, y, w, h, 24); ctx.fill();
+  ctx.strokeStyle = '#ffc857'; ctx.lineWidth = 2; rr(x, y, w, h, 24); ctx.stroke();
+  const rw = c.reward, bob = RM ? 0 : Math.sin(T * 3) * 4;
+  chestIcon(W / 2, y + 96 + (rw ? 0 : bob), 42, !!rw, ready || !!rw);
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  const title = rw ? tr('chestGot') : ready ? tr('chestReadyT') : tr('chestWaitT');
+  ctx.fillStyle = '#ffc857'; fitFont(title, w - 40, 24); ctx.fillText(title, W / 2, y + 168);
+  if (rw) {
+    // what came out of it
+    const k2 = Object.keys(rw)[0], name = k2 === 'wind' ? tr('secondWind') : tr(k2 === 'heart' ? 'boostHeart' : 'boostMeter');
+    const ry = y + 214;
+    if (k2 === 'heart') heart(W / 2 - 70, ry, 11, '#ff5d7a'); else if (k2 === 'wind') windIcon(W / 2 - 70, ry, 12); else rewardIcon({ meter: 1 }, W / 2 - 70, ry);
+    ctx.textAlign = 'left'; ctx.fillStyle = '#f4efe6'; fitFont('+1 ' + name, w - 150, 18, 900, FD); ctx.fillText('+1 ' + name, W / 2 - 50, ry + 1);
+    ctx.textAlign = 'center';
+  } else if (!chestOn()) {
+    ctx.fillStyle = '#c9c2e6'; ctx.font = `800 14px ${FB}`; wrap(tr('dailyTgOnly'), W / 2, y + 210, w - 50, 19);
+  } else if (!ready) {
+    const mins = Math.ceil(Math.max(0, DAILY.chestAt - Date.now()) / 60000), hh = Math.floor(mins / 60), mm = mins % 60;
+    ctx.fillStyle = '#f4efe6'; ctx.font = `900 20px ${FD}`; ctx.fillText(tr('chestLeft', hh, mm), W / 2, y + 206);
+  }
+  if (chestOn() || c.msg) { ctx.fillStyle = '#b9b2da'; ctx.font = `800 13px ${FB}`; wrap(c.msg || tr('chestInfo'), W / 2, y + 244, w - 50, 18); }
+  if (ready && !rw) uiBtn(x + 30, y + h - 66, w - 60, 48, c.busy ? tr('payWait') : tr('chestOpen'), takeChest, true);
+  else uiBtn(x + 30, y + h - 66, w - 60, 48, tr('chestOk'), () => { CHEST = null; }, !!rw);
+  ctx.restore();
+}
+
 function openDetail(kind, id) { DETAIL = { kind, id, t0: T }; }
 function closeDetail() { DETAIL = null; }
 const capFirst = t => t.charAt(0).toUpperCase() + t.slice(1);
@@ -9417,6 +9485,7 @@ function draw() {
   else if (SCREEN === 'guide') drawGuide();
   else drawMap();
   if (DETAIL && (SCREEN === 'shop' || SCREEN === 'heroes')) drawDetail();
+  if (CHEST && SCREEN === 'map') drawChest();
 }
 
 // ---------- input ----------
@@ -9431,7 +9500,7 @@ cv.addEventListener('pointerdown', ev => {
   Snd.init(); Snd.resume();
   const p = toGame(ev);
   // on the map, a press becomes either a tap (on release) or a scroll
-  if (SCREEN === 'map' && p.y < MAP_VIEW) {
+  if (SCREEN === 'map' && p.y < MAP_VIEW && !CHEST) {
     mapDrag = { sy: p.y, y0: MAP.y, ly: p.y, lt: performance.now(), moved: false, p };
     MAP.v = 0;
     try { cv.setPointerCapture(ev.pointerId); } catch (e) {}
@@ -9518,7 +9587,7 @@ loadDaily();
 // #dev: timer-driven loop (keeps running in hidden tabs) plus a state hook for testing
 const DEV = location.hash === '#dev';
 const nextFrame = DEV ? cb => setTimeout(() => cb(performance.now()), 16) : requestAnimationFrame;
-if (DEV) window.__pawsling = { get G() { return G; }, set G(v) { G = v; }, get SCREEN() { return SCREEN; }, get DAILY() { return DAILY; }, startLevel, startEndless, launch, PROG: () => PROG, MAP, BOARD, setScreen, secondWind, setInv, get INV() { return INV; }, prepLevel, setupWave, showStory, step: dt => update(dt), LEVELS, CHAPTERS, ENEMY, bg, BGS,
+if (DEV) window.__pawsling = { get G() { return G; }, set G(v) { G = v; }, openChest, get SCREEN() { return SCREEN; }, get DAILY() { return DAILY; }, startLevel, startEndless, launch, PROG: () => PROG, MAP, BOARD, setScreen, secondWind, setInv, get INV() { return INV; }, prepLevel, setupWave, showStory, step: dt => update(dt), LEVELS, CHAPTERS, ENEMY, bg, BGS,
   // store art: pause the loop, size the canvas, then draw with the game's own painters
   draw, art: { get ctx() { return ctx; }, cv, drawHero, drawBoss, drawEnemy, drawFoe, chIcon, star, heart, rr, glowAt, drawHat, hexRgb, HEROES, BOSS_COL, FD, FB, W, H, TOP, BOT },
   size(w, h, k) { cv.width = w; cv.height = h; scale = k; dpr = 1; } };
