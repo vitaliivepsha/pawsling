@@ -45,6 +45,7 @@ const ITEMS = {
 };
 const BOOSTERS = ['heart', 'meter', 'wind']; // the only items that get used up (wind: a free Second wind)
 // login bonus by day of the streak (the 7th day restarts the cycle)
+const STREAK_GIFT_DAYS = 30; // every 30 days in a row: the party hat, or a free Second wind for those who have it
 const DAILY = [{ meter: 1 }, { heart: 1 }, { meter: 1 }, { heart: 1 }, { meter: 2 }, { heart: 2 }, { wind: 1, heart: 1, meter: 1 }];
 const RAID_GIFT = { heart: 1, meter: 1 }, RAID_MIN = 30, ROOMS_N = 17;
 const REF_GIFT = { heart: 1, meter: 1 }; // for both the inviter and the new player
@@ -227,7 +228,9 @@ async function daily(env, user, body = {}) {
   const today = utcDay(), yesterday = utcDay(Date.now() - DAY);
   const row = await db.prepare('SELECT last_day, streak, challenge_day FROM daily WHERE user_id = ?1').bind(user.id).first();
   const known = row || await db.prepare('SELECT 1 AS x FROM players WHERE id = ?1').bind(user.id).first();
-  let claimed = false, streak = row ? row.streak : 0, reward = null, gifted = false;
+  let claimed = false, streak = row ? row.streak : 0, reward = null, gifted = false, bonus = null;
+  const srow = await db.prepare('SELECT run FROM streaks WHERE user_id = ?1').bind(user.id).first();
+  let run = srow ? srow.run : streak; // players from before this counter start from their 7-day position
   if (!row || row.last_day !== today) {
     const next = row && row.last_day === yesterday ? row.streak % DAILY.length + 1 : 1;
     const r = await db.prepare(`INSERT INTO daily (user_id, last_day, streak, lang) VALUES (?1, ?2, ?3, ?4)
@@ -235,7 +238,16 @@ async function daily(env, user, body = {}) {
       WHERE daily.last_day IS NOT excluded.last_day`)
       .bind(user.id, today, next, user.language_code || '').run();
     streak = next;
-    if (r.meta.changes > 0) { reward = DAILY[next - 1]; await grant(db, user.id, reward); claimed = true; }
+    if (r.meta.changes > 0) {
+      reward = DAILY[next - 1]; await grant(db, user.id, reward); claimed = true;
+      run = row && row.last_day === yesterday ? run + 1 : 1;
+      await db.prepare('INSERT INTO streaks (user_id, run) VALUES (?1, ?2) ON CONFLICT(user_id) DO UPDATE SET run = excluded.run').bind(user.id, run).run();
+      if (run % STREAK_GIFT_DAYS === 0) {
+        const hat = await db.prepare("SELECT count FROM inventory WHERE user_id = ?1 AND item = 'hat_party' AND count > 0").bind(user.id).first();
+        bonus = hat ? { wind: 1 } : { hat_party: 1 };
+        await grant(db, user.id, bonus);
+      }
+    }
   }
   // a brand-new player who came through a friend's link
   const m = /^ref_(\d+)$/.exec(user.start || '');
@@ -250,7 +262,7 @@ async function daily(env, user, body = {}) {
   }
   const inv = await db.prepare('SELECT COUNT(*) AS n FROM referrals WHERE ref_by = ?1').bind(user.id).first();
   if (!botName) { const me = await tg(env, 'getMe', {}); botName = me.ok ? me.result.username : null; }
-  return { claimed, streak, reward, gifted, challengeDone: !!row && row.challenge_day === today, invited: inv.n, bot: botName,
+  return { claimed, streak, run, bonus, reward, gifted, challengeDone: !!row && row.challenge_day === today, invited: inv.n, bot: botName,
     notify: !!(nrow && nrow.enabled), raid: raid ? { id: raid.id, room: raid.room, expires: raid.expires * 1000 } : null,
     items: await inventory(db, user.id), today, weekEnds: weekStart() + 7 * DAY };
 }
@@ -337,6 +349,8 @@ async function ensureTables(db) {
     db.prepare('CREATE INDEX IF NOT EXISTS idx_weekly ON weekly (week, night DESC, at ASC)'),
     db.prepare('CREATE TABLE IF NOT EXISTS week_awards (week TEXT PRIMARY KEY, at INTEGER NOT NULL)'),
     db.prepare('CREATE TABLE IF NOT EXISTS refunds (charge_id TEXT PRIMARY KEY, at INTEGER NOT NULL)'),
+    // days in a row, uncapped (daily.streak only cycles through the seven login rewards)
+    db.prepare('CREATE TABLE IF NOT EXISTS streaks (user_id INTEGER PRIMARY KEY, run INTEGER NOT NULL DEFAULT 0)'),
     db.prepare(`CREATE TABLE IF NOT EXISTS notify (user_id INTEGER PRIMARY KEY, enabled INTEGER NOT NULL DEFAULT 0, lang TEXT, tz INTEGER NOT NULL DEFAULT 0,
       room INTEGER NOT NULL DEFAULT 0, last_seen INTEGER, last_raid INTEGER, blocked INTEGER NOT NULL DEFAULT 0)`),
     db.prepare(`CREATE TABLE IF NOT EXISTS raids (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER NOT NULL, room INTEGER NOT NULL,
