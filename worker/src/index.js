@@ -52,6 +52,7 @@ const ALBUM_GIFTS = [null, { meter: 1 }, { heart: 1 }, { wind: 1 }];
 // weekly quests: three a week; each pays once, all three add a free Second wind
 const QUEST_GIFTS = { knots: { meter: 1 }, robots: { heart: 1 }, bosses: { heart: 1 }, noko: { meter: 1 }, stars3: { heart: 1 }, night: { meter: 1 }, combos: { meter: 1 }, lasers: { meter: 1 } };
 const QUESTS_ALL = { wind: 1 };
+const CHAL_GIFT = { heart: 1 }; // the first win of the weekly challenge
 const CHEST_HOURS = 6;
 const rollChest = () => { const r = Math.random(); return r < .1 ? { wind: 1 } : r < .55 ? { heart: 1 } : { meter: 1 }; };
 const MISS_GIFT = { heart: 1, meter: 1 }; // for a player back after 3+ days away
@@ -158,7 +159,7 @@ export default {
     const json = (body, status = 200) => new Response(JSON.stringify(body), { status, headers: { ...cors, 'Content-Type': 'application/json' } });
     if (req.method === 'OPTIONS') return new Response(null, { headers: cors });
     const url = new URL(req.url), path = url.pathname;
-    if (req.method !== 'POST' || !['/board', '/invoice', '/inventory', '/use', '/daily', '/challenge', '/share', '/notify', '/raid', '/chest', '/album', '/quest', '/tg'].includes(path)) return json({ error: 'not found' }, 404);
+    if (req.method !== 'POST' || !['/board', '/invoice', '/inventory', '/use', '/daily', '/challenge', '/share', '/notify', '/raid', '/chest', '/album', '/quest', '/chal', '/tg'].includes(path)) return json({ error: 'not found' }, 404);
 
     if (path === '/tg') {
       // only Telegram knows the secret we gave it in setWebhook
@@ -196,6 +197,23 @@ export default {
     }
 
     if (path === '/daily') return json(await daily(env, user, body));
+    if (path === '/chal') {
+      // the weekly challenge: keep the best (fewest turns) win of the week; the first win gives a heart
+      const week = weekKey(), turns = clampInt(body.turns, 300);
+      await ensureTables(env.DB);
+      let first = false;
+      if (turns && body.week === week) {
+        const now = Math.floor(Date.now() / 1000);
+        await env.DB.prepare(`INSERT INTO chal (week, user_id, name, turns, at) VALUES (?1, ?2, ?3, ?4, ?5)
+          ON CONFLICT(week, user_id) DO UPDATE SET name = excluded.name, turns = excluded.turns, at = excluded.at WHERE excluded.turns < chal.turns`)
+          .bind(week, user.id, displayName(user), turns, now).run();
+        // the album table doubles as a ledger of one-time gifts: 'chal:<week>' marks this week's first win
+        const mark = await env.DB.prepare('INSERT OR IGNORE INTO album (user_id, card) VALUES (?1, ?2)').bind(user.id, 'chal:' + week).run();
+        first = mark.meta.changes > 0;
+        if (first) await grant(env.DB, user.id, CHAL_GIFT);
+      }
+      return json({ ...(await chalBoard(env.DB, user.id, week)), first, items: await inventory(env.DB, user.id) });
+    }
     if (path === '/quest') {
       // a weekly quest is done: its gift, once; the third one of the week adds the bonus
       const id = String(body.id || ''), week = weekKey();
@@ -273,6 +291,7 @@ export default {
 
     if (body.board === 'week') return json(await weekBoard(env.DB, user.id));
     if (body.board === 'friends') return json(await friendsBoard(env.DB, user.id));
+    if (body.board === 'chal') return json(await chalBoard(env.DB, user.id, weekKey()));
     if (body.board !== 'night' && body.board !== 'stars') return json({ ok: true });
     return json(await board(env.DB, body.board, user.id));
   },
@@ -430,6 +449,9 @@ async function ensureTables(db) {
     db.prepare('CREATE TABLE IF NOT EXISTS comebacks (user_id INTEGER PRIMARY KEY, at INTEGER NOT NULL)'),
     db.prepare('CREATE TABLE IF NOT EXISTS album (user_id INTEGER NOT NULL, card TEXT NOT NULL, PRIMARY KEY (user_id, card))'),
     db.prepare('CREATE TABLE IF NOT EXISTS quests (user_id INTEGER NOT NULL, week TEXT NOT NULL, quest TEXT NOT NULL, PRIMARY KEY (user_id, week, quest))'),
+    db.prepare(`CREATE TABLE IF NOT EXISTS chal (week TEXT NOT NULL, user_id INTEGER NOT NULL, name TEXT NOT NULL, turns INTEGER NOT NULL,
+      at INTEGER NOT NULL, PRIMARY KEY (week, user_id))`),
+    db.prepare('CREATE INDEX IF NOT EXISTS idx_chal ON chal (week, turns ASC, at ASC)'),
     db.prepare(`CREATE TABLE IF NOT EXISTS notify (user_id INTEGER PRIMARY KEY, enabled INTEGER NOT NULL DEFAULT 0, lang TEXT, tz INTEGER NOT NULL DEFAULT 0,
       room INTEGER NOT NULL DEFAULT 0, last_seen INTEGER, last_raid INTEGER, blocked INTEGER NOT NULL DEFAULT 0)`),
     db.prepare(`CREATE TABLE IF NOT EXISTS raids (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER NOT NULL, room INTEGER NOT NULL,
@@ -689,6 +711,17 @@ async function save(env, user, night, stars) {
   if (night > was.night || stars > was.stars) {
     try { await tellPassedFriends(env, user, was, { night: Math.max(night, was.night), stars: Math.max(stars, was.stars) }); } catch (e) {}
   }
+}
+async function chalBoard(db, id, week) {
+  const top = await db.prepare('SELECT user_id, name, turns FROM chal WHERE week = ?1 ORDER BY turns ASC, at ASC LIMIT 20').bind(week).all();
+  const me = await db.prepare('SELECT turns, at FROM chal WHERE week = ?1 AND user_id = ?2').bind(week, id).first();
+  const total = await db.prepare('SELECT COUNT(*) AS n FROM chal WHERE week = ?1').bind(week).first();
+  let mine = null;
+  if (me) {
+    const ahead = await db.prepare('SELECT COUNT(*) AS n FROM chal WHERE week = ?1 AND (turns < ?2 OR (turns = ?2 AND at < ?3))').bind(week, me.turns, me.at).first();
+    mine = { rank: ahead.n + 1, value: me.turns };
+  }
+  return { board: 'chal', week, total: total.n, top: top.results.map((r, i) => ({ rank: i + 1, name: r.name, value: r.turns, me: r.user_id === id })), me: mine };
 }
 // friends are the people a player invited and the one who invited them
 async function friendIds(db, id) {

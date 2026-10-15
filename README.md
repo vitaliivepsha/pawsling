@@ -49,6 +49,10 @@ worker/             the leaderboard: a Cloudflare Worker with a D1 database
   a new side every turn (an arrow at the top shows it) and pushes flying heroes. Cryo bots freeze the
   hero they hit, who skips a turn unless a friend's shot breaks the ice. It ends with the Blizzard
   Snowplough: after each attack it sweeps every hero 110 px the way the wind blows.
+- Weekly challenge (from level 12, on the Daily screen's week tab): one level a week, the same for
+  everyone, in a room from the balcony on with two modifiers from the newer rooms (blizzard, acid,
+  meteors, laser fences, conveyor belts). Fewer turns wins; it has its own weekly board (`/chal`,
+  board `chal`), no Second wind, and the first win of the week gives a heart.
 - Weekly quests: the Daily screen has Today / This week tabs. Each week three quests (picked by the
   week, the same for everyone) from eight kinds: knots, robots, bosses, no-knockout wins, 3-star wins,
   a Night Shift run, friend combos, laser catches. Each gives a heart or a quick start, all three a
