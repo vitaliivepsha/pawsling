@@ -1013,7 +1013,7 @@ const I18N = {
     'item.hat_crown': 'Корона', 'itemd.hat_crown': 'Для всієї команди',
     'item.hat_bow': 'Бантик', 'itemd.hat_bow': 'Для всієї команди',
     'item.rainbow': 'Райдужна нитка', 'itemd.rainbow': 'Нитки переливаються веселкою',
-    'hero.spark.name': 'Іскра', 'hero.spark.skill': 'удар перескакує блискавкою на найближчого ворога', 'hero.spark.combo': 'Грозова хмара', secondWind: 'Друге дихання', secondWindSub: 'Повна міцність і всі герої на ногах', secondWindGo: 'Друге дихання!', payWait: 'Відкриваю оплату…', payFailed: 'Оплата не пройшла. Спробуй ще раз', langAuto: 'Автоматично',
+    'hero.spark.name': 'Іскра', 'hero.spark.skill': 'удар перескакує блискавкою на найближчого ворога', 'hero.spark.combo': 'Грозова хмара', secondWind: 'Друге дихання', secondWindSub: 'Повна міцність і всі герої на ногах', secondWindGo: 'Друге дихання!', almostWon: p => `Перемога була зовсім близько: роботам лишилося ${p}%!`, robotsLeft: p => `Роботам лишилося ${p}% міцності`, windFree: n => `безкоштовно${n > 1 ? ` (${n})` : ''}`, payWait: 'Відкриваю оплату…', payFailed: 'Оплата не пройшла. Спробуй ще раз', langAuto: 'Автоматично',
     aria: 'Гра Pawsling. Потягни від героя назад і відпусти, щоб запустити його, як з рогатки.',
     board: 'Рейтинг', boardNight: 'Нічна зміна', boardStars: 'Зірки', boardYou: 'ти', boardEmpty: 'Поки що нікого. Будь першим!',
     boardLoading: 'Завантаження…', boardError: 'Не вдалося завантажити рейтинг. Перевір інтернет і спробуй ще.',
@@ -1146,7 +1146,7 @@ const I18N = {
     'item.hat_crown': 'Crown', 'itemd.hat_crown': 'For the whole team',
     'item.hat_bow': 'Bow', 'itemd.hat_bow': 'For the whole team',
     'item.rainbow': 'Rainbow yarn', 'itemd.rainbow': 'Threads shimmer like a rainbow',
-    'hero.spark.name': 'Sparky', 'hero.spark.skill': 'each hit arcs like lightning to the nearest enemy', 'hero.spark.combo': 'Thundercloud', secondWind: 'Second wind', secondWindSub: 'Full home strength, every hero back up', secondWindGo: 'Second wind!', payWait: 'Opening payment…', payFailed: 'Payment failed. Try again', langAuto: 'Automatic',
+    'hero.spark.name': 'Sparky', 'hero.spark.skill': 'each hit arcs like lightning to the nearest enemy', 'hero.spark.combo': 'Thundercloud', secondWind: 'Second wind', secondWindSub: 'Full home strength, every hero back up', secondWindGo: 'Second wind!', almostWon: p => `So close: the robots had only ${p}% left!`, robotsLeft: p => `The robots have ${p}% of their strength left`, windFree: n => `free${n > 1 ? ` (${n})` : ''}`, payWait: 'Opening payment…', payFailed: 'Payment failed. Try again', langAuto: 'Automatic',
     aria: 'Pawsling. Pull back from a hero and let go to launch it like a slingshot.',
     board: 'Leaderboard', boardNight: 'Night Shift', boardStars: 'Stars', boardYou: 'you', boardEmpty: 'Nobody here yet. Be the first!',
     boardLoading: 'Loading…', boardError: 'Could not load the leaderboard. Check your connection and try again.',
@@ -1279,7 +1279,7 @@ const I18N = {
     'item.hat_crown': 'Korona', 'itemd.hat_crown': 'Dla całej drużyny',
     'item.hat_bow': 'Kokardka', 'itemd.hat_bow': 'Dla całej drużyny',
     'item.rainbow': 'Tęczowa włóczka', 'itemd.rainbow': 'Nitki mienią się tęczą',
-    'hero.spark.name': 'Iskra', 'hero.spark.skill': 'każde trafienie przeskakuje piorunem na najbliższego wroga', 'hero.spark.combo': 'Chmura burzowa', secondWind: 'Drugi oddech', secondWindSub: 'Pełna wytrzymałość i wszyscy bohaterowie na nogach', secondWindGo: 'Drugi oddech!', payWait: 'Otwieram płatność…', payFailed: 'Płatność nie powiodła się. Spróbuj ponownie', langAuto: 'Automatycznie',
+    'hero.spark.name': 'Iskra', 'hero.spark.skill': 'każde trafienie przeskakuje piorunem na najbliższego wroga', 'hero.spark.combo': 'Chmura burzowa', secondWind: 'Drugi oddech', secondWindSub: 'Pełna wytrzymałość i wszyscy bohaterowie na nogach', secondWindGo: 'Drugi oddech!', almostWon: p => `Tak blisko: robotom zostało tylko ${p}%!`, robotsLeft: p => `Robotom zostało ${p}% wytrzymałości`, windFree: n => `za darmo${n > 1 ? ` (${n})` : ''}`, payWait: 'Otwieram płatność…', payFailed: 'Płatność nie powiodła się. Spróbuj ponownie', langAuto: 'Automatycznie',
     aria: 'Pawsling. Pociągnij od bohatera do tyłu i puść, żeby wystrzelić go jak z procy.',
     board: 'Ranking', boardNight: 'Nocna zmiana', boardStars: 'Gwiazdki', boardYou: 'ty', boardEmpty: 'Jeszcze nikogo tu nie ma. Bądź pierwszy!',
     boardLoading: 'Ładowanie…', boardError: 'Nie udało się wczytać rankingu. Sprawdź internet i spróbuj ponownie.',
@@ -1412,7 +1412,7 @@ const I18N = {
     'item.hat_crown': 'Krone', 'itemd.hat_crown': 'Für das ganze Team',
     'item.hat_bow': 'Schleife', 'itemd.hat_bow': 'Für das ganze Team',
     'item.rainbow': 'Regenbogenwolle', 'itemd.rainbow': 'Fäden schimmern wie ein Regenbogen',
-    'hero.spark.name': 'Funke', 'hero.spark.skill': 'jeder Treffer springt als Blitz auf den nächsten Gegner über', 'hero.spark.combo': 'Gewitterwolke', secondWind: 'Zweite Luft', secondWindSub: 'Volle Stärke und alle Helden wieder auf den Beinen', secondWindGo: 'Zweite Luft!', payWait: 'Zahlung wird geöffnet…', payFailed: 'Zahlung fehlgeschlagen. Versuch es nochmal', langAuto: 'Automatisch',
+    'hero.spark.name': 'Funke', 'hero.spark.skill': 'jeder Treffer springt als Blitz auf den nächsten Gegner über', 'hero.spark.combo': 'Gewitterwolke', secondWind: 'Zweite Luft', secondWindSub: 'Volle Stärke und alle Helden wieder auf den Beinen', secondWindGo: 'Zweite Luft!', almostWon: p => `So knapp: die Roboter hatten nur noch ${p} %!`, robotsLeft: p => `Die Roboter haben noch ${p} % Stärke`, windFree: n => `gratis${n > 1 ? ` (${n})` : ''}`, payWait: 'Zahlung wird geöffnet…', payFailed: 'Zahlung fehlgeschlagen. Versuch es nochmal', langAuto: 'Automatisch',
     aria: 'Pawsling. Zieh vom Helden zurück und lass los, um ihn wie mit einer Schleuder abzufeuern.',
     board: 'Rangliste', boardNight: 'Nachtschicht', boardStars: 'Sterne', boardYou: 'du', boardEmpty: 'Noch niemand hier. Sei der Erste!',
     boardLoading: 'Wird geladen…', boardError: 'Rangliste konnte nicht geladen werden. Prüfe die Verbindung und versuch es nochmal.',
@@ -1545,7 +1545,7 @@ const I18N = {
     'item.hat_crown': 'Corona', 'itemd.hat_crown': 'Para todo el equipo',
     'item.hat_bow': 'Lazo', 'itemd.hat_bow': 'Para todo el equipo',
     'item.rainbow': 'Hilo arcoíris', 'itemd.rainbow': 'Los hilos brillan como un arcoíris',
-    'hero.spark.name': 'Chispa', 'hero.spark.skill': 'cada golpe salta como un rayo al enemigo más cercano', 'hero.spark.combo': 'Nube de tormenta', secondWind: 'Segundo aliento', secondWindSub: 'Resistencia completa y todos los héroes en pie', secondWindGo: '¡Segundo aliento!', payWait: 'Abriendo el pago…', payFailed: 'El pago falló. Inténtalo de nuevo', langAuto: 'Automático',
+    'hero.spark.name': 'Chispa', 'hero.spark.skill': 'cada golpe salta como un rayo al enemigo más cercano', 'hero.spark.combo': 'Nube de tormenta', secondWind: 'Segundo aliento', secondWindSub: 'Resistencia completa y todos los héroes en pie', secondWindGo: '¡Segundo aliento!', almostWon: p => `¡Casi: a los robots solo les quedaba un ${p}%!`, robotsLeft: p => `A los robots les queda un ${p}% de fuerza`, windFree: n => `gratis${n > 1 ? ` (${n})` : ''}`, payWait: 'Abriendo el pago…', payFailed: 'El pago falló. Inténtalo de nuevo', langAuto: 'Automático',
     aria: 'Pawsling. Tira hacia atrás desde un héroe y suelta para lanzarlo como con un tirachinas.',
     board: 'Clasificación', boardNight: 'Turno de noche', boardStars: 'Estrellas', boardYou: 'tú', boardEmpty: 'Aún no hay nadie. ¡Sé el primero!',
     boardLoading: 'Cargando…', boardError: 'No se pudo cargar la clasificación. Revisa la conexión e inténtalo de nuevo.',
@@ -7769,7 +7769,7 @@ function drawLang() {
 // ---------- shop: Second wind for Telegram Stars ----------
 // After a loss the player can buy one continue per run. The invoice comes from the worker,
 // Telegram shows its own payment sheet, and 'paid' resumes the level.
-const WIND_PRICE = 10; // must match ITEMS.continue in worker/src/index.js
+const WIND_PRICES = [10, 20]; // must match ITEMS.continue and ITEMS.continue2 in worker/src/index.js; two per run at most
 const canPay = () => !!(TG && TG.initData && BOARD_URL && TG.openInvoice && tgv('6.1')) || (DEV && window.__fakePay === true);
 async function buySecondWind() {
   if (!G || G.buying) return;
@@ -7778,7 +7778,7 @@ async function buySecondWind() {
   try {
     const r = await fetch(BOARD_URL + '/invoice', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ initData: TG.initData, item: 'continue', lang: LANG }),
+      body: JSON.stringify({ initData: TG.initData, item: run.winds ? 'continue2' : 'continue', lang: LANG }),
     });
     if (!r.ok) throw new Error('HTTP ' + r.status);
     const { link } = await r.json();
@@ -7791,7 +7791,7 @@ async function buySecondWind() {
 }
 function secondWind(run) {
   if (G !== run || G.state !== 'lose') return;
-  G.usedWind = true; G.loseReason = null; G.attackQueue = [];
+  G.winds = (G.winds || 0) + 1; G.loseReason = null; G.attackQueue = [];
   G.hp = G.hpLag = G.maxHp;
   for (const h of G.heroes) { h.ko = 0; h.hearts = h.maxHearts; h.happy = 1; }
   Amb.duck(1); flash('#5ce1c6', .5); ring(W / 2, (TOP + BOT) / 2, 260, '#5ce1c6');
@@ -7799,13 +7799,34 @@ function secondWind(run) {
   Snd.play('heal'); haptic('success');
   nextTurn();
 }
+// how close the loss was: the robots' health left in this wave, and whether it was the last wave
+function lossCloseness() {
+  const all = G.enemies.filter(e => e.type !== 'mini'), max = all.reduce((a, e) => a + e.maxHp, 0) || 1;
+  const left = all.reduce((a, e) => a + (e.alive ? Math.max(0, e.hp) : 0), 0) / max;
+  const last = !G.lvl.endless && G.wave >= G.lvl.waves.length - 1;
+  return { pct: Math.max(1, Math.round(left * 100)), close: last && left <= .35 };
+}
 function drawSecondWind() {
-  if (G.usedWind || G.loseReason === 'turns' || !canPay()) return false;
+  const free = (INV.wind || 0) > 0, n = G.winds || 0;
+  if (n >= WIND_PRICES.length || G.loseReason === 'turns' || (!free && !canPay())) return false;
+  // a nudge: how close the win was
+  const c = lossCloseness();
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillStyle = c.close ? '#ffc857' : '#f4efe6';
+  const hint = c.close ? tr('almostWon', c.pct) : tr('robotsLeft', c.pct);
+  fitFont(hint, W - 50, c.close ? 17 : 14, 900, c.close ? FD : FB); ctx.fillText(hint, W / 2, 486);
   const note = G.payMsg || tr('secondWindSub');
-  ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillStyle = G.payMsg ? '#ff8fb1' : '#c9c2e6';
+  ctx.fillStyle = G.payMsg ? '#ff8fb1' : '#c9c2e6';
   fitFont(note, W - 60, 13, 800, FB); ctx.fillText(note, W / 2, 510);
-  uiBtn(75, 526, W - 150, 56, G.buying ? tr('payWait') : `${tr('secondWind')} · ★ ${WIND_PRICE}`, buySecondWind, true);
+  const label = G.buying ? tr('payWait') : free ? `${tr('secondWind')} · ${tr('windFree', INV.wind)}` : `${tr('secondWind')} · ★ ${WIND_PRICES[n]}`;
+  uiBtn(75, 526, W - 150, 56, label, free ? useFreeWind : buySecondWind, true);
   return true;
+}
+// a free Second wind from the login streak: no payment, the token is used up on the server
+function useFreeWind() {
+  if (!G || G.state !== 'lose' || !(INV.wind > 0)) return;
+  useBooster('wind');
+  secondWind(G);
 }
 
 
@@ -8290,7 +8311,7 @@ function weekKey(ts = Date.now()) {
   const d = new Date(ts), back = (d.getUTCDay() + 6) % 7;
   return utcDay(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate() - back));
 }
-const DAILY_REWARDS = [{ meter: 1 }, { heart: 1 }, { meter: 1 }, { heart: 1 }, { meter: 2 }, { heart: 2 }, { hat_party: 1, heart: 1, meter: 1 }]; // = DAILY in the worker
+const DAILY_REWARDS = [{ meter: 1 }, { heart: 1 }, { meter: 1 }, { heart: 1 }, { meter: 2 }, { heart: 2 }, { wind: 1, heart: 1, meter: 1 }]; // = DAILY in the worker
 const DAILY = { notify: false, raid: null, loaded: false, streak: 0, claimed: false, challengeDone: false, invited: 0, bot: null, today: null, msg: null, shown: false };
 // what "win the level" also has to include; picked by date, same for everyone at the same progress
 const CHALLENGES = {
@@ -8357,8 +8378,18 @@ function inviteFriend() {
     try { TG.shareMessage(r.id); } catch (e) { plain(); }
   }).catch(plain);
 }
+// the Second wind as an item: a heart in a mint swirl
+function windIcon(x, y, s) {
+  ctx.save(); ctx.strokeStyle = '#5ce1c6'; ctx.lineWidth = s * .16; ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.arc(x, y, s * .95, -2.4, 2.2); ctx.stroke();
+  ctx.fillStyle = '#5ce1c6'; ctx.beginPath(); const a = 2.2, tx = x + Math.cos(a) * s * .95, ty = y + Math.sin(a) * s * .95;
+  ctx.moveTo(tx - s * .3, ty - s * .05); ctx.lineTo(tx + s * .12, ty - s * .32); ctx.lineTo(tx + s * .1, ty + s * .22); ctx.closePath(); ctx.fill();
+  ctx.restore();
+  heart(x, y + s * .05, s * .55, '#ff5d7a');
+}
 function rewardIcon(g, x, y) {
   const keys = Object.keys(g);
+  if (g.wind) { windIcon(x, y, 10); return; }
   if (g.hat_party) { ctx.save(); ctx.translate(x + 4, y + 22); drawHat('party', 15); ctx.restore(); return; }
   const k = keys[0], n = g[k];
   if (k === 'heart') heart(x, y, 8, '#ff5d7a');
@@ -8432,7 +8463,11 @@ function drawDaily() {
     // the reward, drawn big
     ctx.save(); ctx.globalAlpha = got && !cur ? .55 : 1;
     const cx = x + tw / 2, cy = ty + 50, n = rw.heart || rw.meter || 1;
-    if (rw.hat_party) {
+    if (rw.wind) {
+      if (!RM) { ctx.save(); ctx.globalCompositeOperation = 'lighter'; glowAt(cx, cy, 30, '92,225,198', .35 + .1 * Math.sin(T * 3)); ctx.restore(); }
+      windIcon(cx, cy + 2, 17);
+      star(cx + 16, cy - 12, 4, '#fff3c4'); star(cx - 17, cy + 10, 3, '#fff3c4');
+    } else if (rw.hat_party) {
       if (!RM) { ctx.save(); ctx.globalCompositeOperation = 'lighter'; glowAt(cx, cy, 30, '255,200,87', .35 + .1 * Math.sin(T * 3)); ctx.restore(); }
       ctx.save(); ctx.translate(cx, cy + 20); drawHat('party', 24); ctx.restore();
       star(cx + 16, cy - 8, 4.5, '#fff3c4'); star(cx - 17, cy + 2, 3.5, '#fff3c4');
@@ -8443,7 +8478,7 @@ function drawDaily() {
       ctx.strokeStyle = '#ffd166'; ctx.lineWidth = 1.5; rr(cx - 16, cy - 7, 32, 14, 7); ctx.stroke();
     }
     ctx.restore();
-    if (n > 1 && !rw.hat_party) {
+    if (n > 1 && !rw.hat_party && !rw.wind) {
       ctx.fillStyle = '#ffc857'; rr(x + tw - 24, ty + th - 30, 20, 16, 8); ctx.fill();
       ctx.fillStyle = '#15122a'; ctx.font = `900 11px ${FD}`; ctx.fillText('×' + n, x + tw - 14, ty + th - 21.5);
     }

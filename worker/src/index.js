@@ -33,6 +33,7 @@ const TOP = 20;
 // `grant` is what lands in the player's inventory once the payment succeeds.
 const ITEMS = {
   continue: { stars: 10 },
+  continue2: { stars: 20 }, // the second Second wind in the same run
   heart3: { stars: 15, grant: { heart: 3 } },
   meter3: { stars: 15, grant: { meter: 3 } },
   hat_party: { stars: 20, grant: { hat_party: 1 } },
@@ -42,9 +43,9 @@ const ITEMS = {
   hero_spark: { stars: 150, grant: { hero_spark: 1 } },
   hero_rex: { stars: 150, grant: { hero_rex: 1 } },
 };
-const BOOSTERS = ['heart', 'meter']; // the only items that get used up
+const BOOSTERS = ['heart', 'meter', 'wind']; // the only items that get used up (wind: a free Second wind)
 // login bonus by day of the streak (the 7th day restarts the cycle)
-const DAILY = [{ meter: 1 }, { heart: 1 }, { meter: 1 }, { heart: 1 }, { meter: 2 }, { heart: 2 }, { hat_party: 1, heart: 1, meter: 1 }];
+const DAILY = [{ meter: 1 }, { heart: 1 }, { meter: 1 }, { heart: 1 }, { meter: 2 }, { heart: 2 }, { wind: 1, heart: 1, meter: 1 }];
 const RAID_GIFT = { heart: 1, meter: 1 }, RAID_MIN = 30, ROOMS_N = 17;
 const REF_GIFT = { heart: 1, meter: 1 }; // for both the inviter and the new player
 const WEEK_PRIZES = [{ heart: 3, meter: 3 }, { heart: 2, meter: 2 }, { heart: 1, meter: 1 }];
@@ -480,7 +481,7 @@ ${m.text.slice(0, 3500)}
 
 // ---------- owner: purchase notifications and /sales ----------
 const isAdmin = (env, from) => !!(env.ADMIN_ID && from && String(from.id) === String(env.ADMIN_ID).trim());
-const itemName = item => (TEXT.uk.items[item] || [])[0] || (item === 'continue' ? TEXT.uk.title : item || '?');
+const itemName = item => (TEXT.uk.items[item] || [])[0] || (item === 'continue' || item === 'continue2' ? TEXT.uk.title : item || '?');
 const buyer = u => `${displayName(u || {})}${u && u.username ? ' @' + u.username : ''} (id ${u ? u.id : '?'})`;
 async function notifyAdmin(env, msg) {
   if (!env.ADMIN_ID) return;
