@@ -925,7 +925,7 @@ const CH_GROUP_AT = 100, CH_GROUP_HOUR = 12;
 const CH_TEXT = {
   uk: {
     mods: { wind: 'хуртовина', acid: 'кислота', meteors: 'метеорити', fences: 'лазерні бар\'єри', belts: 'конвеєрні стрічки' },
-    bosses: ['блендер «Мегамікс»', 'Телебос 3000', 'Будильник-Дзвонар', 'пралька «Барабан»', 'повітродув «Шквал»', 'пилосос-привид', 'Робо-бос 9000', 'павук «Тенета»', 'дрон «Грім»', 'косарка «Стриж»', 'хаб «Розумний дім»', 'ліфт «Експрес»', 'сортувальник «Мегасклад»', 'збирач «Прайм»', 'професор «Колба»', 'командор «Орбіта»', 'снігоочисник «Завірюха»'],
+    bosses: ['блендер «Мегамікс»', 'Телебос 3000', 'Будильник-Дзвонар', 'пралька «Барабан»', 'повітродув «Шквал»', 'пилосос-привид', 'Робо-бос 9000', 'павук «Тенета»', 'дрон «Грім»', 'косарка «Стриж»', 'хаб «Розумний дім»', 'ліфт «Експрес»', 'сортувальник «Мегасклад»', 'збирач «Прайм»', 'професор «Колба»', 'командор «Орбіта»', 'снігоочисник «Завірюха»', 'кракен «Глибина»'],
     play: '🐾 Грати', medals: ['🥇', '🥈', '🥉'],
     weekHead: '📅 <b>Підсумки тижня в Pawsling</b>',
     night: rows => `🌙 <b>Турнір «Нічної зміни»</b>\n${rows.map((r, i) => `${CH_TEXT.uk.medals[i]} ${r.name} — ${r.night} ${ukWaves(r.night)}`).join('\n')}`,
@@ -938,7 +938,7 @@ const CH_TEXT = {
     groupChat: '💬 Чат українською', groupSupport: '🛠 Підтримка',
     halloween_end: n => `🎃 <b>Хелловін: залишилося 3 дні!</b>\n\n${n ? `Капелюх-гарбуз уже є в ${n} ${ukPlayersGen(n)}. ` : ''}Три святкові рівні, а за всі три — ексклюзивний капелюх. Подія закінчується 5 листопада, і тоді капелюх не здобути аж до наступного року.`,
     newyear_end: n => `🎄 <b>Новий рік: залишилося 3 дні!</b>\n\n${n ? `Шапка Санти вже є в ${n} ${ukPlayersGen(n)}. ` : ''}Три святкові рівні, а за всі три — ексклюзивна шапка. Подія закінчується 10 січня, і тоді шапку не здобути аж до наступної зими.`,
-    intro: '🐾 <b>Pawsling</b> — коти та єноти з рогатки проти збунтованої техніки.\n\n97 рівнів, 17 босів, «Нічна зміна» з турніром щотижня — і все прямо в Telegram, без встановлення.\n\nТут: підсумки турнірів, випробування тижня, події, нові кімнати й поради.',
+    intro: '🐾 <b>Pawsling</b> — коти та єноти з рогатки проти збунтованої техніки.\n\n103 рівні, 18 босів, «Нічна зміна» з турніром щотижня — і все прямо в Telegram, без встановлення.\n\nТут: підсумки турнірів, випробування тижня, події, нові кімнати й поради.',
     room: (i, name, boss, what) => `🗺 <b>Кімната ${i + 1}: ${name}</b>\n\n${what}\n\nБос: <b>${boss}</b>.`,
     rooms: [
       'Тут усе почалося: пилососи збунтувалися просто біля холодильника. Порада новачкам: бий у жовтий сенсор — потрійна шкода.',
@@ -957,13 +957,14 @@ const CH_TEXT = {
       'Лазерні бар\'єри вмикаються через хід і відбивають героїв, як стіни, а турелі стріляють уздовж усього ряду. Бос відбудовує останнього збитого робота.',
       'Калюжі кислоти забирають серце в того, хто в них стоїть, а тесла-боти б\'ють струмом усіх поруч. Бос розливає нову калюжу під героєм.',
       'Метеорити падають туди, де за хід до того з\'явилися мітки. Варп-боти телепортуються після кожного влучання. Бос наводить метеорити просто на героїв.',
-      'Найважча кімната: хуртовина щоходу дме з нового боку, а кріоботи заморожують героїв. Бос змітає всю команду туди, куди дме вітер.',
+      'Хуртовина щоходу дме з нового боку, а кріоботи заморожують героїв. Бос змітає всю команду туди, куди дме вітер, а після нього чекає фінальна битва, 97-й рівень.',
+      'Найважча кімната: вода щоходу піднімається знизу й гальмує героїв у польоті. Медузоботи заряджаються за хід до атаки, і герой, що влучить у зарядженого, зупиняється на місці. Бос після кожної атаки здіймає воду одразу на три поділки.',
     ],
     tips: {
       slingshot: '🎯 <b>Як грати</b>\n\nТягни героя назад, цілься й відпускай. Герої відбиваються від стін і прошивають роботів наскрізь — найкращі постріли зачіпають кількох одразу.',
       knots: '🧶 <b>Вузли</b>\n\nПерехрести нитки двох пострілів — і на перетині зав\'яжеться вузол, що вибухає. Кіт + єнот = вогняний вузол (×1,5 шкоди), два коти — муркотливий (ширший), два єноти — сміттєвий (відкладає атаку роботів на хід).',
-      bosses: '👾 <b>17 босів</b>\n\nУ кожної кімнати свій бос зі своїм трюком: павутина, ланцюгова блискавка, кислотні калюжі, метеорити, хуртовина… Хто з них дався тобі найважче?',
-      map: '🗺 <b>97 рівнів у 17 кімнатах</b>\n\nВід кухні до полярної станції. Три зірки — якщо вкладешся в норму ходів, а пройдений рівень можна переграти в режимі виклику: вороги на 40% міцніші, зате подвійний досвід і корона на карті.',
+      bosses: '👾 <b>18 босів</b>\n\nУ кожної кімнати свій бос зі своїм трюком: павутина, ланцюгова блискавка, кислотні калюжі, метеорити, хуртовина, приплив… Хто з них дався тобі найважче?',
+      map: '🗺 <b>103 рівні у 18 кімнатах</b>\n\nВід кухні до підводної бази. Три зірки — якщо вкладешся в норму ходів, а пройдений рівень можна переграти в режимі виклику: вороги на 40% міцніші, зате подвійний досвід і корона на карті.',
       heroes: '🐱 <b>Герої ростуть</b>\n\nЗа кожну перемогу герої отримують досвід: до 10 рівня, +4% шкоди за рівень і посилення здібності на 5-му і 10-му. Хом\'як Хеммі приєднується після 24 рівня — що далі котиться, то сильніше б\'є.',
       night: '🌙 <b>«Нічна зміна»</b>\n\nНескінченні хвилі, бос кожну п\'яту, кімната міняється кожні п\'ять хвиль. Щопонеділка топ-3 тижня отримують призи — а ми публікуємо їхні імена тут.',
       chest: '🎁 <b>Скриня</b>\n\nСкриня на нижній панелі карти дозріває кожні 6 годин: серце, швидкий старт, а інколи й безкоштовне друге дихання. Не забувай забирати!',
@@ -976,7 +977,7 @@ const CH_TEXT = {
   },
   en: {
     mods: { wind: 'blizzard', acid: 'acid', meteors: 'meteors', fences: 'laser fences', belts: 'conveyor belts' },
-    bosses: ['Megamix Blender', 'Teleboss 3000', 'Bellringer Alarm', 'Drum Washer', 'Gale Blower', 'Ghost Vacuum', 'Robo-Boss 9000', 'Web-Spinner', 'Thunder Drone', 'Swift Mower', 'Smart Home Hub', 'Express Lift', 'Mega Sorter', 'Assembler Prime', 'Professor Flask', 'Commander Orbit', 'Blizzard Snowplough'],
+    bosses: ['Megamix Blender', 'Teleboss 3000', 'Bellringer Alarm', 'Drum Washer', 'Gale Blower', 'Ghost Vacuum', 'Robo-Boss 9000', 'Web-Spinner', 'Thunder Drone', 'Swift Mower', 'Smart Home Hub', 'Express Lift', 'Mega Sorter', 'Assembler Prime', 'Professor Flask', 'Commander Orbit', 'Blizzard Snowplough', 'Kraken Deep'],
     play: '🐾 Play', medals: ['🥇', '🥈', '🥉'],
     weekHead: '📅 <b>The week in Pawsling</b>',
     night: rows => `🌙 <b>Night Shift tournament</b>\n${rows.map((r, i) => `${CH_TEXT.en.medals[i]} ${r.name} — ${r.night} waves`).join('\n')}`,
@@ -989,7 +990,7 @@ const CH_TEXT = {
     groupChat: '💬 English chat', groupSupport: '🛠 Support',
     halloween_end: n => `🎃 <b>Halloween: 3 days left!</b>\n\n${n ? `${n} players already have the pumpkin hat. ` : ''}Three spooky levels, and the exclusive hat for beating all three. The event ends on 5 November, and then the hat is gone until next year.`,
     newyear_end: n => `🎄 <b>New Year: 3 days left!</b>\n\n${n ? `${n} players already have the Santa hat. ` : ''}Three festive levels, and the exclusive hat for beating all three. The event ends on 10 January, and then the hat is gone until next winter.`,
-    intro: '🐾 <b>Pawsling</b>: slingshot cats and raccoons against rebel household robots.\n\n97 levels, 17 bosses, a weekly Night Shift tournament, all right inside Telegram with nothing to install.\n\nHere: tournament results, the weekly challenge, events, new rooms and tips.',
+    intro: '🐾 <b>Pawsling</b>: slingshot cats and raccoons against rebel household robots.\n\n103 levels, 18 bosses, a weekly Night Shift tournament, all right inside Telegram with nothing to install.\n\nHere: tournament results, the weekly challenge, events, new rooms and tips.',
     room: (i, name, boss, what) => `🗺 <b>Room ${i + 1}: ${name}</b>\n\n${what}\n\nBoss: <b>${boss}</b>.`,
     rooms: [
       'Where it all began: the vacuums rebelled right by the fridge. A tip for beginners: hit the yellow sensor for triple damage.',
@@ -1008,13 +1009,14 @@ const CH_TEXT = {
       'Laser fences switch on every other turn and bounce heroes like walls; turrets fire along their whole row. The boss rebuilds the last robot you broke.',
       'Acid pools take a heart from anyone standing in them, and tesla bots zap every hero nearby. The boss spills a new pool under a hero.',
       'Meteors land where markers appeared a turn before. Warp bots blink away after every hit. The boss aims meteors right at your heroes.',
-      'The hardest room: the blizzard blows from a new side every turn and cryo bots freeze heroes. The boss sweeps the whole team the way the wind blows.',
+      'The blizzard blows from a new side every turn and cryo bots freeze heroes. The boss sweeps the whole team the way the wind blows, and the final stand, level 97, waits after it.',
+      'The hardest room: the water rises from the bottom every turn and slows heroes flying through it. Jelly bots charge up the turn before they attack, and a hero that hits a charged one stops dead. After each attack the boss raises the water three marks at once.',
     ],
     tips: {
       slingshot: '🎯 <b>How to play</b>\n\nPull a hero back, aim and let go. Heroes bounce off walls and pierce right through robots: the best shots hit several at once.',
       knots: '🧶 <b>Knots</b>\n\nCross the threads of two shots and a knot ties where they meet, then explodes. Cat + raccoon is a fire knot (×1.5 damage), two cats a purring knot (wider), two raccoons a trash knot (delays the robots\' attack by a turn).',
-      bosses: '👾 <b>17 bosses</b>\n\nEvery room has its own boss with its own trick: webs, chain lightning, acid pools, meteors, a blizzard… Which one gave you the hardest time?',
-      map: '🗺 <b>97 levels in 17 rooms</b>\n\nFrom the kitchen to the polar station. Three stars if you win within the par, and a won level can be replayed in challenge mode: enemies 40% tougher, but double XP and a crown on the map.',
+      bosses: '👾 <b>18 bosses</b>\n\nEvery room has its own boss with its own trick: webs, chain lightning, acid pools, meteors, a blizzard, the tide… Which one gave you the hardest time?',
+      map: '🗺 <b>103 levels in 18 rooms</b>\n\nFrom the kitchen to the underwater base. Three stars if you win within the par, and a won level can be replayed in challenge mode: enemies 40% tougher, but double XP and a crown on the map.',
       heroes: '🐱 <b>Heroes grow</b>\n\nEvery win gives XP: up to level 10, +4% damage per level and an ability upgrade at 5 and 10. Hammy the hamster joins after level 24: the further he rolls, the harder he hits.',
       night: '🌙 <b>Night Shift</b>\n\nEndless waves, a boss every fifth, a new room every five waves. Every Monday the week\'s top 3 get prizes, and we post their names here.',
       chest: '🎁 <b>The chest</b>\n\nThe chest on the map\'s bottom bar ripens every 6 hours: a heart, a quick start, and now and then a free Second wind. Don\'t forget to grab it!',
@@ -1037,16 +1039,18 @@ const CH_FEED = [
   { tip: 'night', img: shot('6-night') }, { room: 6 }, { tip: 'quests', img: feed('quests') }, { room: 7 },
   { tip: 'bosses', img: shot('3-bosses') }, { room: 8 }, { tip: 'raids', img: 'raid/raid-8.jpg' }, { room: 9 },
   { tip: 'album', img: feed('album') }, { room: 10 }, { tip: 'streak', img: feed('streak') }, { room: 11 },
-  { room: 12 }, { room: 13 }, { room: 14 }, { room: 15 }, { room: 16 },
+  { room: 12 }, { room: 13 }, { room: 14 }, { room: 15 }, { room: 16 }, { room: 17 },
 ];
 const ukWaves = n => n % 10 === 1 && n % 100 !== 11 ? 'хвиля' : [2, 3, 4].includes(n % 10) && ![12, 13, 14].includes(n % 100) ? 'хвилі' : 'хвиль';
 const ukPlayersGen = n => n % 10 === 1 && n % 100 !== 11 ? 'гравця' : 'гравців'; // "у 21 гравця", "у 25 гравців"
 const esc = s => String(s).replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' })[c]);
-// the same weekly challenge as weekChallenge() in game.js (17 rooms, from the balcony on)
+// the same weekly challenge as weekChallenge() in game.js: CHAL_ROOMS = CHAPTERS.length there, from the balcony on
+// (raids use ROOMS_N, which only grows once a room's raid poster is up)
+const CHAL_ROOMS = 18;
 function chalOf(wk) {
   const h = [...wk].reduce((a, c) => (a * 37 + c.charCodeAt(0)) % 2147483646, 11) + 1;
   let s = h; const R = () => (s = (s * 16807) % 2147483647) / 2147483647;
-  const room = 4 + Math.floor(R() * (ROOMS_N - 4)), mods = ['wind', 'acid', 'meteors', 'fences', 'belts'];
+  const room = 4 + Math.floor(R() * (CHAL_ROOMS - 4)), mods = ['wind', 'acid', 'meteors', 'fences', 'belts'];
   for (let i = mods.length - 1; i > 0; i--) { const j = Math.floor(R() * (i + 1)); [mods[i], mods[j]] = [mods[j], mods[i]]; }
   return { room, mods: mods.slice(0, 2) };
 }
