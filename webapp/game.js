@@ -8258,32 +8258,34 @@ function drawChallengeCard(y) {
   ctx.fillStyle = '#231e44'; rr(16, y, W - 32, 150, 18); ctx.fill();
   ctx.strokeStyle = hexA(ch.col, .6); ctx.lineWidth = 1.5; rr(16, y, W - 32, 150, 18); ctx.stroke();
   // a little window onto the room, top right
-  const rs = 70, rx = W - 32 - rs, ry = y + 12;
-  ctx.save(); rr(rx, ry, rs, rs, 14); ctx.clip();
+  const rs = 56, rx = W - 32 - rs, ry = y + 12;
+  ctx.save(); rr(rx, ry, rs, rs, 12); ctx.clip();
   ctx.drawImage(bg(c.room), 150 * 2, 300 * 2, 150 * 2, 150 * 2, rx, ry, rs, rs);
   ctx.fillStyle = 'rgba(12,10,26,.4)'; ctx.fillRect(rx, ry, rs, rs);
   ctx.restore();
-  ctx.strokeStyle = ch.col; ctx.lineWidth = 2; rr(rx, ry, rs, rs, 14); ctx.stroke();
-  chIcon(c.room, rx + rs / 2, ry + rs / 2, 30, ch.col);
+  ctx.strokeStyle = ch.col; ctx.lineWidth = 2; rr(rx, ry, rs, rs, 12); ctx.stroke();
+  chIcon(c.room, rx + rs / 2, ry + rs / 2, 26, ch.col);
   const tw = rx - 44;
   ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
   ctx.fillStyle = '#ffc857'; fitFont(tr('chalTitle'), tw, 17, 900, FD); ctx.fillText(tr('chalTitle'), 32, y + 22);
-  // the room's name, then each modifier as a badge with its own icon
-  ctx.fillStyle = ch.col; fitFont(ch.name, tw, 14, 900, FD); ctx.fillText(ch.name, 32, y + 44);
-  let mx = 32;
-  for (const m of c.mods) {
-    const nm = modName(m); ctx.font = `800 11px ${FB}`; const nwid = Math.min(110, ctx.measureText(nm).width);
-    const bw2 = nwid + 34;
-    if (mx + bw2 > rx - 8) break;
-    ctx.fillStyle = 'rgba(255,255,255,.07)'; rr(mx, y + 56, bw2, 22, 11); ctx.fill();
-    ctx.strokeStyle = 'rgba(255,255,255,.18)'; ctx.lineWidth = 1; rr(mx, y + 56, bw2, 22, 11); ctx.stroke();
-    modIcon(m, mx + 12, y + 67, 8);
-    ctx.fillStyle = '#e6e1f5'; fitFont(nm, nwid, 11, 800, FB); ctx.textAlign = 'left'; ctx.fillText(nm, mx + 24, y + 67.5);
+  // the room's name and, on the same line, each modifier as a badge (icons only if the names don't fit)
+  fitFont(ch.name, tw * .45, 14, 900, FD); const nmW = ctx.measureText(ch.name).width;
+  ctx.fillStyle = ch.col; ctx.fillText(ch.name, 32, y + 48);
+  ctx.font = `800 11px ${FB}`;
+  const names = c.mods.map(modName), room = rx - 10 - (32 + nmW + 10);
+  const full = names.reduce((a, n) => a + Math.min(100, ctx.measureText(n).width) + 34 + 6, 0) <= room;
+  let mx = 32 + nmW + 10;
+  c.mods.forEach((m, i) => {
+    const nwid = full ? Math.min(100, ctx.measureText(names[i]).width) : 0, bw2 = full ? nwid + 34 : 26;
+    ctx.fillStyle = 'rgba(255,255,255,.07)'; rr(mx, y + 37, bw2, 22, 11); ctx.fill();
+    ctx.strokeStyle = 'rgba(255,255,255,.18)'; ctx.lineWidth = 1; rr(mx, y + 37, bw2, 22, 11); ctx.stroke();
+    modIcon(m, mx + (full ? 12 : 13), y + 48, 8);
+    if (full) { ctx.fillStyle = '#e6e1f5'; fitFont(names[i], nwid, 11, 800, FB); ctx.textAlign = 'left'; ctx.fillText(names[i], mx + 24, y + 48.5); }
     mx += bw2 + 6;
-  }
+  });
   ctx.fillStyle = '#b9b2da'; ctx.font = `800 12px ${FB}`;
   const info = !open ? tr('chalLocked', CHAL_UNLOCK) : d && d.me ? tr('chalBest', d.me.value, d.me.rank, d.total) : tr('chalInfo');
-  fitFont(info, W - 64, 12, 800, FB); ctx.fillText(info, 32, y + 86);
+  ctx.textAlign = 'left'; fitFont(info, W - 64, 12, 800, FB); ctx.fillText(info, 32, y + 77);
   if (open) {
     uiBtn(32, y + 92, (W - 80) * .58, 44, tr('chalPlay'), startWeekChal, true);
     uiBtn(40 + (W - 80) * .58, y + 92, (W - 80) * .42, 44, tr('board'), () => openBoard('chal'), false);
@@ -8590,7 +8592,7 @@ function drawWeekQuests(Y) {
   ids.forEach((qid, i) => { const px = W - 86 + i * 16; ctx.fillStyle = q.c[qid] ? '#5ce1c6' : '#2a2548'; circ(px, y + 32, 5); if (!q.c[qid]) { ctx.strokeStyle = 'rgba(92,225,198,.4)'; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.arc(px, y + 32, 5, 0, TAU); ctx.stroke(); } });
   if (!RM) { ctx.save(); ctx.globalCompositeOperation = 'lighter'; glowAt(48, y + 32, 34, '92,225,198', all ? .45 : .25 + .08 * Math.sin(T * 3)); ctx.restore(); }
   windIcon(48, y + 32, 15);
-  ctx.textAlign = 'left'; ctx.fillStyle = all ? '#5ce1c6' : '#f4efe6'; fitFont(tr('questBonus'), W - 190, 15, 900, FD); ctx.fillText(tr('questBonus'), 76, y + 33);
+  ctx.textAlign = 'left'; ctx.fillStyle = all ? '#5ce1c6' : '#f4efe6'; fitFont(tr('questBonus'), W - 172, 15, 900, FD); ctx.fillText(tr('questBonus'), 76, y + 33);
   // until the next week (Monday 00:00 UTC)
   const now = Date.now(), d = new Date(now), next = Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate() + (8 - (d.getUTCDay() || 7))) - now;
   ctx.textAlign = 'center'; ctx.fillStyle = '#8f88b5'; ctx.font = `800 13px ${FB}`;
