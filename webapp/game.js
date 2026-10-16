@@ -9453,6 +9453,15 @@ function eventWin() {
     setHat(ev.hat); G.evHat = true;
   }
   gainXp(30 + 5 * G.stars);
+  reportEvent(ev);
+}
+// tells the server how far this year's event got, so the news channels can count who has the hat;
+// the progress itself stays here. Once per new level (also catches up wins from before the server counted)
+function reportEvent(ev = activeEvent()) {
+  if (!ev || !serverOn()) return;
+  const done = evDone(ev), sent = evKey(ev) + ':' + done;
+  if (!done || lsGet('pawsling-evsent') === sent) return;
+  api('/event', { id: ev.id, level: done }).then(() => lsSet('pawsling-evsent', sent)).catch(() => {});
 }
 function drawEventIcon(id, x, y, s) {
   if (id === 'halloween') {
@@ -10229,6 +10238,7 @@ if (DEV) window.__pawsling = { get G() { return G; }, set G(v) { G = v; }, openC
   // store art: pause the loop, size the canvas, then draw with the game's own painters
   draw, art: { get ctx() { return ctx; }, cv, drawHero, drawBoss, drawEnemy, drawFoe, chIcon, star, heart, rr, glowAt, drawHat, hexRgb, HEROES, BOSS_COL, FD, FB, W, H, TOP, BOT },
   size(w, h, k) { cv.width = w; cv.height = h; scale = k; dpr = 1; } };
+reportEvent(); // after DEV: activeEvent() reads it
 let last = performance.now();
 // Slow devices: if frames keep taking longer than ~45 ms, drop the animated room lights.
 let LOWFX = false, slowMs = 0, failed = false, failN = 0;

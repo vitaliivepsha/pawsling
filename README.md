@@ -158,7 +158,11 @@ The game runs without a permanently running server: the page is on GitHub Pages
   picked on the Heroes screen.
 - **Seasonal events**: Halloween (15 Oct - 5 Nov) and New Year (15 Dec - 10 Jan). An event card sits
   on top of the map while it runs; three levels with costumed enemies, and finishing them gives an
-  exclusive hat. Progress is kept per event year. In `#dev`, `window.__event = 'halloween'` forces one.
+  exclusive hat. Progress is kept per event year, in the game. Inside Telegram each newly won level is
+  also reported to the worker (`/event`, once per level; wins from before that are sent on the next
+  launch), which keeps each player's furthest level per run in `event_runs` (`halloween-2026`; New Year
+  is keyed by the year it starts) so the news channels can count who has the hat. In `#dev`,
+  `window.__event = 'halloween'` forces one.
 - **Story**: a two-panel comic before the first level of each room and a finale after level 42,
   shown once each (`PROG.story`), all in five languages.
 
@@ -195,13 +199,15 @@ The game runs without a permanently running server: the page is on GitHub Pages
 The worker posts to a Ukrainian and an English Telegram channel (`CHANNEL_UK`, `CHANNEL_EN` in
 `wrangler.toml`, the bot an admin there): the week's results and the new weekly challenge on Monday, a
 tip or a room spotlight from `CH_FEED` on Tuesday, Thursday and Saturday, the challenge leader on Friday,
-and seasonal events. A channel stays quiet until the owner's `/chan intro`. Play buttons carry
+and seasonal events: the announcement on the first day, and three days before the end (2 Nov, 7 Jan,
+15:00) a "3 days left" post with how many players already have the hat (from `event_runs`, left out
+while under 10). A channel stays quiet until the owner's `/chan intro`. Play buttons carry
 `startapp=ch_<lang>_<kind>`; every new player's first start_param goes to `sources`, and `/chan` shows
 arrivals by source. Setup and the audience plan: `promo/CHANNELS.md`.
 
 The community group (`COMMUNITY_GROUP`, a forum; the bot an admin with "Manage topics") gets its topics
 from the owner's `/chan group`: 🇺🇦 UA, 🇬🇧 EN, 🛠 Technical Support and 📣 Events, the last closed to
-members. The week's results and event announcements go to Events in both languages (`startapp=grp_…`),
+members. The week's results and the event posts go to Events in both languages (`startapp=grp_…`),
 and `/start` links the player's language topic next to the news channel.
 
 ## Leaderboard
