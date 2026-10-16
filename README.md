@@ -185,6 +185,15 @@ The game runs without a permanently running server: the page is on GitHub Pages
   the top 3 boosters and a message from the bot.
 - All of it is decided by the worker (`/daily`, `/challenge`, the `weekly` table), never by the page.
 
+## News channels
+
+The worker posts to a Ukrainian and an English Telegram channel (`CHANNEL_UK`, `CHANNEL_EN` in
+`wrangler.toml`, the bot an admin there): the week's results and the new weekly challenge on Monday, a
+tip or a room spotlight from `CH_FEED` on Tuesday, Thursday and Saturday, the challenge leader on Friday,
+and seasonal events. A channel stays quiet until the owner's `/chan intro`. Play buttons carry
+`startapp=ch_<lang>_<kind>`; every new player's first start_param goes to `sources`, and `/chan` shows
+arrivals by source. Setup and the audience plan: `promo/CHANNELS.md`.
+
 ## Leaderboard
 
 `worker/` is a Cloudflare Worker (free plan) with a D1 database. The game posts Telegram's `initData`

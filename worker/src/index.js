@@ -18,6 +18,7 @@
 //   between 10:00 and 21:00 their time, a raid alert with a picture and a button; they have 30 minutes
 // POST /share     { initData, lang }  ->  { id }  an invite card (picture, text, Play button with the
 //   player's referral link) prepared for WebApp.shareMessage; t.me Mini App links get no link preview
+// cron (every hour): posts to the news channels (CHANNEL_UK, CHANNEL_EN), see "news channels" below
 // cron (Monday 00:05 UTC): the week's top 3 in Night Shift get prizes and a message from the bot
 // POST /tg       the bot's webhook (set automatically on the first game request):
 //   approves pre-checkout queries, records successful payments and refunds, answers /start,
@@ -296,7 +297,7 @@ export default {
     return json(await board(env.DB, body.board, user.id));
   },
 
-  async scheduled(event, env, ctx) { ctx.waitUntil(event.cron === '5 0 * * 1' ? awardWeek(env) : Promise.all([sendRaids(env), sendStreakReminders(env), sendChestPings(env), sendMissYou(env)])); },
+  async scheduled(event, env, ctx) { ctx.waitUntil(event.cron === '5 0 * * 1' ? awardWeek(env) : Promise.all([sendRaids(env), sendStreakReminders(env), sendChestPings(env), sendMissYou(env), sendChannelPosts(env)])); },
 };
 
 // ---------- daily bonus, challenge, invites ----------
@@ -340,6 +341,9 @@ async function daily(env, user, body = {}) {
       }
     }
   }
+  // a brand-new player: remember where they came from (ref_<id> is kept as ref)
+  if (!known && user.start) await db.prepare('INSERT OR IGNORE INTO sources (user_id, src, at) VALUES (?1, ?2, ?3)')
+    .bind(user.id, user.start.replace(/^ref_\d+$/, 'ref').replace(/^raid_\d+$/, 'raid').slice(0, 40), now).run();
   // a brand-new player who came through a friend's link
   const m = /^ref_(\d+)$/.exec(user.start || '');
   if (!known && m && Number(m[1]) !== user.id) {
@@ -457,6 +461,9 @@ async function ensureTables(db) {
     db.prepare(`CREATE TABLE IF NOT EXISTS raids (id INTEGER PRIMARY KEY AUTOINCREMENT, user_id INTEGER NOT NULL, room INTEGER NOT NULL,
       created INTEGER NOT NULL, expires INTEGER NOT NULL, done INTEGER)`),
     db.prepare('CREATE INDEX IF NOT EXISTS idx_raids_user ON raids (user_id, id)'),
+    // channel posts already made (one per slot), and where new players came from (their first start_param)
+    db.prepare('CREATE TABLE IF NOT EXISTS channel_posts (chat TEXT NOT NULL, key TEXT NOT NULL, at INTEGER NOT NULL, msg_id INTEGER, PRIMARY KEY (chat, key))'),
+    db.prepare('CREATE TABLE IF NOT EXISTS sources (user_id INTEGER PRIMARY KEY, src TEXT NOT NULL, at INTEGER NOT NULL)'),
     db.prepare(`CREATE TABLE IF NOT EXISTS raid_runs (at INTEGER PRIMARY KEY, checked INTEGER NOT NULL, sent INTEGER NOT NULL,
       failed INTEGER NOT NULL, err TEXT)`),
   ]);
@@ -485,9 +492,15 @@ async function inlineResults(env, from) {
   return out;
 }
 // a button that opens the chat picker with the invite ready (works once inline mode is on in @BotFather)
+// the news channel in the player's language (Ukrainian for Ukrainian, English for everyone else)
+function newsKb(env, t) {
+  const url = channelUrl(String((t === TEXT.uk ? env.CHANNEL_UK : env.CHANNEL_EN) || '').trim());
+  return url ? [[{ text: t === TEXT.uk ? '📣 Новини гри' : '📣 Game news', url }]] : [];
+}
 const shareKb = t => [{ text: t.share, switch_inline_query_chosen_chat: { query: '', allow_user_chats: true, allow_group_chats: true, allow_channel_chats: false, allow_bot_chats: false } }];
 async function onUpdate(env, u) {
   if (u.my_chat_member) {
+    if (u.my_chat_member.chat.type !== 'private') return; // the bot made a channel admin is not a player unblocking it
     // a player who blocks the bot gets no more alerts; unblocking lets them come back
     const st = u.my_chat_member.new_chat_member && u.my_chat_member.new_chat_member.status;
     await ensureTables(env.DB);
@@ -552,6 +565,10 @@ async function onUpdate(env, u) {
     await tg(env, 'sendMessage', { chat_id: m.chat.id, text: await raidLog(env.DB, row ? row.tz : 0) });
     return;
   }
+  if (typeof m.text === 'string' && /^\/chan\b/.test(m.text) && isAdmin(env, m.from)) {
+    await channelCommand(env, m);
+    return;
+  }
   if (typeof m.text === 'string' && /^\/sales\b/.test(m.text) && isAdmin(env, m.from)) {
     await tg(env, 'sendMessage', { chat_id: m.chat.id, text: await salesReport(env.DB) });
     return;
@@ -566,7 +583,7 @@ async function onUpdate(env, u) {
     const t = await userText(env, m.from);
     await tg(env, 'sendMessage', {
       chat_id: m.chat.id, text: t.start((m.from && m.from.first_name) || ''),
-      reply_markup: { inline_keyboard: [[{ text: t.play, web_app: { url: env.WEBAPP_URL } }], shareKb(t)] },
+      reply_markup: { inline_keyboard: [[{ text: t.play, web_app: { url: env.WEBAPP_URL } }], shareKb(t), ...newsKb(env, t)] },
     });
     return;
   }
@@ -823,6 +840,289 @@ async function sendStreakReminders(env) {
       if (res.error_code === 403) await db.prepare('UPDATE notify SET blocked = 1 WHERE user_id = ?1').bind(r.user_id).run();
     } catch (e) {}
   }
+}
+
+// ---------- news channels: autoposting from the hourly cron ----------
+// CHANNEL_UK / CHANNEL_EN (vars): the channels' @usernames; the bot has to be an admin there that may post.
+// A channel stays quiet until the owner's /chan intro posts and pins the welcome post. Times are UTC. Monday 09:00: the week's results and the new weekly challenge; Tuesday, Thursday and
+// Saturday 15:00: the next post of CH_FEED (room spotlights and tips, round and round); Friday 15:00: who
+// leads the weekly challenge; the first day of a seasonal event: its announcement. Every post is claimed in
+// channel_posts first, so a slot is posted once even if the cron overlaps.
+// Play buttons carry startapp=ch_<lang>_<kind>; the first visit of a new player records it in `sources`,
+// and the owner's /chan shows how many came from each.
+const CH_LANGS = { uk: 'CHANNEL_UK', en: 'CHANNEL_EN' };
+const CH_FEED_DAYS = [2, 4, 6], CH_HOUR = 15, CH_WEEK_HOUR = 9;
+const CH_EVENTS = [{ id: 'halloween', from: '10-15', to: '11-05', room: 5 }, { id: 'newyear', from: '12-15', to: '01-10', room: 2 }];
+const CH_TEXT = {
+  uk: {
+    mods: { wind: 'хуртовина', acid: 'кислота', meteors: 'метеорити', fences: 'лазерні бар\'єри', belts: 'конвеєрні стрічки' },
+    bosses: ['блендер «Мегамікс»', 'Телебос 3000', 'Будильник-Дзвонар', 'пралька «Барабан»', 'повітродув «Шквал»', 'пилосос-привид', 'Робо-бос 9000', 'павук «Тенета»', 'дрон «Грім»', 'косарка «Стриж»', 'хаб «Розумний дім»', 'ліфт «Експрес»', 'сортувальник «Мегасклад»', 'збирач «Прайм»', 'професор «Колба»', 'командор «Орбіта»', 'снігоочисник «Завірюха»'],
+    play: '🐾 Грати', medals: ['🥇', '🥈', '🥉'],
+    weekHead: '📅 <b>Підсумки тижня в Pawsling</b>',
+    night: rows => `🌙 <b>Турнір «Нічної зміни»</b>\n${rows.map((r, i) => `${CH_TEXT.uk.medals[i]} ${r.name} — ${r.night} ${ukWaves(r.night)}`).join('\n')}`,
+    chalWon: (name, turns, n) => `⏱ <b>Випробування тижня</b>: найшвидше — ${name}, за ${turns} ход. (учасників: ${n})`,
+    chalNew: (room, mods) => `🆕 <b>Нове випробування</b>: «${room}» + ${mods}. Той самий рівень для всіх — хто пройде за найменше ходів?`,
+    chalLead: (room, mods, name, turns, n) => `⏱ <b>Випробування тижня</b>: «${room}» + ${mods}\n\nЗараз лідирує ${name} — ${turns} ход. Учасників: ${n}. До кінця тижня ще вихідні. Зможеш швидше?`,
+    halloween: '🎃 <b>Хелловін у Pawsling!</b>\n\nРоботи вбралися в гарбузи: три святкові рівні з костюмованими ворогами, а за всі три — ексклюзивний капелюх-гарбуз. Подія триває до 5 листопада.',
+    newyear: '🎄 <b>Новий рік у Pawsling!</b>\n\nТехніка в шапках Санти захопила спальню: три святкові рівні, а за всі три — ексклюзивна шапка Санти. Подія триває до 10 січня.',
+    intro: '🐾 <b>Pawsling</b> — коти та єноти з рогатки проти збунтованої техніки.\n\n96 рівнів, 17 босів, «Нічна зміна» з турніром щотижня — і все прямо в Telegram, без встановлення.\n\nТут: підсумки турнірів, випробування тижня, події, нові кімнати й поради.',
+    room: (i, name, boss, what) => `🗺 <b>Кімната ${i + 1}: ${name}</b>\n\n${what}\n\nБос: <b>${boss}</b>.`,
+    rooms: [
+      'Тут усе почалося: пилососи збунтувалися просто біля холодильника. Порада новачкам: бий у жовтий сенсор — потрійна шкода.',
+      'Телевізор оголосив себе королем дивана й скликав пульти та пилососи.',
+      'Навіть будильник перейшов на бік роботів. Тепер ніхто не виспиться, доки його не вимкнуть.',
+      'Тут слизько, мильно й гамірно, а вороги стають міцнішими.',
+      'Свіже повітря й зовсім не свіжі роботи. Перша кімната з шістьма рівнями.',
+      'Темно, пильно й моторошно: на горищі завівся привид… пилососа.',
+      'Щитоботи ріжуть шкоду сусідам до 35%, а близнюки після удару діляться на двох малюків. Спершу знімай щит!',
+      'Тут змішалися всі вороги одразу. Бос після кожної атаки обплутує героя павутиною — той пропускає хід, доки друг його не звільнить пострілом.',
+      'Магніти притягують героїв і гнуть постріли. Блискавка боса перескакує на найближчого героя — тримай команду врозтіч.',
+      'Кроти через хід ховаються під землю, і постріли котяться над ними. Бос після атаки таранить героя й розштовхує всіх на шляху.',
+      '3D-принтери друкують міні-роботів після кожної атаки. Бос розганяє всіх інших роботів, і ті б\'ють на хід раніше.',
+      'Бомбоботи вибухають, коли їх збити, і зачіпають сусідів — можна влаштувати ланцюжок. Бос б\'є вниз по шахті: усі під ним втрачають серце.',
+      'Конвеєрні стрічки зносять героїв у польоті, а коробоботи ховаються в коробку. Бос після атаки розвертає стрічки й пришвидшує їх.',
+      'Лазерні бар\'єри вмикаються через хід і відбивають героїв, як стіни, а турелі стріляють уздовж усього ряду. Бос відбудовує останнього збитого робота.',
+      'Калюжі кислоти забирають серце в того, хто в них стоїть, а тесла-боти б\'ють струмом усіх поруч. Бос розливає нову калюжу під героєм.',
+      'Метеорити падають туди, де за хід до того з\'явилися мітки. Варп-боти телепортуються після кожного влучання. Бос наводить метеорити просто на героїв.',
+      'Найважча кімната: хуртовина щоходу дме з нового боку, а кріоботи заморожують героїв. Бос змітає всю команду туди, куди дме вітер.',
+    ],
+    tips: {
+      slingshot: '🎯 <b>Як грати</b>\n\nТягни героя назад, цілься й відпускай. Герої відбиваються від стін і прошивають роботів наскрізь — найкращі постріли зачіпають кількох одразу.',
+      knots: '🧶 <b>Вузли</b>\n\nПерехрести нитки двох пострілів — і на перетині зав\'яжеться вузол, що вибухає. Кіт + єнот = вогняний вузол (×1,5 шкоди), два коти — муркотливий (ширший), два єноти — сміттєвий (відкладає атаку роботів на хід).',
+      bosses: '👾 <b>17 босів</b>\n\nУ кожної кімнати свій бос зі своїм трюком: павутина, ланцюгова блискавка, кислотні калюжі, метеорити, хуртовина… Хто з них дався тобі найважче?',
+      map: '🗺 <b>96 рівнів у 17 кімнатах</b>\n\nВід кухні до полярної станції. Три зірки — якщо вкладешся в норму ходів, а пройдений рівень можна переграти в режимі виклику: вороги на 40% міцніші, зате подвійний досвід і корона на карті.',
+      heroes: '🐱 <b>Герої ростуть</b>\n\nЗа кожну перемогу герої отримують досвід: до 10 рівня, +4% шкоди за рівень і посилення здібності на 5-му і 10-му. Хом\'як Хеммі приєднується після 24 рівня — що далі котиться, то сильніше б\'є.',
+      night: '🌙 <b>«Нічна зміна»</b>\n\nНескінченні хвилі, бос кожну п\'яту, кімната міняється кожні п\'ять хвиль. Щопонеділка топ-3 тижня отримують призи — а ми публікуємо їхні імена тут.',
+      chest: '🎁 <b>Скриня</b>\n\nСкриня на нижній панелі карти дозріває кожні 6 годин: серце, швидкий старт, а інколи й безкоштовне друге дихання. Не забувай забирати!',
+      invite: '📨 <b>Грати разом веселіше</b>\n\nЗапроси друга: коли він зайде в гру за твоїм посиланням, ви обидва отримаєте +1 серце і +1 швидкий старт. А в рейтингу друзів видно, хто кого обганяє.',
+      album: '🏅 <b>Альбом роботів</b>\n\nКожна перемога над роботом іде в альбом. 10, 50 і 200 перемог роблять картку бронзовою, срібною й золотою — і за кожну дають подарунок.',
+      quests: '📋 <b>Квести тижня</b>\n\nНа екрані «Щодня» щотижня три нові цілі: вузли, боси, рівні на три зірки… За кожну — бонус, а за всі три — безкоштовне друге дихання.',
+      streak: '🔥 <b>Серія днів</b>\n\nЗаходь щодня: бонус за вхід росте сім днів поспіль, а кожні 30 днів поспіль — святковий капелюх для всієї команди.',
+      raids: '🚨 <b>Нальоти</b>\n\nІнколи роботи нападають на одну з кімнат, і бот кличе на допомогу. Відбий нальот за 30 хвилин — і отримаєш серце та швидкий старт.',
+    },
+  },
+  en: {
+    mods: { wind: 'blizzard', acid: 'acid', meteors: 'meteors', fences: 'laser fences', belts: 'conveyor belts' },
+    bosses: ['Megamix Blender', 'Teleboss 3000', 'Bellringer Alarm', 'Drum Washer', 'Gale Blower', 'Ghost Vacuum', 'Robo-Boss 9000', 'Web-Spinner', 'Thunder Drone', 'Swift Mower', 'Smart Home Hub', 'Express Lift', 'Mega Sorter', 'Assembler Prime', 'Professor Flask', 'Commander Orbit', 'Blizzard Snowplough'],
+    play: '🐾 Play', medals: ['🥇', '🥈', '🥉'],
+    weekHead: '📅 <b>The week in Pawsling</b>',
+    night: rows => `🌙 <b>Night Shift tournament</b>\n${rows.map((r, i) => `${CH_TEXT.en.medals[i]} ${r.name} — ${r.night} waves`).join('\n')}`,
+    chalWon: (name, turns, n) => `⏱ <b>Weekly challenge</b>: fastest was ${name}, in ${turns} turns (${n} players)`,
+    chalNew: (room, mods) => `🆕 <b>New challenge</b>: ${room} + ${mods}. The same level for everyone: who can win it in the fewest turns?`,
+    chalLead: (room, mods, name, turns, n) => `⏱ <b>Weekly challenge</b>: ${room} + ${mods}\n\n${name} leads with ${turns} turns. Players so far: ${n}. There is still the weekend. Can you do it faster?`,
+    halloween: '🎃 <b>Halloween in Pawsling!</b>\n\nThe robots dressed up as pumpkins: three spooky levels with costumed enemies, and an exclusive pumpkin hat for beating all three. On until 5 November.',
+    newyear: '🎄 <b>New Year in Pawsling!</b>\n\nGadgets in Santa hats took over the bedroom: three festive levels, and an exclusive Santa hat for beating all three. On until 10 January.',
+    intro: '🐾 <b>Pawsling</b>: slingshot cats and raccoons against rebel household robots.\n\n96 levels, 17 bosses, a weekly Night Shift tournament, all right inside Telegram with nothing to install.\n\nHere: tournament results, the weekly challenge, events, new rooms and tips.',
+    room: (i, name, boss, what) => `🗺 <b>Room ${i + 1}: ${name}</b>\n\n${what}\n\nBoss: <b>${boss}</b>.`,
+    rooms: [
+      'Where it all began: the vacuums rebelled right by the fridge. A tip for beginners: hit the yellow sensor for triple damage.',
+      'The TV declared itself king of the sofa and called in the remotes and vacuums.',
+      'Even the alarm clock switched sides. Nobody sleeps until it is switched off.',
+      'Slippery, soapy and loud, and the enemies keep getting tougher.',
+      'Fresh air and not-so-fresh robots. The first room with six levels.',
+      'Dark, dusty and creepy: the attic is haunted by a ghost… of a vacuum.',
+      'Shield bots cut damage to their neighbours to 35%, and twins split into two minis when hit. Take the shield down first!',
+      'Every enemy type at once. After each attack the boss webs a hero, who skips a turn unless a friend shoots them free.',
+      'Magnets pull heroes in and bend their shots. The boss\'s lightning jumps to the closest hero, so keep the team spread out.',
+      'Moles dig underground every other turn, and shots roll right over them. The boss charges at the hero it hit and shoves everyone aside.',
+      '3D printers print a mini robot after every attack. The boss overclocks every other robot, so they strike a turn sooner.',
+      'Bomb bots explode when destroyed and hurt the robots nearby: chain them! The boss strikes down its shaft, and every hero below loses a heart.',
+      'Conveyor belts push flying heroes sideways and box bots hide in a box. After each attack the boss reverses every belt and speeds it up.',
+      'Laser fences switch on every other turn and bounce heroes like walls; turrets fire along their whole row. The boss rebuilds the last robot you broke.',
+      'Acid pools take a heart from anyone standing in them, and tesla bots zap every hero nearby. The boss spills a new pool under a hero.',
+      'Meteors land where markers appeared a turn before. Warp bots blink away after every hit. The boss aims meteors right at your heroes.',
+      'The hardest room: the blizzard blows from a new side every turn and cryo bots freeze heroes. The boss sweeps the whole team the way the wind blows.',
+    ],
+    tips: {
+      slingshot: '🎯 <b>How to play</b>\n\nPull a hero back, aim and let go. Heroes bounce off walls and pierce right through robots: the best shots hit several at once.',
+      knots: '🧶 <b>Knots</b>\n\nCross the threads of two shots and a knot ties where they meet, then explodes. Cat + raccoon is a fire knot (×1.5 damage), two cats a purring knot (wider), two raccoons a trash knot (delays the robots\' attack by a turn).',
+      bosses: '👾 <b>17 bosses</b>\n\nEvery room has its own boss with its own trick: webs, chain lightning, acid pools, meteors, a blizzard… Which one gave you the hardest time?',
+      map: '🗺 <b>96 levels in 17 rooms</b>\n\nFrom the kitchen to the polar station. Three stars if you win within the par, and a won level can be replayed in challenge mode: enemies 40% tougher, but double XP and a crown on the map.',
+      heroes: '🐱 <b>Heroes grow</b>\n\nEvery win gives XP: up to level 10, +4% damage per level and an ability upgrade at 5 and 10. Hammy the hamster joins after level 24: the further he rolls, the harder he hits.',
+      night: '🌙 <b>Night Shift</b>\n\nEndless waves, a boss every fifth, a new room every five waves. Every Monday the week\'s top 3 get prizes, and we post their names here.',
+      chest: '🎁 <b>The chest</b>\n\nThe chest on the map\'s bottom bar ripens every 6 hours: a heart, a quick start, and now and then a free Second wind. Don\'t forget to grab it!',
+      invite: '📨 <b>Better together</b>\n\nInvite a friend: when they join through your link, you both get +1 heart and +1 quick start. The friends board shows who is ahead of whom.',
+      album: '🏅 <b>Robot album</b>\n\nEvery win over a robot goes into the album. 10, 50 and 200 wins make its card bronze, silver and gold, with a gift for each.',
+      quests: '📋 <b>Weekly quests</b>\n\nThree new goals every week on the Daily screen: knots, bosses, 3-star wins… A bonus for each, and a free Second wind for all three.',
+      streak: '🔥 <b>Login streak</b>\n\nCome back every day: the login bonus grows for seven days in a row, and every 30 days in a row brings a party hat for the whole team.',
+      raids: '🚨 <b>Raids</b>\n\nNow and then robots raid one of the rooms and the bot calls for help. Repel the raid within 30 minutes for a heart and a quick start.',
+    },
+  },
+};
+// the feed alternates tips and room spotlights; img is a path under ART, or a function of the language
+const shot = n => l => `${l}/${n}.jpg`;
+const CH_FEED = [
+  { tip: 'slingshot', img: shot('1-slingshot') }, { room: 0 }, { tip: 'knots', img: shot('2-knots') }, { room: 1 },
+  { tip: 'chest', img: 'welcome-1280x720.jpg' }, { room: 2 }, { tip: 'map', img: shot('4-map') }, { room: 3 },
+  { tip: 'invite', img: CARD }, { room: 4 }, { tip: 'heroes', img: shot('5-heroes') }, { room: 5 },
+  { tip: 'night', img: shot('6-night') }, { room: 6 }, { tip: 'quests', img: 'welcome-1280x720.jpg' }, { room: 7 },
+  { tip: 'bosses', img: shot('3-bosses') }, { room: 8 }, { tip: 'raids', img: 'raid/raid-8.jpg' }, { room: 9 },
+  { tip: 'album', img: CARD }, { room: 10 }, { tip: 'streak', img: 'welcome-1280x720.jpg' }, { room: 11 },
+  { room: 12 }, { room: 13 }, { room: 14 }, { room: 15 }, { room: 16 },
+];
+const ukWaves = n => n % 10 === 1 && n % 100 !== 11 ? 'хвиля' : [2, 3, 4].includes(n % 10) && ![12, 13, 14].includes(n % 100) ? 'хвилі' : 'хвиль';
+const esc = s => String(s).replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' })[c]);
+// the same weekly challenge as weekChallenge() in game.js (17 rooms, from the balcony on)
+function chalOf(wk) {
+  const h = [...wk].reduce((a, c) => (a * 37 + c.charCodeAt(0)) % 2147483646, 11) + 1;
+  let s = h; const R = () => (s = (s * 16807) % 2147483647) / 2147483647;
+  const room = 4 + Math.floor(R() * (ROOMS_N - 4)), mods = ['wind', 'acid', 'meteors', 'fences', 'belts'];
+  for (let i = mods.length - 1; i > 0; i--) { const j = Math.floor(R() * (i + 1)); [mods[i], mods[j]] = [mods[j], mods[i]]; }
+  return { room, mods: mods.slice(0, 2) };
+}
+const modList = (c, l) => c.mods.map(m => CH_TEXT[l].mods[m]).join(l === 'uk' ? ' і ' : ' and ');
+function channels(env) {
+  return Object.entries(CH_LANGS).map(([lang, k]) => ({ lang, chat: String(env[k] || '').trim() })).filter(c => c.chat);
+}
+const channelUrl = chat => chat.startsWith('@') ? `https://t.me/${chat.slice(1)}` : null;
+async function ensureBotName(env) {
+  if (!botName) { const me = await tg(env, 'getMe', {}); botName = me.ok ? me.result.username : null; }
+  return botName;
+}
+// a post: { img, caption } for a language, or null when there is nothing to say
+async function channelPost(env, kind, lang, now = Date.now()) {
+  const t = CH_TEXT[lang], rooms = TEXT[lang].rooms, db = env.DB;
+  if (kind === 'week') {
+    const last = weekKey(now - 3 * DAY), c = chalOf(weekKey(now)), parts = [t.weekHead];
+    const top = await db.prepare('SELECT name, night FROM weekly WHERE week = ?1 AND night > 0 ORDER BY night DESC, at ASC LIMIT 3').bind(last).all();
+    if (top.results.length) parts.push(t.night(top.results.map(r => ({ name: esc(r.name), night: r.night }))));
+    const best = await db.prepare('SELECT name, turns FROM chal WHERE week = ?1 ORDER BY turns ASC, at ASC LIMIT 1').bind(last).first();
+    if (best) {
+      const n = await db.prepare('SELECT COUNT(*) AS n FROM chal WHERE week = ?1').bind(last).first();
+      parts.push(t.chalWon(esc(best.name), best.turns, n.n));
+    }
+    parts.push(t.chalNew(rooms[c.room], modList(c, lang)));
+    return { img: `raid/raid-${c.room}.jpg`, caption: parts.join('\n\n') };
+  }
+  if (kind === 'chal') {
+    const wk = weekKey(now), c = chalOf(wk);
+    const best = await db.prepare('SELECT name, turns FROM chal WHERE week = ?1 ORDER BY turns ASC, at ASC LIMIT 1').bind(wk).first();
+    if (!best) return null;
+    const n = await db.prepare('SELECT COUNT(*) AS n FROM chal WHERE week = ?1').bind(wk).first();
+    return { img: `raid/raid-${c.room}.jpg`, caption: t.chalLead(rooms[c.room], modList(c, lang), esc(best.name), best.turns, n.n) };
+  }
+  if (kind === 'intro') return { img: 'welcome-1280x720.jpg', caption: t.intro };
+  const ev = CH_EVENTS.find(e => e.id === kind);
+  if (ev) return { img: `raid/raid-${ev.room}.jpg`, caption: t[ev.id] };
+  const m = /^feed(\d+)$/.exec(kind);
+  if (m) {
+    const f = CH_FEED[Number(m[1]) % CH_FEED.length];
+    if (f.tip) return { img: typeof f.img === 'function' ? f.img(lang) : f.img, caption: t.tips[f.tip] };
+    return { img: `raid/raid-${f.room}.jpg`, caption: t.room(f.room, rooms[f.room], t.bosses[f.room], t.rooms[f.room]) };
+  }
+  return null;
+}
+async function sendChannelPost(env, chat, lang, kind, post) {
+  const src = `ch_${lang}_${kind.replace(/\d+$/, '')}`;
+  return tg(env, 'sendPhoto', { chat_id: chat, photo: ART + post.img, caption: post.caption, parse_mode: 'HTML',
+    reply_markup: { inline_keyboard: [[{ text: CH_TEXT[lang].play, url: `https://t.me/${botName}?startapp=${src}` }]] } });
+}
+// the event running on this day, with the key of this year's run (New Year runs over the change of year)
+function eventToday(ts = Date.now()) {
+  const d = new Date(ts), md = utcDay(ts).slice(5), y = d.getUTCFullYear();
+  for (const e of CH_EVENTS) {
+    const inside = e.from <= e.to ? md >= e.from && md <= e.to : md >= e.from || md <= e.to;
+    if (inside) return { id: e.id, key: `${e.id}-${e.from <= e.to || md >= e.from ? y : y - 1}` };
+  }
+  return null;
+}
+// what is due this hour: [{ key, kind }], key being unique per slot
+async function channelDue(db, chat, ts = Date.now()) {
+  const d = new Date(ts), h = d.getUTCHours(), wd = d.getUTCDay(), day = utcDay(ts), due = [];
+  if (wd === 1 && h === CH_WEEK_HOUR) due.push({ key: 'week-' + weekKey(ts), kind: 'week' });
+  if (wd === 5 && h === CH_HOUR) due.push({ key: 'chal-' + weekKey(ts), kind: 'chal' });
+  const ev = eventToday(ts);
+  if (ev && h >= CH_WEEK_HOUR && h <= CH_HOUR) due.push({ key: 'ev-' + ev.key, kind: ev.id });
+  if (CH_FEED_DAYS.includes(wd) && h === CH_HOUR) {
+    const n = await db.prepare("SELECT COUNT(*) AS n FROM channel_posts WHERE chat = ?1 AND key LIKE 'feed-%'").bind(chat).first();
+    due.push({ key: 'feed-' + day, kind: 'feed' + n.n });
+  }
+  return due;
+}
+async function sendChannelPosts(env) {
+  const list = channels(env);
+  if (!list.length) return;
+  const db = env.DB;
+  await ensureTables(db);
+  await ensureBotName(env);
+  const now = Math.floor(Date.now() / 1000);
+  for (const { lang, chat } of list) {
+    // a channel goes live with its welcome post (/chan intro), so nothing lands in it before that
+    if (!await db.prepare("SELECT 1 AS x FROM channel_posts WHERE chat = ?1 AND key LIKE 'intro-%'").bind(chat).first()) continue;
+    for (const { key, kind } of await channelDue(db, chat)) {
+      // claim the slot first; give it back if the post could not go out
+      const claim = await db.prepare('INSERT OR IGNORE INTO channel_posts (chat, key, at) VALUES (?1, ?2, ?3)').bind(chat, key, now).run();
+      if (claim.meta.changes === 0) continue;
+      let r;
+      try {
+        const post = await channelPost(env, kind, lang);
+        if (!post) continue; // nothing to say (no challenge results yet): the slot stays used
+        r = await sendChannelPost(env, chat, lang, kind, post);
+      } catch (e) { r = { ok: false, description: String(e) }; }
+      if (r.ok) await db.prepare('UPDATE channel_posts SET msg_id = ?3 WHERE chat = ?1 AND key = ?2').bind(chat, key, r.result.message_id).run();
+      else {
+        await db.prepare('DELETE FROM channel_posts WHERE chat = ?1 AND key = ?2').bind(chat, key).run();
+        await notifyAdmin(env, `⚠️ Канал ${chat}: не вдалося опублікувати ${key}: ${r.description || ''}`);
+      }
+    }
+  }
+}
+// the owner's /chan: status and arrivals; /chan preview: every kind of post sent to the owner;
+// /chan intro: the welcome post, posted and pinned in every channel; /chan post <week|chal|feed|halloween|newyear>: post now
+async function channelCommand(env, m) {
+  const db = env.DB, list = channels(env), arg = m.text.trim().split(/\s+/).slice(1), say = s => tg(env, 'sendMessage', { chat_id: m.chat.id, text: s });
+  await ensureTables(db);
+  await ensureBotName(env);
+  if (!list.length) return say('Канали не налаштовані: додай CHANNEL_UK і CHANNEL_EN у wrangler.toml ([vars]) і зроби деплой.');
+  if (arg[0] === 'preview') {
+    for (const { lang } of list) {
+      const n = await db.prepare("SELECT COUNT(*) AS n FROM channel_posts WHERE chat = ?1 AND key LIKE 'feed-%'").bind(list.find(c => c.lang === lang).chat).first();
+      for (const kind of ['intro', 'week', 'chal', 'feed' + n.n, 'halloween']) {
+        const post = await channelPost(env, kind, lang);
+        if (!post) { await say(`${lang} · ${kind}: зараз нема що публікувати`); continue; }
+        const r = await sendChannelPost(env, m.chat.id, lang, kind, post);
+        if (!r.ok) await say(`${lang} · ${kind}: ${r.description || 'помилка'}`);
+      }
+    }
+    return;
+  }
+  if (arg[0] === 'intro' || arg[0] === 'post') {
+    const kind = arg[0] === 'intro' ? 'intro' : arg[1];
+    if (!['intro', 'week', 'chal', 'feed', 'halloween', 'newyear'].includes(kind)) return say('Що саме? /chan post week | chal | feed | halloween | newyear');
+    const out = [];
+    for (const { lang, chat } of list) {
+      let k = kind, key = null;
+      if (kind === 'feed') {
+        const n = await db.prepare("SELECT COUNT(*) AS n FROM channel_posts WHERE chat = ?1 AND key LIKE 'feed-%'").bind(chat).first();
+        k = 'feed' + n.n; key = `feed-manual-${Date.now()}`; // counts as a feed post, so the rotation moves on
+      }
+      if (kind === 'intro') key = `intro-${Date.now()}`; // the channel is live from now on
+      const post = await channelPost(env, k, lang);
+      if (!post) { out.push(`${chat}: нема що публікувати`); continue; }
+      const r = await sendChannelPost(env, chat, lang, k, post);
+      if (r.ok && key) await db.prepare('INSERT OR IGNORE INTO channel_posts (chat, key, at, msg_id) VALUES (?1, ?2, ?3, ?4)').bind(chat, key, Math.floor(Date.now() / 1000), r.result.message_id).run();
+      if (r.ok && kind === 'intro') await tg(env, 'pinChatMessage', { chat_id: chat, message_id: r.result.message_id, disable_notification: true });
+      out.push(`${chat}: ${r.ok ? '✅' : '⚠️ ' + (r.description || '')}`);
+    }
+    return say(out.join('\n'));
+  }
+  const me = await tg(env, 'getMe', {}), lines = ['📣 Канали'];
+  for (const { lang, chat } of list) {
+    const cm = me.ok ? await tg(env, 'getChatMember', { chat_id: chat, user_id: me.result.id }) : { ok: false };
+    const can = cm.ok && (cm.result.status === 'creator' || (cm.result.status === 'administrator' && cm.result.can_post_messages !== false));
+    const subs = await tg(env, 'getChatMemberCount', { chat_id: chat });
+    const posts = await db.prepare('SELECT COUNT(*) AS n, MAX(at) AS last FROM channel_posts WHERE chat = ?1 AND msg_id IS NOT NULL').bind(chat).first();
+    lines.push(`\n${chat} (${lang}): ${can ? '✅ бот може публікувати' : '⚠️ бот не адмін або не може публікувати'}` +
+      `\nпідписників: ${subs.ok ? subs.result : '?'} · постів: ${posts.n}${posts.last ? ` · останній ${new Date(posts.last * 1000).toISOString().slice(0, 16).replace('T', ' ')} UTC` : ''}`);
+  }
+  // new players by where they came from
+  const day = Math.floor(Date.now() / 1000) - 86400;
+  const rows = await db.prepare(`SELECT src, COUNT(*) AS n, SUM(at > ?1) AS d1, SUM(at > ?2) AS d7 FROM sources
+    GROUP BY src ORDER BY n DESC LIMIT 15`).bind(day, day - 6 * 86400).all();
+  lines.push('\nНові гравці за джерелом (доба / 7 днів / усього):');
+  lines.push(rows.results.length ? rows.results.map(r => `${r.src}: ${r.d1} / ${r.d7} / ${r.n}`).join('\n') : 'поки нікого');
+  lines.push('\n/chan preview — усі види постів мені\n/chan intro — привітальний пост у канали і закріпити\n/chan post week|chal|feed|halloween|newyear — опублікувати зараз');
+  return say(lines.join('\n'));
 }
 
 async function board(db, col, id) {
