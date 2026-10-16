@@ -10300,7 +10300,7 @@ const DEV = location.hash === '#dev';
 const nextFrame = DEV ? cb => setTimeout(() => cb(performance.now()), 16) : requestAnimationFrame;
 if (DEV) window.__pawsling = { get G() { return G; }, set G(v) { G = v; }, openChest, get SCREEN() { return SCREEN; }, get DAILY() { return DAILY; }, openNews, checkNews, startLevel, startEndless, launch, PROG: () => PROG, MAP, BOARD, setScreen, secondWind, setInv, get INV() { return INV; }, prepLevel, setupWave, showStory, get CHEST() { return CHEST; }, get T() { return T; }, step: dt => update(dt), LEVELS, CHAPTERS, ENEMY, bg, BGS,
   // store art: pause the loop, size the canvas, then draw with the game's own painters
-  draw, art: { get ctx() { return ctx; }, cv, drawHero, drawBoss, drawEnemy, drawFoe, chIcon, star, heart, rr, glowAt, drawHat, hexRgb, HEROES, BOSS_COL, FD, FB, W, H, TOP, BOT },
+  draw, art: { get ctx() { return ctx; }, cv, chestIcon, windIcon, questIcon, albumMedal, tierFrame, flameIcon, moonIcon, rewardIcon, paw, laurel, drawHero, drawBoss, drawEnemy, drawFoe, chIcon, star, heart, rr, glowAt, drawHat, hexRgb, HEROES, BOSS_COL, FD, FB, W, H, TOP, BOT },
   size(w, h, k) { cv.width = w; cv.height = h; scale = k; dpr = 1; } };
 reportEvent(); // after DEV: activeEvent() reads it
 let last = performance.now();
