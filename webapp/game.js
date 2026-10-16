@@ -9476,9 +9476,9 @@ const EVENTS = [
 ];
 const EVENT_LEVELS = {
   halloween: [
-    { par: 10, hpMul: 1.3, atkMul: 1.15, waves: [[['vac', 110, 200], ['rc', 340, 200], ['vac', 225, 360]], [['spray', 100, 180], ['brush', 225, 260], ['spray', 350, 180]]] },
-    { par: 12, hpMul: 1.3, atkMul: 1.15, waves: [[['mop', 225, 200], ['rc', 100, 320], ['rc', 350, 320]], [['fan', 225, 240], ['split', 110, 380], ['split', 340, 380]]] },
-    { par: 14, hpMul: 1.3, atkMul: 1.15, boss: .6, waves: [[['shield', 110, 300], ['rc', 225, 180], ['shield', 340, 300]], [['boss', 225, 240], ['vac', 85, 430], ['vac', 365, 430]]] },
+    { par: 12, hpMul: 1.3, atkMul: 1.15, waves: [[['vac', 110, 200], ['mole', 340, 200], ['rc', 225, 330]], [['spray', 100, 180], ['brush', 225, 260], ['mimic', 350, 180], ['vac', 225, 380]]] },
+    { par: 15, hpMul: 1.3, atkMul: 1.15, acid: [[120, 470, 46], [330, 470, 46]], waves: [[['mop', 225, 200], ['mimic', 100, 320], ['rc', 350, 320]], [['fan', 225, 220], ['bomb', 110, 340], ['split', 340, 340], ['mole', 225, 420]]] },
+    { par: 18, hpMul: 1.3, atkMul: 1.15, boss: .7, acid: [[225, 470, 50]], waves: [[['shield', 110, 300], ['mimic', 225, 180], ['bomb', 340, 300]], [['printer', 110, 220], ['mole', 340, 220], ['brush', 225, 360]], [['boss', 225, 240], ['mimic', 85, 430], ['bomb', 365, 430]]] },
   ],
   newyear: [
     { par: 10, hpMul: 1.3, atkMul: 1.15, waves: [[['vac', 90, 170], ['vac', 360, 170], ['spray', 225, 300]], [['mop', 225, 200], ['brush', 110, 340], ['brush', 340, 340]]] },
@@ -9503,6 +9503,9 @@ function startEventLevel(i) {
   newRun(0);
   G.li = -2;
   G.lvl = { ...EVENT_LEVELS[ev.id][i], ch: ev.ch, event: ev, evIdx: i };
+  // the event follows the player's progress: 63% of their furthest room's strength (the event levels are longer), never below the level's own
+  const top = CHAPTERS[Math.min(maxRoom(), CHAPTERS.length - 1)];
+  G.lvl.hpMul = Math.max(G.lvl.hpMul, top.hp * .63); G.lvl.atkMul = Math.max(G.lvl.atkMul, top.atk * .63);
   G.ch = CHAPTERS[ev.ch];
   setScreen('game');
   setupWave(0);
@@ -10298,7 +10301,7 @@ loadDaily();
 // #dev: timer-driven loop (keeps running in hidden tabs) plus a state hook for testing
 const DEV = location.hash === '#dev';
 const nextFrame = DEV ? cb => setTimeout(() => cb(performance.now()), 16) : requestAnimationFrame;
-if (DEV) window.__pawsling = { get G() { return G; }, set G(v) { G = v; }, openChest, get SCREEN() { return SCREEN; }, get DAILY() { return DAILY; }, openNews, checkNews, startLevel, startEndless, launch, PROG: () => PROG, MAP, BOARD, setScreen, secondWind, setInv, get INV() { return INV; }, prepLevel, setupWave, showStory, get CHEST() { return CHEST; }, get T() { return T; }, step: dt => update(dt), LEVELS, CHAPTERS, ENEMY, bg, BGS,
+if (DEV) window.__pawsling = { get G() { return G; }, set G(v) { G = v; }, openChest, startEventLevel, get SCREEN() { return SCREEN; }, get DAILY() { return DAILY; }, openNews, checkNews, startLevel, startEndless, launch, PROG: () => PROG, MAP, BOARD, setScreen, secondWind, setInv, get INV() { return INV; }, prepLevel, setupWave, showStory, get CHEST() { return CHEST; }, get T() { return T; }, step: dt => update(dt), LEVELS, CHAPTERS, ENEMY, bg, BGS,
   // store art: pause the loop, size the canvas, then draw with the game's own painters
   draw, art: { get ctx() { return ctx; }, cv, chestIcon, windIcon, questIcon, albumMedal, tierFrame, flameIcon, moonIcon, rewardIcon, paw, laurel, drawHero, drawBoss, drawEnemy, drawFoe, chIcon, star, heart, rr, glowAt, drawHat, hexRgb, HEROES, BOSS_COL, FD, FB, W, H, TOP, BOT },
   size(w, h, k) { cv.width = w; cv.height = h; scale = k; dpr = 1; } };
