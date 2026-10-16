@@ -8,6 +8,8 @@ WEBAPP_URL = "https://vitaliivepsha.github.io/pawsling/webapp/?v=2"
 # news channels the bot posts to (it must be an admin there); empty = no posting
 CHANNEL_UK = ""
 CHANNEL_EN = ""
+# the community group with topics (UA, EN, Technical Support, Events); the bot an admin with "Manage topics"
+COMMUNITY_GROUP = ""
 
 # `npx wrangler d1 create pawsling` prints the id to put here
 [[d1_databases]]

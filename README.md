@@ -181,9 +181,14 @@ The game runs without a permanently running server: the page is on GitHub Pages
 - **Invites**: the share link is `t.me/<bot>?startapp=ref_<id>`. A brand-new player who opens it
   gets +1 heart and +1 quick start, so does the inviter, and the bot messages the inviter. This needs
   the bot's Main Mini App set up in @BotFather (Bot Settings → Configure Mini App).
+- **News channel gift**: a card on the Today tab of Daily, "Subscribe to the news — +1 heart". It opens
+  the channel for the player's language (`CHANNEL_UK` for Ukrainian, `CHANNEL_EN` for everyone else),
+  then Check calls `/subscribed`: the worker asks Telegram (`getChatMember`, the bot is an admin there)
+  and gives the heart once per player (the `subs` table). The card is hidden once taken, outside
+  Telegram, and when no channel is set (or it has no @username).
 - **Weekly Night Shift tournament**: the Week tab of the leaderboard. A cron on Monday 00:05 UTC gives
   the top 3 boosters and a message from the bot.
-- All of it is decided by the worker (`/daily`, `/challenge`, the `weekly` table), never by the page.
+- All of it is decided by the worker (`/daily`, `/challenge`, `/subscribed`, the `weekly` table), never by the page.
 
 ## News channels
 
@@ -193,6 +198,11 @@ tip or a room spotlight from `CH_FEED` on Tuesday, Thursday and Saturday, the ch
 and seasonal events. A channel stays quiet until the owner's `/chan intro`. Play buttons carry
 `startapp=ch_<lang>_<kind>`; every new player's first start_param goes to `sources`, and `/chan` shows
 arrivals by source. Setup and the audience plan: `promo/CHANNELS.md`.
+
+The community group (`COMMUNITY_GROUP`, a forum; the bot an admin with "Manage topics") gets its topics
+from the owner's `/chan group`: 🇺🇦 UA, 🇬🇧 EN, 🛠 Technical Support and 📣 Events, the last closed to
+members. The week's results and event announcements go to Events in both languages (`startapp=grp_…`),
+and `/start` links the player's language topic next to the news channel.
 
 ## Leaderboard
 

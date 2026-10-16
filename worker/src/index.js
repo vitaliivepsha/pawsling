@@ -11,6 +11,8 @@
 // POST /use       { initData, item }  ->  { ok, items }   spends one booster
 // POST /daily     { initData }  ->  today's login bonus (once a day), streak, invite count, bot name;
 //   a first visit through a friend's link (start_param ref_<id>) gifts both players
+//   (also the news channel for the player's language and whether its subscription gift was taken)
+// POST /subscribed { initData, lang }  ->  { ok, reward, items, channel }  a heart, once, for being subscribed to the news channel
 // POST /challenge { initData, reward }  ->  the daily challenge reward, once a day
 // POST /notify    { initData, on, tz, room, lang }  ->  raid alerts on or off (on by default; tz: getTimezoneOffset minutes)
 // POST /raid      { initData, id }  ->  { ok, late?, reward, items }  the raid bonus, if the raid was repelled in time
@@ -18,7 +20,8 @@
 //   between 10:00 and 21:00 their time, a raid alert with a picture and a button; they have 30 minutes
 // POST /share     { initData, lang }  ->  { id }  an invite card (picture, text, Play button with the
 //   player's referral link) prepared for WebApp.shareMessage; t.me Mini App links get no link preview
-// cron (every hour): posts to the news channels (CHANNEL_UK, CHANNEL_EN), see "news channels" below
+// cron (every hour): posts to the news channels (CHANNEL_UK, CHANNEL_EN) and the community group's Events topic
+//   (COMMUNITY_GROUP), see "news channels" and "community group" below
 // cron (Monday 00:05 UTC): the week's top 3 in Night Shift get prizes and a message from the bot
 // POST /tg       the bot's webhook (set automatically on the first game request):
 //   approves pre-checkout queries, records successful payments and refunds, answers /start,
@@ -54,6 +57,7 @@ const ALBUM_GIFTS = [null, { meter: 1 }, { heart: 1 }, { wind: 1 }];
 const QUEST_GIFTS = { knots: { meter: 1 }, robots: { heart: 1 }, bosses: { heart: 1 }, noko: { meter: 1 }, stars3: { heart: 1 }, night: { meter: 1 }, combos: { meter: 1 }, lasers: { meter: 1 } };
 const QUESTS_ALL = { wind: 1 };
 const CHAL_GIFT = { heart: 1 }; // the first win of the weekly challenge
+const SUB_GIFT = { heart: 1 }; // once, for subscribing to the news channel
 const CHEST_HOURS = 6;
 const rollChest = () => { const r = Math.random(); return r < .1 ? { wind: 1 } : r < .55 ? { heart: 1 } : { meter: 1 }; };
 const MISS_GIFT = { heart: 1, meter: 1 }; // for a player back after 3+ days away
@@ -160,7 +164,7 @@ export default {
     const json = (body, status = 200) => new Response(JSON.stringify(body), { status, headers: { ...cors, 'Content-Type': 'application/json' } });
     if (req.method === 'OPTIONS') return new Response(null, { headers: cors });
     const url = new URL(req.url), path = url.pathname;
-    if (req.method !== 'POST' || !['/board', '/invoice', '/inventory', '/use', '/daily', '/challenge', '/share', '/notify', '/raid', '/chest', '/album', '/quest', '/chal', '/tg'].includes(path)) return json({ error: 'not found' }, 404);
+    if (req.method !== 'POST' || !['/board', '/invoice', '/inventory', '/use', '/daily', '/challenge', '/share', '/notify', '/raid', '/chest', '/album', '/quest', '/chal', '/subscribed', '/tg'].includes(path)) return json({ error: 'not found' }, 404);
 
     if (path === '/tg') {
       // only Telegram knows the secret we gave it in setWebhook
@@ -198,6 +202,21 @@ export default {
     }
 
     if (path === '/daily') return json(await daily(env, user, body));
+    if (path === '/subscribed') {
+      // the news channel gift: a heart, once, if Telegram says the player is in the channel (the bot is an admin there)
+      await ensureTables(env.DB);
+      const row = await env.DB.prepare('SELECT lang FROM notify WHERE user_id = ?1').bind(user.id).first();
+      const channel = newsChat(env, body.lang || (row && row.lang) || user.language_code);
+      if (!channel) return json({ ok: false, reward: null, channel: null });
+      if (await env.DB.prepare('SELECT 1 AS x FROM subs WHERE user_id = ?1').bind(user.id).first()) return json({ ok: true, reward: null, items: await inventory(env.DB, user.id), channel });
+      const cm = await tg(env, 'getChatMember', { chat_id: channel, user_id: user.id });
+      const st = cm.ok ? cm.result : {};
+      if (!(['member', 'administrator', 'creator'].includes(st.status) || (st.status === 'restricted' && st.is_member))) return json({ ok: false, reward: null, channel });
+      const r = await env.DB.prepare('INSERT OR IGNORE INTO subs (user_id, chat, at) VALUES (?1, ?2, ?3)').bind(user.id, channel, Math.floor(Date.now() / 1000)).run();
+      const reward = r.meta.changes > 0 ? SUB_GIFT : null;
+      if (reward) await grant(env.DB, user.id, reward);
+      return json({ ok: true, reward, items: await inventory(env.DB, user.id), channel });
+    }
     if (path === '/chal') {
       // the weekly challenge: keep the best (fewest turns) win of the week; the first win gives a heart
       const week = weekKey(), turns = clampInt(body.turns, 300);
@@ -313,7 +332,7 @@ async function daily(env, user, body = {}) {
   // the game's language wins over the Telegram app's, so the bot follows a language switch in the game
   await db.prepare("UPDATE notify SET last_seen = ?2, tz = ?3, room = ?4, lang = COALESCE(NULLIF(?5, ''), lang) WHERE user_id = ?1")
     .bind(user.id, now, clampTz(body.tz), clampRoom(body.room), String(body.lang || '').slice(0, 5)).run();
-  const nrow = await db.prepare('SELECT enabled FROM notify WHERE user_id = ?1').bind(user.id).first();
+  const nrow = await db.prepare('SELECT enabled, lang FROM notify WHERE user_id = ?1').bind(user.id).first();
   const raid = await db.prepare('SELECT id, room, expires FROM raids WHERE user_id = ?1 AND done IS NULL AND expires > ?2 ORDER BY id DESC LIMIT 1').bind(user.id, now).first();
   await db.prepare('INSERT OR IGNORE INTO chests (user_id, ready_at) VALUES (?1, ?2)').bind(user.id, now).run();
   const chest = await db.prepare('SELECT ready_at FROM chests WHERE user_id = ?1').bind(user.id).first();
@@ -357,9 +376,11 @@ async function daily(env, user, body = {}) {
   }
   const inv = await db.prepare('SELECT COUNT(*) AS n FROM referrals WHERE ref_by = ?1').bind(user.id).first();
   if (!botName) { const me = await tg(env, 'getMe', {}); botName = me.ok ? me.result.username : null; }
+  const news = newsChat(env, (nrow && nrow.lang) || user.language_code), newsUrl = channelUrl(news); // the game opens it by @username
+  const newsDone = !!await db.prepare('SELECT 1 AS x FROM subs WHERE user_id = ?1').bind(user.id).first();
   return { claimed, streak, run, bonus, chestAt: chest.ready_at * 1000, reward, gifted, challengeDone: !!row && row.challenge_day === today, invited: inv.n, bot: botName,
     notify: !!(nrow && nrow.enabled), raid: raid ? { id: raid.id, room: raid.room, expires: raid.expires * 1000 } : null,
-    items: await inventory(db, user.id), today, weekEnds: weekStart() + 7 * DAY };
+    items: await inventory(db, user.id), today, weekEnds: weekStart() + 7 * DAY, news: newsUrl ? news : null, newsDone };
 }
 async function grant(db, id, g) {
   await db.batch(Object.entries(g).map(([k, n]) => db.prepare(
@@ -464,6 +485,10 @@ async function ensureTables(db) {
     // channel posts already made (one per slot), and where new players came from (their first start_param)
     db.prepare('CREATE TABLE IF NOT EXISTS channel_posts (chat TEXT NOT NULL, key TEXT NOT NULL, at INTEGER NOT NULL, msg_id INTEGER, PRIMARY KEY (chat, key))'),
     db.prepare('CREATE TABLE IF NOT EXISTS sources (user_id INTEGER PRIMARY KEY, src TEXT NOT NULL, at INTEGER NOT NULL)'),
+    // who has taken the news channel gift (once per player)
+    // the community group's topics, made by /chan group
+    db.prepare('CREATE TABLE IF NOT EXISTS group_topics (chat TEXT NOT NULL, key TEXT NOT NULL, thread_id INTEGER NOT NULL, PRIMARY KEY (chat, key))'),
+    db.prepare('CREATE TABLE IF NOT EXISTS subs (user_id INTEGER PRIMARY KEY, chat TEXT NOT NULL, at INTEGER NOT NULL)'),
     db.prepare(`CREATE TABLE IF NOT EXISTS raid_runs (at INTEGER PRIMARY KEY, checked INTEGER NOT NULL, sent INTEGER NOT NULL,
       failed INTEGER NOT NULL, err TEXT)`),
   ]);
@@ -491,12 +516,19 @@ async function inlineResults(env, from) {
     input_message_content: { message_text: t.invite }, reply_markup: playKb(t, uid) });
   return out;
 }
-// a button that opens the chat picker with the invite ready (works once inline mode is on in @BotFather)
 // the news channel in the player's language (Ukrainian for Ukrainian, English for everyone else)
+const newsChat = (env, lang) => String((text(lang) === TEXT.uk ? env.CHANNEL_UK : env.CHANNEL_EN) || '').trim();
 function newsKb(env, t) {
-  const url = channelUrl(String((t === TEXT.uk ? env.CHANNEL_UK : env.CHANNEL_EN) || '').trim());
-  return url ? [[{ text: t === TEXT.uk ? '📣 Новини гри' : '📣 Game news', url }]] : [];
+  const url = channelUrl(newsChat(env, t === TEXT.uk ? 'uk' : 'en'));
+  return url ? [{ text: t === TEXT.uk ? '📣 Новини гри' : '📣 Game news', url }] : [];
 }
+// the news channel and the community group's topic in the player's language, side by side
+async function communityKb(env, t) {
+  const row = newsKb(env, t), url = await groupTopicUrl(env, t === TEXT.uk ? 'uk' : 'en');
+  if (url) row.push({ text: t === TEXT.uk ? '💬 Спільнота' : '💬 Community', url });
+  return row.length ? [row] : [];
+}
+// a button that opens the chat picker with the invite ready (works once inline mode is on in @BotFather)
 const shareKb = t => [{ text: t.share, switch_inline_query_chosen_chat: { query: '', allow_user_chats: true, allow_group_chats: true, allow_channel_chats: false, allow_bot_chats: false } }];
 async function onUpdate(env, u) {
   if (u.my_chat_member) {
@@ -583,7 +615,9 @@ async function onUpdate(env, u) {
     const t = await userText(env, m.from);
     await tg(env, 'sendMessage', {
       chat_id: m.chat.id, text: t.start((m.from && m.from.first_name) || ''),
-      reply_markup: { inline_keyboard: [[{ text: t.play, web_app: { url: env.WEBAPP_URL } }], shareKb(t), ...newsKb(env, t)] },
+      // web_app buttons only work in private chats; in a group the button opens the Mini App by link
+      reply_markup: { inline_keyboard: [[m.chat.type === 'private' ? { text: t.play, web_app: { url: env.WEBAPP_URL } } : { text: t.play, url: `https://t.me/${await ensureBotName(env)}?startapp` }],
+        shareKb(t), ...await communityKb(env, t)] },
     });
     return;
   }
@@ -1012,9 +1046,9 @@ async function channelPost(env, kind, lang, now = Date.now()) {
   }
   return null;
 }
-async function sendChannelPost(env, chat, lang, kind, post) {
-  const src = `ch_${lang}_${kind.replace(/\d+$/, '')}`;
-  return tg(env, 'sendPhoto', { chat_id: chat, photo: ART + post.img, caption: post.caption, parse_mode: 'HTML',
+async function sendChannelPost(env, chat, lang, kind, post, thread = null, via = 'ch') {
+  const src = `${via}_${lang}_${kind.replace(/\d+$/, '')}`;
+  return tg(env, 'sendPhoto', { chat_id: chat, photo: ART + post.img, caption: post.caption, parse_mode: 'HTML', ...(thread ? { message_thread_id: thread } : {}),
     reply_markup: { inline_keyboard: [[{ text: CH_TEXT[lang].play, url: `https://t.me/${botName}?startapp=${src}` }]] } });
 }
 // the event running on this day, with the key of this year's run (New Year runs over the change of year)
@@ -1041,15 +1075,20 @@ async function channelDue(db, chat, ts = Date.now()) {
 }
 async function sendChannelPosts(env) {
   const list = channels(env);
-  if (!list.length) return;
+  if (!list.length && !groupChat(env)) return;
   const db = env.DB;
   await ensureTables(db);
   await ensureBotName(env);
-  const now = Math.floor(Date.now() / 1000);
-  for (const { lang, chat } of list) {
-    // a channel goes live with its welcome post (/chan intro), so nothing lands in it before that
-    if (!await db.prepare("SELECT 1 AS x FROM channel_posts WHERE chat = ?1 AND key LIKE 'intro-%'").bind(chat).first()) continue;
-    for (const { key, kind } of await channelDue(db, chat)) {
+  const now = Math.floor(Date.now() / 1000), targets = [];
+  // a channel goes live with its welcome post (/chan intro), so nothing lands in it before that
+  for (const c of list) if (await db.prepare("SELECT 1 AS x FROM channel_posts WHERE chat = ?1 AND key LIKE 'intro-%'").bind(c.chat).first()) targets.push(c);
+  // the group's Events topic (live once /chan group made it) gets the week's results and events, in both languages
+  const ev = await groupTopic(env, 'events');
+  if (ev) for (const lang of Object.keys(CH_LANGS)) targets.push({ lang, chat: ev.chat, thread: ev.thread, via: 'grp', only: k => k === 'week' || CH_EVENTS.some(e => e.id === k) });
+  for (const { lang, chat, thread, via, only } of targets) {
+    for (let { key, kind } of await channelDue(db, chat)) {
+      if (only && !only(kind)) continue;
+      if (thread) key += '-' + lang;
       // claim the slot first; give it back if the post could not go out
       const claim = await db.prepare('INSERT OR IGNORE INTO channel_posts (chat, key, at) VALUES (?1, ?2, ?3)').bind(chat, key, now).run();
       if (claim.meta.changes === 0) continue;
@@ -1057,7 +1096,7 @@ async function sendChannelPosts(env) {
       try {
         const post = await channelPost(env, kind, lang);
         if (!post) continue; // nothing to say (no challenge results yet): the slot stays used
-        r = await sendChannelPost(env, chat, lang, kind, post);
+        r = await sendChannelPost(env, chat, lang, kind, post, thread, via);
       } catch (e) { r = { ok: false, description: String(e) }; }
       if (r.ok) await db.prepare('UPDATE channel_posts SET msg_id = ?3 WHERE chat = ?1 AND key = ?2').bind(chat, key, r.result.message_id).run();
       else {
@@ -1067,13 +1106,64 @@ async function sendChannelPosts(env) {
     }
   }
 }
+// ---------- community group: a forum with topics ----------
+// COMMUNITY_GROUP (var): the group's @username (or -100… id). The owner turns Topics on in the group settings and
+// makes the bot an admin with "Manage topics"; /chan group then creates the topics below with a first message
+// in each, closes Events (only admins and the bot write there; reactions stay) and hides General.
+const GROUP_TOPICS = [
+  { key: 'uk', name: '🇺🇦 UA', color: 16766590 }, { key: 'en', name: '🇬🇧 EN', color: 7322096 },
+  { key: 'support', name: '🛠 Technical Support', color: 16478047 }, { key: 'events', name: '📣 Events', color: 13338331, closed: true },
+];
+const GROUP_HELLO = {
+  uk: '🇺🇦 Тут спілкуємося українською: питання, поради, рекорди й скріншоти. Будьмо чемними 🐾',
+  en: '🇬🇧 English chat: questions, tips, records and screenshots. Be kind 🐾',
+  support: '🛠 Щось не працює? Напиши тут: що сталося, на якому рівні, телефон чи комп\'ютер. Скріншот дуже допоможе.\n\nSomething broken? Tell us here: what happened, which level, phone or computer. A screenshot helps a lot.',
+  events: '📣 Події, підсумки тижня й анонси. Писати тут можуть лише адміни, а обговорити все можна в гілках UA та EN.\n\nEvents, weekly results and news. Only admins post here; talk about it in the UA and EN topics.',
+};
+const groupChat = env => String(env.COMMUNITY_GROUP || '').trim();
+async function groupTopic(env, key) {
+  const chat = groupChat(env);
+  if (!chat) return null;
+  const row = await env.DB.prepare('SELECT thread_id FROM group_topics WHERE chat = ?1 AND key = ?2').bind(chat, key).first();
+  return row ? { chat, thread: row.thread_id } : null;
+}
+// a link straight into a topic (needs a public group)
+async function groupTopicUrl(env, key) {
+  const t = await groupTopic(env, key), base = t && channelUrl(t.chat);
+  return base ? `${base}/${t.thread}` : null;
+}
+async function groupSetup(env) {
+  const db = env.DB, chat = groupChat(env), out = [`💬 Група ${chat}`];
+  const info = await tg(env, 'getChat', { chat_id: chat });
+  if (!info.ok) return `⚠️ Група ${chat}: ${info.description || 'недоступна'} (бот доданий у групу адміном?)`;
+  if (!info.result.is_forum) return `⚠️ У групі ${chat} не ввімкнені гілки: Налаштування групи → Topics / Гілки. Потім /chan group ще раз.`;
+  for (const t of GROUP_TOPICS) {
+    if (await groupTopic(env, t.key)) { out.push(`${t.name}: вже є`); continue; }
+    const r = await tg(env, 'createForumTopic', { chat_id: chat, name: t.name, icon_color: t.color });
+    if (!r.ok) { out.push(`${t.name}: ⚠️ ${r.description || 'помилка'} (бот має право «Керувати гілками»?)`); continue; }
+    const thread = r.result.message_thread_id;
+    await db.prepare('INSERT OR REPLACE INTO group_topics (chat, key, thread_id) VALUES (?1, ?2, ?3)').bind(chat, t.key, thread).run();
+    await tg(env, 'sendMessage', { chat_id: chat, message_thread_id: thread, text: GROUP_HELLO[t.key] });
+    const c = t.closed ? await tg(env, 'closeForumTopic', { chat_id: chat, message_thread_id: thread }) : null;
+    out.push(`${t.name}: ✅ створено${c ? (c.ok ? ', закрито для учасників' : ` ⚠️ не вдалося закрити: ${c.description || ''}`) : ''}`);
+  }
+  const h = await tg(env, 'hideGeneralForumTopic', { chat_id: chat });
+  out.push(h.ok ? 'General: сховано' : `General: ${h.description || 'не сховано'}`);
+  out.push('\nЯкщо видалиш гілку руками, /chan group reset забуде збережені гілки, і /chan group створить їх знову.');
+  return out.join('\n');
+}
 // the owner's /chan: status and arrivals; /chan preview: every kind of post sent to the owner;
 // /chan intro: the welcome post, posted and pinned in every channel; /chan post <week|chal|feed|halloween|newyear>: post now
 async function channelCommand(env, m) {
   const db = env.DB, list = channels(env), arg = m.text.trim().split(/\s+/).slice(1), say = s => tg(env, 'sendMessage', { chat_id: m.chat.id, text: s });
   await ensureTables(db);
   await ensureBotName(env);
-  if (!list.length) return say('Канали не налаштовані: додай CHANNEL_UK і CHANNEL_EN у wrangler.toml ([vars]) і зроби деплой.');
+  if (arg[0] === 'group') {
+    if (!groupChat(env)) return say('Група не налаштована: додай COMMUNITY_GROUP у wrangler.toml ([vars]) і зроби деплой.');
+    if (arg[1] === 'reset') { await db.prepare('DELETE FROM group_topics WHERE chat = ?1').bind(groupChat(env)).run(); return say('Збережені гілки забуто. /chan group створить нові.'); }
+    return say(await groupSetup(env));
+  }
+  if (!list.length && !groupChat(env)) return say('Канали не налаштовані: додай CHANNEL_UK і CHANNEL_EN (і COMMUNITY_GROUP для групи) у wrangler.toml ([vars]) і зроби деплой.');
   if (arg[0] === 'preview') {
     for (const { lang } of list) {
       const n = await db.prepare("SELECT COUNT(*) AS n FROM channel_posts WHERE chat = ?1 AND key LIKE 'feed-%'").bind(list.find(c => c.lang === lang).chat).first();
@@ -1115,13 +1205,22 @@ async function channelCommand(env, m) {
     lines.push(`\n${chat} (${lang}): ${can ? '✅ бот може публікувати' : '⚠️ бот не адмін або не може публікувати'}` +
       `\nпідписників: ${subs.ok ? subs.result : '?'} · постів: ${posts.n}${posts.last ? ` · останній ${new Date(posts.last * 1000).toISOString().slice(0, 16).replace('T', ' ')} UTC` : ''}`);
   }
+  const gchat = groupChat(env);
+  if (gchat) {
+    const gi = await tg(env, 'getChat', { chat_id: gchat }), cm = me.ok ? await tg(env, 'getChatMember', { chat_id: gchat, user_id: me.result.id }) : { ok: false };
+    const n = await tg(env, 'getChatMemberCount', { chat_id: gchat });
+    const topics = (await db.prepare('SELECT key FROM group_topics WHERE chat = ?1').bind(gchat).all()).results.map(r => r.key);
+    const canTopics = cm.ok && (cm.result.status === 'creator' || (cm.result.status === 'administrator' && cm.result.can_manage_topics));
+    lines.push(`\n💬 ${gchat}: ${!gi.ok ? '⚠️ недоступна' : gi.result.is_forum ? 'гілки ввімкнені' : '⚠️ гілки вимкнені'} · ${canTopics ? '✅ бот керує гілками' : '⚠️ бот без права «Керувати гілками»'}` +
+      `\nучасників: ${n.ok ? n.result : '?'} · гілки: ${topics.length ? topics.join(', ') : 'ще не створені (/chan group)'}`);
+  }
   // new players by where they came from
   const day = Math.floor(Date.now() / 1000) - 86400;
   const rows = await db.prepare(`SELECT src, COUNT(*) AS n, SUM(at > ?1) AS d1, SUM(at > ?2) AS d7 FROM sources
     GROUP BY src ORDER BY n DESC LIMIT 15`).bind(day, day - 6 * 86400).all();
   lines.push('\nНові гравці за джерелом (доба / 7 днів / усього):');
   lines.push(rows.results.length ? rows.results.map(r => `${r.src}: ${r.d1} / ${r.d7} / ${r.n}`).join('\n') : 'поки нікого');
-  lines.push('\n/chan preview — усі види постів мені\n/chan intro — привітальний пост у канали і закріпити\n/chan post week|chal|feed|halloween|newyear — опублікувати зараз');
+  lines.push('\n/chan preview — усі види постів мені\n/chan intro — привітальний пост у канали і закріпити\n/chan post week|chal|feed|halloween|newyear — опублікувати зараз\n/chan group — створити гілки в групі');
   return say(lines.join('\n'));
 }
 
