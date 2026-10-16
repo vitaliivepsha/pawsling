@@ -4659,7 +4659,13 @@ function drawBossIntro() {
   const k = RM ? 1 : Math.min(1, t / INTRO_LAND), y = RM ? by : -R + (by + R) * k * k;
   ctx.save(); ctx.globalCompositeOperation = 'lighter';
   glowAt(W / 2, by, 210, hexRgb(bc), (I.landed ? .3 + .1 * Math.sin(T * 5) : .12) * a);
+  if (G.lvl.finale) {
+    // the final stand: slow gold rays behind the boss and a ring of sparks
+    ctx.translate(W / 2, by); ctx.rotate(RM ? 0 : T * .25);
+    for (let q = 0; q < 16; q++) { ctx.rotate(TAU / 16); ctx.fillStyle = q % 2 ? 'rgba(255,200,87,.12)' : 'rgba(255,240,190,.07)'; ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(-22, -330); ctx.lineTo(22, -330); ctx.closePath(); ctx.fill(); }
+  }
   ctx.restore();
+  if (G.lvl.finale && !RM) for (let q = 0; q < 10; q++) { const a2 = q / 10 * TAU + T * .6, rr2 = 150 + 8 * Math.sin(T * 3 + q); star(W / 2 + Math.cos(a2) * rr2, by + Math.sin(a2) * rr2 * .55, 3 + 1.5 * Math.sin(T * 4 + q), 'rgba(255,224,138,.85)'); }
   if (I.landed && !RM) {
     const s = t - INTRO_LAND;
     if (s < .6) {
@@ -7377,7 +7383,7 @@ const bannerTime = tip => tip ? Math.max(2.2, Math.min(6, tip.length / 30)) : 1.
 function drawBanner() {
   const b = G.banner;
   if (!b) return;
-  const c = G.lvl.ch, ch = G.ch;
+  const c = G.lvl.ch, ch = G.ch, fin = !!G.lvl.finale && b.done === afterIntro, bcol = fin ? '#ffc857' : ch.col;
   const el = b.max - b.t, kin = Math.min(1, el / .4), kout = Math.min(1, b.t / .25);
   const a = Math.min(kin * 2, kout, 1), sc = RM ? 1 : .75 + .25 * easeOutBack(kin);
   ctx.globalAlpha = a * .35; ctx.fillStyle = '#000'; ctx.fillRect(0, TOP, W, BOT - TOP);
@@ -7391,15 +7397,25 @@ function drawBanner() {
   const g = ctx.createLinearGradient(0, 312, 0, 312 + bh);
   g.addColorStop(0, ch.hud); g.addColorStop(1, 'rgba(12,10,26,.96)');
   ctx.fillStyle = g; rr(30, 312, W - 60, bh, 20); ctx.fill();
-  ctx.save(); rr(30, 312, W - 60, bh, 20); ctx.clip(); chTrim(c, 30, 312, W - 60, ch.col + '55'); chTrim(c, 30, 302 + bh, W - 60, ch.col + '55'); ctx.restore();
-  ctx.strokeStyle = ch.col; ctx.lineWidth = 2; rr(30, 312, W - 60, bh, 20); ctx.stroke();
-  ctx.shadowColor = ch.col; ctx.shadowBlur = 18;
-  ctx.fillStyle = ch.hud; circ(W / 2, 312, 24);
+  ctx.save(); rr(30, 312, W - 60, bh, 20); ctx.clip(); chTrim(c, 30, 312, W - 60, bcol + '55'); chTrim(c, 30, 302 + bh, W - 60, bcol + '55');
+  if (fin) { ctx.globalCompositeOperation = 'lighter'; const gg = ctx.createLinearGradient(0, 312, 0, 312 + bh); gg.addColorStop(0, 'rgba(255,200,87,.18)'); gg.addColorStop(1, 'rgba(255,200,87,0)'); ctx.fillStyle = gg; ctx.fillRect(30, 312, W - 60, bh); }
+  ctx.restore();
+  if (fin && !RM) { ctx.save(); ctx.shadowColor = '#ffc857'; ctx.shadowBlur = 16 + 6 * Math.sin(T * 3); ctx.strokeStyle = '#ffc857'; ctx.lineWidth = 3; rr(30, 312, W - 60, bh, 20); ctx.stroke(); ctx.restore(); }
+  ctx.strokeStyle = bcol; ctx.lineWidth = fin ? 3 : 2; rr(30, 312, W - 60, bh, 20); ctx.stroke();
+  if (fin) ctx.strokeStyle = 'rgba(255,224,138,.5)', ctx.lineWidth = 1, rr(36, 318, W - 72, bh - 12, 15), ctx.stroke();
+  ctx.shadowColor = bcol; ctx.shadowBlur = 18;
+  ctx.fillStyle = fin ? '#3a2408' : ch.hud; circ(W / 2, 312, fin ? 28 : 24);
   ctx.shadowBlur = 0;
-  ctx.strokeStyle = ch.col; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(W / 2, 312, 24, 0, TAU); ctx.stroke();
-  chIcon(c, W / 2, 313, 26, ch.col);
+  ctx.strokeStyle = bcol; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(W / 2, 312, fin ? 28 : 24, 0, TAU); ctx.stroke();
+  if (fin) { ctx.save(); ctx.translate(W / 2, 326); drawHat('crown', 26); ctx.restore(); }
+  else chIcon(c, W / 2, 313, 26, ch.col);
   ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-  ctx.fillStyle = '#ffc857'; fitFont(b.title, W - 90, 26); ctx.fillText(b.title, W / 2, 352);
+  ctx.fillStyle = '#ffc857'; fitFont(b.title, W - (fin ? 130 : 90), 26); ctx.fillText(b.title, W / 2, 352);
+  if (fin) {
+    const tw2 = Math.min(W - 130, ctx.measureText(b.title).width);
+    laurel(W / 2 - tw2 / 2 - 14, 364, 24, -1); laurel(W / 2 + tw2 / 2 + 14, 364, 24, 1);
+    if (!RM) for (let k = 0; k < 6; k++) { const ph = frac(T * .6 + k / 6), sx = 50 + ((k * 73) % (W - 100)); star(sx, 318 + bh - 14 - ph * (bh - 30), 2.5, `rgba(255,243,196,${Math.sin(ph * Math.PI) * .9})`); }
+  }
   ctx.fillStyle = '#f4efe6'; ctx.font = `800 ${fs}px ${FB}`; lines.forEach((l, i) => ctx.fillText(l, W / 2, 386 + i * lh));
   ctx.restore();
   ctx.globalAlpha = 1;
@@ -7451,6 +7467,40 @@ function openDoc(page) {
   window.open(url, '_blank', 'noopener');
 }
 
+// a golden laurel sprig curving up from (x, y); sd = -1 left, 1 right
+function laurel(x, y, s, sd, col = '#ffc857') {
+  ctx.save(); ctx.translate(x, y); ctx.scale(sd, 1);
+  ctx.strokeStyle = col; ctx.lineWidth = Math.max(1.5, s * .08); ctx.lineCap = 'round';
+  ctx.beginPath(); ctx.moveTo(0, 0); ctx.quadraticCurveTo(-s * .55, -s * .4, -s * .3, -s * 1.1); ctx.stroke();
+  ctx.fillStyle = col;
+  for (let k = 0; k < 5; k++) {
+    const f = k / 5, px = -s * .55 * 2 * f * (1 - f) - s * .3 * f * f + 0, py = -s * .4 * 2 * f * (1 - f) - s * 1.1 * f * f;
+    for (const side of [-1, 1]) {
+      ctx.save(); ctx.translate(px, py); ctx.rotate(-.9 + f * .6 + side * .7);
+      ctx.beginPath(); ctx.ellipse(0, -s * .12, s * .07, s * .15, 0, 0, TAU); ctx.fill();
+      ctx.restore();
+    }
+  }
+  ctx.restore();
+}
+// the finale's map node: a gold medallion with turning rays, a laurel wreath and a crown
+function drawFinaleNode(x, y, r, open) {
+  const t = RM ? 0 : T;
+  if (open) {
+    ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.translate(x, y); ctx.rotate(t * .3);
+    for (let k = 0; k < 12; k++) { ctx.rotate(TAU / 12); ctx.fillStyle = k % 2 ? 'rgba(255,200,87,.16)' : 'rgba(255,240,190,.1)'; ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(-8, -r * 1.9); ctx.lineTo(8, -r * 1.9); ctx.closePath(); ctx.fill(); }
+    ctx.restore();
+    ctx.save(); ctx.globalCompositeOperation = 'lighter'; glowAt(x, y, r * 1.8, '255,200,87', .35 + .1 * Math.sin(t * 3)); ctx.restore();
+  }
+  const g = ctx.createRadialGradient(x - r * .35, y - r * .4, r * .1, x, y, r);
+  g.addColorStop(0, open ? '#fff3c4' : '#4a4278'); g.addColorStop(.5, open ? '#ffc857' : '#2e2859'); g.addColorStop(1, open ? '#b8761a' : '#1d1938');
+  ctx.fillStyle = g; ctx.beginPath(); for (let k = 0; k < 24; k++) { const a = k / 24 * TAU, rr2 = k % 2 ? r * .9 : r; ctx.lineTo(x + Math.cos(a) * rr2, y + Math.sin(a) * rr2); } ctx.closePath(); ctx.fill();
+  ctx.strokeStyle = open ? '#7a4a10' : '#3b3563'; ctx.lineWidth = 2.5; ctx.stroke();
+  ctx.strokeStyle = open ? 'rgba(255,255,255,.55)' : 'rgba(255,255,255,.1)'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(x, y, r * .72, 0, TAU); ctx.stroke();
+  laurel(x - r * .2, y + r * .62, r * .62, -1, open ? '#5ce1c6' : '#3b3563'); laurel(x + r * .2, y + r * .62, r * .62, 1, open ? '#5ce1c6' : '#3b3563');
+  ctx.save(); ctx.translate(x, y - r * .78); drawHat('crown', r * .62); ctx.restore();
+  if (open && !RM) for (let k = 0; k < 4; k++) { const ph = frac(t * .5 + k / 4), a = k * 1.7 + t * .4; star(x + Math.cos(a) * r * 1.3, y + Math.sin(a) * r * 1.1, 2 + 2 * Math.sin(ph * Math.PI), `rgba(255,243,196,${Math.sin(ph * Math.PI)})`); }
+}
 function drawNode(c, x, y, r, col, open) {
   ctx.save();
   ctx.fillStyle = 'rgba(0,0,0,.4)'; ctx.beginPath(); ctx.ellipse(x + 2, y + r * .9, r * .95, r * .3, 0, 0, TAU); ctx.fill();
@@ -7802,12 +7852,17 @@ function drawMap() {
     ctx.setLineDash([]); ctx.lineDashOffset = 0; ctx.globalAlpha = 1;
     pts.forEach(([x, y], i) => {
       const li = ids[i], n = li + 1, lvl = LEVELS[li];
-      const open = n <= PROG.unlocked, isBoss = !!lvl.boss, r = isBoss ? 33 : 28;
+      const open = n <= PROG.unlocked, isBoss = !!lvl.boss, fin = !!lvl.finale, r = fin ? 38 : isBoss ? 33 : 28;
       const current = n === PROG.unlocked && !PROG.stars[String(n)];
       const bob = current && !RM ? Math.sin(T * 3) * 3 : 0;
       if (current) { ctx.save(); ctx.globalCompositeOperation = 'lighter'; glowAt(x, y, r * 2, hexRgb(ch.col), .35 + .15 * Math.sin(T * 4)); ctx.restore(); }
-      drawNode(c, x, y + bob, r, ch.col, open);
-      if (open) {
+      if (fin) drawFinaleNode(x, y + bob, r, open); else drawNode(c, x, y + bob, r, ch.col, open);
+      if (open && fin) {
+        // the finale: just its number, big, in dark ink on the gold
+        ctx.font = `900 24px ${FD}`; ctx.textAlign = 'center'; ctx.lineJoin = 'round';
+        ctx.strokeStyle = 'rgba(255,255,255,.6)'; ctx.lineWidth = 3; ctx.strokeText(String(n), x, y + bob + 3);
+        ctx.fillStyle = '#4a2a08'; ctx.fillText(String(n), x, y + bob + 3);
+      } else if (open) {
         // dark nodes (web, storm cloud, garden flower) get white numbers with an ink outline
         const light = c >= 7, ink = light ? '#fff' : '#15122a', rim = light ? '#15122a' : 'rgba(255,255,255,.55)';
         const label = (txt, yy, font) => {
