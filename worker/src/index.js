@@ -1022,13 +1022,15 @@ const CH_TEXT = {
 };
 // the feed alternates tips and room spotlights; img is a path under ART, or a function of the language
 const shot = n => l => `${l}/${n}.jpg`;
+// pictures drawn for the feed, without text, so both channels share them
+const feed = n => `feed/${n}-1280x720.jpg`;
 const CH_FEED = [
   { tip: 'slingshot', img: shot('1-slingshot') }, { room: 0 }, { tip: 'knots', img: shot('2-knots') }, { room: 1 },
-  { tip: 'chest', img: 'welcome-1280x720.jpg' }, { room: 2 }, { tip: 'map', img: shot('4-map') }, { room: 3 },
-  { tip: 'invite', img: CARD }, { room: 4 }, { tip: 'heroes', img: shot('5-heroes') }, { room: 5 },
-  { tip: 'night', img: shot('6-night') }, { room: 6 }, { tip: 'quests', img: 'welcome-1280x720.jpg' }, { room: 7 },
+  { tip: 'chest', img: feed('chest') }, { room: 2 }, { tip: 'map', img: shot('4-map') }, { room: 3 },
+  { tip: 'invite', img: feed('invite') }, { room: 4 }, { tip: 'heroes', img: shot('5-heroes') }, { room: 5 },
+  { tip: 'night', img: shot('6-night') }, { room: 6 }, { tip: 'quests', img: feed('quests') }, { room: 7 },
   { tip: 'bosses', img: shot('3-bosses') }, { room: 8 }, { tip: 'raids', img: 'raid/raid-8.jpg' }, { room: 9 },
-  { tip: 'album', img: CARD }, { room: 10 }, { tip: 'streak', img: 'welcome-1280x720.jpg' }, { room: 11 },
+  { tip: 'album', img: feed('album') }, { room: 10 }, { tip: 'streak', img: feed('streak') }, { room: 11 },
   { room: 12 }, { room: 13 }, { room: 14 }, { room: 15 }, { room: 16 },
 ];
 const ukWaves = n => n % 10 === 1 && n % 100 !== 11 ? 'хвиля' : [2, 3, 4].includes(n % 10) && ![12, 13, 14].includes(n % 100) ? 'хвилі' : 'хвиль';
