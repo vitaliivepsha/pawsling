@@ -213,7 +213,9 @@ arrivals by source. Setup and the audience plan: `promo/CHANNELS.md`.
 The community group (`COMMUNITY_GROUP`, a forum; the bot an admin with "Manage topics") gets its topics
 from the owner's `/chan group`: 🇺🇦 UA, 🇬🇧 EN, 🛠 Technical Support and 📣 Events, the last closed to
 members. The week's results and the event posts go to Events in both languages (`startapp=grp_…`),
-and `/start` links the player's language topic next to the news channel.
+and `/start` links the player's language topic next to the news channel. Once a channel reaches `CH_GROUP_AT`
+(100) subscribers it gets one post inviting to the group, with buttons into its language topic and into
+Technical Support (`/chan post group` posts it by hand).
 
 ## Leaderboard
 

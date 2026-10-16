@@ -920,6 +920,8 @@ const CH_FEED_DAYS = [2, 4, 6], CH_HOUR = 15, CH_WEEK_HOUR = 9;
 const CH_EVENTS = [{ id: 'halloween', from: '10-15', to: '11-05', room: 5 }, { id: 'newyear', from: '12-15', to: '01-10', room: 2 }];
 // levels in an event (as EVENT_LEVELS in game.js); the "3 days left" post leaves the hat count out while it is under CH_EV_MIN
 const EV_LEVELS = 3, CH_EV_END = 3, CH_EV_MIN = 10;
+// the community group's announcement: once per channel, the first day it has CH_GROUP_AT subscribers (checked at CH_GROUP_HOUR)
+const CH_GROUP_AT = 100, CH_GROUP_HOUR = 12;
 const CH_TEXT = {
   uk: {
     mods: { wind: 'хуртовина', acid: 'кислота', meteors: 'метеорити', fences: 'лазерні бар\'єри', belts: 'конвеєрні стрічки' },
@@ -932,6 +934,8 @@ const CH_TEXT = {
     chalLead: (room, mods, name, turns, n) => `⏱ <b>Випробування тижня</b>: «${room}» + ${mods}\n\nЗараз лідирує ${name} — ${turns} ход. Учасників: ${n}. До кінця тижня ще вихідні. Зможеш швидше?`,
     halloween: '🎃 <b>Хелловін у Pawsling!</b>\n\nРоботи вбралися в гарбузи: три святкові рівні з костюмованими ворогами, а за всі три — ексклюзивний капелюх-гарбуз. Подія триває до 5 листопада.',
     newyear: '🎄 <b>Новий рік у Pawsling!</b>\n\nТехніка в шапках Санти захопила спальню: три святкові рівні, а за всі три — ексклюзивна шапка Санти. Подія триває до 10 січня.',
+    group: '💬 <b>У Pawsling тепер є спільнота!</b>\n\nОбговорюй рівні, ділися рекордами й скріншотами, питай поради в гілці 🇺🇦 UA. Щось не працює — пиши в 🛠 Technical Support, відповімо там.\n\nА в 📣 Events — події й підсумки тижня.',
+    groupChat: '💬 Чат українською', groupSupport: '🛠 Підтримка',
     halloween_end: n => `🎃 <b>Хелловін: залишилося 3 дні!</b>\n\n${n ? `Капелюх-гарбуз уже є в ${n} ${ukPlayersGen(n)}. ` : ''}Три святкові рівні, а за всі три — ексклюзивний капелюх. Подія закінчується 5 листопада, і тоді капелюх не здобути аж до наступного року.`,
     newyear_end: n => `🎄 <b>Новий рік: залишилося 3 дні!</b>\n\n${n ? `Шапка Санти вже є в ${n} ${ukPlayersGen(n)}. ` : ''}Три святкові рівні, а за всі три — ексклюзивна шапка. Подія закінчується 10 січня, і тоді шапку не здобути аж до наступної зими.`,
     intro: '🐾 <b>Pawsling</b> — коти та єноти з рогатки проти збунтованої техніки.\n\n97 рівнів, 17 босів, «Нічна зміна» з турніром щотижня — і все прямо в Telegram, без встановлення.\n\nТут: підсумки турнірів, випробування тижня, події, нові кімнати й поради.',
@@ -981,6 +985,8 @@ const CH_TEXT = {
     chalLead: (room, mods, name, turns, n) => `⏱ <b>Weekly challenge</b>: ${room} + ${mods}\n\n${name} leads with ${turns} turns. Players so far: ${n}. There is still the weekend. Can you do it faster?`,
     halloween: '🎃 <b>Halloween in Pawsling!</b>\n\nThe robots dressed up as pumpkins: three spooky levels with costumed enemies, and an exclusive pumpkin hat for beating all three. On until 5 November.',
     newyear: '🎄 <b>New Year in Pawsling!</b>\n\nGadgets in Santa hats took over the bedroom: three festive levels, and an exclusive Santa hat for beating all three. On until 10 January.',
+    group: '💬 <b>Pawsling has a community now!</b>\n\nTalk about levels, share records and screenshots, and ask for tips in the 🇬🇧 EN topic. Something broken? Write in 🛠 Technical Support and we\'ll answer there.\n\nAnd 📣 Events has the events and the weekly results.',
+    groupChat: '💬 English chat', groupSupport: '🛠 Support',
     halloween_end: n => `🎃 <b>Halloween: 3 days left!</b>\n\n${n ? `${n} players already have the pumpkin hat. ` : ''}Three spooky levels, and the exclusive hat for beating all three. The event ends on 5 November, and then the hat is gone until next year.`,
     newyear_end: n => `🎄 <b>New Year: 3 days left!</b>\n\n${n ? `${n} players already have the Santa hat. ` : ''}Three festive levels, and the exclusive hat for beating all three. The event ends on 10 January, and then the hat is gone until next winter.`,
     intro: '🐾 <b>Pawsling</b>: slingshot cats and raccoons against rebel household robots.\n\n97 levels, 17 bosses, a weekly Night Shift tournament, all right inside Telegram with nothing to install.\n\nHere: tournament results, the weekly challenge, events, new rooms and tips.',
@@ -1078,6 +1084,12 @@ async function channelPost(env, kind, lang, now = Date.now()) {
     return { img: `raid/raid-${c.room}.jpg`, caption: t.chalLead(rooms[c.room], modList(c, lang), esc(best.name), best.turns, n.n) };
   }
   if (kind === 'intro') return { img: 'welcome-1280x720.jpg', caption: t.intro };
+  if (kind === 'group') {
+    // buttons straight into the topic of the channel's language and into support (needs a public group)
+    const chatUrl = await groupTopicUrl(env, lang), helpUrl = await groupTopicUrl(env, 'support');
+    if (!chatUrl || !helpUrl) return null;
+    return { img: feed('invite'), caption: t.group, kb: [[{ text: t.groupChat, url: chatUrl }], [{ text: t.groupSupport, url: helpUrl }]] };
+  }
   const ev = CH_EVENTS.find(e => e.id === kind);
   if (ev) return { img: `raid/raid-${ev.room}.jpg`, caption: t[ev.id] };
   const end = CH_EVENTS.find(e => e.id + '_end' === kind);
@@ -1096,7 +1108,14 @@ async function channelPost(env, kind, lang, now = Date.now()) {
 async function sendChannelPost(env, chat, lang, kind, post, thread = null, via = 'ch') {
   const src = `${via}_${lang}_${kind.replace(/\d+$/, '')}`;
   return tg(env, 'sendPhoto', { chat_id: chat, photo: ART + post.img, caption: post.caption, parse_mode: 'HTML', ...(thread ? { message_thread_id: thread } : {}),
-    reply_markup: { inline_keyboard: [[{ text: CH_TEXT[lang].play, url: `https://t.me/${botName}?startapp=${src}` }]] } });
+    reply_markup: { inline_keyboard: post.kb || [[{ text: CH_TEXT[lang].play, url: `https://t.me/${botName}?startapp=${src}` }]] } });
+}
+// the group's announcement is due once the channel has grown to CH_GROUP_AT subscribers (and the group has its topics)
+async function groupPostDue(env, chat, ts = Date.now()) {
+  if (new Date(ts).getUTCHours() !== CH_GROUP_HOUR || !await groupTopic(env, 'support')) return false;
+  if (await env.DB.prepare("SELECT 1 AS x FROM channel_posts WHERE chat = ?1 AND key = 'group'").bind(chat).first()) return false;
+  const n = await tg(env, 'getChatMemberCount', { chat_id: chat });
+  return n.ok && n.result >= CH_GROUP_AT;
 }
 // an event's run is keyed by the year it started (New Year runs over the change of year), as evKey() in game.js
 function evRunKey(e, ts = Date.now()) {
@@ -1140,7 +1159,9 @@ async function sendChannelPosts(env) {
   const ev = await groupTopic(env, 'events');
   if (ev) for (const lang of Object.keys(CH_LANGS)) targets.push({ lang, chat: ev.chat, thread: ev.thread, via: 'grp', only: k => k === 'week' || CH_EVENTS.some(e => k === e.id || k === e.id + '_end') });
   for (const { lang, chat, thread, via, only } of targets) {
-    for (let { key, kind } of await channelDue(db, chat)) {
+    const due = await channelDue(db, chat);
+    if (!thread && await groupPostDue(env, chat)) due.push({ key: 'group', kind: 'group' });
+    for (let { key, kind } of due) {
       if (only && !only(kind)) continue;
       if (thread) key += '-' + lang;
       // claim the slot first; give it back if the post could not go out
@@ -1221,7 +1242,7 @@ async function channelCommand(env, m) {
   if (arg[0] === 'preview') {
     for (const { lang } of list) {
       const n = await db.prepare("SELECT COUNT(*) AS n FROM channel_posts WHERE chat = ?1 AND key LIKE 'feed-%'").bind(list.find(c => c.lang === lang).chat).first();
-      for (const kind of ['intro', 'week', 'chal', 'feed' + n.n, 'halloween', 'halloween_end']) {
+      for (const kind of ['intro', 'week', 'chal', 'feed' + n.n, 'halloween', 'halloween_end', 'group']) {
         const post = await channelPost(env, kind, lang);
         if (!post) { await say(`${lang} · ${kind}: зараз нема що публікувати`); continue; }
         const r = await sendChannelPost(env, m.chat.id, lang, kind, post);
@@ -1232,7 +1253,7 @@ async function channelCommand(env, m) {
   }
   if (arg[0] === 'intro' || arg[0] === 'post') {
     const kind = arg[0] === 'intro' ? 'intro' : arg[1];
-    if (!['intro', 'week', 'chal', 'feed', 'halloween', 'newyear', 'halloween_end', 'newyear_end'].includes(kind)) return say('Що саме? /chan post week | chal | feed | halloween | newyear | halloween_end | newyear_end');
+    if (!['intro', 'week', 'chal', 'feed', 'halloween', 'newyear', 'halloween_end', 'newyear_end', 'group'].includes(kind)) return say('Що саме? /chan post group | week | chal | feed | halloween | newyear | halloween_end | newyear_end');
     const out = [];
     for (const { lang, chat } of list) {
       let k = kind, key = null;
@@ -1241,6 +1262,7 @@ async function channelCommand(env, m) {
         k = 'feed' + n.n; key = `feed-manual-${Date.now()}`; // counts as a feed post, so the rotation moves on
       }
       if (kind === 'intro') key = `intro-${Date.now()}`; // the channel is live from now on
+      if (kind === 'group') key = 'group'; // posted by hand: the automatic one is then skipped
       const post = await channelPost(env, k, lang);
       if (!post) { out.push(`${chat}: нема що публікувати`); continue; }
       const r = await sendChannelPost(env, chat, lang, k, post);
@@ -1274,7 +1296,7 @@ async function channelCommand(env, m) {
     GROUP BY src ORDER BY n DESC LIMIT 15`).bind(day, day - 6 * 86400).all();
   lines.push('\nНові гравці за джерелом (доба / 7 днів / усього):');
   lines.push(rows.results.length ? rows.results.map(r => `${r.src}: ${r.d1} / ${r.d7} / ${r.n}`).join('\n') : 'поки нікого');
-  lines.push('\n/chan preview — усі види постів мені\n/chan intro — привітальний пост у канали і закріпити\n/chan post week|chal|feed|halloween|newyear|halloween_end|newyear_end — опублікувати зараз\n/chan group — створити гілки в групі');
+  lines.push('\n/chan preview — усі види постів мені\n/chan intro — привітальний пост у канали і закріпити\n/chan post group|week|chal|feed|halloween|newyear|halloween_end|newyear_end — опублікувати зараз\n/chan group — створити гілки в групі');
   return say(lines.join('\n'));
 }
 
