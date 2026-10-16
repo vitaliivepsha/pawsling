@@ -185,6 +185,8 @@ The game runs without a permanently running server: the page is on GitHub Pages
 - **Invites**: the share link is `t.me/<bot>?startapp=ref_<id>`. A brand-new player who opens it
   gets +1 heart and +1 quick start, so does the inviter, and the bot messages the inviter. This needs
   the bot's Main Mini App set up in @BotFather (Bot Settings → Configure Mini App).
+  Typing `@<bot>` in any chat offers the invite card, a record challenge and a text invite in the player's
+  language; a word after the bot's name picks another one (`en`, `pl`, `de`, `es`, `uk`, or the language's name).
 - **News channel gift**: a card on the Today tab of Daily, "Subscribe to the news — +1 heart". It opens
   the channel for the player's language (`CHANNEL_UK` for Ukrainian, `CHANNEL_EN` for everyone else),
   then Check calls `/subscribed`: the worker asks Telegram (`getChatMember`, the bot is an admin there)

@@ -27,7 +27,8 @@
 // cron (Monday 00:05 UTC): the week's top 3 in Night Shift get prizes and a message from the bot
 // POST /tg       the bot's webhook (set automatically on the first game request):
 //   approves pre-checkout queries, records successful payments and refunds, answers /start,
-//   and answers inline queries (@the_bot in any chat) with the player's invite card.
+//   and answers inline queries (@the_bot in any chat) with the player's invite card, in the language named
+//   after the bot's name (@the_bot en) or the player's own.
 // ADMIN_ID (secret, optional): the owner's Telegram id. The bot messages the owner about every
 //   purchase and refund, and answers the owner's /sales with a sales summary. Other text sent to the
 //   bot goes to the owner as a support message; the owner's reply to it goes back to that player.
@@ -519,13 +520,29 @@ function inviteCard(t, uid, caption = t.invite, id = 'invite-' + uid) {
   return { type: 'photo', id, photo_url: ART + CARD, thumbnail_url: ART + CARD_THUMB, photo_width: 1280, photo_height: 720,
     title: t.cardTitle, description: t.cardDesc, caption, reply_markup: playKb(t, uid) };
 }
-// typing @the_bot in any chat: the invite card, the player's record as a challenge, and a text-only invite
-async function inlineResults(env, from) {
-  const t = await userText(env, from), uid = from.id;
+// a word after @the_bot picks the cards' language: a code or a language's name in English, in it, or in Ukrainian
+const INLINE_LANGS = {
+  uk: { words: ['uk', 'ua', 'укр', 'ukr', 'ukrainian'], hint: 'Інша мова: допиши en, pl, de або es' },
+  en: { words: ['en', 'eng', 'english', 'англ'], hint: 'Other language: add uk, pl, de or es' },
+  pl: { words: ['pl', 'pol', 'polish', 'польськ'], hint: 'Inny język: dopisz uk, en, de lub es' },
+  de: { words: ['de', 'deu', 'deutsch', 'german', 'нім'], hint: 'Andere Sprache: schreib uk, en, pl oder es dazu' },
+  es: { words: ['es', 'esp', 'español', 'espanol', 'spanish', 'іспан'], hint: 'Otro idioma: añade uk, en, pl o de' },
+};
+function inlineLang(query) {
+  const w = String(query || '').trim().toLowerCase().split(/\s+/)[0];
+  if (!w) return null;
+  // two-letter codes match exactly, longer words by their start ("англійською", "polski")
+  return Object.keys(INLINE_LANGS).find(l => INLINE_LANGS[l].words.some(a => a.length < 3 ? w === a : w.startsWith(a) || (w.length >= 3 && a.startsWith(w)))) || null;
+}
+// typing @the_bot in any chat: the invite card, the player's record as a challenge, and a text-only invite,
+// in the player's language or the one named after the bot's name
+async function inlineResults(env, from, query) {
+  const lang = inlineLang(query), t = lang ? TEXT[lang] : await userText(env, from), uid = from.id;
+  const code = Object.keys(TEXT).find(k => TEXT[k] === t) || 'en', hint = (INLINE_LANGS[code] || INLINE_LANGS.en).hint;
   const p = await env.DB.prepare('SELECT night, stars FROM players WHERE id = ?1').bind(uid).first();
-  const out = [inviteCard(t, uid)];
-  if (p && (p.stars || p.night)) out.push({ ...inviteCard(t, uid, t.rec(p.stars, p.night), 'record-' + uid), title: t.recTitle, description: t.recDesc });
-  out.push({ type: 'article', id: 'text-' + uid, title: t.textTitle, description: t.textDesc, thumbnail_url: ART + CARD_THUMB,
+  const out = [inviteCard(t, uid, t.invite, `invite-${uid}-${code}`)];
+  if (p && (p.stars || p.night)) out.push({ ...inviteCard(t, uid, t.rec(p.stars, p.night), `record-${uid}-${code}`), title: t.recTitle, description: t.recDesc });
+  out.push({ type: 'article', id: `text-${uid}-${code}`, title: t.textTitle, description: `${t.textDesc}\n${hint}`, thumbnail_url: ART + CARD_THUMB,
     input_message_content: { message_text: t.invite }, reply_markup: playKb(t, uid) });
   return out;
 }
@@ -555,7 +572,7 @@ async function onUpdate(env, u) {
   if (u.inline_query) {
     const q = u.inline_query;
     if (!botName) { const me = await tg(env, 'getMe', {}); botName = me.ok ? me.result.username : null; }
-    await tg(env, 'answerInlineQuery', { inline_query_id: q.id, is_personal: true, cache_time: 60, results: await inlineResults(env, q.from) });
+    await tg(env, 'answerInlineQuery', { inline_query_id: q.id, is_personal: true, cache_time: 60, results: await inlineResults(env, q.from, q.query) });
     return;
   }
   if (u.pre_checkout_query) {
