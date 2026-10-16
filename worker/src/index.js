@@ -54,7 +54,7 @@ const BOOSTERS = ['heart', 'meter', 'wind']; // the only items that get used up 
 // login bonus by day of the streak (the 7th day restarts the cycle)
 // the chest ripens every 6 hours; inside: a heart or a quick start, and now and then a free Second wind
 // the robot album: each card's tiers (10 / 50 / 200 wins) pay out once
-const ALBUM_TYPES = ['vac', 'spray', 'mop', 'brush', 'fan', 'rc', 'shield', 'split', 'magnet', 'mole', 'printer', 'bomb', 'mimic', 'turret', 'tesla', 'warp', 'cryo', 'boss'];
+const ALBUM_TYPES = ['vac', 'spray', 'mop', 'brush', 'fan', 'rc', 'shield', 'split', 'magnet', 'mole', 'printer', 'bomb', 'mimic', 'turret', 'tesla', 'warp', 'cryo', 'jelly', 'boss'];
 const ALBUM_GIFTS = [null, { meter: 1 }, { heart: 1 }, { wind: 1 }];
 // weekly quests: three a week; each pays once, all three add a free Second wind
 const QUEST_GIFTS = { knots: { meter: 1 }, robots: { heart: 1 }, bosses: { heart: 1 }, noko: { meter: 1 }, stars3: { heart: 1 }, night: { meter: 1 }, combos: { meter: 1 }, lasers: { meter: 1 } };
@@ -77,7 +77,7 @@ function weekStart(ts = Date.now()) { // Monday 00:00 UTC of the week containing
 }
 const weekKey = (ts = Date.now()) => utcDay(weekStart(ts));
 const TEXT = {
-  uk: { rooms: ['Кухня', 'Вітальня', 'Спальня', 'Ванна', 'Балкон', 'Горище', 'Гараж', 'Підвал', 'Дах', 'Сад', 'Серверна', 'Під\'їзд', 'Склад', 'Фабрика', 'Лабораторія', 'Космостанція', 'Полярна станція'], raid: room => `🚨 Тривога! Збунтована техніка напала на кімнату «${room}»!\n\nВідбий нальот за 30 хвилин і отримай бонус: ❤️ +1 серце і ⚡ +1 швидкий старт.`, raidBtn: '🐾 Відбити нальот',
+  uk: { rooms: ['Кухня', 'Вітальня', 'Спальня', 'Ванна', 'Балкон', 'Горище', 'Гараж', 'Підвал', 'Дах', 'Сад', 'Серверна', 'Під\'їзд', 'Склад', 'Фабрика', 'Лабораторія', 'Космостанція', 'Полярна станція', 'Підводна база'], raid: room => `🚨 Тривога! Збунтована техніка напала на кімнату «${room}»!\n\nВідбий нальот за 30 хвилин і отримай бонус: ❤️ +1 серце і ⚡ +1 швидкий старт.`, raidBtn: '🐾 Відбити нальот',
     invite: 'Коти та єноти проти збунтованої техніки! Зіграй зі мною в Pawsling 🐾',
     sent: 'Дякуємо! Повідомлення передано розробнику.',
     refJoined: n => `${n} тепер у грі за твоїм запрошенням! Вам обом: +1 серце і +1 швидкий старт.`,
@@ -91,7 +91,7 @@ const TEXT = {
     passStars: (name, me, them) => `⭐ ${name} випереджає тебе за зірками: ${me} проти твоїх ${them}. Наздоженеш?`, friendsBtn: '🏆 Рейтинг друзів',
     chestReady: '🎁 Твоя скриня в Pawsling дозріла й чекає! Відкрий і забери подарунок.',
     missYou: '🐾 Ми скучили! Коти та єноти тримають для тебе подарунок: ❤️ +1 серце і ⚡ +1 швидкий старт. Вони вже в грі.' },
-  en: { rooms: ['Kitchen', 'Living room', 'Bedroom', 'Bathroom', 'Balcony', 'Attic', 'Garage', 'Basement', 'Roof', 'Garden', 'Server room', 'Stairwell', 'Warehouse', 'Factory', 'Lab', 'Space station', 'Polar station'], raid: room => `🚨 Alert! Rebel robots are raiding your home: ${room}!\n\nRepel the raid within 30 minutes and get a bonus: ❤️ +1 heart and ⚡ +1 quick start.`, raidBtn: '🐾 Repel the raid',
+  en: { rooms: ['Kitchen', 'Living room', 'Bedroom', 'Bathroom', 'Balcony', 'Attic', 'Garage', 'Basement', 'Roof', 'Garden', 'Server room', 'Stairwell', 'Warehouse', 'Factory', 'Lab', 'Space station', 'Polar station', 'Underwater base'], raid: room => `🚨 Alert! Rebel robots are raiding your home: ${room}!\n\nRepel the raid within 30 minutes and get a bonus: ❤️ +1 heart and ⚡ +1 quick start.`, raidBtn: '🐾 Repel the raid',
     invite: 'Cats and raccoons vs rebel robots! Play Pawsling with me 🐾',
     sent: 'Thanks! Your message has been sent to the developer.',
     refJoined: n => `${n} joined the game with your invite! You both get +1 heart and +1 quick start.`,
@@ -105,7 +105,7 @@ const TEXT = {
     passStars: (name, me, them) => `⭐ ${name} is ahead of you in stars: ${me} against your ${them}. Can you catch up?`, friendsBtn: '🏆 Friends board',
     chestReady: '🎁 Your Pawsling chest is ripe and waiting! Open it and grab the gift.',
     missYou: '🐾 We miss you! The cats and raccoons saved you a gift: ❤️ +1 heart and ⚡ +1 quick start. It is already in the game.' },
-  pl: { rooms: ['Kuchnia', 'Salon', 'Sypialnia', 'Łazienka', 'Balkon', 'Strych', 'Garaż', 'Piwnica', 'Dach', 'Ogród', 'Serwerownia', 'Klatka schodowa', 'Magazyn', 'Fabryka', 'Laboratorium', 'Stacja kosmiczna', 'Stacja polarna'], raid: room => `🚨 Alarm! Zbuntowane roboty napadły na pokój: ${room}!\n\nOdeprzyj nalot w 30 minut i zdobądź bonus: ❤️ +1 serce i ⚡ +1 szybki start.`, raidBtn: '🐾 Odeprzyj nalot',
+  pl: { rooms: ['Kuchnia', 'Salon', 'Sypialnia', 'Łazienka', 'Balkon', 'Strych', 'Garaż', 'Piwnica', 'Dach', 'Ogród', 'Serwerownia', 'Klatka schodowa', 'Magazyn', 'Fabryka', 'Laboratorium', 'Stacja kosmiczna', 'Stacja polarna', 'Baza podwodna'], raid: room => `🚨 Alarm! Zbuntowane roboty napadły na pokój: ${room}!\n\nOdeprzyj nalot w 30 minut i zdobądź bonus: ❤️ +1 serce i ⚡ +1 szybki start.`, raidBtn: '🐾 Odeprzyj nalot',
     invite: 'Koty i szopy kontra zbuntowane roboty! Zagraj ze mną w Pawsling 🐾',
     sent: 'Dzięki! Wiadomość trafiła do twórcy gry.',
     refJoined: n => `${n} dołączył(a) do gry z twojego zaproszenia! Oboje dostajecie +1 serce i +1 szybki start.`,
@@ -119,7 +119,7 @@ const TEXT = {
     passStars: (name, me, them) => `⭐ ${name} wyprzedza cię w gwiazdkach: ${me} wobec twoich ${them}. Dogonisz?`, friendsBtn: '🏆 Ranking znajomych',
     chestReady: '🎁 Twoja skrzynia w Pawsling dojrzała i czeka! Otwórz ją i odbierz prezent.',
     missYou: '🐾 Tęsknimy! Koty i szopy mają dla ciebie prezent: ❤️ +1 serce i ⚡ +1 szybki start. Już czeka w grze.' },
-  de: { rooms: ['Küche', 'Wohnzimmer', 'Schlafzimmer', 'Badezimmer', 'Balkon', 'Dachboden', 'Garage', 'Keller', 'Dach', 'Garten', 'Serverraum', 'Treppenhaus', 'Lager', 'Fabrik', 'Labor', 'Raumstation', 'Polarstation'], raid: room => `🚨 Alarm! Rebellische Roboter überfallen den Raum: ${room}!\n\nWehr den Überfall in 30 Minuten ab und hol dir einen Bonus: ❤️ +1 Herz und ⚡ +1 Schnellstart.`, raidBtn: '🐾 Überfall abwehren',
+  de: { rooms: ['Küche', 'Wohnzimmer', 'Schlafzimmer', 'Badezimmer', 'Balkon', 'Dachboden', 'Garage', 'Keller', 'Dach', 'Garten', 'Serverraum', 'Treppenhaus', 'Lager', 'Fabrik', 'Labor', 'Raumstation', 'Polarstation', 'Unterwasserbasis'], raid: room => `🚨 Alarm! Rebellische Roboter überfallen den Raum: ${room}!\n\nWehr den Überfall in 30 Minuten ab und hol dir einen Bonus: ❤️ +1 Herz und ⚡ +1 Schnellstart.`, raidBtn: '🐾 Überfall abwehren',
     invite: 'Katzen und Waschbären gegen rebellische Roboter! Spiel Pawsling mit mir 🐾',
     sent: 'Danke! Deine Nachricht wurde an den Entwickler weitergeleitet.',
     refJoined: n => `${n} ist über deine Einladung ins Spiel gekommen! Ihr bekommt beide +1 Herz und +1 Schnellstart.`,
@@ -133,7 +133,7 @@ const TEXT = {
     passStars: (name, me, them) => `⭐ ${name} liegt bei den Sternen vor dir: ${me} gegen deine ${them}. Holst du auf?`, friendsBtn: '🏆 Freunde-Rangliste',
     chestReady: '🎁 Deine Pawsling-Truhe ist reif und wartet! Öffne sie und hol dir das Geschenk.',
     missYou: '🐾 Wir vermissen dich! Die Katzen und Waschbären haben ein Geschenk für dich: ❤️ +1 Herz und ⚡ +1 Schnellstart. Es liegt schon im Spiel.' },
-  es: { rooms: ['Cocina', 'Salón', 'Dormitorio', 'Baño', 'Balcón', 'Desván', 'Garaje', 'Sótano', 'Tejado', 'Jardín', 'Sala de servidores', 'Escalera', 'Almacén', 'Fábrica', 'Laboratorio', 'Estación espacial', 'Estación polar'], raid: room => `🚨 ¡Alerta! ¡Los robots rebeldes asaltan la habitación: ${room}!\n\nRechaza el asalto en 30 minutos y gana un bonus: ❤️ +1 corazón y ⚡ +1 inicio rápido.`, raidBtn: '🐾 Rechazar el asalto',
+  es: { rooms: ['Cocina', 'Salón', 'Dormitorio', 'Baño', 'Balcón', 'Desván', 'Garaje', 'Sótano', 'Tejado', 'Jardín', 'Sala de servidores', 'Escalera', 'Almacén', 'Fábrica', 'Laboratorio', 'Estación espacial', 'Estación polar', 'Base submarina'], raid: room => `🚨 ¡Alerta! ¡Los robots rebeldes asaltan la habitación: ${room}!\n\nRechaza el asalto en 30 minutos y gana un bonus: ❤️ +1 corazón y ⚡ +1 inicio rápido.`, raidBtn: '🐾 Rechazar el asalto',
     invite: '¡Gatos y mapaches contra robots rebeldes! Juega Pawsling conmigo 🐾',
     sent: '¡Gracias! Tu mensaje se ha enviado al desarrollador.',
     refJoined: n => `¡${n} se unió al juego con tu invitación! Los dos recibís +1 corazón y +1 inicio rápido.`,
