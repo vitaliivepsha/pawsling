@@ -517,7 +517,7 @@ async function inlineResults(env, from) {
   return out;
 }
 // the news channel in the player's language (Ukrainian for Ukrainian, English for everyone else)
-const newsChat = (env, lang) => String((text(lang) === TEXT.uk ? env.CHANNEL_UK : env.CHANNEL_EN) || '').trim();
+const newsChat = (env, lang) => chatRef(text(lang) === TEXT.uk ? env.CHANNEL_UK : env.CHANNEL_EN);
 function newsKb(env, t) {
   const url = channelUrl(newsChat(env, t === TEXT.uk ? 'uk' : 'en'));
   return url ? [{ text: t === TEXT.uk ? '📣 Новини гри' : '📣 Game news', url }] : [];
@@ -1006,8 +1006,10 @@ function chalOf(wk) {
 }
 const modList = (c, l) => c.mods.map(m => CH_TEXT[l].mods[m]).join(l === 'uk' ? ' і ' : ' and ');
 function channels(env) {
-  return Object.entries(CH_LANGS).map(([lang, k]) => ({ lang, chat: String(env[k] || '').trim() })).filter(c => c.chat);
+  return Object.entries(CH_LANGS).map(([lang, k]) => ({ lang, chat: chatRef(env[k]) })).filter(c => c.chat);
 }
+// a channel or group from the config: @username (the @ may be left out) or a numeric -100… id
+const chatRef = v => { const c = String(v || '').trim().replace(/^https:\/\/t\.me\//, ''); return !c || c.startsWith('@') || /^-?\d+$/.test(c) ? c : '@' + c; };
 const channelUrl = chat => chat.startsWith('@') ? `https://t.me/${chat.slice(1)}` : null;
 async function ensureBotName(env) {
   if (!botName) { const me = await tg(env, 'getMe', {}); botName = me.ok ? me.result.username : null; }
@@ -1120,7 +1122,7 @@ const GROUP_HELLO = {
   support: '🛠 Щось не працює? Напиши тут: що сталося, на якому рівні, телефон чи комп\'ютер. Скріншот дуже допоможе.\n\nSomething broken? Tell us here: what happened, which level, phone or computer. A screenshot helps a lot.',
   events: '📣 Події, підсумки тижня й анонси. Писати тут можуть лише адміни, а обговорити все можна в гілках UA та EN.\n\nEvents, weekly results and news. Only admins post here; talk about it in the UA and EN topics.',
 };
-const groupChat = env => String(env.COMMUNITY_GROUP || '').trim();
+const groupChat = env => chatRef(env.COMMUNITY_GROUP);
 async function groupTopic(env, key) {
   const chat = groupChat(env);
   if (!chat) return null;
