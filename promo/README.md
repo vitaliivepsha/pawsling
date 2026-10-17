@@ -28,12 +28,12 @@ Everything needed to list the game in Telegram's app catalog and in other catalo
 **Tagline (EN, ≤ 30):** Slingshot cats vs rebel robots
 **Tagline (UK):** Коти з рогатки проти роботів
 
-**Short description (EN, ≤ 120):** Launch cats & raccoons like a slingshot and save the flat from rebel robots! 103 levels, 18 bosses. Free to play.
+**Short description (EN, ≤ 120):** Launch cats & raccoons like a slingshot and save the flat from rebel robots! 102 levels, 18 bosses. Free to play.
 
-**Short description (UK):** Запускай котів і єнотів, як з рогатки, і рятуй квартиру від збунтованої техніки! 103 рівні, 18 босів. Безкоштовно.
+**Short description (UK):** Запускай котів і єнотів, як з рогатки, і рятуй квартиру від збунтованої техніки! 102 рівні, 18 босів. Безкоштовно.
 
 **Description (EN):**
-Pull back, aim and launch your heroes like a slingshot. Bounce off walls, pierce through robots, cross your yarn to tie exploding knots and beat 18 wild robot bosses across 103 levels, from the kitchen to the bottom of the sea.
+Pull back, aim and launch your heroes like a slingshot. Bounce off walls, pierce through robots, cross your yarn to tie exploding knots and beat 18 wild robot bosses across 102 levels, from the kitchen to the bottom of the sea.
 - 7 heroes with superpowers that level up
 - Night Shift: endless waves and a weekly tournament with prizes
 - Daily bonus, daily challenges and story comics

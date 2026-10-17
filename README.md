@@ -12,8 +12,8 @@ worker/             the leaderboard: a Cloudflare Worker with a D1 database
 
 ## Gameplay
 
-- 103 levels in 18 rooms, each room ends with a boss: Kitchen, Living room, Bedroom (4 levels each),
-  Bathroom, Balcony, Attic, Garage, Basement, Roof, Garden, Server room, Stairwell, Warehouse, Factory, Lab, Space station, Polar station, Underwater base (6 levels each; the polar station has a 7th, the rematch). The map scrolls.
+- 102 levels in 18 rooms, each room ends with a boss: Kitchen, Living room, Bedroom (4 levels each),
+  Bathroom, Balcony, Attic, Garage, Basement, Roof, Garden, Server room, Stairwell, Warehouse, Factory, Lab, Space station, Polar station, Underwater base (6 levels each). The map scrolls.
 - The basement mixes every enemy type (toughness ×3.39) and ends with the Web-Spinner: after each
   attack it webs the hero it hit, who skips their next turn unless an ally frees them with a shot.
 - The roof (toughness ×4.06) adds magnets that pull heroes in and bend their shots, and ends with
@@ -49,14 +49,11 @@ worker/             the leaderboard: a Cloudflare Worker with a D1 database
   a new side every turn (an arrow at the top shows it) and pushes flying heroes. Cryo bots freeze the
   hero they hit, who skips a turn unless a friend's shot breaks the ice. It ends with the Blizzard
   Snowplough: after each attack it sweeps every hero 110 px the way the wind blows.
-  Level 97, the rematch, comes after it: toughness ×7.7, a stronger blizzard, meteors and two acid
-  pools at once, robots from every late room, and the snowplough back with a bigger escort (par 34).
-  Raids on the polar station leave it out.
-- The underwater base (levels 98-103, toughness ×6.6 with harder mechanics, the hardest room): the water
+- The underwater base (levels 97-102, toughness ×6.6 with harder mechanics, the hardest room): the water
   rises a mark every turn from the bottom (up to 35% of the field, starting low again each wave) and slows
   flying heroes inside it. Jelly bots charge up the turn before they attack; a hero that hits a charged
   one stops dead, even a piercer. It ends with Kraken Deep: after each attack the water jumps three marks.
-  Level 103 is the finale: a gold medallion on the map and gold rays behind the kraken.
+  Level 102 is the finale: a gold medallion on the map and gold rays behind the kraken.
 - Weekly challenge (from level 12, on the Daily screen's week tab): one level a week, the same for
   everyone, in a room from the balcony on with two modifiers from the newer rooms (blizzard, acid,
   meteors, laser fences, conveyor belts). Fewer turns wins; it has its own weekly board (`/chal`,
