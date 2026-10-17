@@ -223,7 +223,7 @@ Technical Support (`/chan post group` posts it by hand).
 
 `worker/` is a Cloudflare Worker (free plan) with a D1 database. The game posts Telegram's `initData`
 with every request; the worker checks its signature with the bot token, so a result is always saved
-for the real Telegram account. Scores are capped (500 waves, 300 stars); a determined player could
+for the real Telegram account. Scores are capped (500 waves, 400 stars); a determined player could
 still send a fake result from their own account, which is the usual limit of a client-side game.
 
 Setup (Node 18+; with nvm: `nvm use 22`):

@@ -34,7 +34,7 @@
 //   bot goes to the owner as a support message; the owner's reply to it goes back to that player.
 
 const MAX_AGE = 7 * 24 * 3600; // initData older than this is refused
-const LIMITS = { night: 500, stars: 300 }; // anything above is not a real result
+const LIMITS = { night: 500, stars: 400 }; // anything above is not a real result
 const TOP = 20;
 // Items sold for Telegram Stars (currency XTR). The price is checked again at pre-checkout.
 // `grant` is what lands in the player's inventory once the payment succeeds.
