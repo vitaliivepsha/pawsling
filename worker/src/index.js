@@ -66,7 +66,7 @@ const rollChest = () => { const r = Math.random(); return r < .1 ? { wind: 1 } :
 const MISS_GIFT = { heart: 1, meter: 1 }; // for a player back after 3+ days away
 const STREAK_GIFT_DAYS = 30; // every 30 days in a row: the party hat, or a free Second wind for those who have it
 const DAILY = [{ meter: 1 }, { heart: 1 }, { meter: 1 }, { heart: 1 }, { meter: 2 }, { heart: 2 }, { wind: 1, heart: 1, meter: 1 }];
-const RAID_GIFT = { heart: 1, meter: 1 }, RAID_MIN = 30, ROOMS_N = 17;
+const RAID_GIFT = { heart: 1, meter: 1 }, RAID_MIN = 30, ROOMS_N = 18;
 const REF_GIFT = { heart: 1, meter: 1 }; // for both the inviter and the new player
 const WEEK_PRIZES = [{ heart: 3, meter: 3 }, { heart: 2, meter: 2 }, { heart: 1, meter: 1 }];
 const DAY = 86400000;
