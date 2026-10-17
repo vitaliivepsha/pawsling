@@ -957,8 +957,8 @@ const CH_TEXT = {
       'Лазерні бар\'єри вмикаються через хід і відбивають героїв, як стіни, а турелі стріляють уздовж усього ряду. Бос відбудовує останнього збитого робота.',
       'Калюжі кислоти забирають серце в того, хто в них стоїть, а тесла-боти б\'ють струмом усіх поруч. Бос розливає нову калюжу під героєм.',
       'Метеорити падають туди, де за хід до того з\'явилися мітки. Варп-боти телепортуються після кожного влучання. Бос наводить метеорити просто на героїв.',
-      'Хуртовина щоходу дме з нового боку, а кріоботи заморожують героїв. Бос змітає всю команду туди, куди дме вітер, а після нього чекає фінальна битва, 97-й рівень.',
-      'Найважча кімната: вода щоходу піднімається знизу й гальмує героїв у польоті. Медузоботи заряджаються за хід до атаки, і герой, що влучить у зарядженого, зупиняється на місці. Бос після кожної атаки здіймає воду одразу на три поділки.',
+      'Хуртовина щоходу дме з нового боку, а кріоботи заморожують героїв. Бос змітає всю команду туди, куди дме вітер, а після нього чекає реванш, 97-й рівень.',
+      'Найважча кімната: вода щоходу піднімається знизу й гальмує героїв у польоті. Медузоботи заряджаються за хід до атаки, і герой, що влучить у зарядженого, зупиняється на місці. Бос після кожної атаки здіймає воду одразу на три поділки. Це фінал гри: рівень 103.',
     ],
     tips: {
       slingshot: '🎯 <b>Як грати</b>\n\nТягни героя назад, цілься й відпускай. Герої відбиваються від стін і прошивають роботів наскрізь — найкращі постріли зачіпають кількох одразу.',
@@ -1009,8 +1009,8 @@ const CH_TEXT = {
       'Laser fences switch on every other turn and bounce heroes like walls; turrets fire along their whole row. The boss rebuilds the last robot you broke.',
       'Acid pools take a heart from anyone standing in them, and tesla bots zap every hero nearby. The boss spills a new pool under a hero.',
       'Meteors land where markers appeared a turn before. Warp bots blink away after every hit. The boss aims meteors right at your heroes.',
-      'The blizzard blows from a new side every turn and cryo bots freeze heroes. The boss sweeps the whole team the way the wind blows, and the final stand, level 97, waits after it.',
-      'The hardest room: the water rises from the bottom every turn and slows heroes flying through it. Jelly bots charge up the turn before they attack, and a hero that hits a charged one stops dead. After each attack the boss raises the water three marks at once.',
+      'The blizzard blows from a new side every turn and cryo bots freeze heroes. The boss sweeps the whole team the way the wind blows, and a rematch with it, level 97, waits after it.',
+      'The hardest room: the water rises from the bottom every turn and slows heroes flying through it. Jelly bots charge up the turn before they attack, and a hero that hits a charged one stops dead. After each attack the boss raises the water three marks at once. This is the finale of the game: level 103.',
     ],
     tips: {
       slingshot: '🎯 <b>How to play</b>\n\nPull a hero back, aim and let go. Heroes bounce off walls and pierce right through robots: the best shots hit several at once.',
