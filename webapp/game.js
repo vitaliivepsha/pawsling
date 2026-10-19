@@ -9674,9 +9674,99 @@ function drawHeroDetail(h, x, y, w, ph, t) {
   }
 }
 // a weekly quest: what to do, what counts, how far along it is and the reward
+// a little scene for each weekly quest at the top of its card; a big tick stamp once it's done
+function questScene(id, x, y, w, h, t, col, done) {
+  const cx = x + w / 2, cy = y + h / 2;
+  ctx.save();
+  ctx.fillStyle = 'rgba(0,0,0,.3)'; rr(x, y + 5, w, h, 20); ctx.fill();
+  const bg2 = ctx.createLinearGradient(0, y, 0, y + h);
+  bg2.addColorStop(0, hexA(col, .28)); bg2.addColorStop(1, '#15122a');
+  ctx.fillStyle = bg2; rr(x, y, w, h, 20); ctx.fill();
+  ctx.save(); rr(x, y, w, h, 20); ctx.clip();
+  ctx.save(); ctx.globalCompositeOperation = 'lighter'; glowAt(cx, cy, w * .45, hexRgb(col), .25); ctx.restore();
+  ctx.fillStyle = 'rgba(255,255,255,.035)'; for (let yy = y + 6; yy < y + h; yy += 12) for (let xx = x + 6 + ((yy / 12) % 2) * 6; xx < x + w; xx += 12) circ(xx, yy, 1.4);
+  const bob = RM ? 0 : Math.sin(t * 2.4) * 3;
+  if (id === 'knots') {
+    // two threads crossing and the knot blowing up where they meet
+    ctx.lineCap = 'round'; ctx.lineWidth = 5;
+    ctx.strokeStyle = '#ff9f43'; ctx.beginPath(); ctx.moveTo(x + 30, y + h - 20); ctx.quadraticCurveTo(cx - 20, y + 20, x + w - 40, y + 30); ctx.stroke();
+    ctx.strokeStyle = '#5ce1c6'; ctx.beginPath(); ctx.moveTo(x + 40, y + 26); ctx.quadraticCurveTo(cx + 30, y + h, x + w - 30, y + h - 26); ctx.stroke();
+    ctx.save(); ctx.globalCompositeOperation = 'lighter'; glowAt(cx, cy, 60, '255,143,177', .6 + .2 * Math.sin(t * 5)); ctx.restore();
+    ctx.strokeStyle = 'rgba(255,243,196,.8)'; ctx.lineWidth = 2; for (let k = 0; k < 10; k++) { const a = k / 10 * TAU + t * .5, r1 = 30, r2 = 46 + 6 * Math.sin(t * 4 + k); ctx.beginPath(); ctx.moveTo(cx + Math.cos(a) * r1, cy + Math.sin(a) * r1); ctx.lineTo(cx + Math.cos(a) * r2, cy + Math.sin(a) * r2); ctx.stroke(); }
+    drawKnotMark(cx, cy + bob * .3, 18, '#ff8fb1');
+    drawHero(HEROES[0], x + 34, y + h - 30, 22, null, { mood: 'happy', hat: false, look: [1, -.4] });
+    drawHero(HEROES[2], x + w - 34, y + h - 34, 22, null, { mood: 'happy', hat: false, look: [-1, -.4] });
+  } else if (id === 'robots') {
+    // a heap of beaten robots, with dizzy stars
+    [['vac', cx - 70, cy + 22, 26], ['spray', cx + 70, cy + 20, 24], ['mop', cx - 22, cy + 30, 24], ['brush', cx + 28, cy + 28, 22], ['fan', cx, cy - 18, 26]].forEach(([type, ex, ey, r], i) => {
+      ctx.save(); ctx.translate(ex, ey); ctx.rotate((i - 2) * .25); drawFoe(type, 0, 0, r); ctx.restore();
+    });
+    for (let k = 0; k < 5; k++) { const a = t * 3 + k / 5 * TAU; star(cx + Math.cos(a) * 36, cy - 48 + Math.sin(a) * 9, 5, '#ffe066'); }
+  } else if (id === 'bosses') {
+    // a boss knocked over with its crown flying off
+    const e = { type: 'boss', kind: 0, r: 40, weak: NaN, weakT: 0, fade: 0, foam: false, ph: 0, timer: 3, maxTimer: 3, flash: 0 };
+    ctx.save(); ctx.translate(cx - 10, cy + 20); ctx.rotate(-.45); drawBoss(e, 40, t); ctx.restore();
+    ctx.save(); ctx.translate(cx + 70, cy - 30 + bob); ctx.rotate(.5 + (RM ? 0 : Math.sin(t * 2) * .2)); drawHat('crown', 30); ctx.restore();
+    for (let k = 0; k < 6; k++) { const a = t * 2.5 + k / 6 * TAU; star(cx - 10 + Math.cos(a) * 46, cy - 30 + Math.sin(a) * 10, 5, '#fff3c4'); }
+    drawHero(HEROES[1], x + 36, y + h - 34, 24, null, { mood: 'happy', hat: false, look: [1, -.3] });
+  } else if (id === 'noko') {
+    // a hero safe in a bubble shield, all hearts in place
+    drawHero(HEROES[0], cx, cy + 14 + bob, 40, null, { mood: 'happy', hat: false, look: [0, .2] });
+    ctx.save(); ctx.globalCompositeOperation = 'lighter'; glowAt(cx, cy + 10, 70, '92,225,198', .3); ctx.restore();
+    ctx.strokeStyle = 'rgba(92,225,198,.85)'; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(cx, cy + 10, 58, 0, TAU); ctx.stroke();
+    ctx.fillStyle = 'rgba(255,255,255,.35)'; ctx.beginPath(); ctx.ellipse(cx - 26, cy - 22, 14, 6, -.6, 0, TAU); ctx.fill();
+    for (let k = 0; k < 3; k++) heart(cx - 26 + k * 26, y + 22, 9, '#ff5d7a');
+    for (const sd of [-1, 1]) { ctx.save(); ctx.translate(cx + sd * 92, cy + 10); ctx.rotate(sd * .4); ctx.fillStyle = '#ff3b5c'; ctx.globalAlpha = .6; ctx.beginPath(); ctx.moveTo(-sd * 20, 0); ctx.lineTo(sd * 4, -6); ctx.lineTo(sd * 4, 6); ctx.closePath(); ctx.fill(); ctx.restore(); }
+  } else if (id === 'stars3') {
+    // a level node with three big stars rising over it
+    ctx.save(); ctx.globalCompositeOperation = 'lighter'; glowAt(cx, cy + 30, 70, '255,209,102', .35); ctx.restore();
+    ctx.fillStyle = '#2e2859'; circ(cx, cy + 34, 28); ctx.strokeStyle = '#ffd166'; ctx.lineWidth = 3; ctx.beginPath(); ctx.arc(cx, cy + 34, 28, 0, TAU); ctx.stroke();
+    paw(cx, cy + 37, 26, '#ffd166');
+    [[-62, -6, 20], [0, -26, 26], [62, -6, 20]].forEach(([dx, dy, r], i) => { const b2 = RM ? 0 : Math.sin(t * 2.4 + i) * 4; star(cx + dx, cy + dy + b2, r, '#ffd166', '#c98a1a'); });
+    for (let k = 0; k < 6; k++) { const ph = frac(t * .5 + k / 6); star(cx - 110 + k * 44, y + h - 14 - ph * 30, 2.5, `rgba(255,243,196,${Math.sin(ph * Math.PI)})`); }
+  } else if (id === 'night') {
+    // the Night Shift: a moonlit room, wave after wave of robot silhouettes, a hero holding out
+    ctx.fillStyle = 'rgba(8,10,30,.55)'; ctx.fillRect(x, y, w, h);
+    for (let k = 0; k < 18; k++) { ctx.fillStyle = `rgba(255,255,255,${.4 + .4 * Math.sin(t * 2 + k)})`; ctx.fillRect(x + (k * 53) % w, y + (k * 23) % 60, 1.5, 1.5); }
+    moonIcon(x + w - 46, y + 36, 22);
+    for (let k = 0; k < 3; k++) { ctx.globalAlpha = .55 - k * .15; for (let q = 0; q < 4; q++) { ctx.save(); ctx.translate(x + 60 + q * 52 + k * 14, y + 40 + k * 26); drawFoe('vac', 0, 0, 12); ctx.restore(); } }
+    ctx.globalAlpha = 1;
+    drawHero(HEROES[1], cx + 60, y + h - 36, 28, null, { mood: 'happy', hat: false, look: [-.8, -.4] });
+  } else if (id === 'combos') {
+    // two friends bumping in flight: a burst of paws between them
+    const k2 = RM ? .5 : .5 + .5 * Math.sin(t * 3);
+    drawHero(HEROES[0], cx - 44 - k2 * 8, cy + 10, 34, null, { mood: 'happy', hat: false, look: [1, 0] });
+    drawHero(HEROES[4] || HEROES[1], cx + 44 + k2 * 8, cy + 10, 34, null, { mood: 'happy', hat: false, look: [-1, 0] });
+    ctx.save(); ctx.globalCompositeOperation = 'lighter'; glowAt(cx, cy, 50, '92,225,198', .6); ctx.restore();
+    for (let k = 0; k < 8; k++) { const a = k / 8 * TAU + t, d = 24 + 10 * k2; star(cx + Math.cos(a) * d, cy + Math.sin(a) * d * .7, 3.5, '#e8fffa'); }
+    paw(cx, cy - 34 + bob, 22, '#5ce1c6');
+  } else if (id === 'lasers') {
+    // a cat chasing the red dot along a dashed trail
+    const lx = cx + 70 + (RM ? 0 : Math.sin(t * 1.8) * 30), ly = cy + 10 + (RM ? 0 : Math.cos(t * 2.3) * 14);
+    ctx.strokeStyle = 'rgba(255,59,92,.5)'; ctx.lineWidth = 2; ctx.setLineDash([5, 6]); ctx.beginPath(); ctx.moveTo(x + 20, cy + 40); ctx.quadraticCurveTo(cx - 20, cy - 40, lx, ly); ctx.stroke(); ctx.setLineDash([]);
+    ctx.save(); ctx.globalCompositeOperation = 'lighter'; glowAt(lx, ly, 30, '255,59,92', .9); ctx.restore();
+    ctx.fillStyle = '#ff3b5c'; circ(lx, ly, 7); ctx.fillStyle = '#ffd0d8'; circ(lx, ly, 3);
+    drawHero(HEROES[0], cx - 50, cy + 14 + bob, 36, null, { mood: 'happy', hat: false, look: [1, 0] });
+  }
+  ctx.restore();
+  ctx.strokeStyle = hexA(col, .7); ctx.lineWidth = 2; rr(x, y, w, h, 20); ctx.stroke();
+  // the quest's own icon in the corner
+  questIcon(id, x + 26, y + 26, 16, done);
+  // done: a big tick stamp
+  if (done) {
+    ctx.save(); ctx.translate(x + w - 46, y + h - 40); ctx.rotate(-.2);
+    ctx.fillStyle = 'rgba(21,18,42,.6)'; circ(0, 0, 30);
+    ctx.strokeStyle = '#5ce1c6'; ctx.lineWidth = 4; ctx.beginPath(); ctx.arc(0, 0, 30, 0, TAU); ctx.stroke();
+    ctx.setLineDash([3, 4]); ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(0, 0, 24, 0, TAU); ctx.stroke(); ctx.setLineDash([]);
+    ctx.strokeStyle = '#5ce1c6'; ctx.lineWidth = 7; ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+    ctx.beginPath(); ctx.moveTo(-12, 0); ctx.lineTo(-3, 9); ctx.lineTo(14, -10); ctx.stroke();
+    ctx.restore();
+  }
+  ctx.restore();
+}
 function drawQuestDetail(id, x, y, w, ph, t, col) {
   const q = questState(), done = !!q.c[id], goal = QUESTS[id].n, n = Math.min(goal, q.p[id] || 0), cx = W / 2, L = x + 26, R = x + w - 26, py = y + 112;
-  questIcon(id, cx, py + Math.sin(t * 2.4) * 4, 50, done);
+  questScene(id, x + 22, y + 26, w - 44, 150, t, col, done);
   ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillStyle = col;
   fitFont(tr('q.' + id + '.t'), w - 80, 28); ctx.fillText(tr('q.' + id + '.t'), cx, y + 200);
   detailChips([done ? [tr('questDoneTag'), '#5ce1c6', true] : [`${n} / ${goal}`, col, false]], y + 236);
@@ -9686,10 +9776,24 @@ function drawQuestDetail(id, x, y, w, ph, t, col) {
   // the reward, and the bonus for all three
   detailHead(tr('questReward'), L, y + 432, R, col);
   const g = QUEST_GIFT[id], item = tr(g.heart ? 'item.heart3' : 'item.meter3').replace('×3', '×1');
-  ctx.globalAlpha = done ? .45 : 1; rewardIcon(g, L + 14, y + 462); ctx.globalAlpha = 1;
-  ctx.textAlign = 'left'; ctx.fillStyle = done ? '#5ce1c6' : '#f4efe6'; fitFont(item, R - L - 40, 15, 900, FD); ctx.fillText(item, L + 38, y + 462);
-  windIcon(L + 14, y + 496, 10);
-  ctx.fillStyle = '#b9b2da'; fitFont(tr('questBonus'), R - L - 40, 13, 800, FB); ctx.fillText(tr('questBonus'), L + 38, y + 496);
+  // the gift as a little shop tile with a ×1 tag; ticked off once the quest is done
+  const tx = L, ty = y + 446, ts = 38;
+  const tg = ctx.createLinearGradient(tx, ty, tx + ts, ty + ts);
+  tg.addColorStop(0, '#d9577f'); tg.addColorStop(1, '#5a2440');
+  ctx.fillStyle = 'rgba(0,0,0,.3)'; rr(tx, ty + 3, ts, ts, 10); ctx.fill();
+  ctx.fillStyle = tg; rr(tx, ty, ts, ts, 10); ctx.fill();
+  ctx.fillStyle = 'rgba(255,255,255,.14)'; rr(tx + 3, ty + 3, ts - 6, ts * .34, 7); ctx.fill();
+  ctx.save(); ctx.translate(tx + ts / 2, ty + ts / 2); ctx.scale(.85, .85); drawShopIcon(g.heart ? 'heart3' : 'meter3', 0, 0); ctx.restore();
+  ctx.fillStyle = '#ffc857'; rr(tx + ts - 14, ty - 6, 22, 14, 7); ctx.fill();
+  ctx.fillStyle = '#15122a'; ctx.font = `900 10px ${FD}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('×1', tx + ts - 3, ty + 1.5);
+  if (done) { ctx.fillStyle = '#5ce1c6'; circ(tx + ts - 2, ty + ts - 2, 9); ctx.strokeStyle = '#15122a'; ctx.lineWidth = 2.2; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(tx + ts - 6, ty + ts - 2); ctx.lineTo(tx + ts - 3, ty + ts + 1); ctx.lineTo(tx + ts + 2, ty + ts - 5); ctx.stroke(); }
+  ctx.textAlign = 'left'; ctx.textBaseline = 'middle'; ctx.fillStyle = done ? '#5ce1c6' : '#f4efe6'; fitFont(item, R - L - 56, 16, 900, FD); ctx.fillText(item, L + ts + 16, ty + ts / 2 + 1);
+  // the bonus for all three, with its pips
+  const by2 = y + 500, q3 = weekQuests(q.wk);
+  ctx.fillStyle = 'rgba(92,225,198,.08)'; rr(L - 6, by2 - 16, R - L + 12, 32, 16); ctx.fill();
+  windIcon(L + 12, by2, 11);
+  ctx.textAlign = 'left'; ctx.fillStyle = '#b9b2da'; fitFont(tr('questBonus'), R - L - 90, 13, 800, FB); ctx.fillText(tr('questBonus'), L + 32, by2 + 1);
+  q3.forEach((qid, i) => { const px = R - 34 + i * 13; ctx.fillStyle = q.c[qid] ? '#5ce1c6' : '#2a2548'; circ(px, by2, 4.5); if (!q.c[qid]) { ctx.strokeStyle = 'rgba(92,225,198,.45)'; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.arc(px, by2, 4.5, 0, TAU); ctx.stroke(); } });
 }
 function drawItemDetail(id, x, y, w, ph, t, col) {
   const a = shopAction(id), cx = W / 2, L = x + 26, R = x + w - 26, py = y + 112;
@@ -10639,7 +10743,7 @@ loadDaily();
 // #dev: timer-driven loop (keeps running in hidden tabs) plus a state hook for testing
 const DEV = location.hash === '#dev';
 const nextFrame = DEV ? cb => setTimeout(() => cb(performance.now()), 16) : requestAnimationFrame;
-if (DEV) window.__pawsling = { get G() { return G; }, set G(v) { G = v; }, openChest, startEventLevel, get SCREEN() { return SCREEN; }, get DAILY() { return DAILY; }, openNews, checkNews, startLevel, startEndless, launch, PROG: () => PROG, MAP, BOARD, setScreen, secondWind, setInv, get INV() { return INV; }, prepLevel, setupWave, showStory, get CHEST() { return CHEST; }, get T() { return T; }, step: dt => update(dt), LEVELS, CHAPTERS, ENEMY, bg, BGS,
+if (DEV) window.__pawsling = { get G() { return G; }, set G(v) { G = v; }, openChest, startEventLevel, get SCREEN() { return SCREEN; }, get DAILY() { return DAILY; }, openNews, checkNews, startLevel, startEndless, launch, PROG: () => PROG, MAP, BOARD, setScreen, secondWind, setInv, get INV() { return INV; }, prepLevel, setupWave, showStory, get CHEST() { return CHEST; }, get T() { return T; }, openDetail, step: dt => update(dt), LEVELS, CHAPTERS, ENEMY, bg, BGS,
   // store art: pause the loop, size the canvas, then draw with the game's own painters
   draw, art: { get ctx() { return ctx; }, cv, chestIcon, windIcon, questIcon, albumMedal, tierFrame, flameIcon, moonIcon, rewardIcon, paw, laurel, drawHero, drawBoss, drawEnemy, drawFoe, chIcon, star, heart, rr, glowAt, drawHat, hexRgb, HEROES, BOSS_COL, FD, FB, W, H, TOP, BOT },
   size(w, h, k) { cv.width = w; cv.height = h; scale = k; dpr = 1; } };
