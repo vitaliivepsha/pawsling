@@ -8400,35 +8400,53 @@ function startPrepared() {
 }
 function drawPrep() {
   drawMap(); UI = [];
-  ctx.fillStyle = 'rgba(12,10,26,.9)'; ctx.fillRect(0, 0, W, H);
+  const c = PREP.li < 0 ? null : LEVELS[PREP.li].ch, ch = c == null ? null : CHAPTERS[c], col = ch ? ch.col : '#9fa8ff';
+  ctx.fillStyle = 'rgba(12,10,26,.94)'; ctx.fillRect(0, 0, W, H);
+  ctx.save(); ctx.globalCompositeOperation = 'lighter'; glowAt(W / 2, 150, 260, hexRgb(col), .16); ctx.restore();
+  // a window onto the level's room
+  const wx = W / 2 - 92, wy = 92, ww = 184, wh = 76;
+  ctx.fillStyle = 'rgba(0,0,0,.35)'; rr(wx, wy + 5, ww, wh, 18); ctx.fill();
+  ctx.save(); rr(wx, wy, ww, wh, 18); ctx.clip();
+  if (c != null) { ctx.drawImage(bg(c), 130 * 2, 300 * 2, 184 * 2, 76 * 2, wx, wy, ww, wh); ctx.fillStyle = 'rgba(12,10,26,.35)'; ctx.fillRect(wx, wy, ww, wh); }
+  else { ctx.fillStyle = '#15122a'; ctx.fillRect(wx, wy, ww, wh); for (let k = 0; k < 14; k++) star(wx + 10 + (k * 37) % (ww - 20), wy + 8 + (k * 23) % (wh - 16), 1.6, '#fff3c4'); }
+  ctx.restore();
+  ctx.strokeStyle = col; ctx.lineWidth = 2.5; rr(wx, wy, ww, wh, 18); ctx.stroke();
+  if (c != null) chIcon(c, W / 2, wy + wh / 2, 34, col); else moonIcon(W / 2, wy + wh / 2, 22);
   ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillStyle = '#ffc857';
-  const title = PREP.li < 0 ? tr('night') : tr('levelRoom', PREP.li + 1, CHAPTERS[LEVELS[PREP.li].ch].name);
+  const title = PREP.li < 0 ? tr('night') : tr('levelRoom', PREP.li + 1, ch.name);
   fitFont(title, W - 60, 26); ctx.fillText(title, W / 2, 200);
   ctx.fillStyle = '#c9c2e6'; ctx.font = `800 14px ${FB}`; ctx.fillText(tr('boosters'), W / 2, 238);
-  const row = (y, key, name, desc) => {
-    const on = PREP[key], have = INV[key] || 0;
-    UI.push({ x: 40, y, w: W - 80, h: 70, cb: () => { if (have) PREP[key] = !PREP[key]; } });
-    ctx.fillStyle = on ? 'rgba(255,200,87,.16)' : '#1d1938'; rr(40, y, W - 80, 70, 14); ctx.fill();
-    ctx.strokeStyle = on ? '#ffc857' : '#3b3563'; ctx.lineWidth = 2; rr(40, y, W - 80, 70, 14); ctx.stroke();
-    ctx.strokeStyle = on ? '#ffc857' : '#8f88b5'; ctx.lineWidth = 2.5; rr(58, y + 23, 24, 24, 6); ctx.stroke();
-    if (on) { ctx.beginPath(); ctx.moveTo(63, y + 35); ctx.lineTo(68, y + 41); ctx.lineTo(77, y + 28); ctx.stroke(); }
-    ctx.textAlign = 'left'; ctx.fillStyle = have ? '#f4efe6' : '#6f6893'; fitFont(name, W - 250, 16); ctx.fillText(name, 96, y + 24);
-    ctx.fillStyle = '#b9b2da'; fitFont(desc, W - 150, 12, 700, FB); ctx.fillText(desc, 96, y + 48);
-    ctx.textAlign = 'right'; ctx.fillStyle = '#ffc857'; ctx.font = `900 14px ${FD}`; ctx.fillText(tr('owned', have), W - 56, y + 24);
+  // a row: an icon tile on the left, the name and a two-line note, a switch and the count on the right
+  const row = (y, on, enabled, tint, icon, name, desc, right, cb) => {
+    UI.push({ x: 40, y, w: W - 80, h: 70, cb });
+    ctx.fillStyle = 'rgba(0,0,0,.3)'; rr(40, y + 3, W - 80, 70, 16); ctx.fill();
+    const g = ctx.createLinearGradient(40, 0, W - 40, 0);
+    g.addColorStop(0, on ? hexA(tint, .22) : '#1f1a3e'); g.addColorStop(1, on ? hexA(tint, .08) : '#1a1633');
+    ctx.fillStyle = g; rr(40, y, W - 80, 70, 16); ctx.fill();
+    ctx.strokeStyle = on ? tint : '#3b3563'; ctx.lineWidth = on ? 2.5 : 1.5; rr(40, y, W - 80, 70, 16); ctx.stroke();
+    // icon tile
+    const tg = ctx.createLinearGradient(52, y + 14, 92, y + 56);
+    tg.addColorStop(0, hexA(tint, enabled ? .55 : .2)); tg.addColorStop(1, hexA(tint, enabled ? .18 : .06));
+    ctx.fillStyle = tg; rr(52, y + 15, 42, 42, 12); ctx.fill();
+    ctx.save(); if (!enabled) ctx.globalAlpha = .45; icon(73, y + 36); ctx.restore();
+    // text
+    ctx.textAlign = 'left'; ctx.fillStyle = enabled ? '#f4efe6' : '#6f6893'; fitFont(name, W - 240, 16); ctx.fillText(name, 106, y + 21);
+    ctx.font = `700 11.5px ${FB}`; let lines = splitLines(desc, W - 220);
+    if (lines.length > 2) { ctx.font = `700 10.5px ${FB}`; lines = splitLines(desc, W - 220); }
+    ctx.fillStyle = '#b9b2da'; lines.slice(0, 2).forEach((ln, i) => ctx.fillText(ln, 106, y + 41 + i * 14));
+    // the switch
+    const sx = W - 100, sy = y + 16;
+    ctx.fillStyle = on ? tint : '#2a2548'; rr(sx, sy, 44, 24, 12); ctx.fill();
+    ctx.strokeStyle = on ? 'rgba(255,255,255,.35)' : '#4a4278'; ctx.lineWidth = 1.5; rr(sx, sy, 44, 24, 12); ctx.stroke();
+    ctx.fillStyle = on ? '#fff' : (enabled ? '#8f88b5' : '#4a4278'); circ(on ? sx + 32 : sx + 12, sy + 12, 9);
+    if (right) { ctx.textAlign = 'right'; ctx.fillStyle = enabled ? '#ffc857' : '#6f6893'; fitFont(right, 70, 12, 900, FD); ctx.fillText(right, W - 56, y + 54); }
   };
-  row(268, 'heart', tr('boostHeart'), tr('boostHeartD'));
-  row(352, 'meter', tr('boostMeter'), tr('boostMeterD'));
+  const hv = INV.heart || 0, mv = INV.meter || 0;
+  row(268, PREP.heart, hv > 0, '#ff5d7a', (x, y) => heart(x, y + 1, 12, '#ff5d7a'), tr('boostHeart'), tr('boostHeartD'), tr('owned', hv), () => { if (hv) PREP.heart = !PREP.heart; });
+  row(352, PREP.meter, mv > 0, '#ff8fb1', (x, y) => { ctx.fillStyle = '#15122a'; rr(x - 15, y - 7, 30, 14, 7); ctx.fill(); ctx.fillStyle = '#ff8fb1'; rr(x - 15, y - 7, 16, 14, 7); ctx.fill(); ctx.strokeStyle = '#ffd166'; ctx.lineWidth = 1.5; rr(x - 15, y - 7, 30, 14, 7); ctx.stroke(); }, tr('boostMeter'), tr('boostMeterD'), tr('owned', mv), () => { if (mv) PREP.meter = !PREP.meter; });
   if (PREP.hardOk) {
-    const y = 436, on = PREP.hard;
-    UI.push({ x: 40, y, w: W - 80, h: 70, cb: () => { PREP.hard = !PREP.hard; } });
-    ctx.fillStyle = on ? 'rgba(255,93,122,.16)' : '#1d1938'; rr(40, y, W - 80, 70, 14); ctx.fill();
-    ctx.strokeStyle = on ? '#ff5d7a' : '#3b3563'; ctx.lineWidth = 2; rr(40, y, W - 80, 70, 14); ctx.stroke();
-    ctx.strokeStyle = on ? '#ff5d7a' : '#8f88b5'; ctx.lineWidth = 2.5; rr(58, y + 23, 24, 24, 6); ctx.stroke();
-    if (on) { ctx.beginPath(); ctx.moveTo(63, y + 35); ctx.lineTo(68, y + 41); ctx.lineTo(77, y + 28); ctx.stroke(); }
-    ctx.textAlign = 'left'; ctx.fillStyle = '#f4efe6'; fitFont(tr('hardName'), W - 220, 16); ctx.fillText(tr('hardName'), 96, y + 24);
-    const hd = tr('hardDesc', LEVELS[PREP.li].par);
-    ctx.fillStyle = '#b9b2da'; fitFont(hd, W - 150, 12, 700, FB); ctx.fillText(hd, 96, y + 48);
-    if (PROG.hard && PROG.hard[String(PREP.li + 1)]) { ctx.save(); ctx.translate(W - 70, y + 36); drawHat('crown', 20); ctx.restore(); }
+    const won = PROG.hard && PROG.hard[String(PREP.li + 1)];
+    row(436, PREP.hard, true, '#ffc857', (x, y) => { ctx.save(); ctx.translate(x, y + 12); drawHat('crown', 22); ctx.restore(); }, tr('hardName'), tr('hardDesc', LEVELS[PREP.li].par), won ? '✓' : '', () => { PREP.hard = !PREP.hard; });
   }
   uiBtn(75, 530, W - 150, 56, tr('startLvl'), startPrepared, true);
   uiBtn(75, 600, W - 150, 46, tr('cancel'), () => { PREP = null; setScreen('map'); }, false);
@@ -9585,7 +9603,7 @@ function drawDetail() {
   const d = DETAIL, t = RM ? 0 : T, k = RM ? 1 : Math.min(1, (T - d.t0) / .28), sc = RM ? 1 : .88 + .12 * easeOutBack(k);
   const hero = d.kind === 'hero' ? HEROES.find(h => h.id === d.id) : null, quest = d.kind === 'quest';
   const col = hero ? hero.yarn : quest ? QUEST_COL[d.id] : ITEM_COL(d.id);
-  const ph = hero ? 656 : quest ? 530 : 500, x = 22, w = W - 44, y = Math.round((H - ph) / 2), cx = W / 2, py = y + 112;
+  const ph = hero ? 656 : quest ? 560 : 500, x = 22, w = W - 44, y = Math.round((H - ph) / 2), cx = W / 2, py = y + 112;
   UI.push({ x: 0, y: 0, w: W, h: H, cb: closeDetail });
   UI.push({ x, y, w, h: ph, cb: () => {} }); // a tap on the card itself keeps it open
   ctx.save();
@@ -9790,7 +9808,7 @@ function drawQuestDetail(id, x, y, w, ph, t, col) {
   if (done) { ctx.fillStyle = '#5ce1c6'; circ(tx + ts - 2, ty + ts - 2, 9); ctx.strokeStyle = '#15122a'; ctx.lineWidth = 2.2; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(tx + ts - 6, ty + ts - 2); ctx.lineTo(tx + ts - 3, ty + ts + 1); ctx.lineTo(tx + ts + 2, ty + ts - 5); ctx.stroke(); }
   ctx.textAlign = 'left'; ctx.textBaseline = 'middle'; ctx.fillStyle = done ? '#5ce1c6' : '#f4efe6'; fitFont(item, R - L - 56, 16, 900, FD); ctx.fillText(item, L + ts + 16, ty + ts / 2 + 1);
   // the bonus for all three, with its pips
-  const by2 = y + 500, q3 = weekQuests(q.wk);
+  const by2 = y + 516, q3 = weekQuests(q.wk);
   ctx.fillStyle = 'rgba(92,225,198,.08)'; rr(L - 6, by2 - 16, R - L + 12, 32, 16); ctx.fill();
   windIcon(L + 12, by2, 11);
   ctx.textAlign = 'left'; ctx.fillStyle = '#b9b2da'; fitFont(tr('questBonus'), R - L - 90, 13, 800, FB); ctx.fillText(tr('questBonus'), L + 32, by2 + 1);
@@ -9835,7 +9853,7 @@ function drawItemDetail(id, x, y, w, ph, t, col) {
   fitFont(tr('item.' + id), w - 80, 28); ctx.fillText(tr('item.' + id), cx, y + 214);
   const chips = [];
   if (!a.perm) chips.push([tr('owned', a.have), '#5ce1c6', false]);
-  else if (a.have) chips.push([tr('owned', 1).replace(/\d+/, '✓'), '#5ce1c6', true]);
+  else if (a.have) chips.push([tr('owned', 1).replace(/:?\s*\d+/, ' ✓'), '#5ce1c6', true]);
   if (PRICES[id] && (!a.perm || !a.have)) chips.push([`★ ${PRICES[id]}`, '#ffc857', false]);
   if (chips.length) detailChips(chips, y + 248);
   ctx.textAlign = 'center'; ctx.fillStyle = '#b9b2da'; fitFont(tr('itemd.' + id), w - 60, 12, 700, FB); ctx.fillText(tr('itemd.' + id), cx, y + 276);
