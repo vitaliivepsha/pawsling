@@ -1726,8 +1726,9 @@ function cloudLoaded() {
 }
 function loadProg() {
   const old = lsGet(OLD_PKEY), s = lsGet(PKEY);
-  if (old) { try { PROG = mergeProg(PROG, fromV1(JSON.parse(old))); } catch (e) {} }
+  // v2 first: where the two disagree on a single choice (the team), the earlier one in the merge wins
   if (s) { try { PROG = mergeProg(PROG, JSON.parse(s)); } catch (e) {} }
+  if (old) { try { PROG = mergeProg(PROG, fromV1(JSON.parse(old))); } catch (e) {} }
   if (!TG_CLOUD) return;
   setTimeout(cloudLoaded, 6000); // some clients never answer
   try {
@@ -1735,8 +1736,8 @@ function loadProg() {
       if (!err && vals && (vals[OLD_PKEY] || vals[PKEY])) {
         try {
           const before = PROG.unlocked;
-          if (vals[OLD_PKEY]) PROG = mergeProg(PROG, fromV1(JSON.parse(vals[OLD_PKEY])));
           if (vals[PKEY]) PROG = mergeProg(PROG, JSON.parse(vals[PKEY]));
+          if (vals[OLD_PKEY]) PROG = mergeProg(PROG, fromV1(JSON.parse(vals[OLD_PKEY])));
           seedSeen(); lsSet(PKEY, JSON.stringify(PROG));
           if (PROG.unlocked !== before) { cloudDirty = true; if (SCREEN === 'map') MAP.focus = true; }
         } catch (e) {}
