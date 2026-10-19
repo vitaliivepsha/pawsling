@@ -9115,9 +9115,11 @@ const CHALLENGES = {
   par: { n: 0, ok: g => g.turn <= g.lvl.par },
   portals: { n: 2, ok: g => g.stats.portals >= 2 },
 };
+const CHALLENGE_SPAN = 24;
 function todayChallenge() {
   const today = DAILY.today || utcDay(), dn = Math.floor(Date.parse(today) / DAY_MS);
-  const count = Math.max(1, Math.min(PROG.unlocked, LEVELS.length)), lo = Math.max(0, count - 6);
+  // one of the last 24 open levels (about four rooms), so a late player is not always sent to the hardest room
+  const count = Math.max(1, Math.min(PROG.unlocked, LEVELS.length)), lo = Math.max(0, count - CHALLENGE_SPAN);
   const li = lo + dn % (count - lo);
   let type = Object.keys(CHALLENGES)[dn % 5];
   if (type === 'portals' && LEVELS[li].noBoxes) type = 'knots';
