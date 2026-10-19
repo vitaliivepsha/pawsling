@@ -3658,7 +3658,7 @@ function startLevel(li, noStory, onStart) {
   const c = LEVELS[li].ch, arc = ARC_BEFORE[c];
   if (!noStory && CH_LEVELS[c][0] === li && arc && !(PROG.story && PROG.story[arc])) { showStory(arc, () => startLevel(li, false, onStart)); return; }
   if (!noStory && CH_LEVELS[c][0] === li && STORY[c] && !(PROG.story && PROG.story[c])) { showStory(c, () => startLevel(li, true, onStart)); return; }
-  newRun(li); setScreen('game'); setupWave(0);
+  newRun(li); setScreen('game'); setupWave(0); markDayChallenge();
   if (onStart) onStart();
 }
 
@@ -8396,7 +8396,7 @@ function startPrepared() {
     if (pr.meter && owns('meter')) { useBooster('meter'); G.meter = Math.max(G.meter, 50); }
   };
   if (pr.li < 0) { startEndless(); boost(); }
-  else if (pr.hard) { newRun(pr.li); G.hard = true; setScreen('game'); setupWave(0); boost(); }
+  else if (pr.hard) { newRun(pr.li); G.hard = true; setScreen('game'); setupWave(0); markDayChallenge(); boost(); }
   else startLevel(pr.li, false, boost);
 }
 function drawPrep() {
@@ -9150,6 +9150,9 @@ async function loadDaily() {
     }
   } catch (e) { DAILY.loaded = true; } // offline: fall back to what this device knows
 }
+// today's challenge level counts however it was started: from the daily card, or from the map with boosters.
+// Taken at the start, since winning a new level moves the challenge to another one
+function markDayChallenge() { const ch = todayChallenge(); if (G && ch.li === G.li) G.challenge = ch; }
 function startChallenge() {
   const ch = todayChallenge();
   startLevel(ch.li, false, () => { G.challenge = ch; });
