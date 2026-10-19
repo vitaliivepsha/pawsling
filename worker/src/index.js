@@ -68,6 +68,7 @@ const STREAK_GIFT_DAYS = 30; // every 30 days in a row: the party hat, or a free
 const DAILY = [{ meter: 1 }, { heart: 1 }, { meter: 1 }, { heart: 1 }, { meter: 2 }, { heart: 2 }, { wind: 1, heart: 1, meter: 1 }];
 const RAID_GIFT = { heart: 1, meter: 1 }, RAID_MIN = 30, ROOMS_N = 18;
 const REF_GIFT = { heart: 1, meter: 1 }; // for both the inviter and the new player
+const REF_ROOM_GIFT = { wind: 1 }, REF_ROOM_LEVELS = 4; // for the inviter, once the friend has won the first room
 const WEEK_PRIZES = [{ heart: 3, meter: 3 }, { heart: 2, meter: 2 }, { heart: 1, meter: 1 }];
 const DAY = 86400000;
 const utcDay = (ts = Date.now()) => new Date(ts).toISOString().slice(0, 10);
@@ -80,7 +81,8 @@ const TEXT = {
   uk: { rooms: ['Кухня', 'Вітальня', 'Спальня', 'Ванна', 'Балкон', 'Горище', 'Гараж', 'Підвал', 'Дах', 'Сад', 'Серверна', 'Під\'їзд', 'Склад', 'Фабрика', 'Лабораторія', 'Космостанція', 'Полярна станція', 'Підводна база'], raid: room => `🚨 Тривога! Збунтована техніка напала на кімнату «${room}»!\n\nВідбий нальот за 30 хвилин і отримай бонус: ❤️ +1 серце і ⚡ +1 швидкий старт.`, raidBtn: '🐾 Відбити нальот',
     invite: 'Коти та єноти проти збунтованої техніки! Зіграй зі мною в Pawsling 🐾',
     sent: 'Дякуємо! Повідомлення передано розробнику.',
-    refJoined: n => `${n} тепер у грі за твоїм запрошенням! Вам обом: +1 серце і +1 швидкий старт.`,
+    refJoined: n => `${n} тепер у грі за твоїм запрошенням! Вам обом: +1 серце і +1 швидкий старт. А коли друг пройде першу кімнату, тобі — безкоштовне друге дихання.`,
+    refRoom: n => `🎉 У ${n} уже позаду перша кімната! Подарунок за запрошеного друга: безкоштовне друге дихання 🌬, воно вже в грі.`,
     weekWin: (place, w) => `Тиждень «Нічної зміни» завершено: ти на ${place} місці (${w} хвиль)! Приз уже в магазині.`,
     items: { heart3: ['Серце+ ×3', '+1 серце кожному героєві на 3 рівні.'], meter3: ['Швидкий старт ×3', 'Пів шкали «Бешкету» на старті 3 рівнів.'], hat_party: ['Святковий ковпак', 'Капелюшок для всієї команди, назавжди.'], hat_crown: ['Корона', 'Корона для всієї команди, назавжди.'], hat_bow: ['Бантик', 'Бантик для всієї команди, назавжди.'], rainbow: ['Райдужна нитка', 'Нитки героїв переливаються веселкою, назавжди.'], hero_rex: ['Рекс', 'Новий герой: пес-рятувальник, що лікує друзів, яких зачепить.'], hero_spark: ['Іскра', 'Нова героїня: її удар перескакує блискавкою на найближчого ворога.'] },
     title: 'Друге дихання', desc: 'Продовж рівень: повна міцність квартири й усі герої знову на ногах.',
@@ -94,7 +96,8 @@ const TEXT = {
   en: { rooms: ['Kitchen', 'Living room', 'Bedroom', 'Bathroom', 'Balcony', 'Attic', 'Garage', 'Basement', 'Roof', 'Garden', 'Server room', 'Stairwell', 'Warehouse', 'Factory', 'Lab', 'Space station', 'Polar station', 'Underwater base'], raid: room => `🚨 Alert! Rebel robots are raiding your home: ${room}!\n\nRepel the raid within 30 minutes and get a bonus: ❤️ +1 heart and ⚡ +1 quick start.`, raidBtn: '🐾 Repel the raid',
     invite: 'Cats and raccoons vs rebel robots! Play Pawsling with me 🐾',
     sent: 'Thanks! Your message has been sent to the developer.',
-    refJoined: n => `${n} joined the game with your invite! You both get +1 heart and +1 quick start.`,
+    refJoined: n => `${n} joined the game with your invite! You both get +1 heart and +1 quick start. And once your friend clears the first room, you get a free Second wind.`,
+    refRoom: n => `🎉 ${n} has cleared the first room! Your gift for bringing a friend: a free Second wind 🌬, already in the game.`,
     weekWin: (place, w) => `The Night Shift week is over: you finished #${place} (${w} waves)! Your prize is in the shop.`,
     items: { heart3: ['Heart+ ×3', '+1 heart for every hero, for 3 levels.'], meter3: ['Quick start ×3', 'Half a Mischief meter at the start of 3 levels.'], hat_party: ['Party hat', 'A hat for the whole team, forever.'], hat_crown: ['Crown', 'A crown for the whole team, forever.'], hat_bow: ['Bow', 'A bow for the whole team, forever.'], rainbow: ['Rainbow yarn', 'Hero threads shimmer in rainbow colors, forever.'], hero_rex: ['Rex', 'A new hero: a rescue dog that heals every friend he touches.'], hero_spark: ['Sparky', 'A new hero: her hits arc like lightning to the nearest enemy.'] },
     title: 'Second wind', desc: 'Continue the level: full home strength and every hero back on their feet.',
@@ -108,7 +111,8 @@ const TEXT = {
   pl: { rooms: ['Kuchnia', 'Salon', 'Sypialnia', 'Łazienka', 'Balkon', 'Strych', 'Garaż', 'Piwnica', 'Dach', 'Ogród', 'Serwerownia', 'Klatka schodowa', 'Magazyn', 'Fabryka', 'Laboratorium', 'Stacja kosmiczna', 'Stacja polarna', 'Baza podwodna'], raid: room => `🚨 Alarm! Zbuntowane roboty napadły na pokój: ${room}!\n\nOdeprzyj nalot w 30 minut i zdobądź bonus: ❤️ +1 serce i ⚡ +1 szybki start.`, raidBtn: '🐾 Odeprzyj nalot',
     invite: 'Koty i szopy kontra zbuntowane roboty! Zagraj ze mną w Pawsling 🐾',
     sent: 'Dzięki! Wiadomość trafiła do twórcy gry.',
-    refJoined: n => `${n} dołączył(a) do gry z twojego zaproszenia! Oboje dostajecie +1 serce i +1 szybki start.`,
+    refJoined: n => `${n} dołączył(a) do gry z twojego zaproszenia! Oboje dostajecie +1 serce i +1 szybki start. A gdy znajomy przejdzie pierwszy pokój, dostaniesz darmowy Drugi oddech.`,
+    refRoom: n => `🎉 ${n} ma już za sobą pierwszy pokój! Prezent za zaproszenie znajomego: darmowy Drugi oddech 🌬, już czeka w grze.`,
     weekWin: (place, w) => `Tydzień nocnej zmiany zakończony: zajmujesz ${place}. miejsce (${w} fal)! Nagroda czeka w sklepie.`,
     items: { heart3: ['Serce+ ×3', '+1 serce dla każdego bohatera na 3 poziomy.'], meter3: ['Szybki start ×3', 'Pół paska psot na starcie 3 poziomów.'], hat_party: ['Czapeczka imprezowa', 'Czapka dla całej drużyny, na zawsze.'], hat_crown: ['Korona', 'Korona dla całej drużyny, na zawsze.'], hat_bow: ['Kokardka', 'Kokardka dla całej drużyny, na zawsze.'], rainbow: ['Tęczowa włóczka', 'Nitki bohaterów mienią się tęczą, na zawsze.'], hero_rex: ['Reks', 'Nowy bohater: pies ratownik, który leczy przyjaciół, których dotknie.'], hero_spark: ['Iskra', 'Nowa bohaterka: jej ciosy przeskakują piorunem na najbliższego wroga.'] },
     title: 'Drugi oddech', desc: 'Kontynuuj poziom: pełna wytrzymałość mieszkania i wszyscy bohaterowie znów na nogach.',
@@ -122,7 +126,8 @@ const TEXT = {
   de: { rooms: ['Küche', 'Wohnzimmer', 'Schlafzimmer', 'Badezimmer', 'Balkon', 'Dachboden', 'Garage', 'Keller', 'Dach', 'Garten', 'Serverraum', 'Treppenhaus', 'Lager', 'Fabrik', 'Labor', 'Raumstation', 'Polarstation', 'Unterwasserbasis'], raid: room => `🚨 Alarm! Rebellische Roboter überfallen den Raum: ${room}!\n\nWehr den Überfall in 30 Minuten ab und hol dir einen Bonus: ❤️ +1 Herz und ⚡ +1 Schnellstart.`, raidBtn: '🐾 Überfall abwehren',
     invite: 'Katzen und Waschbären gegen rebellische Roboter! Spiel Pawsling mit mir 🐾',
     sent: 'Danke! Deine Nachricht wurde an den Entwickler weitergeleitet.',
-    refJoined: n => `${n} ist über deine Einladung ins Spiel gekommen! Ihr bekommt beide +1 Herz und +1 Schnellstart.`,
+    refJoined: n => `${n} ist über deine Einladung ins Spiel gekommen! Ihr bekommt beide +1 Herz und +1 Schnellstart. Und schafft dein Freund den ersten Raum, bekommst du eine Zweite Luft gratis.`,
+    refRoom: n => `🎉 ${n} hat den ersten Raum geschafft! Dein Geschenk fürs Einladen: eine Zweite Luft gratis 🌬, schon im Spiel.`,
     weekWin: (place, w) => `Die Nachtschicht-Woche ist vorbei: Platz ${place} (${w} Wellen)! Dein Preis liegt im Shop.`,
     items: { heart3: ['Herz+ ×3', '+1 Herz für jeden Helden, für 3 Level.'], meter3: ['Schnellstart ×3', 'Halbe Unfug-Leiste zu Beginn von 3 Leveln.'], hat_party: ['Partyhut', 'Ein Hut für das ganze Team, für immer.'], hat_crown: ['Krone', 'Eine Krone für das ganze Team, für immer.'], hat_bow: ['Schleife', 'Eine Schleife für das ganze Team, für immer.'], rainbow: ['Regenbogenwolle', 'Die Fäden der Helden schimmern in Regenbogenfarben, für immer.'], hero_rex: ['Rex', 'Ein neuer Held: ein Rettungshund, der jeden berührten Freund heilt.'], hero_spark: ['Funke', 'Eine neue Heldin: ihre Treffer springen als Blitz zum nächsten Gegner.'] },
     title: 'Zweite Luft', desc: 'Spiel weiter: volle Wohnungsstärke und alle Helden wieder auf den Beinen.',
@@ -136,7 +141,8 @@ const TEXT = {
   es: { rooms: ['Cocina', 'Salón', 'Dormitorio', 'Baño', 'Balcón', 'Desván', 'Garaje', 'Sótano', 'Tejado', 'Jardín', 'Sala de servidores', 'Escalera', 'Almacén', 'Fábrica', 'Laboratorio', 'Estación espacial', 'Estación polar', 'Base submarina'], raid: room => `🚨 ¡Alerta! ¡Los robots rebeldes asaltan la habitación: ${room}!\n\nRechaza el asalto en 30 minutos y gana un bonus: ❤️ +1 corazón y ⚡ +1 inicio rápido.`, raidBtn: '🐾 Rechazar el asalto',
     invite: '¡Gatos y mapaches contra robots rebeldes! Juega Pawsling conmigo 🐾',
     sent: '¡Gracias! Tu mensaje se ha enviado al desarrollador.',
-    refJoined: n => `¡${n} se unió al juego con tu invitación! Los dos recibís +1 corazón y +1 inicio rápido.`,
+    refJoined: n => `¡${n} se unió al juego con tu invitación! Los dos recibís +1 corazón y +1 inicio rápido. Y cuando tu amigo supere la primera sala, recibirás un Segundo aliento gratis.`,
+    refRoom: n => `🎉 ¡${n} ya superó la primera sala! Tu regalo por traer a un amigo: un Segundo aliento gratis 🌬, ya está en el juego.`,
     weekWin: (place, w) => `Terminó la semana del turno de noche: quedaste en el puesto ${place} (${w} oleadas). ¡Tu premio está en la tienda!`,
     items: { heart3: ['Corazón+ ×3', '+1 corazón para cada héroe durante 3 niveles.'], meter3: ['Inicio rápido ×3', 'Media barra de travesura al empezar 3 niveles.'], hat_party: ['Gorro de fiesta', 'Un gorro para todo el equipo, para siempre.'], hat_crown: ['Corona', 'Una corona para todo el equipo, para siempre.'], hat_bow: ['Lazo', 'Un lazo para todo el equipo, para siempre.'], rainbow: ['Hilo arcoíris', 'Los hilos de los héroes brillan con los colores del arcoíris, para siempre.'], hero_rex: ['Rex', 'Un nuevo héroe: un perro de rescate que cura a cada amigo que toca.'], hero_spark: ['Chispa', 'Una nueva heroína: sus golpes saltan como un rayo al enemigo más cercano.'] },
     title: 'Segundo aliento', desc: 'Continúa el nivel: resistencia completa y todos los héroes de nuevo en pie.',
@@ -319,6 +325,7 @@ export default {
     await ensureTables(env.DB);
     const night = clampInt(body.night, LIMITS.night), stars = clampInt(body.stars, LIMITS.stars), week = clampInt(body.week, LIMITS.night);
     if (night || stars) await save(env, user, night, stars);
+    if (clampInt(body.levels, 500) >= REF_ROOM_LEVELS) await refRoomDone(env, user);
     if (week) await saveWeek(env.DB, user, week);
 
     if (body.board === 'week') return json(await weekBoard(env.DB, user.id));
@@ -393,6 +400,16 @@ async function daily(env, user, body = {}) {
   return { claimed, streak, run, bonus, chestAt: chest.ready_at * 1000, reward, gifted, challengeDone: !!row && row.challenge_day === today, invited: inv.n, bot: botName,
     notify: !!(nrow && nrow.enabled), raid: raid ? { id: raid.id, room: raid.room, expires: raid.expires * 1000 } : null,
     items: await inventory(db, user.id), today, weekEnds: weekStart() + 7 * DAY, news: newsUrl ? news : null, newsDone };
+}
+// an invited player has won the first room: the inviter's gift, once per invited player
+async function refRoomDone(env, user) {
+  const db = env.DB, ref = await db.prepare('SELECT ref_by FROM referrals WHERE user_id = ?1').bind(user.id).first();
+  if (!ref) return;
+  const r = await db.prepare('INSERT OR IGNORE INTO ref_rooms (user_id, at) VALUES (?1, ?2)').bind(user.id, Math.floor(Date.now() / 1000)).run();
+  if (!r.meta.changes) return;
+  await grant(db, ref.ref_by, REF_ROOM_GIFT);
+  const il = await db.prepare('SELECT lang FROM daily WHERE user_id = ?1').bind(ref.ref_by).first();
+  await tg(env, 'sendMessage', { chat_id: ref.ref_by, text: text(il && il.lang).refRoom(displayName(user)) });
 }
 async function grant(db, id, g) {
   await db.batch(Object.entries(g).map(([k, n]) => db.prepare(
@@ -484,6 +501,7 @@ async function ensureTables(db) {
     db.prepare('CREATE TABLE IF NOT EXISTS chests (user_id INTEGER PRIMARY KEY, ready_at INTEGER NOT NULL, ping_day TEXT)'),
     // when a player away for days was last sent the 'we miss you' gift
     db.prepare('CREATE TABLE IF NOT EXISTS comebacks (user_id INTEGER PRIMARY KEY, at INTEGER NOT NULL)'),
+    db.prepare('CREATE TABLE IF NOT EXISTS ref_rooms (user_id INTEGER PRIMARY KEY, at INTEGER NOT NULL)'),
     db.prepare('CREATE TABLE IF NOT EXISTS album (user_id INTEGER NOT NULL, card TEXT NOT NULL, PRIMARY KEY (user_id, card))'),
     db.prepare('CREATE TABLE IF NOT EXISTS quests (user_id INTEGER NOT NULL, week TEXT NOT NULL, quest TEXT NOT NULL, PRIMARY KEY (user_id, week, quest))'),
     db.prepare(`CREATE TABLE IF NOT EXISTS chal (week TEXT NOT NULL, user_id INTEGER NOT NULL, name TEXT NOT NULL, turns INTEGER NOT NULL,
