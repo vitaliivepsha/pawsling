@@ -8487,11 +8487,11 @@ function drawShop() {
     ctx.fillStyle = tg; rr(tx, ty, ts, ts, 11); ctx.fill();
     ctx.fillStyle = 'rgba(255,255,255,.14)'; rr(tx + 3, ty + 3, ts - 6, ts * .34, 8); ctx.fill();
     ctx.save(); ctx.translate(tx + ts / 2, ty + ts / 2); ctx.scale(.85, .85); drawShopIcon(id, 0, 0); ctx.restore();
-    ctx.textAlign = 'left'; ctx.fillStyle = '#f4efe6'; fitFont(tr('item.' + id), W - 230, 15); ctx.fillText(tr('item.' + id), 78, y + 19);
+    ctx.textAlign = 'left'; ctx.fillStyle = '#f4efe6'; fitFont(tr('item.' + id), W - 246, 15); ctx.fillText(tr('item.' + id), 78, y + 19);
     const desc = `${tr('itemd.' + id)} · ${tr('owned', a.have)}`;
-    ctx.fillStyle = '#b9b2da'; fitFont(desc, W - 230, 11.5, 700, FB); ctx.fillText(desc, 78, y + 40);
+    ctx.fillStyle = '#b9b2da'; fitFont(desc, W - 246, 11.5, 700, FB); ctx.fillText(desc, 78, y + 40);
     UI.push({ x: 16, y, w: W - 32, h: 56, cb: () => openDetail('item', id) });
-    infoDot(W - 140, y + 28);
+    infoDot(W - 148, y + 28);
     uiBtn(W - 130, y + 8, 104, 40, a.label, a.cb, a.primary);
   });
 
