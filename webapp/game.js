@@ -10394,9 +10394,39 @@ function drawEnd() {
     ctx.textAlign = 'right'; ctx.fillStyle = '#fff'; ctx.font = `900 16px ${FD}`; ctx.fillText(v, W - 96, y);
   });
   if (win && G.challengeWon) {
-    ctx.textAlign = 'center'; ctx.fillStyle = '#ffc857';
-    const cw = tr('chWon', tr(G.challengeWon === 'heart' ? 'boostHeart' : 'boostMeter'));
-    fitFont(cw, W - 40, 15, 900, FD); ctx.fillText(cw, W / 2, 570);
+    // today's challenge is done: a gold plaque pops in with the gift, a tick and a burst of sparkles
+    if (G.chWonAt == null) G.chWonAt = T;
+    const ek = RM ? 1 : Math.min(1, (T - G.chWonAt) / .45), sc = RM ? 1 : easeOutBack(ek), heartGift = G.challengeWon === 'heart';
+    const cw = tr('chWon', tr(heartGift ? 'boostHeart' : 'boostMeter'));
+    const px = 40, pw = W - 80, py = 546, ph = 42;
+    ctx.save(); ctx.globalAlpha = Math.min(1, ek * 2);
+    ctx.translate(W / 2, py + ph / 2); ctx.scale(sc, sc); ctx.translate(-W / 2, -(py + ph / 2));
+    if (!RM) { ctx.save(); ctx.globalCompositeOperation = 'lighter'; glowAt(W / 2, py + ph / 2, 170, '255,200,87', .22 + .08 * Math.sin(T * 4)); ctx.restore(); }
+    ctx.fillStyle = 'rgba(0,0,0,.35)'; rr(px, py + 4, pw, ph, 16); ctx.fill();
+    const g = ctx.createLinearGradient(px, 0, px + pw, 0);
+    g.addColorStop(0, '#4a3512'); g.addColorStop(.5, '#6b4a14'); g.addColorStop(1, '#4a3512');
+    ctx.fillStyle = g; rr(px, py, pw, ph, 16); ctx.fill();
+    ctx.fillStyle = 'rgba(255,255,255,.12)'; rr(px + 6, py + 4, pw - 12, ph * .34, 11); ctx.fill();
+    ctx.strokeStyle = '#ffc857'; ctx.lineWidth = 2.5; rr(px, py, pw, ph, 16); ctx.stroke();
+    // the gift tile and a tick
+    const tx = px + 9, ty = py + 5, ts = 32;
+    const tg = ctx.createLinearGradient(tx, ty, tx + ts, ty + ts);
+    tg.addColorStop(0, '#d9577f'); tg.addColorStop(1, '#5a2440');
+    ctx.fillStyle = tg; rr(tx, ty, ts, ts, 10); ctx.fill();
+    ctx.save(); ctx.translate(tx + ts / 2, ty + ts / 2); ctx.scale(.8, .8); drawShopIcon(heartGift ? 'heart3' : 'meter3', 0, 0); ctx.restore();
+    ctx.fillStyle = '#5ce1c6'; circ(tx + ts - 1, ty + ts - 2, 9);
+    ctx.strokeStyle = '#15122a'; ctx.lineWidth = 2.2; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(tx + ts - 5, ty + ts - 2); ctx.lineTo(tx + ts - 2, ty + ts + 1); ctx.lineTo(tx + ts + 3, ty + ts - 5); ctx.stroke();
+    ctx.textAlign = 'left'; ctx.textBaseline = 'middle'; ctx.fillStyle = '#ffe08a'; fitFont(cw, pw - ts - 40, 16, 900, FD); ctx.fillText(cw, tx + ts + 14, py + ph / 2 + 1);
+    ctx.restore();
+    // sparkles bursting out as it lands, then a couple drifting
+    if (!RM) {
+      const age = T - G.chWonAt;
+      for (let k = 0; k < 10; k++) {
+        const a = k / 10 * TAU, f = Math.min(1, age / .8), d = 30 + f * 120;
+        if (age < 1) star(W / 2 + Math.cos(a) * d, py + ph / 2 + Math.sin(a) * d * .45, 5 * (1 - f) + 1, `rgba(255,224,138,${1 - f})`);
+      }
+      for (let k = 0; k < 3; k++) { const ph2 = frac(T * .6 + k / 3); star(px + 30 + k * (pw - 60) / 2, py - 4 - ph2 * 14, 2.5, `rgba(255,243,196,${Math.sin(ph2 * Math.PI)})`); }
+    }
   }
   if (win && G.newBest) {
     ctx.textAlign = 'center'; ctx.fillStyle = '#5ce1c6'; ctx.font = `800 14px ${FB}`;
