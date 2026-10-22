@@ -3548,7 +3548,7 @@ function setScreen(s) {
   document.body.style.backgroundColor = col;
   if (TG && tgv('6.1')) { try { TG.setHeaderColor(col); TG.setBackgroundColor(col); } catch (e) {} }
 }
-function goMap() { G = null; setScreen('map'); }
+function goMap() { if (G && G.lvl && G.lvl.endless && G.state !== 'lose') endEndless(); G = null; setScreen('map'); }
 function closeHowto() { lsSet('pawsling-seen', '1'); setScreen('map'); }
 
 function uiBtn(x, y, w, h, label, cb, primary) {
@@ -3674,6 +3674,7 @@ function startEndless() {
   G.li = -1;
   G.lvl = { ch: 0, endless: true, waves: [] };
   G.ch = CHAPTERS[0];
+  G.bestBefore = PROG.endless || 0; G.xpWaves = 0;
   setScreen('game');
   setupWave(0);
 }
@@ -3711,15 +3712,22 @@ function genWave(n) {
   }
   return out;
 }
-function endEndless() {
-  G.newBest = G.wave > (PROG.endless || 0);
-  if (G.newBest) { PROG.endless = G.wave; saveProg(); }
-  gainXp(G.wave * 4);
+// waves survived so far count at once (best, this week's best, the quest, the boards),
+// so leaving the run from the menu or closing the game keeps them
+function keepEndless(n) {
   const wk = weekKey();
   if (PROG.wk !== wk) { PROG.wk = wk; PROG.wkBest = 0; }
-  if (G.wave > PROG.wkBest) { PROG.wkBest = G.wave; saveProg(); }
-  questMax('night', G.wave);
+  if (n > (PROG.endless || 0)) PROG.endless = n;
+  if (n > PROG.wkBest) PROG.wkBest = n;
+  saveProg();
+  questMax('night', n);
   submitScores();
+}
+// the run ends: by losing, or by leaving it; XP only for waves not paid yet (a Second wind goes on)
+function endEndless() {
+  keepEndless(G.wave);
+  G.newBest = G.wave > (G.bestBefore || 0);
+  gainXp((G.wave - (G.xpWaves || 0)) * 4); G.xpWaves = G.wave;
 }
 
 function burst(x, y, col, n = 12, sp = 180, shape) {
@@ -4422,6 +4430,7 @@ function waveClear() {
     Amb.duck(.25); playWin(G.lvl.ch, G.stars); haptic('success');
     return;
   }
+  if (G.lvl.endless) keepEndless(G.wave + 1);
   const heal = Math.round(G.maxHp * .15);
   G.hp = Math.min(G.maxHp, G.hp + heal);
   for (const h of G.heroes) { if (h.ko) { h.ko = 0; h.hearts = 1; } else h.hearts = Math.min(h.maxHearts, h.hearts + 1); }
