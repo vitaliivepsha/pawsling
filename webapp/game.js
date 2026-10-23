@@ -3153,32 +3153,94 @@ function roomDeep(b, ch) {
   });
 }
 
+const PLANT = { gens: [95, 355], panel: [225, TOP + 70], spark: [[150, TOP + 30], [300, TOP + 30], [40, TOP + 30], [410, TOP + 30]], boxes: [[22, 260], [W - 22, 260]], tr: [34, BOT - 56], spools: [W - 36, BOT - 40] };
 function roomPlant(b, ch) {
-  // a power plant hall: dark steel walls, two big generators with yellow bands, cables and a hazard stripe
+  const R = seeded(421);
+  // the hall: dark ribbed steel walls, a riveted floor, a yellow-black stripe along the bottom
   const g = b.createLinearGradient(0, TOP, 0, BOT);
-  g.addColorStop(0, '#1d1a12'); g.addColorStop(1, '#0d0b06');
+  g.addColorStop(0, '#22201a'); g.addColorStop(1, '#0e0c08');
   b.fillStyle = g; b.fillRect(0, TOP, W, BOT - TOP);
-  for (let x = 0; x < W; x += 75) { b.fillStyle = 'rgba(255,255,255,.035)'; b.fillRect(x, TOP, 2, 200); }
-  for (const gx of [95, 355]) {
-    const cg = b.createLinearGradient(gx - 55, 0, gx + 55, 0);
-    cg.addColorStop(0, '#2c2a26'); cg.addColorStop(.45, '#5a564c'); cg.addColorStop(1, '#22201b');
-    b.fillStyle = cg; rr(gx - 55, TOP + 40, 110, 150, 18, b); b.fill();
-    b.fillStyle = '#ffd60a'; b.fillRect(gx - 55, TOP + 100, 110, 12);
-    b.fillStyle = '#15120a'; for (let k = 0; k < 5; k++) b.fillRect(gx - 50 + k * 22, TOP + 100, 10, 12);
-    b.fillStyle = '#ffd60a'; b.beginPath(); b.moveTo(gx + 4, TOP + 135); b.lineTo(gx - 10, TOP + 160); b.lineTo(gx + 1, TOP + 160); b.lineTo(gx - 6, TOP + 182); b.lineTo(gx + 12, TOP + 154); b.lineTo(gx + 1, TOP + 154); b.closePath(); b.fill();
+  for (let x = 0; x < W; x += 30) { b.fillStyle = 'rgba(255,255,255,.03)'; b.fillRect(x, TOP, 14, 220); b.fillStyle = 'rgba(0,0,0,.2)'; b.fillRect(x + 14, TOP, 2, 220); }
+  const fy = TOP + 220;
+  for (let y = fy; y < BOT; y += 60) for (let x = 0; x < W; x += 90) {
+    const pg = b.createLinearGradient(x, y, x + 90, y + 60); pg.addColorStop(0, '#2a2720'); pg.addColorStop(1, '#1c1a14');
+    b.fillStyle = pg; b.fillRect(x + 1, y + 1, 88, 58);
+    b.fillStyle = 'rgba(255,230,160,.12)'; for (const [rx, ry] of [[6, 6], [82, 6], [6, 52], [82, 52]]) b.fillRect(x + rx, y + ry, 2, 2);
   }
-  b.strokeStyle = '#2a2720'; b.lineWidth = 7; b.lineCap = 'round';
-  for (const [x1, x2] of [[150, 300], [40, 410]]) { b.beginPath(); b.moveTo(x1, TOP + 30); b.quadraticCurveTo((x1 + x2) / 2, TOP + 95, x2, TOP + 30); b.stroke(); }
-  for (let x = -20; x < W; x += 36) { b.fillStyle = '#ffd60a'; b.beginPath(); b.moveTo(x, BOT - 14); b.lineTo(x + 18, BOT - 14); b.lineTo(x + 34, BOT); b.lineTo(x + 16, BOT); b.closePath(); b.fill(); }
+  b.fillStyle = 'rgba(0,0,0,.5)'; b.fillRect(0, fy - 3, W, 3);
+  for (let k = 0; k < 800; k++) { b.fillStyle = `rgba(${R() < .5 ? '255,230,160' : '0,0,0'},${.02 + R() * .04})`; b.fillRect(R() * W, fy + R() * (BOT - fy), 1.5, 1.5); }
+  // a high-voltage sign stencilled on the floor with the room number
+  b.save(); b.translate(225, 400); b.globalAlpha = .08; b.fillStyle = '#ffd60a';
+  b.beginPath(); b.moveTo(0, -70); b.lineTo(70, 50); b.lineTo(-70, 50); b.closePath(); b.fill();
+  b.globalAlpha = .14; b.fillStyle = '#0e0c08'; b.beginPath(); b.moveTo(6, -38); b.lineTo(-14, 6); b.lineTo(0, 6); b.lineTo(-8, 38); b.lineTo(16, -6); b.lineTo(2, -6); b.closePath(); b.fill();
+  b.globalAlpha = .1; b.fillStyle = '#ffd60a'; b.font = `900 34px ${FD}`; b.textAlign = 'center'; b.textBaseline = 'middle'; b.fillText('19', 0, 84);
+  b.restore();
+  windowLight(b, ch, .04);
+  // cables sagging across the ceiling, hung on ceramic insulators
+  b.lineCap = 'round';
+  for (const [x1, x2, sag] of [[150, 300, 60], [40, 410, 70], [0, 150, 30], [300, W, 30]]) {
+    b.strokeStyle = '#141210'; b.lineWidth = 7; b.beginPath(); b.moveTo(x1, TOP + 30); b.quadraticCurveTo((x1 + x2) / 2, TOP + 30 + sag, x2, TOP + 30); b.stroke();
+    b.strokeStyle = 'rgba(255,255,255,.08)'; b.lineWidth = 2; b.stroke();
+  }
+  for (const x of [40, 150, 300, 410]) {
+    b.fillStyle = '#3a372f'; b.fillRect(x - 2, TOP, 4, 22);
+    for (let k = 0; k < 3; k++) { b.fillStyle = k % 2 ? '#c9c2b0' : '#e8e2d4'; b.beginPath(); b.ellipse(x, TOP + 18 + k * 5, 8, 3, 0, 0, TAU); b.fill(); }
+  }
+  // two generators: steel drums with cooling fins, a hazard band, a bolt badge and a dial
+  for (const gx of PLANT.gens) {
+    b.fillStyle = 'rgba(0,0,0,.4)'; rr(gx - 58, TOP + 46, 116, 158, 18, b); b.fill();
+    const cg = b.createLinearGradient(gx - 55, 0, gx + 55, 0);
+    cg.addColorStop(0, '#2c2a26'); cg.addColorStop(.45, '#6a655a'); cg.addColorStop(1, '#22201b');
+    b.fillStyle = cg; rr(gx - 55, TOP + 40, 110, 158, 18, b); b.fill();
+    b.strokeStyle = '#15120a'; b.lineWidth = 2; rr(gx - 55, TOP + 40, 110, 158, 18, b); b.stroke();
+    b.fillStyle = 'rgba(0,0,0,.35)'; for (let y = TOP + 54; y < TOP + 96; y += 7) b.fillRect(gx - 44, y, 88, 3);
+    hazardStripe(b, gx - 55, TOP + 100, 110, 14, 1, 14);
+    b.fillStyle = '#15120a'; b.beginPath(); b.arc(gx, TOP + 150, 22, 0, TAU); b.fill();
+    b.strokeStyle = '#ffd60a'; b.lineWidth = 3; b.stroke();
+    b.fillStyle = '#ffd60a'; b.beginPath(); b.moveTo(gx + 4, TOP + 134); b.lineTo(gx - 9, TOP + 153); b.lineTo(gx, TOP + 153); b.lineTo(gx - 5, TOP + 168); b.lineTo(gx + 10, TOP + 147); b.lineTo(gx + 1, TOP + 147); b.closePath(); b.fill();
+    b.fillStyle = '#e9e4d8'; b.beginPath(); b.arc(gx + 34, TOP + 178, 9, 0, TAU); b.fill(); b.strokeStyle = '#15120a'; b.lineWidth = 1.5; b.stroke();
+    b.strokeStyle = '#e5484d'; b.lineWidth = 2; b.beginPath(); b.arc(gx + 34, TOP + 178, 7, -.5, .5); b.stroke();
+    b.fillStyle = '#3a372f'; b.fillRect(gx - 40, TOP + 198, 80, 10);
+  }
+  // the control panel between them
+  const [px, py] = PLANT.panel;
+  b.fillStyle = 'rgba(0,0,0,.4)'; rr(px - 44, py - 4, 92, 74, 8, b); b.fill();
+  b.fillStyle = '#34312a'; rr(px - 46, py - 8, 92, 74, 8, b); b.fill();
+  b.strokeStyle = '#5a564c'; b.lineWidth = 1.5; rr(px - 46, py - 8, 92, 74, 8, b); b.stroke();
+  for (let k = 0; k < 4; k++) { const sx = px - 33 + k * 22; b.fillStyle = '#15120a'; rr(sx - 6, py + 6, 12, 26, 3, b); b.fill(); b.fillStyle = k % 2 ? '#e5484d' : '#9ee06a'; rr(sx - 5, py + (k % 2 ? 8 : 20), 10, 10, 2, b); b.fill(); }
+  b.fillStyle = '#0a0906'; rr(px - 36, py + 40, 72, 18, 3, b); b.fill();
+  // breaker boxes on the walls with a lever and a warning sticker
+  for (const [bx, by] of PLANT.boxes) {
+    b.fillStyle = 'rgba(0,0,0,.4)'; b.fillRect(bx - 18, by + 4, 38, 70);
+    b.fillStyle = '#4a463c'; rr(bx - 20, by, 40, 70, 5, b); b.fill();
+    b.strokeStyle = '#6a655a'; b.lineWidth = 1.5; rr(bx - 20, by, 40, 70, 5, b); b.stroke();
+    b.fillStyle = '#ffd60a'; b.beginPath(); b.moveTo(bx, by + 8); b.lineTo(bx + 10, by + 24); b.lineTo(bx - 10, by + 24); b.closePath(); b.fill();
+    b.fillStyle = '#15120a'; b.fillRect(bx - 1, by + 12, 2, 7);
+    b.fillStyle = '#15120a'; b.fillRect(bx - 4, by + 32, 8, 28); b.fillStyle = '#e5484d'; b.fillRect(bx - 6, by + 34, 12, 8);
+  }
+  // a transformer with fins (bottom left) and cable spools (bottom right)
+  const [tx, ty] = PLANT.tr;
+  b.fillStyle = 'rgba(0,0,0,.4)'; b.fillRect(tx - 28, ty + 40, 60, 6);
+  b.fillStyle = '#5a6a50'; rr(tx - 26, ty - 20, 52, 60, 6, b); b.fill();
+  b.fillStyle = 'rgba(0,0,0,.3)'; for (let x = tx - 22; x < tx + 24; x += 6) b.fillRect(x, ty - 14, 3, 48);
+  for (const ox of [-12, 0, 12]) { b.fillStyle = '#e8e2d4'; for (let k = 0; k < 3; k++) { b.beginPath(); b.ellipse(tx + ox, ty - 22 - k * 5, 5, 2, 0, 0, TAU); b.fill(); } }
+  hazardStripe(b, tx - 26, ty + 26, 52, 8, .9, 10);
+  const [sx2, sy2] = PLANT.spools;
+  for (const [ox, oy, r] of [[-14, 6, 18], [12, 0, 22]]) {
+    b.fillStyle = '#6a4a2e'; b.beginPath(); b.arc(sx2 + ox, sy2 + oy, r, 0, TAU); b.fill();
+    b.strokeStyle = '#141210'; b.lineWidth = 4; for (let rr2 = r * .4; rr2 < r - 3; rr2 += 4) { b.beginPath(); b.arc(sx2 + ox, sy2 + oy, rr2, 0, TAU); b.stroke(); }
+    b.fillStyle = '#3a2a18'; b.beginPath(); b.arc(sx2 + ox, sy2 + oy, r * .3, 0, TAU); b.fill();
+  }
+  hazardStripe(b, 0, BOT - 14, W, 14, 1, 18);
   b.fillStyle = '#15120a'; b.fillRect(0, BOT - 16, W, 2);
-  windowLight(b, ch, .05);
-  vignette(b, '10,8,0', .6);
+  vignette(b, '10,8,0', .55);
   hudBars(b, ch, c => {
     c.strokeStyle = 'rgba(255,214,10,.3)'; c.lineWidth = 1.5; c.beginPath();
     for (let x = 0; x < W; x += 24) { c.moveTo(x, 26); c.lineTo(x + 8, 18); c.lineTo(x + 12, 26); c.lineTo(x + 20, 18); }
     c.stroke();
   });
 }
+
 const ROOMS = [roomKitchen, roomLiving, roomBedroom, roomBath, roomBalcony, roomAttic, roomGarage, roomBasement, roomRoof, roomGarden, roomServer, roomStairs, roomStore, roomFactory, roomLab, roomSpace, roomPolar, roomDeep, roomPlant];
 // Each room is painted the first time it is needed (the rest are warmed up after start),
 // so the game opens without painting all ten rooms first.
@@ -3258,8 +3320,26 @@ function drawRoomUnder(c) {
     const fl = frac(t * .09);
     if (!RM && fl > .97) glowAt(225, TOP + 220, 560, '200,215,255', .18 * Math.sin((fl - .97) / .03 * Math.PI));
   } else if (c === 18) {
-    // the generators' warning lamps pulse, and now and then the whole hall flickers
-    for (const gx of [95, 355]) glowAt(gx, TOP + 106, 70, '255,214,10', .1 + .06 * Math.sin(t * 3 + gx));
+    // the generators hum: their bolt badges and bands pulse, the dial needles shiver; panel lamps blink;
+    // now and then a cable throws a spark and the whole hall flickers
+    for (const gx of PLANT.gens) {
+      glowAt(gx, TOP + 150, 60, '255,214,10', .2 + .1 * Math.sin(t * 3 + gx));
+      glowAt(gx, TOP + 107, 70, '255,214,10', .08 + .05 * Math.sin(t * 3 + gx));
+      ctx.save(); ctx.globalCompositeOperation = 'source-over';
+      const na = -.2 + (RM ? 0 : Math.sin(t * 9 + gx) * .25);
+      ctx.strokeStyle = '#15120a'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.moveTo(gx + 34, TOP + 178); ctx.lineTo(gx + 34 + Math.cos(na - Math.PI / 2) * 7, TOP + 178 + Math.sin(na - Math.PI / 2) * 7); ctx.stroke();
+      ctx.restore();
+    }
+    const [px, py] = PLANT.panel;
+    for (let k = 0; k < 5; k++) { const on = RM || frac(t * (.7 + k * .23) + k * .3) < .5; if (on) { glowAt(px - 28 + k * 14, py + 49, 8, k % 2 ? '255,90,60' : '160,255,120', .7); } }
+    for (const [bx, by] of PLANT.boxes) glowAt(bx, by + 16, 18, '255,214,10', .15 + .1 * Math.sin(t * 4 + bx));
+    const sp = frac(t * .5), si = Math.floor(t * .5) % PLANT.spark.length, [sx, sy] = PLANT.spark[si];
+    if (!RM && sp < .18) {
+      const k2 = 1 - sp / .18;
+      glowAt(sx, sy + 14, 26, '255,240,170', .9 * k2);
+      ctx.strokeStyle = `rgba(255,240,170,${k2})`; ctx.lineWidth = 1.5;
+      for (let q = 0; q < 7; q++) { const a = q / 7 * TAU + si, l = 6 + 12 * (1 - k2); ctx.beginPath(); ctx.moveTo(sx, sy + 14); ctx.lineTo(sx + Math.cos(a) * l, sy + 14 + Math.sin(a) * l + (1 - k2) * 10); ctx.stroke(); }
+    }
     const fl = frac(t * .21);
     if (!RM && fl > .96) glowAt(225, TOP + 260, 520, '255,230,150', .12 * Math.sin((fl - .96) / .04 * Math.PI));
   } else if (c === 17) {
@@ -6350,62 +6430,152 @@ function drawJelly(e, r, t) {
   }
 }
 function drawArcs() {
-  // power arcs between two terminals: live, a crackling yellow-white bolt; off (it switches on next turn), a dim dashed line
+  // power arcs between two terminals. Live: a thick crackling yellow-white bolt with branches, a glow along it,
+  // a pulse running end to end and terminals lit. Off (live next turn): a dim amber dashed line with warning marks
+  // and the terminals charging up.
   const t = RM ? 0 : T;
   for (const a of G.arcs || []) {
     const on = arcOn(a), dx = a.x2 - a.x1, dy = a.y2 - a.y1, len = Math.hypot(dx, dy) || 1, nx = -dy / len, ny = dx / len;
     if (on) {
       ctx.save(); ctx.globalCompositeOperation = 'lighter';
-      const n = Math.max(6, Math.round(len / 18)), step = Math.floor(t * 14);
-      for (const [w, c] of [[10, 'rgba(255,214,10,.16)'], [4, 'rgba(255,240,170,.7)'], [1.6, '#ffffff']]) {
-        ctx.strokeStyle = c; ctx.lineWidth = w; ctx.lineJoin = 'round'; ctx.beginPath();
-        for (let k = 0; k <= n; k++) { const f = k / n, j = k === 0 || k === n ? 0 : Math.sin(k * 2.7 + step * 1.3) * 7; ctx.lineTo(a.x1 + dx * f + nx * j, a.y1 + dy * f + ny * j); }
-        ctx.stroke();
+      // a soft glow band along the arc
+      ctx.strokeStyle = 'rgba(255,214,10,.14)'; ctx.lineWidth = 26; ctx.lineCap = 'round'; ctx.beginPath(); ctx.moveTo(a.x1, a.y1); ctx.lineTo(a.x2, a.y2); ctx.stroke();
+      const n = Math.max(6, Math.round(len / 16)), step = Math.floor(t * 14);
+      const pts = [];
+      for (let k = 0; k <= n; k++) { const f = k / n, j = k === 0 || k === n ? 0 : (Math.sin(k * 2.7 + step * 1.3) + Math.sin(k * 5.1 - step * .7) * .5) * 7; pts.push([a.x1 + dx * f + nx * j, a.y1 + dy * f + ny * j]); }
+      for (const [w, c] of [[12, 'rgba(255,214,10,.22)'], [5, 'rgba(255,240,170,.8)'], [2, '#ffffff']]) {
+        ctx.strokeStyle = c; ctx.lineWidth = w; ctx.lineJoin = 'round'; ctx.beginPath(); pts.forEach(([px, py], k) => k ? ctx.lineTo(px, py) : ctx.moveTo(px, py)); ctx.stroke();
       }
+      // branches flicking off the main bolt
+      ctx.strokeStyle = 'rgba(255,240,170,.7)'; ctx.lineWidth = 1.5;
+      for (let q = 0; q < 3; q++) {
+        const k = 1 + ((step * 3 + q * 5) % (n - 1)), [bx, by] = pts[k], sd = (step + q) % 2 ? 1 : -1;
+        ctx.beginPath(); ctx.moveTo(bx, by); ctx.lineTo(bx + nx * sd * 10 + dx / len * 6, by + ny * sd * 10 + dy / len * 6); ctx.lineTo(bx + nx * sd * 16 + dx / len * 2, by + ny * sd * 18 + dy / len * 2); ctx.stroke();
+      }
+      // a pulse running along it
+      const pf = frac(t * 1.6); glowAt(a.x1 + dx * pf, a.y1 + dy * pf, 16, '255,255,220', .8);
       ctx.restore();
     } else {
-      ctx.save(); ctx.strokeStyle = 'rgba(255,214,10,.3)'; ctx.lineWidth = 2; ctx.setLineDash([6, 8]); ctx.lineDashOffset = -t * 10;
-      ctx.beginPath(); ctx.moveTo(a.x1, a.y1); ctx.lineTo(a.x2, a.y2); ctx.stroke(); ctx.restore();
+      const p = .5 + .5 * Math.sin(t * 4);
+      ctx.save(); ctx.strokeStyle = `rgba(255,190,60,${.28 + .18 * p})`; ctx.lineWidth = 2; ctx.setLineDash([6, 8]); ctx.lineDashOffset = -t * 18;
+      ctx.beginPath(); ctx.moveTo(a.x1, a.y1); ctx.lineTo(a.x2, a.y2); ctx.stroke(); ctx.setLineDash([]);
+      for (let f = .25; f < .8; f += .25) {
+        const mx = a.x1 + dx * f, my = a.y1 + dy * f;
+        ctx.globalAlpha = .45 + .4 * p;
+        ctx.fillStyle = '#15120a'; ctx.beginPath(); ctx.moveTo(mx, my - 9); ctx.lineTo(mx + 9, my + 7); ctx.lineTo(mx - 9, my + 7); ctx.closePath(); ctx.fill();
+        ctx.fillStyle = '#ffd60a'; ctx.beginPath(); ctx.moveTo(mx, my - 7); ctx.lineTo(mx + 7, my + 5.5); ctx.lineTo(mx - 7, my + 5.5); ctx.closePath(); ctx.fill();
+        ctx.fillStyle = '#15120a'; ctx.beginPath(); ctx.moveTo(mx + 1.5, my - 4); ctx.lineTo(mx - 2.5, my + 1); ctx.lineTo(mx, my + 1); ctx.lineTo(mx - 1.5, my + 4.5); ctx.lineTo(mx + 2.5, my - .5); ctx.lineTo(mx, my - .5); ctx.closePath(); ctx.fill();
+      }
+      ctx.restore();
     }
+    // terminals: insulated posts with a lamp
     for (const [px, py] of [[a.x1, a.y1], [a.x2, a.y2]]) {
-      ctx.fillStyle = '#2a2720'; rr(px - 9, py - 9, 18, 18, 4); ctx.fill();
-      ctx.strokeStyle = '#5a564c'; ctx.lineWidth = 1.5; rr(px - 9, py - 9, 18, 18, 4); ctx.stroke();
-      ctx.fillStyle = on ? '#ffd60a' : '#6b5a1a'; circ(px, py, 4);
+      ctx.fillStyle = 'rgba(0,0,0,.4)'; rr(px - 11, py - 8, 22, 22, 5); ctx.fill();
+      const tg = ctx.createLinearGradient(px - 11, 0, px + 11, 0); tg.addColorStop(0, '#5a564c'); tg.addColorStop(1, '#22201b');
+      ctx.fillStyle = tg; rr(px - 11, py - 11, 22, 22, 5); ctx.fill();
+      ctx.strokeStyle = on ? '#ffd60a' : '#6a655a'; ctx.lineWidth = 1.5; rr(px - 11, py - 11, 22, 22, 5); ctx.stroke();
+      ctx.fillStyle = '#e8e2d4'; for (const sd of [-1, 1]) { ctx.beginPath(); ctx.ellipse(px + sd * 7, py + 7, 3, 1.5, 0, 0, TAU); ctx.fill(); }
+      if (on) { ctx.save(); ctx.globalCompositeOperation = 'lighter'; glowAt(px, py, 22, '255,214,10', .9); ctx.restore(); ctx.fillStyle = '#fff3b0'; circ(px, py - 1, 4.5); }
+      else {
+        ctx.fillStyle = '#5a4a14'; circ(px, py - 1, 4.5);
+        ctx.strokeStyle = '#ffb347'; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.arc(px, py - 1, 7.5, -Math.PI / 2, -Math.PI / 2 + (RM ? .6 : frac(t * .8)) * TAU); ctx.stroke();
+      }
     }
   }
 }
 function drawBattery(e, r, t) {
-  // a battery bot: a steel cylinder with a + cap and three charge cells that light up as it charges
-  const ch = e.charge || 0, full = ch >= BATTERY_MAX;
-  if (ch && !RM) { ctx.save(); ctx.globalCompositeOperation = 'lighter'; glowAt(0, 0, r * 1.6, '255,214,10', .12 * ch); ctx.restore(); }
-  const bg = ctx.createLinearGradient(-r * .7, 0, r * .7, 0);
-  bg.addColorStop(0, '#3a3832'); bg.addColorStop(.45, '#8a857a'); bg.addColorStop(1, '#2c2a26');
-  ctx.fillStyle = bg; rr(-r * .7, -r * .85, r * 1.4, r * 1.75, r * .25); ctx.fill();
-  ctx.fillStyle = '#c9c2b0'; rr(-r * .25, -r * 1.08, r * .5, r * .26, r * .08); ctx.fill();
-  ctx.fillStyle = '#15120a'; ctx.font = `900 ${Math.round(r * .5)}px ${FD}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('+', 0, -r * .95);
+  // a battery bot: a steel cylinder with a + terminal and three big charge cells on its front. The charge reads from
+  // afar: each cell lights yellow, and when full the cells turn orange-red, the case pulses and sparks crackle round it
+  const ch = e.charge || 0, full = ch >= BATTERY_MAX, p = RM ? .5 : .5 + .5 * Math.sin(t * (full ? 10 : 3));
+  ctx.fillStyle = 'rgba(0,0,0,.3)'; ctx.beginPath(); ctx.ellipse(0, r * .95, r * .7, r * .14, 0, 0, TAU); ctx.fill();
+  if (ch && !RM) { ctx.save(); ctx.globalCompositeOperation = 'lighter'; glowAt(0, 0, r * (1.4 + ch * .2), full ? '255,90,40' : '255,214,10', (full ? .35 + .25 * p : .1 * ch)); ctx.restore(); }
+  const bg = ctx.createLinearGradient(-r * .72, 0, r * .72, 0);
+  bg.addColorStop(0, '#2c2a26'); bg.addColorStop(.4, '#9a958a'); bg.addColorStop(1, '#22201b');
+  ctx.fillStyle = bg; rr(-r * .72, -r * .82, r * 1.44, r * 1.72, r * .28); ctx.fill();
+  ctx.strokeStyle = full ? `rgba(255,${120 + 80 * p | 0},60,1)` : '#15120a'; ctx.lineWidth = full ? 3 : 2; rr(-r * .72, -r * .82, r * 1.44, r * 1.72, r * .28); ctx.stroke();
+  ctx.fillStyle = '#ffd60a'; ctx.fillRect(-r * .72, -r * .62, r * 1.44, r * .1);
+  ctx.fillStyle = '#c9c2b0'; rr(-r * .24, -r * 1.06, r * .48, r * .26, r * .08); ctx.fill();
+  ctx.fillStyle = '#15120a'; ctx.font = `900 ${Math.round(r * .48)}px ${FD}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('+', 0, -r * .93);
+  // the face strip
+  ctx.fillStyle = '#0e0c08'; rr(-r * .52, -r * .46, r * 1.04, r * .3, r * .14); ctx.fill();
+  angryEyes(0, -r * .31, r * .52, full ? (p > .5 ? '#fff3b0' : '#ff5a3c') : '#ff3b5c');
+  // three big cells, bottom up
   for (let k = 0; k < BATTERY_MAX; k++) {
-    const lit = k < ch, cy = r * .62 - k * r * .36;
-    ctx.fillStyle = lit ? (full ? '#ff9f1c' : '#ffd60a') : '#1a1810'; rr(-r * .45, cy - r * .13, r * .9, r * .26, r * .06); ctx.fill();
+    const lit = k < ch, cy = r * .66 - k * r * .26;
+    ctx.fillStyle = '#0e0c08'; rr(-r * .5, cy - r * .11, r * 1.0, r * .22, r * .06); ctx.fill();
+    if (lit) {
+      const cg = ctx.createLinearGradient(-r * .5, 0, r * .5, 0);
+      cg.addColorStop(0, full ? '#ff5a3c' : '#ffb000'); cg.addColorStop(1, full ? '#ffb347' : '#ffe14d');
+      ctx.fillStyle = cg; rr(-r * .46, cy - r * .08, r * .92, r * .16, r * .05); ctx.fill();
+      ctx.fillStyle = 'rgba(255,255,255,.4)'; ctx.fillRect(-r * .42, cy - r * .07, r * .84, r * .04);
+    }
   }
-  angryEyes(0, -r * .5, r * .55, full && !RM && Math.sin(t * 12) > 0 ? '#fff3b0' : '#ff3b5c');
+  if (full && !RM) {
+    const seed = Math.floor(t * 16);
+    ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.strokeStyle = 'rgba(255,220,140,.9)'; ctx.lineWidth = 1.6;
+    for (let q = 0; q < 3; q++) {
+      const a0 = (q / 3) * TAU + seed * .9; ctx.beginPath(); ctx.moveTo(Math.cos(a0) * r * .75, Math.sin(a0) * r * .85);
+      for (let k = 1; k <= 3; k++) { const a = a0 + k * .25, j = (frac(Math.sin(seed * 7.7 + q * 3 + k) * 431.1) - .5) * r * .3; ctx.lineTo(Math.cos(a) * (r * 1.05 + j), Math.sin(a) * (r * 1.05 + j)); }
+      ctx.stroke();
+    }
+    ctx.restore();
+  }
 }
 function drawTurbineBoss(e, r, t) {
-  // a turbine: a round steel housing, spinning blades behind a grille, a yellow hazard ring and an angry hub
-  ctx.fillStyle = '#2c2a26'; circ(0, 0, r);
-  ctx.strokeStyle = '#ffd60a'; ctx.lineWidth = r * .1; ctx.beginPath(); ctx.arc(0, 0, r * .93, 0, TAU); ctx.stroke();
-  ctx.strokeStyle = '#15120a'; ctx.lineWidth = r * .1; ctx.setLineDash([r * .18, r * .18]); ctx.beginPath(); ctx.arc(0, 0, r * .93, 0, TAU); ctx.stroke(); ctx.setLineDash([]);
-  ctx.save(); ctx.rotate((RM ? 0 : t) * 4);
-  for (let k = 0; k < 6; k++) {
-    ctx.rotate(TAU / 6);
-    ctx.fillStyle = '#8a857a'; ctx.beginPath(); ctx.moveTo(0, 0); ctx.quadraticCurveTo(r * .35, -r * .2, r * .8, -r * .05); ctx.lineTo(r * .8, r * .12); ctx.quadraticCurveTo(r * .35, r * .05, 0, 0); ctx.fill();
+  // GIGAWATT TURBINE: a riveted housing with a yellow-black ring, blades spinning behind a grille, a glowing yellow
+  // hub with angry eyes, two insulator pylons at the sides crackling with arcs, and a heavy base
+  const angry = e.timer <= 1, sp = angry ? 9 : 4;
+  ctx.fillStyle = 'rgba(0,0,0,.35)'; ctx.beginPath(); ctx.ellipse(0, r * 1.02, r * 1.1, r * .17, 0, 0, TAU); ctx.fill();
+  // the base and pylons
+  ctx.fillStyle = '#3a372f'; rr(-r * .7, r * .7, r * 1.4, r * .3, r * .08); ctx.fill();
+  hazardStripe(ctx, -r * .7, r * .86, r * 1.4, r * .12, 1, r * .2);
+  for (const sd of [-1, 1]) {
+    const px = sd * r * 1.08;
+    ctx.fillStyle = '#4a463c'; ctx.fillRect(px - r * .05, -r * .2, r * .1, r * 1.0);
+    for (let k = 0; k < 4; k++) { ctx.fillStyle = k % 2 ? '#c9c2b0' : '#e8e2d4'; ctx.beginPath(); ctx.ellipse(px, -r * .25 - k * r * .1, r * .12, r * .04, 0, 0, TAU); ctx.fill(); }
+    ctx.fillStyle = '#ffd60a'; circ(px, -r * .62, r * .06);
+  }
+  if (!RM) {
+    const seed = Math.floor(t * (angry ? 18 : 10));
+    ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.strokeStyle = angry ? 'rgba(255,240,170,.95)' : 'rgba(255,214,10,.6)'; ctx.lineWidth = angry ? 2.2 : 1.5;
+    for (const sd of [-1, 1]) {
+      ctx.beginPath(); ctx.moveTo(sd * r * 1.08, -r * .62);
+      for (let k = 1; k <= 4; k++) { const f = k / 4, j = (frac(Math.sin(seed * 5.3 + k * 7 + sd) * 311.7) - .5) * r * .25; ctx.lineTo(sd * r * (1.08 - f * .28), -r * .62 + f * r * .3 + j); }
+      ctx.stroke();
+    }
+    glowAt(-r * 1.08, -r * .62, r * .25, '255,214,10', .6); glowAt(r * 1.08, -r * .62, r * .25, '255,214,10', .6);
+    ctx.restore();
+  }
+  // the housing
+  const hg0 = ctx.createRadialGradient(-r * .3, -r * .35, r * .1, 0, 0, r);
+  hg0.addColorStop(0, '#5a564c'); hg0.addColorStop(1, '#1c1a14');
+  ctx.fillStyle = hg0; circ(0, 0, r);
+  ctx.strokeStyle = '#ffd60a'; ctx.lineWidth = r * .11; ctx.beginPath(); ctx.arc(0, 0, r * .92, 0, TAU); ctx.stroke();
+  ctx.strokeStyle = '#15120a'; ctx.lineWidth = r * .11; ctx.setLineDash([r * .2, r * .2]); ctx.lineDashOffset = RM ? 0 : -t * 20; ctx.beginPath(); ctx.arc(0, 0, r * .92, 0, TAU); ctx.stroke(); ctx.setLineDash([]);
+  ctx.fillStyle = '#8a857a'; for (let k = 0; k < 12; k++) { const a = k / 12 * TAU; circ(Math.cos(a) * r * .99, Math.sin(a) * r * .99, r * .025); }
+  ctx.fillStyle = '#0e0c08'; circ(0, 0, r * .84);
+  // blades with motion blur
+  ctx.save(); ctx.rotate((RM ? 0 : t) * sp);
+  for (let k = 0; k < 7; k++) {
+    ctx.rotate(TAU / 7);
+    const bg = ctx.createLinearGradient(0, 0, r * .8, 0); bg.addColorStop(0, '#6a655a'); bg.addColorStop(1, '#b8b2a4');
+    ctx.fillStyle = bg; ctx.beginPath(); ctx.moveTo(0, 0); ctx.quadraticCurveTo(r * .35, -r * .24, r * .8, -r * .08); ctx.lineTo(r * .8, r * .1); ctx.quadraticCurveTo(r * .35, r * .04, 0, 0); ctx.fill();
+    ctx.fillStyle = 'rgba(184,178,164,.15)'; ctx.beginPath(); ctx.moveTo(0, 0); ctx.arc(0, 0, r * .8, -.5, -.08); ctx.closePath(); ctx.fill();
   }
   ctx.restore();
-  ctx.strokeStyle = 'rgba(21,18,10,.6)'; ctx.lineWidth = 2;
-  for (let k = -3; k <= 3; k++) { ctx.beginPath(); ctx.moveTo(k * r * .22, -r * .78); ctx.lineTo(k * r * .22, r * .78); ctx.stroke(); }
-  const hg = ctx.createRadialGradient(-r * .1, -r * .12, r * .05, 0, 0, r * .38);
+  // the grille
+  ctx.save(); ctx.beginPath(); ctx.arc(0, 0, r * .84, 0, TAU); ctx.clip();
+  ctx.strokeStyle = 'rgba(30,26,18,.75)'; ctx.lineWidth = 2;
+  for (let k = -4; k <= 4; k++) { ctx.beginPath(); ctx.moveTo(k * r * .19, -r); ctx.lineTo(k * r * .19, r); ctx.stroke(); }
+  ctx.restore();
+  // the hub
+  ctx.save(); ctx.globalCompositeOperation = 'lighter'; glowAt(0, 0, r * .6, angry ? '255,120,60' : '255,214,10', .45); ctx.restore();
+  const hg = ctx.createRadialGradient(-r * .1, -r * .12, r * .05, 0, 0, r * .4);
   hg.addColorStop(0, '#fff3b0'); hg.addColorStop(1, '#c9a50a');
-  ctx.fillStyle = hg; circ(0, 0, r * .36);
-  angryEyes(0, -r * .02, r * .5, '#ff3b5c');
+  ctx.fillStyle = hg; circ(0, 0, r * .38);
+  ctx.strokeStyle = '#7a5a08'; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.arc(0, 0, r * .38, 0, TAU); ctx.stroke();
+  ctx.fillStyle = '#0e0c08'; rr(-r * .28, -r * .12, r * .56, r * .2, r * .1); ctx.fill();
+  angryEyes(0, -r * .02, r * .5, angry ? '#ff3b5c' : '#ff7a3c');
 }
 function drawKrakenBoss(e, r, t) {
   // KRAKEN DEEP: a submarine with a conning tower and periscope, a porthole face with angry eyes, headlights,
@@ -10843,6 +11013,8 @@ function drawGame() {
       return;
     }
     if (!(G.shot && G.shot.hero === h)) heartsRow(h, h.x, h.y - h.r - 14, 3.6);
+    const surged = G.shot && G.shot.hero === h && G.shot.surged;
+    if (surged && !RM) { ctx.save(); ctx.globalCompositeOperation = 'lighter'; glowAt(h.x, h.y, h.r * 2.6, '255,214,10', .55 + .15 * Math.sin(T * 20)); ctx.restore(); }
     if (sp > 60 && !RM) {
       // squash & stretch along the flight direction, with a soft glow in the hero's yarn colour
       const k = Math.min(.2, sp / 7000), ang = Math.atan2(h.vy, h.vx);
@@ -10851,6 +11023,16 @@ function drawGame() {
       ctx.save(); ctx.translate(h.x, h.y); ctx.rotate(ang); ctx.scale(1 + k, 1 - k); ctx.rotate(-ang);
       drawHero(h, 0, 0, h.r, gold ? '#ffd166' : null, ho); ctx.restore();
     } else drawHero(h, h.x, h.y, h.r, gold ? '#ffd166' : null, ho);
+    if (surged && !RM) {
+      const seed = Math.floor(T * 18);
+      ctx.save(); ctx.globalCompositeOperation = 'lighter'; ctx.strokeStyle = 'rgba(255,240,170,.9)'; ctx.lineWidth = 1.8;
+      for (let q = 0; q < 3; q++) {
+        const a0 = (q / 3) * TAU + seed * .8; ctx.beginPath(); ctx.moveTo(h.x + Math.cos(a0) * h.r * .8, h.y + Math.sin(a0) * h.r * .8);
+        for (let k = 1; k <= 3; k++) { const a = a0 + k * .3, j = (frac(Math.sin(seed * 6.1 + q * 4 + k) * 517.3) - .5) * h.r * .5; ctx.lineTo(h.x + Math.cos(a) * (h.r * 1.25 + j), h.y + Math.sin(a) * (h.r * 1.25 + j)); }
+        ctx.stroke();
+      }
+      ctx.restore();
+    }
     if (h.webbed && h.ice) drawIce(h.x, h.y, h.r + 8); else if (h.webbed) drawWeb(h.x, h.y, h.r + 10);
   });
   if (ink) comicEnd(ink);
