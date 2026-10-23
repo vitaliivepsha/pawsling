@@ -935,6 +935,11 @@ async function sendStreakReminders(env) {
 // and the owner's /chan shows how many came from each.
 const CH_LANGS = { uk: 'CHANNEL_UK', en: 'CHANNEL_EN' };
 const CH_FEED_DAYS = [2, 4, 6], CH_HOUR = 15, CH_WEEK_HOUR = 9;
+// rooms announced when they appear: from this one on (the older ones were in the game before the channels);
+// a room is announced once its raid poster is on Pages, which is also the post's picture
+const CH_NEW_FROM = 18;
+// a room's levels: the first three rooms have 4, every other room 6
+const roomLevels = i => i < 3 ? [i * 4 + 1, i * 4 + 4] : [12 + (i - 3) * 6 + 1, 12 + (i - 3) * 6 + 6];
 const CH_EVENTS = [{ id: 'halloween', from: '10-15', to: '11-05', room: 5 }, { id: 'newyear', from: '12-15', to: '01-10', room: 2 }];
 // levels in an event (as EVENT_LEVELS in game.js); the "3 days left" post leaves the hat count out while it is under CH_EV_MIN
 const EV_LEVELS = 3, CH_EV_END = 3, CH_EV_MIN = 10;
@@ -943,7 +948,7 @@ const CH_GROUP_AT = 100, CH_GROUP_HOUR = 12;
 const CH_TEXT = {
   uk: {
     mods: { wind: 'хуртовина', acid: 'кислота', meteors: 'метеорити', fences: 'лазерні бар\'єри', belts: 'конвеєрні стрічки' },
-    bosses: ['блендер «Мегамікс»', 'Телебос 3000', 'Будильник-Дзвонар', 'пралька «Барабан»', 'повітродув «Шквал»', 'пилосос-привид', 'Робо-бос 9000', 'павук «Тенета»', 'дрон «Грім»', 'косарка «Стриж»', 'хаб «Розумний дім»', 'ліфт «Експрес»', 'сортувальник «Мегасклад»', 'збирач «Прайм»', 'професор «Колба»', 'командор «Орбіта»', 'снігоочисник «Завірюха»', 'кракен «Глибина»'],
+    bosses: ['блендер «Мегамікс»', 'Телебос 3000', 'Будильник-Дзвонар', 'пралька «Барабан»', 'повітродув «Шквал»', 'пилосос-привид', 'Робо-бос 9000', 'павук «Тенета»', 'дрон «Грім»', 'косарка «Стриж»', 'хаб «Розумний дім»', 'ліфт «Експрес»', 'сортувальник «Мегасклад»', 'збирач «Прайм»', 'професор «Колба»', 'командор «Орбіта»', 'снігоочисник «Завірюха»', 'кракен «Глибина»', 'турбіна «Гігават»'],
     play: '🐾 Грати', medals: ['🥇', '🥈', '🥉'],
     weekHead: '📅 <b>Підсумки тижня в Pawsling</b>',
     night: rows => `🌙 <b>Турнір «Нічної зміни»</b>\n${rows.map((r, i) => `${CH_TEXT.uk.medals[i]} ${r.name} — ${r.night} ${ukWaves(r.night)}`).join('\n')}`,
@@ -956,8 +961,9 @@ const CH_TEXT = {
     groupChat: '💬 Чат українською', groupSupport: '🛠 Підтримка',
     halloween_end: n => `🎃 <b>Хелловін: залишилося 3 дні!</b>\n\n${n ? `Капелюх-гарбуз уже є в ${n} ${ukPlayersGen(n)}. ` : ''}Три святкові рівні, а за всі три — ексклюзивний капелюх. Подія закінчується 5 листопада, і тоді капелюх не здобути аж до наступного року.`,
     newyear_end: n => `🎄 <b>Новий рік: залишилося 3 дні!</b>\n\n${n ? `Шапка Санти вже є в ${n} ${ukPlayersGen(n)}. ` : ''}Три святкові рівні, а за всі три — ексклюзивна шапка. Подія закінчується 10 січня, і тоді шапку не здобути аж до наступної зими.`,
-    intro: '🐾 <b>Pawsling</b> — коти та єноти з рогатки проти збунтованої техніки.\n\n102 рівні, 18 босів, «Нічна зміна» з турніром щотижня — і все прямо в Telegram, без встановлення.\n\nТут: підсумки турнірів, випробування тижня, події, нові кімнати й поради.',
+    intro: '🐾 <b>Pawsling</b> — коти та єноти з рогатки проти збунтованої техніки.\n\n108 рівнів, 19 босів, «Нічна зміна» з турніром щотижня — і все прямо в Telegram, без встановлення.\n\nТут: підсумки турнірів, випробування тижня, події, нові кімнати й поради.',
     room: (i, name, boss, what) => `🗺 <b>Кімната ${i + 1}: ${name}</b>\n\n${what}\n\nБос: <b>${boss}</b>.`,
+    newRoom: (i, name, boss, what, [a, b]) => `🆕 <b>Нова кімната: ${name}!</b>\n\nКімната ${i + 1}, рівні ${a}–${b}. ${what}\n\nБос: <b>${boss}</b>. Хто першим дійде до кінця?`,
     rooms: [
       'Тут усе почалося: пилососи збунтувалися просто біля холодильника. Порада новачкам: бий у жовтий сенсор — потрійна шкода.',
       'Телевізор оголосив себе королем дивана й скликав пульти та пилососи.',
@@ -976,13 +982,14 @@ const CH_TEXT = {
       'Калюжі кислоти забирають серце в того, хто в них стоїть, а тесла-боти б\'ють струмом усіх поруч. Бос розливає нову калюжу під героєм.',
       'Метеорити падають туди, де за хід до того з\'явилися мітки. Варп-боти телепортуються після кожного влучання. Бос наводить метеорити просто на героїв.',
       'Хуртовина щоходу дме з нового боку, а кріоботи заморожують героїв. Бос змітає всю команду туди, куди дме вітер.',
-      'Найважча кімната: вода щоходу піднімається знизу й гальмує героїв у польоті. Медузоботи заряджаються за хід до атаки, і герой, що влучить у зарядженого, зупиняється на місці. Бос після кожної атаки здіймає воду одразу на три поділки. Це фінал гри: рівень 102.',
+      'Вода щоходу піднімається знизу й гальмує героїв у польоті. Медузоботи заряджаються за хід до атаки, і герой, що влучить у зарядженого, зупиняється на місці. Бос після кожної атаки здіймає воду одразу на три поділки.',
+      'Найважча кімната: струмові дуги між клемами вмикаються через хід. Пролетиш крізь увімкнену — удар до кінця польоту подвійний, а хто стоїть на дузі, коли вона вмикається, втрачає серце. Акумулятори щоходу набирають заряд і б\'ють дедалі сильніше, доки влучання їх не розрядить. Бос після атаки заряджає всі акумулятори до максимуму. Це фінал гри: рівень 108.',
     ],
     tips: {
       slingshot: '🎯 <b>Як грати</b>\n\nТягни героя назад, цілься й відпускай. Герої відбиваються від стін і прошивають роботів наскрізь — найкращі постріли зачіпають кількох одразу.',
       knots: '🧶 <b>Вузли</b>\n\nПерехрести нитки двох пострілів — і на перетині зав\'яжеться вузол, що вибухає. Кіт + єнот = вогняний вузол (×1,5 шкоди), два коти — муркотливий (ширший), два єноти — сміттєвий (відкладає атаку роботів на хід).',
-      bosses: '👾 <b>18 босів</b>\n\nУ кожної кімнати свій бос зі своїм трюком: павутина, ланцюгова блискавка, кислотні калюжі, метеорити, хуртовина, приплив… Хто з них дався тобі найважче?',
-      map: '🗺 <b>102 рівні у 18 кімнатах</b>\n\nВід кухні до підводної бази. Три зірки — якщо вкладешся в норму ходів, а пройдений рівень можна переграти в режимі виклику: вороги на 40% міцніші, зате подвійний досвід і корона на карті.',
+      bosses: '👾 <b>19 босів</b>\n\nУ кожної кімнати свій бос зі своїм трюком: павутина, ланцюгова блискавка, кислотні калюжі, метеорити, хуртовина, приплив, перевантаження… Хто з них дався тобі найважче?',
+      map: '🗺 <b>108 рівнів у 19 кімнатах</b>\n\nВід кухні до електростанції. Три зірки — якщо вкладешся в норму ходів, а пройдений рівень можна переграти в режимі виклику: вороги на 40% міцніші, зате подвійний досвід і корона на карті.',
       heroes: '🐱 <b>Герої ростуть</b>\n\nЗа кожну перемогу герої отримують досвід: до 10 рівня, +4% шкоди за рівень і посилення здібності на 5-му і 10-му. Хом\'як Хеммі приєднується після 24 рівня — що далі котиться, то сильніше б\'є.',
       night: '🌙 <b>«Нічна зміна»</b>\n\nНескінченні хвилі, бос кожну п\'яту, кімната міняється кожні п\'ять хвиль. Щопонеділка топ-3 тижня отримують призи — а ми публікуємо їхні імена тут.',
       chest: '🎁 <b>Скриня</b>\n\nСкриня на нижній панелі карти дозріває кожні 6 годин: серце, швидкий старт, а інколи й безкоштовне друге дихання. Не забувай забирати!',
@@ -995,7 +1002,7 @@ const CH_TEXT = {
   },
   en: {
     mods: { wind: 'blizzard', acid: 'acid', meteors: 'meteors', fences: 'laser fences', belts: 'conveyor belts' },
-    bosses: ['Megamix Blender', 'Teleboss 3000', 'Bellringer Alarm', 'Drum Washer', 'Gale Blower', 'Ghost Vacuum', 'Robo-Boss 9000', 'Web-Spinner', 'Thunder Drone', 'Swift Mower', 'Smart Home Hub', 'Express Lift', 'Mega Sorter', 'Assembler Prime', 'Professor Flask', 'Commander Orbit', 'Blizzard Snowplough', 'Kraken Deep'],
+    bosses: ['Megamix Blender', 'Teleboss 3000', 'Bellringer Alarm', 'Drum Washer', 'Gale Blower', 'Ghost Vacuum', 'Robo-Boss 9000', 'Web-Spinner', 'Thunder Drone', 'Swift Mower', 'Smart Home Hub', 'Express Lift', 'Mega Sorter', 'Assembler Prime', 'Professor Flask', 'Commander Orbit', 'Blizzard Snowplough', 'Kraken Deep', 'Gigawatt Turbine'],
     play: '🐾 Play', medals: ['🥇', '🥈', '🥉'],
     weekHead: '📅 <b>The week in Pawsling</b>',
     night: rows => `🌙 <b>Night Shift tournament</b>\n${rows.map((r, i) => `${CH_TEXT.en.medals[i]} ${r.name} — ${r.night} waves`).join('\n')}`,
@@ -1008,8 +1015,9 @@ const CH_TEXT = {
     groupChat: '💬 English chat', groupSupport: '🛠 Support',
     halloween_end: n => `🎃 <b>Halloween: 3 days left!</b>\n\n${n ? `${n} players already have the pumpkin hat. ` : ''}Three spooky levels, and the exclusive hat for beating all three. The event ends on 5 November, and then the hat is gone until next year.`,
     newyear_end: n => `🎄 <b>New Year: 3 days left!</b>\n\n${n ? `${n} players already have the Santa hat. ` : ''}Three festive levels, and the exclusive hat for beating all three. The event ends on 10 January, and then the hat is gone until next winter.`,
-    intro: '🐾 <b>Pawsling</b>: slingshot cats and raccoons against rebel household robots.\n\n102 levels, 18 bosses, a weekly Night Shift tournament, all right inside Telegram with nothing to install.\n\nHere: tournament results, the weekly challenge, events, new rooms and tips.',
+    intro: '🐾 <b>Pawsling</b>: slingshot cats and raccoons against rebel household robots.\n\n108 levels, 19 bosses, a weekly Night Shift tournament, all right inside Telegram with nothing to install.\n\nHere: tournament results, the weekly challenge, events, new rooms and tips.',
     room: (i, name, boss, what) => `🗺 <b>Room ${i + 1}: ${name}</b>\n\n${what}\n\nBoss: <b>${boss}</b>.`,
+    newRoom: (i, name, boss, what, [a, b]) => `🆕 <b>New room: ${name}!</b>\n\nRoom ${i + 1}, levels ${a}–${b}. ${what}\n\nBoss: <b>${boss}</b>. Who gets to the end first?`,
     rooms: [
       'Where it all began: the vacuums rebelled right by the fridge. A tip for beginners: hit the yellow sensor for triple damage.',
       'The TV declared itself king of the sofa and called in the remotes and vacuums.',
@@ -1028,13 +1036,14 @@ const CH_TEXT = {
       'Acid pools take a heart from anyone standing in them, and tesla bots zap every hero nearby. The boss spills a new pool under a hero.',
       'Meteors land where markers appeared a turn before. Warp bots blink away after every hit. The boss aims meteors right at your heroes.',
       'The blizzard blows from a new side every turn and cryo bots freeze heroes. The boss sweeps the whole team the way the wind blows.',
-      'The hardest room: the water rises from the bottom every turn and slows heroes flying through it. Jelly bots charge up the turn before they attack, and a hero that hits a charged one stops dead. After each attack the boss raises the water three marks at once. This is the finale of the game: level 102.',
+      'The water rises from the bottom every turn and slows heroes flying through it. Jelly bots charge up the turn before they attack, and a hero that hits a charged one stops dead. After each attack the boss raises the water three marks at once.',
+      'The hardest room: power arcs between the terminals switch on every other turn. Fly through a live one and your hits are doubled for the rest of the flight, but a hero standing on an arc when it switches on loses a heart. Battery bots charge up every turn and hit harder and harder until a hit drains them. After each attack the boss charges every battery to the full. This is the finale of the game: level 108.',
     ],
     tips: {
       slingshot: '🎯 <b>How to play</b>\n\nPull a hero back, aim and let go. Heroes bounce off walls and pierce right through robots: the best shots hit several at once.',
       knots: '🧶 <b>Knots</b>\n\nCross the threads of two shots and a knot ties where they meet, then explodes. Cat + raccoon is a fire knot (×1.5 damage), two cats a purring knot (wider), two raccoons a trash knot (delays the robots\' attack by a turn).',
-      bosses: '👾 <b>18 bosses</b>\n\nEvery room has its own boss with its own trick: webs, chain lightning, acid pools, meteors, a blizzard, the tide… Which one gave you the hardest time?',
-      map: '🗺 <b>102 levels in 18 rooms</b>\n\nFrom the kitchen to the underwater base. Three stars if you win within the par, and a won level can be replayed in challenge mode: enemies 40% tougher, but double XP and a crown on the map.',
+      bosses: '👾 <b>19 bosses</b>\n\nEvery room has its own boss with its own trick: webs, chain lightning, acid pools, meteors, a blizzard, the tide, an overload… Which one gave you the hardest time?',
+      map: '🗺 <b>108 levels in 19 rooms</b>\n\nFrom the kitchen to the power plant. Three stars if you win within the par, and a won level can be replayed in challenge mode: enemies 40% tougher, but double XP and a crown on the map.',
       heroes: '🐱 <b>Heroes grow</b>\n\nEvery win gives XP: up to level 10, +4% damage per level and an ability upgrade at 5 and 10. Hammy the hamster joins after level 24: the further he rolls, the harder he hits.',
       night: '🌙 <b>Night Shift</b>\n\nEndless waves, a boss every fifth, a new room every five waves. Every Monday the week\'s top 3 get prizes, and we post their names here.',
       chest: '🎁 <b>The chest</b>\n\nThe chest on the map\'s bottom bar ripens every 6 hours: a heart, a quick start, and now and then a free Second wind. Don\'t forget to grab it!',
@@ -1057,14 +1066,15 @@ const CH_FEED = [
   { tip: 'night', img: shot('6-night') }, { room: 6 }, { tip: 'quests', img: feed('quests') }, { room: 7 },
   { tip: 'bosses', img: shot('3-bosses') }, { room: 8 }, { tip: 'raids', img: 'raid/raid-8.jpg' }, { room: 9 },
   { tip: 'album', img: feed('album') }, { room: 10 }, { tip: 'streak', img: feed('streak') }, { room: 11 },
-  { room: 12 }, { room: 13 }, { room: 14 }, { room: 15 }, { room: 16 }, { room: 17 },
+  { room: 12 }, { room: 13 }, { room: 14 }, { room: 15 }, { room: 16 }, { room: 17 }, { room: 18 },
 ];
 const ukWaves = n => n % 10 === 1 && n % 100 !== 11 ? 'хвиля' : [2, 3, 4].includes(n % 10) && ![12, 13, 14].includes(n % 100) ? 'хвилі' : 'хвиль';
 const ukPlayersGen = n => n % 10 === 1 && n % 100 !== 11 ? 'гравця' : 'гравців'; // "у 21 гравця", "у 25 гравців"
 const esc = s => String(s).replace(/[&<>]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;' })[c]);
-// the same weekly challenge as weekChallenge() in game.js: CHAL_ROOMS = CHAPTERS.length there, from the balcony on
+// the same weekly challenge as weekChallenge() in game.js: CHAL_ROOMS = CHAPTERS.length there (TEXT.rooms has one name
+// per room, kept in step with it), from the balcony on
 // (raids use ROOMS_N, which only grows once a room's raid poster is up)
-const CHAL_ROOMS = 18;
+const CHAL_ROOMS = TEXT.uk.rooms.length;
 function chalOf(wk) {
   const h = [...wk].reduce((a, c) => (a * 37 + c.charCodeAt(0)) % 2147483646, 11) + 1;
   let s = h; const R = () => (s = (s * 16807) % 2147483647) / 2147483647;
@@ -1106,6 +1116,12 @@ async function channelPost(env, kind, lang, now = Date.now()) {
     return { img: `raid/raid-${c.room}.jpg`, caption: t.chalLead(rooms[c.room], modList(c, lang), esc(best.name), best.turns, n.n) };
   }
   if (kind === 'intro') return { img: 'welcome-1280x720.jpg', caption: t.intro };
+  const nr = /^new(\d+)$/.exec(kind);
+  if (nr) {
+    const i = Number(nr[1]);
+    if (!t.rooms[i] || !rooms[i]) return null;
+    return { img: `raid/raid-${i}.jpg`, caption: t.newRoom(i, rooms[i], t.bosses[i], t.rooms[i], roomLevels(i)) };
+  }
   if (kind === 'group') {
     // buttons straight into the topic of the channel's language and into support (needs a public group)
     const chatUrl = await groupTopicUrl(env, lang), helpUrl = await groupTopicUrl(env, 'support');
@@ -1133,6 +1149,17 @@ async function sendChannelPost(env, chat, lang, kind, post, thread = null, via =
     reply_markup: { inline_keyboard: post.kb || [[{ text: CH_TEXT[lang].play, url: `https://t.me/${botName}?startapp=${src}` }]] } });
 }
 // the group's announcement is due once the channel has grown to CH_GROUP_AT subscribers (and the group has its topics)
+// the newest room's announcement, once per room: at CH_HOUR, when its texts are here and its raid poster is on Pages
+const newestRoom = () => Math.min(TEXT.uk.rooms.length, CH_TEXT.uk.rooms.length, CH_TEXT.en.rooms.length) - 1;
+async function newRoomDue(env, chat, thread, lang, ts = Date.now()) {
+  const i = newestRoom();
+  if (i < CH_NEW_FROM || new Date(ts).getUTCHours() !== CH_HOUR) return null;
+  const key = 'new-' + i;
+  // in the group's topic each language is its own post (key-<lang>, as the loop below stores it)
+  if (await env.DB.prepare('SELECT 1 AS x FROM channel_posts WHERE chat = ?1 AND key = ?2').bind(chat, thread ? `${key}-${lang}` : key).first()) return null;
+  const img = await fetch(`${ART}raid/raid-${i}.jpg`, { method: 'HEAD' }).catch(() => null);
+  return img && img.ok ? { key, kind: 'new' + i } : null;
+}
 async function groupPostDue(env, chat, ts = Date.now()) {
   if (new Date(ts).getUTCHours() !== CH_GROUP_HOUR || !await groupTopic(env, 'support')) return false;
   if (await env.DB.prepare("SELECT 1 AS x FROM channel_posts WHERE chat = ?1 AND key = 'group'").bind(chat).first()) return false;
@@ -1179,10 +1206,12 @@ async function sendChannelPosts(env) {
   for (const c of list) if (await db.prepare("SELECT 1 AS x FROM channel_posts WHERE chat = ?1 AND key LIKE 'intro-%'").bind(c.chat).first()) targets.push(c);
   // the group's Events topic (live once /chan group made it) gets the week's results and events, in both languages
   const ev = await groupTopic(env, 'events');
-  if (ev) for (const lang of Object.keys(CH_LANGS)) targets.push({ lang, chat: ev.chat, thread: ev.thread, via: 'grp', only: k => k === 'week' || CH_EVENTS.some(e => k === e.id || k === e.id + '_end') });
+  if (ev) for (const lang of Object.keys(CH_LANGS)) targets.push({ lang, chat: ev.chat, thread: ev.thread, via: 'grp', only: k => k === 'week' || /^new\d+$/.test(k) || CH_EVENTS.some(e => k === e.id || k === e.id + '_end') });
   for (const { lang, chat, thread, via, only } of targets) {
     const due = await channelDue(db, chat);
     if (!thread && await groupPostDue(env, chat)) due.push({ key: 'group', kind: 'group' });
+    const room = await newRoomDue(env, chat, thread, lang);
+    if (room) due.push(room);
     for (let { key, kind } of due) {
       if (only && !only(kind)) continue;
       if (thread) key += '-' + lang;
@@ -1264,7 +1293,7 @@ async function channelCommand(env, m) {
   if (arg[0] === 'preview') {
     for (const { lang } of list) {
       const n = await db.prepare("SELECT COUNT(*) AS n FROM channel_posts WHERE chat = ?1 AND key LIKE 'feed-%'").bind(list.find(c => c.lang === lang).chat).first();
-      for (const kind of ['intro', 'week', 'chal', 'feed' + n.n, 'halloween', 'halloween_end', 'group']) {
+      for (const kind of ['intro', 'week', 'chal', 'feed' + n.n, 'halloween', 'halloween_end', 'group', 'new' + newestRoom()]) {
         const post = await channelPost(env, kind, lang);
         if (!post) { await say(`${lang} · ${kind}: зараз нема що публікувати`); continue; }
         const r = await sendChannelPost(env, m.chat.id, lang, kind, post);
@@ -1275,7 +1304,7 @@ async function channelCommand(env, m) {
   }
   if (arg[0] === 'intro' || arg[0] === 'post') {
     const kind = arg[0] === 'intro' ? 'intro' : arg[1];
-    if (!['intro', 'week', 'chal', 'feed', 'halloween', 'newyear', 'halloween_end', 'newyear_end', 'group'].includes(kind)) return say('Що саме? /chan post group | week | chal | feed | halloween | newyear | halloween_end | newyear_end');
+    if (!['intro', 'week', 'chal', 'feed', 'halloween', 'newyear', 'halloween_end', 'newyear_end', 'group', 'new'].includes(kind)) return say('Що саме? /chan post new | group | week | chal | feed | halloween | newyear | halloween_end | newyear_end');
     const out = [];
     for (const { lang, chat } of list) {
       let k = kind, key = null;
@@ -1285,6 +1314,7 @@ async function channelCommand(env, m) {
       }
       if (kind === 'intro') key = `intro-${Date.now()}`; // the channel is live from now on
       if (kind === 'group') key = 'group'; // posted by hand: the automatic one is then skipped
+      if (kind === 'new') { k = 'new' + newestRoom(); key = 'new-' + newestRoom(); } // the newest room, by hand
       const post = await channelPost(env, k, lang);
       if (!post) { out.push(`${chat}: нема що публікувати`); continue; }
       const r = await sendChannelPost(env, chat, lang, k, post);
@@ -1318,7 +1348,7 @@ async function channelCommand(env, m) {
     GROUP BY src ORDER BY n DESC LIMIT 15`).bind(day, day - 6 * 86400).all();
   lines.push('\nНові гравці за джерелом (доба / 7 днів / усього):');
   lines.push(rows.results.length ? rows.results.map(r => `${r.src}: ${r.d1} / ${r.d7} / ${r.n}`).join('\n') : 'поки нікого');
-  lines.push('\n/chan preview — усі види постів мені\n/chan intro — привітальний пост у канали і закріпити\n/chan post group|week|chal|feed|halloween|newyear|halloween_end|newyear_end — опублікувати зараз\n/chan group — створити гілки в групі');
+  lines.push('\n/chan preview — усі види постів мені\n/chan intro — привітальний пост у канали і закріпити\n/chan post new|group|week|chal|feed|halloween|newyear|halloween_end|newyear_end — опублікувати зараз\n/chan group — створити гілки в групі');
   return say(lines.join('\n'));
 }
 

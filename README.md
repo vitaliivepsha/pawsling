@@ -223,6 +223,9 @@ members. The week's results and the event posts go to Events in both languages (
 and `/start` links the player's language topic next to the news channel. Once a channel reaches `CH_GROUP_AT`
 (100) subscribers it gets one post inviting to the group, with buttons into its language topic and into
 Technical Support (`/chan post group` posts it by hand).
+A new room (from room 19 on) is announced by itself at 15:00 UTC once its texts are in `CH_TEXT` and its raid
+poster is on Pages (the post's picture), in both channels and the Events topic; `/chan post new` posts it by hand.
+The weekly challenge post picks from `TEXT.uk.rooms.length` rooms, the same count as `CHAPTERS` in the game.
 
 ## Leaderboard
 
