@@ -232,7 +232,10 @@ and `/start` links the player's language topic next to the news channel. Once a 
 Technical Support (`/chan post group` posts it by hand).
 A new room (from room 19 on) is announced by itself at 15:00 UTC once its texts are in `CH_TEXT` and its raid
 poster is on Pages (the post's picture), in both channels and the Events topic; `/chan post new` posts it by hand.
-The weekly challenge post picks from `TEXT.uk.rooms.length` rooms, the same count as `CHAPTERS` in the game.
+The weekly challenge post uses the same fixed `CHAL_ROOMS` as the game (19 for now; both change together, from a Monday).
+A room with an opening time in `CH_OPEN` (the subway: 30 Oct 07:00 UTC, as `SUBWAY_OPEN_AT` in the game) does not exist for the
+channels before it: level and boss counts, the map tip, "the hardest room" and the finale all follow the newest open room,
+and its announcement goes out on the first run after the opening.
 
 ## Leaderboard
 
