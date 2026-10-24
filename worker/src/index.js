@@ -983,7 +983,7 @@ const CH_TEXT = {
       'Метеорити падають туди, де за хід до того з\'явилися мітки. Варп-боти телепортуються після кожного влучання. Бос наводить метеорити просто на героїв.',
       'Хуртовина щоходу дме з нового боку, а кріоботи заморожують героїв. Бос змітає всю команду туди, куди дме вітер.',
       'Вода щоходу піднімається знизу й гальмує героїв у польоті. Медузоботи заряджаються за хід до атаки, і герой, що влучить у зарядженого, зупиняється на місці. Бос після кожної атаки здіймає воду одразу на три поділки.',
-      'Найважча кімната: струмові дуги між клемами вмикаються через хід. Пролетиш крізь увімкнену — удар до кінця польоту подвійний, а хто стоїть на дузі, коли вона вмикається, втрачає серце. Акумулятори щоходу набирають заряд і б\'ють дедалі сильніше, доки влучання їх не розрядить. Бос після атаки заряджає всі акумулятори до максимуму. Це фінал гри: рівень 108.',
+      'Найважча кімната: струмові дуги між клемами вмикаються через хід. Пролетиш крізь увімкнену — удар до кінця польоту у півтора раза сильніший, а хто стоїть на дузі, коли вона вмикається, втрачає серце. Акумулятори щоходу набирають заряд і б\'ють дедалі сильніше, доки влучання їх не розрядить. Бос після атаки заряджає всі акумулятори до максимуму. Це фінал гри: рівень 108.',
     ],
     tips: {
       slingshot: '🎯 <b>Як грати</b>\n\nТягни героя назад, цілься й відпускай. Герої відбиваються від стін і прошивають роботів наскрізь — найкращі постріли зачіпають кількох одразу.',
@@ -1037,7 +1037,7 @@ const CH_TEXT = {
       'Meteors land where markers appeared a turn before. Warp bots blink away after every hit. The boss aims meteors right at your heroes.',
       'The blizzard blows from a new side every turn and cryo bots freeze heroes. The boss sweeps the whole team the way the wind blows.',
       'The water rises from the bottom every turn and slows heroes flying through it. Jelly bots charge up the turn before they attack, and a hero that hits a charged one stops dead. After each attack the boss raises the water three marks at once.',
-      'The hardest room: power arcs between the terminals switch on every other turn. Fly through a live one and your hits are doubled for the rest of the flight, but a hero standing on an arc when it switches on loses a heart. Battery bots charge up every turn and hit harder and harder until a hit drains them. After each attack the boss charges every battery to the full. This is the finale of the game: level 108.',
+      'The hardest room: power arcs between the terminals switch on every other turn. Fly through a live one and your hits are 1.5 times stronger for the rest of the flight, but a hero standing on an arc when it switches on loses a heart. Battery bots charge up every turn and hit harder and harder until a hit drains them. After each attack the boss charges every battery to the full. This is the finale of the game: level 108.',
     ],
     tips: {
       slingshot: '🎯 <b>How to play</b>\n\nPull a hero back, aim and let go. Heroes bounce off walls and pierce right through robots: the best shots hit several at once.',
