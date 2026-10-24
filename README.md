@@ -53,8 +53,8 @@ worker/             the leaderboard: a Cloudflare Worker with a D1 database
   rises a mark every turn from the bottom (up to 35% of the field, starting low again each wave) and slows
   flying heroes inside it. Jelly bots charge up the turn before they attack; a hero that hits a charged
   one stops dead, even a piercer. It ends with Kraken Deep: after each attack the water jumps three marks.
-- The power plant (levels 103-108, toughness ×7.8, the hardest room): power arcs between terminals switch on
-  every other turn. A hero flying through a live arc hits double for the rest of the flight; a hero standing on
+- The power plant (levels 103-108, toughness ×8.4, the hardest room): power arcs between terminals switch on
+  every other turn. A hero flying through a live arc hits 1.5x for the rest of the flight; a hero standing on
   an arc when it switches on loses a heart (never the last). Battery bots charge up every turn (three at most)
   and hit harder the more they hold (+50% a charge); a hit drains them. It ends with the Gigawatt Turbine: after
   each attack it charges every battery to the full. Level 108 is the finale: a gold medallion on the map and
