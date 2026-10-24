@@ -53,12 +53,19 @@ worker/             the leaderboard: a Cloudflare Worker with a D1 database
   rises a mark every turn from the bottom (up to 35% of the field, starting low again each wave) and slows
   flying heroes inside it. Jelly bots charge up the turn before they attack; a hero that hits a charged
   one stops dead, even a piercer. It ends with Kraken Deep: after each attack the water jumps three marks.
-- The power plant (levels 103-108, toughness ×8.4, the hardest room): power arcs between terminals switch on
+- The power plant (levels 103-108, toughness ×8.4): power arcs between terminals switch on
   every other turn. A hero flying through a live arc hits 1.5x for the rest of the flight; a hero standing on
   an arc when it switches on loses a heart (never the last). Battery bots charge up every turn (three at most)
   and hit harder the more they hold (+50% a charge); a hit drains them. It ends with the Gigawatt Turbine: after
   each attack it charges every battery to the full. Level 108 is the finale: a gold medallion on the map and
   gold rays behind the turbine.
+- The subway (room 20, levels 109-114, toughness ×8.2, the hardest room) opens for everyone on Friday 30 October
+  2026 at 09:00 Kyiv (SUBWAY_OPEN_AT in game.js); until then only the owner sees it (/daily says preview: true for
+  ADMIN_ID and the game reloads once). Trains run along tracks: a track's lamps show the turns left and go red the
+  turn before a train; heroes on the track lose a heart (never the last) and are thrown aside, robots on it take 30%
+  of their health (a boss 6%). Signal bots make trains come every 2 turns instead of 3 while they stand. It ends
+  with the Comet Locomotive: after each attack it sends an extra train down the track with the most heroes.
+  The last level is always the finale, and the weekly challenge keeps a fixed count of 19 rooms (CHAL_ROOMS).
 - Weekly challenge (from level 12, on the Daily screen's week tab): one level a week, the same for
   everyone, in a room from the balcony on with two modifiers from the newer rooms (blizzard, acid,
   meteors, laser fences, conveyor belts). Fewer turns wins; it has its own weekly board (`/chal`,
