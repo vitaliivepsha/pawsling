@@ -9162,6 +9162,8 @@ function shopSection(text, y) {
   const w = ctx.measureText(t).width;
   ctx.fillStyle = '#2a2548'; ctx.fillRect(30 + w, y - 1, W - 52 - w, 2);
 }
+// the counts the shop last showed, to bounce a chip when its count goes up
+const HAVE_SEEN = {}, HAVE_BUMP = {};
 function drawShop() {
   ctx.fillStyle = '#110e22'; ctx.fillRect(0, 0, W, H);
   const g = ctx.createRadialGradient(W / 2, 60, 10, W / 2, 60, 320);
@@ -9174,21 +9176,33 @@ function drawShop() {
 
   // boosters: one row each
   shopSection(tr('shopBoosts'), 70);
-  // what you already have: prizes and gifts land here, and they are switched on before a level
+  // what you already have: prizes and gifts land here, and they are switched on before a level.
+  // Coloured chips with big icons; a chip whose count just went up bounces and flashes
   {
-    const items = [['heart', INV.heart || 0], ['meter', INV.meter || 0], ['wind', INV.wind || 0]], cw = 50;
+    const items = [['heart', INV.heart || 0, '#ff5d7a'], ['meter', INV.meter || 0, '#ff8fb1'], ['wind', INV.wind || 0, '#5ce1c6']], cw = 60, ch = 22, cy = 55;
     ctx.font = `800 12px ${FB}`; const lw = ctx.measureText(tr('shopHave')).width;
-    const x0 = W - 22 - items.length * cw - lw - 10;
-    ctx.fillStyle = '#110e22'; ctx.fillRect(x0 - 8, 60, W - 22 - x0 + 8, 20);
-    ctx.textAlign = 'left'; ctx.textBaseline = 'middle'; ctx.fillStyle = '#b9b2da'; ctx.fillText(tr('shopHave'), x0, 70);
-    items.forEach(([k, n], i) => {
-      const x = x0 + lw + 10 + i * cw;
-      ctx.fillStyle = '#1d1938'; rr(x, 60, cw - 6, 20, 10); ctx.fill();
-      ctx.strokeStyle = n ? '#4a4278' : '#2a2548'; ctx.lineWidth = 1; rr(x, 60, cw - 6, 20, 10); ctx.stroke();
-      if (k === 'heart') heart(x + 11, 71, 7, '#ff5d7a');
-      else if (k === 'meter') { ctx.fillStyle = '#231e44'; rr(x + 4, 66, 15, 8, 4); ctx.fill(); ctx.fillStyle = '#ff8fb1'; rr(x + 4, 66, 8, 8, 4); ctx.fill(); }
-      else windIcon(x + 11, 70, 6);
-      ctx.textAlign = 'right'; ctx.fillStyle = n ? '#f4efe6' : '#6f6893'; ctx.font = `900 12px ${FD}`; ctx.fillText(String(n), x + cw - 12, 71);
+    const x0 = W - 18 - items.length * cw - lw - 8;
+    ctx.fillStyle = '#110e22'; ctx.fillRect(x0 - 8, cy - 2, W - 18 - x0 + 8, ch + 4);
+    ctx.textAlign = 'left'; ctx.textBaseline = 'middle'; ctx.fillStyle = '#c9c2e6'; ctx.fillText(tr('shopHave'), x0, cy + ch / 2);
+    items.forEach(([k, n, col], i) => {
+      const prev = HAVE_SEEN[k];
+      if (prev != null && n > prev) HAVE_BUMP[k] = T;
+      HAVE_SEEN[k] = n;
+      const age = HAVE_BUMP[k] == null ? 9 : T - HAVE_BUMP[k], bk = RM ? 1 : Math.min(1, age / .5), sc = age < .5 && !RM ? .7 + .3 * easeOutBack(bk) : 1;
+      const x = x0 + lw + 8 + i * cw, w = cw - 6, mx = x + w / 2, my = cy + ch / 2;
+      ctx.save(); ctx.translate(mx, my); ctx.scale(sc, sc); ctx.translate(-mx, -my);
+      if (age < 1.2 && !RM) { ctx.save(); ctx.globalCompositeOperation = 'lighter'; glowAt(mx, my, 36, hexRgb(col), .7 * (1 - age / 1.2)); ctx.restore(); }
+      const g = ctx.createLinearGradient(x, cy, x, cy + ch);
+      g.addColorStop(0, n ? hexA(col, .3) : '#1d1938'); g.addColorStop(1, n ? hexA(col, .1) : '#17142e');
+      ctx.fillStyle = g; rr(x, cy, w, ch, ch / 2); ctx.fill();
+      ctx.strokeStyle = n ? hexA(col, .75) : '#2a2548'; ctx.lineWidth = 1.5; rr(x, cy, w, ch, ch / 2); ctx.stroke();
+      ctx.save(); if (!n) ctx.globalAlpha = .45;
+      if (k === 'heart') heart(x + 13, my + 1, 9, '#ff5d7a');
+      else if (k === 'meter') { ctx.fillStyle = '#15122a'; rr(x + 4, my - 5, 19, 10, 5); ctx.fill(); ctx.fillStyle = '#ff8fb1'; rr(x + 4, my - 5, 10, 10, 5); ctx.fill(); ctx.strokeStyle = '#ffd166'; ctx.lineWidth = 1.2; rr(x + 4, my - 5, 19, 10, 5); ctx.stroke(); }
+      else windIcon(x + 13, my, 8.5);
+      ctx.restore();
+      ctx.textAlign = 'right'; ctx.fillStyle = n ? '#ffffff' : '#6f6893'; ctx.font = `900 14px ${FD}`; ctx.fillText(String(n), x + w - 9, my + 1);
+      ctx.restore();
       ctx.font = `800 12px ${FB}`;
     });
   }
