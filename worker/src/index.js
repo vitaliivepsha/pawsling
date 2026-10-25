@@ -83,7 +83,7 @@ const TEXT = {
     sent: 'Дякуємо! Повідомлення передано розробнику.',
     refJoined: n => `${n} тепер у грі за твоїм запрошенням! Вам обом: +1 серце і +1 швидкий старт. А коли друг пройде першу кімнату, тобі — безкоштовне друге дихання.`,
     refRoom: n => `🎉 У ${n} уже позаду перша кімната! Подарунок за запрошеного друга: безкоштовне друге дихання 🌬, воно вже в грі.`,
-    weekWin: (place, w) => `Тиждень «Нічної зміни» завершено: ти на ${place} місці (${w} хвиль)! Приз уже в магазині.`,
+    weekWin: (place, w, p) => `Тиждень «Нічної зміни» завершено: ти на ${place} місці (${w} хвиль)! Приз: ❤️ +${p.heart} «Серце+» і ⚡ +${p.meter} «Швидкий старт». Вони вже у тебе: вмикай їх перед будь-яким рівнем.`,
     items: { heart3: ['Серце+ ×3', '+1 серце кожному героєві на 3 рівні.'], meter3: ['Швидкий старт ×3', 'Пів шкали «Бешкету» на старті 3 рівнів.'], hat_party: ['Святковий ковпак', 'Капелюшок для всієї команди, назавжди.'], hat_crown: ['Корона', 'Корона для всієї команди, назавжди.'], hat_bow: ['Бантик', 'Бантик для всієї команди, назавжди.'], rainbow: ['Райдужна нитка', 'Нитки героїв переливаються веселкою, назавжди.'], hero_rex: ['Рекс', 'Новий герой: пес-рятувальник, що лікує друзів, яких зачепить.'], hero_spark: ['Іскра', 'Нова героїня: її удар перескакує блискавкою на найближчого ворога.'] },
     title: 'Друге дихання', desc: 'Продовж рівень: повна міцність квартири й усі герої знову на ногах.',
     start: n => `Привіт, ${n}! Збунтована техніка захопила квартиру. Запускай котів і єнотів, як з рогатки!`, play: '🐾 Грати',
@@ -98,7 +98,7 @@ const TEXT = {
     sent: 'Thanks! Your message has been sent to the developer.',
     refJoined: n => `${n} joined the game with your invite! You both get +1 heart and +1 quick start. And once your friend clears the first room, you get a free Second wind.`,
     refRoom: n => `🎉 ${n} has cleared the first room! Your gift for bringing a friend: a free Second wind 🌬, already in the game.`,
-    weekWin: (place, w) => `The Night Shift week is over: you finished #${place} (${w} waves)! Your prize is in the shop.`,
+    weekWin: (place, w, p) => `The Night Shift week is over: you finished #${place} (${w} waves)! Your prize: ❤️ +${p.heart} Heart+ and ⚡ +${p.meter} Quick start. They are already yours: switch them on before any level.`,
     items: { heart3: ['Heart+ ×3', '+1 heart for every hero, for 3 levels.'], meter3: ['Quick start ×3', 'Half a Mischief meter at the start of 3 levels.'], hat_party: ['Party hat', 'A hat for the whole team, forever.'], hat_crown: ['Crown', 'A crown for the whole team, forever.'], hat_bow: ['Bow', 'A bow for the whole team, forever.'], rainbow: ['Rainbow yarn', 'Hero threads shimmer in rainbow colors, forever.'], hero_rex: ['Rex', 'A new hero: a rescue dog that heals every friend he touches.'], hero_spark: ['Sparky', 'A new hero: her hits arc like lightning to the nearest enemy.'] },
     title: 'Second wind', desc: 'Continue the level: full home strength and every hero back on their feet.',
     start: n => `Hi, ${n}! Rebel robots have taken over the flat. Launch the cats and raccoons like a slingshot!`, play: '🐾 Play',
@@ -113,7 +113,7 @@ const TEXT = {
     sent: 'Dzięki! Wiadomość trafiła do twórcy gry.',
     refJoined: n => `${n} dołączył(a) do gry z twojego zaproszenia! Oboje dostajecie +1 serce i +1 szybki start. A gdy znajomy przejdzie pierwszy pokój, dostaniesz darmowy Drugi oddech.`,
     refRoom: n => `🎉 ${n} ma już za sobą pierwszy pokój! Prezent za zaproszenie znajomego: darmowy Drugi oddech 🌬, już czeka w grze.`,
-    weekWin: (place, w) => `Tydzień nocnej zmiany zakończony: zajmujesz ${place}. miejsce (${w} fal)! Nagroda czeka w sklepie.`,
+    weekWin: (place, w, p) => `Tydzień nocnej zmiany zakończony: zajmujesz ${place}. miejsce (${w} fal)! Nagroda: ❤️ +${p.heart} Serce+ i ⚡ +${p.meter} Szybki start. Już są twoje: włącz je przed dowolnym poziomem.`,
     items: { heart3: ['Serce+ ×3', '+1 serce dla każdego bohatera na 3 poziomy.'], meter3: ['Szybki start ×3', 'Pół paska psot na starcie 3 poziomów.'], hat_party: ['Czapeczka imprezowa', 'Czapka dla całej drużyny, na zawsze.'], hat_crown: ['Korona', 'Korona dla całej drużyny, na zawsze.'], hat_bow: ['Kokardka', 'Kokardka dla całej drużyny, na zawsze.'], rainbow: ['Tęczowa włóczka', 'Nitki bohaterów mienią się tęczą, na zawsze.'], hero_rex: ['Reks', 'Nowy bohater: pies ratownik, który leczy przyjaciół, których dotknie.'], hero_spark: ['Iskra', 'Nowa bohaterka: jej ciosy przeskakują piorunem na najbliższego wroga.'] },
     title: 'Drugi oddech', desc: 'Kontynuuj poziom: pełna wytrzymałość mieszkania i wszyscy bohaterowie znów na nogach.',
     start: n => `Cześć, ${n}! Zbuntowane roboty przejęły mieszkanie. Wystrzel koty i szopy jak z procy!`, play: '🐾 Graj',
@@ -128,7 +128,7 @@ const TEXT = {
     sent: 'Danke! Deine Nachricht wurde an den Entwickler weitergeleitet.',
     refJoined: n => `${n} ist über deine Einladung ins Spiel gekommen! Ihr bekommt beide +1 Herz und +1 Schnellstart. Und schafft dein Freund den ersten Raum, bekommst du eine Zweite Luft gratis.`,
     refRoom: n => `🎉 ${n} hat den ersten Raum geschafft! Dein Geschenk fürs Einladen: eine Zweite Luft gratis 🌬, schon im Spiel.`,
-    weekWin: (place, w) => `Die Nachtschicht-Woche ist vorbei: Platz ${place} (${w} Wellen)! Dein Preis liegt im Shop.`,
+    weekWin: (place, w, p) => `Die Nachtschicht-Woche ist vorbei: Platz ${place} (${w} Wellen)! Dein Preis: ❤️ +${p.heart} Herz+ und ⚡ +${p.meter} Schnellstart. Sie gehören schon dir: schalte sie vor jedem Level ein.`,
     items: { heart3: ['Herz+ ×3', '+1 Herz für jeden Helden, für 3 Level.'], meter3: ['Schnellstart ×3', 'Halbe Unfug-Leiste zu Beginn von 3 Leveln.'], hat_party: ['Partyhut', 'Ein Hut für das ganze Team, für immer.'], hat_crown: ['Krone', 'Eine Krone für das ganze Team, für immer.'], hat_bow: ['Schleife', 'Eine Schleife für das ganze Team, für immer.'], rainbow: ['Regenbogenwolle', 'Die Fäden der Helden schimmern in Regenbogenfarben, für immer.'], hero_rex: ['Rex', 'Ein neuer Held: ein Rettungshund, der jeden berührten Freund heilt.'], hero_spark: ['Funke', 'Eine neue Heldin: ihre Treffer springen als Blitz zum nächsten Gegner.'] },
     title: 'Zweite Luft', desc: 'Spiel weiter: volle Wohnungsstärke und alle Helden wieder auf den Beinen.',
     start: n => `Hallo, ${n}! Rebellische Roboter haben die Wohnung übernommen. Schieß Katzen und Waschbären wie mit einer Schleuder!`, play: '🐾 Spielen',
@@ -143,7 +143,7 @@ const TEXT = {
     sent: '¡Gracias! Tu mensaje se ha enviado al desarrollador.',
     refJoined: n => `¡${n} se unió al juego con tu invitación! Los dos recibís +1 corazón y +1 inicio rápido. Y cuando tu amigo supere la primera sala, recibirás un Segundo aliento gratis.`,
     refRoom: n => `🎉 ¡${n} ya superó la primera sala! Tu regalo por traer a un amigo: un Segundo aliento gratis 🌬, ya está en el juego.`,
-    weekWin: (place, w) => `Terminó la semana del turno de noche: quedaste en el puesto ${place} (${w} oleadas). ¡Tu premio está en la tienda!`,
+    weekWin: (place, w, p) => `Terminó la semana del turno de noche: quedaste en el puesto ${place} (${w} oleadas). Tu premio: ❤️ +${p.heart} Corazón+ y ⚡ +${p.meter} Inicio rápido. Ya son tuyos: actívalos antes de cualquier nivel.`,
     items: { heart3: ['Corazón+ ×3', '+1 corazón para cada héroe durante 3 niveles.'], meter3: ['Inicio rápido ×3', 'Media barra de travesura al empezar 3 niveles.'], hat_party: ['Gorro de fiesta', 'Un gorro para todo el equipo, para siempre.'], hat_crown: ['Corona', 'Una corona para todo el equipo, para siempre.'], hat_bow: ['Lazo', 'Un lazo para todo el equipo, para siempre.'], rainbow: ['Hilo arcoíris', 'Los hilos de los héroes brillan con los colores del arcoíris, para siempre.'], hero_rex: ['Rex', 'Un nuevo héroe: un perro de rescate que cura a cada amigo que toca.'], hero_spark: ['Chispa', 'Una nueva heroína: sus golpes saltan como un rayo al enemigo más cercano.'] },
     title: 'Segundo aliento', desc: 'Continúa el nivel: resistencia completa y todos los héroes de nuevo en pie.',
     start: n => `¡Hola, ${n}! Los robots rebeldes han tomado el piso. ¡Lanza a los gatos y mapaches como con un tirachinas!`, play: '🐾 Jugar',
@@ -446,7 +446,7 @@ async function awardWeek(env) {
   const top = await db.prepare('SELECT user_id, lang, night FROM weekly WHERE week = ?1 AND night > 0 ORDER BY night DESC, at ASC LIMIT 3').bind(wk).all();
   for (const [i, r] of top.results.entries()) {
     await grant(db, r.user_id, WEEK_PRIZES[i]);
-    try { await tg(env, 'sendMessage', { chat_id: r.user_id, text: text(r.lang).weekWin(i + 1, r.night) }); } catch {}
+    try { await tg(env, 'sendMessage', { chat_id: r.user_id, text: text(r.lang).weekWin(i + 1, r.night, WEEK_PRIZES[i]) }); } catch {}
   }
 }
 
