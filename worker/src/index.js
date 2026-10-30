@@ -68,6 +68,16 @@ const STREAK_GIFT_DAYS = 30; // every 30 days in a row: the party hat, or a free
 const DAILY = [{ meter: 1 }, { heart: 1 }, { meter: 1 }, { heart: 1 }, { meter: 2 }, { heart: 2 }, { wind: 1, heart: 1, meter: 1 }];
 const RAID_GIFT = { heart: 1, meter: 1 }, RAID_MIN = 30, ROOMS_N = 20;
 const REF_GIFT = { heart: 1, meter: 1 }; // for both the inviter and the new player
+// Thanksgiving harvest, 20-29 November (UTC): a pumpkin per robot, thanks between friends, wreaths for the top places.
+// The owner can try it before it starts under a separate key, so the real board starts clean
+const THANKS_BONUS = 20, REF_PUMPKINS = 100, REF_SHARE = .1, BRONZE_MIN = 200, HARVEST_CAP = 100000;
+const harvestWindow = (ts = Date.now()) => { const y = new Date(ts).getUTCFullYear(); return [Date.UTC(y, 10, 20), Date.UTC(y, 10, 30)]; };
+function harvestKey(env, user, ts = Date.now()) {
+  const [a, b] = harvestWindow(ts), y = new Date(ts).getUTCFullYear();
+  if (ts >= a && ts < b) return `thanksgiving-${y}`;
+  if (ts < a && isAdmin(env, user)) return `thanksgiving-${y}-preview`;
+  return null;
+}
 const REF_ROOM_GIFT = { wind: 1 }, REF_ROOM_LEVELS = 4; // for the inviter, once the friend has won the first room
 const WEEK_PRIZES = [{ heart: 3, meter: 3 }, { heart: 2, meter: 2 }, { heart: 1, meter: 1 }];
 const DAY = 86400000;
@@ -83,6 +93,9 @@ const TEXT = {
     sent: 'Дякуємо! Повідомлення передано розробнику.',
     refJoined: n => `${n} тепер у грі за твоїм запрошенням! Вам обом: +1 серце і +1 швидкий старт. А коли друг пройде першу кімнату, тобі — безкоштовне друге дихання.`,
     refRoom: n => `🎉 У ${n} уже позаду перша кімната! Подарунок за запрошеного друга: безкоштовне друге дихання 🌬, воно вже в грі.`,
+    thanksGot: n => `🎃 ${n} дякує тобі! Вам обом +20 гарбузів у рейтингу врожаю.`,
+    harvestWin: (place, n, prize) => `🏆 День подяки завершено: ти на ${place} місці (${n} 🎃)! Твоя нагорода — «${prize}». Вона вже в магазині серед прикрас: одягай!`,
+    wreaths: ['Золотий вінок урожаю', 'Срібний вінок', 'Бронзовий вінок'],
     weekWin: (place, w, p) => `Тиждень «Нічної зміни» завершено: ти на ${place} місці (${w} хвиль)! Приз: ❤️ +${p.heart} «Серце+» і ⚡ +${p.meter} «Швидкий старт». Вони вже у тебе: вмикай їх перед будь-яким рівнем.`,
     items: { heart3: ['Серце+ ×3', '+1 серце кожному героєві на 3 рівні.'], meter3: ['Швидкий старт ×3', 'Пів шкали «Бешкету» на старті 3 рівнів.'], hat_party: ['Святковий ковпак', 'Капелюшок для всієї команди, назавжди.'], hat_crown: ['Корона', 'Корона для всієї команди, назавжди.'], hat_bow: ['Бантик', 'Бантик для всієї команди, назавжди.'], rainbow: ['Райдужна нитка', 'Нитки героїв переливаються веселкою, назавжди.'], hero_rex: ['Рекс', 'Новий герой: пес-рятувальник, що лікує друзів, яких зачепить.'], hero_spark: ['Іскра', 'Нова героїня: її удар перескакує блискавкою на найближчого ворога.'] },
     title: 'Друге дихання', desc: 'Продовж рівень: повна міцність квартири й усі герої знову на ногах.',
@@ -98,6 +111,9 @@ const TEXT = {
     sent: 'Thanks! Your message has been sent to the developer.',
     refJoined: n => `${n} joined the game with your invite! You both get +1 heart and +1 quick start. And once your friend clears the first room, you get a free Second wind.`,
     refRoom: n => `🎉 ${n} has cleared the first room! Your gift for bringing a friend: a free Second wind 🌬, already in the game.`,
+    thanksGot: n => `🎃 ${n} says thanks! +20 pumpkins on the harvest board for you both.`,
+    harvestWin: (place, n, prize) => `🏆 Thanksgiving is over: you finished #${place} (${n} 🎃)! Your reward: the ${prize}. It is in the shop among your looks: put it on!`,
+    wreaths: ['Golden harvest wreath', 'Silver wreath', 'Bronze wreath'],
     weekWin: (place, w, p) => `The Night Shift week is over: you finished #${place} (${w} waves)! Your prize: ❤️ +${p.heart} Heart+ and ⚡ +${p.meter} Quick start. They are already yours: switch them on before any level.`,
     items: { heart3: ['Heart+ ×3', '+1 heart for every hero, for 3 levels.'], meter3: ['Quick start ×3', 'Half a Mischief meter at the start of 3 levels.'], hat_party: ['Party hat', 'A hat for the whole team, forever.'], hat_crown: ['Crown', 'A crown for the whole team, forever.'], hat_bow: ['Bow', 'A bow for the whole team, forever.'], rainbow: ['Rainbow yarn', 'Hero threads shimmer in rainbow colors, forever.'], hero_rex: ['Rex', 'A new hero: a rescue dog that heals every friend he touches.'], hero_spark: ['Sparky', 'A new hero: her hits arc like lightning to the nearest enemy.'] },
     title: 'Second wind', desc: 'Continue the level: full home strength and every hero back on their feet.',
@@ -113,6 +129,9 @@ const TEXT = {
     sent: 'Dzięki! Wiadomość trafiła do twórcy gry.',
     refJoined: n => `${n} dołączył(a) do gry z twojego zaproszenia! Oboje dostajecie +1 serce i +1 szybki start. A gdy znajomy przejdzie pierwszy pokój, dostaniesz darmowy Drugi oddech.`,
     refRoom: n => `🎉 ${n} ma już za sobą pierwszy pokój! Prezent za zaproszenie znajomego: darmowy Drugi oddech 🌬, już czeka w grze.`,
+    thanksGot: n => `🎃 ${n} dziękuje! Obojgu +20 dyń w rankingu plonów.`,
+    harvestWin: (place, n, prize) => `🏆 Święto Dziękczynienia zakończone: zajmujesz ${place}. miejsce (${n} 🎃)! Nagroda: «${prize}». Czeka w sklepie wśród ozdób: załóż ją!`,
+    wreaths: ['Złoty wieniec plonów', 'Srebrny wieniec', 'Brązowy wieniec'],
     weekWin: (place, w, p) => `Tydzień nocnej zmiany zakończony: zajmujesz ${place}. miejsce (${w} fal)! Nagroda: ❤️ +${p.heart} Serce+ i ⚡ +${p.meter} Szybki start. Już są twoje: włącz je przed dowolnym poziomem.`,
     items: { heart3: ['Serce+ ×3', '+1 serce dla każdego bohatera na 3 poziomy.'], meter3: ['Szybki start ×3', 'Pół paska psot na starcie 3 poziomów.'], hat_party: ['Czapeczka imprezowa', 'Czapka dla całej drużyny, na zawsze.'], hat_crown: ['Korona', 'Korona dla całej drużyny, na zawsze.'], hat_bow: ['Kokardka', 'Kokardka dla całej drużyny, na zawsze.'], rainbow: ['Tęczowa włóczka', 'Nitki bohaterów mienią się tęczą, na zawsze.'], hero_rex: ['Reks', 'Nowy bohater: pies ratownik, który leczy przyjaciół, których dotknie.'], hero_spark: ['Iskra', 'Nowa bohaterka: jej ciosy przeskakują piorunem na najbliższego wroga.'] },
     title: 'Drugi oddech', desc: 'Kontynuuj poziom: pełna wytrzymałość mieszkania i wszyscy bohaterowie znów na nogach.',
@@ -128,6 +147,9 @@ const TEXT = {
     sent: 'Danke! Deine Nachricht wurde an den Entwickler weitergeleitet.',
     refJoined: n => `${n} ist über deine Einladung ins Spiel gekommen! Ihr bekommt beide +1 Herz und +1 Schnellstart. Und schafft dein Freund den ersten Raum, bekommst du eine Zweite Luft gratis.`,
     refRoom: n => `🎉 ${n} hat den ersten Raum geschafft! Dein Geschenk fürs Einladen: eine Zweite Luft gratis 🌬, schon im Spiel.`,
+    thanksGot: n => `🎃 ${n} sagt danke! Euch beiden +20 Kürbisse in der Ernte-Rangliste.`,
+    harvestWin: (place, n, prize) => `🏆 Erntedank ist vorbei: Platz ${place} (${n} 🎃)! Dein Preis: «${prize}». Er liegt im Shop bei deinen Looks: setz ihn auf!`,
+    wreaths: ['Goldener Erntekranz', 'Silberkranz', 'Bronzekranz'],
     weekWin: (place, w, p) => `Die Nachtschicht-Woche ist vorbei: Platz ${place} (${w} Wellen)! Dein Preis: ❤️ +${p.heart} Herz+ und ⚡ +${p.meter} Schnellstart. Sie gehören schon dir: schalte sie vor jedem Level ein.`,
     items: { heart3: ['Herz+ ×3', '+1 Herz für jeden Helden, für 3 Level.'], meter3: ['Schnellstart ×3', 'Halbe Unfug-Leiste zu Beginn von 3 Leveln.'], hat_party: ['Partyhut', 'Ein Hut für das ganze Team, für immer.'], hat_crown: ['Krone', 'Eine Krone für das ganze Team, für immer.'], hat_bow: ['Schleife', 'Eine Schleife für das ganze Team, für immer.'], rainbow: ['Regenbogenwolle', 'Die Fäden der Helden schimmern in Regenbogenfarben, für immer.'], hero_rex: ['Rex', 'Ein neuer Held: ein Rettungshund, der jeden berührten Freund heilt.'], hero_spark: ['Funke', 'Eine neue Heldin: ihre Treffer springen als Blitz zum nächsten Gegner.'] },
     title: 'Zweite Luft', desc: 'Spiel weiter: volle Wohnungsstärke und alle Helden wieder auf den Beinen.',
@@ -143,6 +165,9 @@ const TEXT = {
     sent: '¡Gracias! Tu mensaje se ha enviado al desarrollador.',
     refJoined: n => `¡${n} se unió al juego con tu invitación! Los dos recibís +1 corazón y +1 inicio rápido. Y cuando tu amigo supere la primera sala, recibirás un Segundo aliento gratis.`,
     refRoom: n => `🎉 ¡${n} ya superó la primera sala! Tu regalo por traer a un amigo: un Segundo aliento gratis 🌬, ya está en el juego.`,
+    thanksGot: n => `🎃 ¡${n} te da las gracias! +20 calabazas en la cosecha para los dos.`,
+    harvestWin: (place, n, prize) => `🏆 Terminó Acción de Gracias: quedaste en el puesto ${place} (${n} 🎃). Tu premio: «${prize}». Está en la tienda, en tus looks: ¡póntela!`,
+    wreaths: ['Corona dorada de cosecha', 'Corona de plata', 'Corona de bronce'],
     weekWin: (place, w, p) => `Terminó la semana del turno de noche: quedaste en el puesto ${place} (${w} oleadas). Tu premio: ❤️ +${p.heart} Corazón+ y ⚡ +${p.meter} Inicio rápido. Ya son tuyos: actívalos antes de cualquier nivel.`,
     items: { heart3: ['Corazón+ ×3', '+1 corazón para cada héroe durante 3 niveles.'], meter3: ['Inicio rápido ×3', 'Media barra de travesura al empezar 3 niveles.'], hat_party: ['Gorro de fiesta', 'Un gorro para todo el equipo, para siempre.'], hat_crown: ['Corona', 'Una corona para todo el equipo, para siempre.'], hat_bow: ['Lazo', 'Un lazo para todo el equipo, para siempre.'], rainbow: ['Hilo arcoíris', 'Los hilos de los héroes brillan con los colores del arcoíris, para siempre.'], hero_rex: ['Rex', 'Un nuevo héroe: un perro de rescate que cura a cada amigo que toca.'], hero_spark: ['Chispa', 'Una nueva heroína: sus golpes saltan como un rayo al enemigo más cercano.'] },
     title: 'Segundo aliento', desc: 'Continúa el nivel: resistencia completa y todos los héroes de nuevo en pie.',
@@ -173,7 +198,7 @@ export default {
     const json = (body, status = 200) => new Response(JSON.stringify(body), { status, headers: { ...cors, 'Content-Type': 'application/json' } });
     if (req.method === 'OPTIONS') return new Response(null, { headers: cors });
     const url = new URL(req.url), path = url.pathname;
-    if (req.method !== 'POST' || !['/board', '/invoice', '/inventory', '/use', '/daily', '/challenge', '/share', '/notify', '/raid', '/chest', '/album', '/quest', '/chal', '/subscribed', '/event', '/tg'].includes(path)) return json({ error: 'not found' }, 404);
+    if (req.method !== 'POST' || !['/board', '/invoice', '/inventory', '/use', '/daily', '/challenge', '/share', '/notify', '/raid', '/chest', '/album', '/quest', '/chal', '/subscribed', '/event', '/thanks', '/tg'].includes(path)) return json({ error: 'not found' }, 404);
 
     if (path === '/tg') {
       // only Telegram knows the secret we gave it in setWebhook
@@ -267,6 +292,21 @@ export default {
       }
       return json({ ok: r.meta.changes > 0, bonus, items: await inventory(env.DB, user.id) });
     }
+    if (path === '/thanks') {
+      // Thanksgiving: thank a friend once a day, +20 pumpkins for you both and a note from the bot to them
+      await ensureTables(env.DB);
+      const hk = harvestKey(env, user), to = Number(body.to);
+      if (!hk || !Number.isInteger(to) || to === user.id) return json({ error: 'bad thanks' }, 400);
+      if (!(await friendIds(env.DB, user.id)).includes(to)) return json({ error: 'not a friend' }, 400);
+      const r = await env.DB.prepare('INSERT OR IGNORE INTO thanks (ev, from_id, day, to_id) VALUES (?1, ?2, ?3, ?4)').bind(hk, user.id, utcDay(), to).run();
+      if (!r.meta.changes) return json({ ok: false });
+      const now = Math.floor(Date.now() / 1000);
+      for (const id of [user.id, to]) await env.DB.prepare(`INSERT INTO harvest (ev, user_id, bonus, at) VALUES (?1, ?2, ?3, ?4)
+        ON CONFLICT(ev, user_id) DO UPDATE SET bonus = bonus + excluded.bonus`).bind(hk, id, THANKS_BONUS, now).run();
+      const fl = await env.DB.prepare('SELECT lang FROM daily WHERE user_id = ?1').bind(to).first();
+      try { await tg(env, 'sendMessage', { chat_id: to, text: text(fl && fl.lang).thanksGot(displayName(user)) }); } catch (e) {}
+      return json({ ok: true });
+    }
     if (path === '/album') {
       // a card reached a new tier: its gift, once
       const type = String(body.type || ''), tier = Math.floor(Number(body.tier));
@@ -326,16 +366,20 @@ export default {
     const night = clampInt(body.night, LIMITS.night), stars = clampInt(body.stars, LIMITS.stars), week = clampInt(body.week, LIMITS.night);
     if (night || stars) await save(env, user, night, stars);
     if (clampInt(body.levels, 500) >= REF_ROOM_LEVELS) await refRoomDone(env, user);
+    const hk = harvestKey(env, user), hv = clampInt(body.harvest, HARVEST_CAP);
+    if (hk && hv) await env.DB.prepare(`INSERT INTO harvest (ev, user_id, own, at) VALUES (?1, ?2, ?3, ?4)
+      ON CONFLICT(ev, user_id) DO UPDATE SET own = MAX(own, excluded.own), at = excluded.at`).bind(hk, user.id, hv, Math.floor(Date.now() / 1000)).run();
     if (week) await saveWeek(env.DB, user, week);
 
     if (body.board === 'week') return json(await weekBoard(env.DB, user.id));
     if (body.board === 'friends') return json(await friendsBoard(env.DB, user.id));
     if (body.board === 'chal') return json(await chalBoard(env.DB, user.id, weekKey()));
+    if (body.board === 'harvest') return json(await harvestBoard(env, user));
     if (body.board !== 'night' && body.board !== 'stars') return json({ ok: true });
     return json(await board(env.DB, body.board, user.id));
   },
 
-  async scheduled(event, env, ctx) { ctx.waitUntil(event.cron === '5 0 * * 1' ? awardWeek(env) : Promise.all([sendRaids(env), sendStreakReminders(env), sendChestPings(env), sendMissYou(env), sendChannelPosts(env)])); },
+  async scheduled(event, env, ctx) { ctx.waitUntil(event.cron === '5 0 * * 1' ? awardWeek(env) : Promise.all([sendRaids(env), sendStreakReminders(env), sendChestPings(env), sendMissYou(env), sendChannelPosts(env), awardHarvest(env)])); },
 };
 
 // ---------- daily bonus, challenge, invites ----------
@@ -502,6 +546,9 @@ async function ensureTables(db) {
     // when a player away for days was last sent the 'we miss you' gift
     db.prepare('CREATE TABLE IF NOT EXISTS comebacks (user_id INTEGER PRIMARY KEY, at INTEGER NOT NULL)'),
     db.prepare('CREATE TABLE IF NOT EXISTS ref_rooms (user_id INTEGER PRIMARY KEY, at INTEGER NOT NULL)'),
+    db.prepare('CREATE TABLE IF NOT EXISTS harvest (ev TEXT NOT NULL, user_id INTEGER NOT NULL, own INTEGER NOT NULL DEFAULT 0, bonus INTEGER NOT NULL DEFAULT 0, at INTEGER NOT NULL, PRIMARY KEY (ev, user_id))'),
+    db.prepare('CREATE TABLE IF NOT EXISTS thanks (ev TEXT NOT NULL, from_id INTEGER NOT NULL, day TEXT NOT NULL, to_id INTEGER NOT NULL, PRIMARY KEY (ev, from_id, day))'),
+    db.prepare('CREATE TABLE IF NOT EXISTS harvest_awards (ev TEXT PRIMARY KEY, at INTEGER NOT NULL)'),
     db.prepare('CREATE TABLE IF NOT EXISTS album (user_id INTEGER NOT NULL, card TEXT NOT NULL, PRIMARY KEY (user_id, card))'),
     db.prepare('CREATE TABLE IF NOT EXISTS quests (user_id INTEGER NOT NULL, week TEXT NOT NULL, quest TEXT NOT NULL, PRIMARY KEY (user_id, week, quest))'),
     db.prepare(`CREATE TABLE IF NOT EXISTS chal (week TEXT NOT NULL, user_id INTEGER NOT NULL, name TEXT NOT NULL, turns INTEGER NOT NULL,
@@ -830,8 +877,50 @@ async function friendIds(db, id) {
 async function friendsBoard(db, id) {
   const ids = [id, ...await friendIds(db, id)];
   const rows = await db.prepare(`SELECT id, name, stars, night FROM players WHERE id IN (${ids.map(() => '?').join(',')})`).bind(...ids).all();
-  const list = rows.results.sort((a, b) => b.stars - a.stars || b.night - a.night);
-  return { board: 'friends', friends: ids.length - 1, top: list.map((r, i) => ({ rank: i + 1, name: r.name, value: r.stars, night: r.night, me: r.id === id })), me: null };
+  const list = rows.results.sort((a, b) => b.stars - a.stars || b.night - a.night), champ = await champions(db);
+  // friends see each other's ids so they can thank each other at Thanksgiving; thanked: already thanked someone today
+  const thanked = !!await db.prepare('SELECT 1 AS x FROM thanks WHERE from_id = ?1 AND day = ?2').bind(id, utcDay()).first();
+  return { board: 'friends', friends: ids.length - 1, thanked, top: list.map((r, i) => ({ rank: i + 1, id: r.id === id ? undefined : r.id, name: r.name, value: r.stars, night: r.night, me: r.id === id, champ: champ.has(r.id) })), me: null };
+}
+// players who hold the gold harvest wreath get a trophy next to their name
+async function champions(db) {
+  const r = await db.prepare("SELECT user_id FROM inventory WHERE item = 'hat_wreath_gold' AND count > 0").all();
+  return new Set(r.results.map(x => x.user_id));
+}
+// the harvest ranking: own pumpkins + thanks + for each friend who joined during the event 100 and 10% of their own
+async function harvestRanking(db, key, from, to) {
+  const a = Math.floor(from / 1000), b = Math.floor(to / 1000);
+  const rows = await db.prepare(`SELECT h.user_id AS id, COALESCE(p.name, '?') AS name, h.own, h.bonus,
+      (SELECT COUNT(*) FROM referrals r WHERE r.ref_by = h.user_id AND r.at >= ?2 AND r.at < ?3) AS refs,
+      (SELECT COALESCE(SUM(h2.own), 0) FROM referrals r2 JOIN harvest h2 ON h2.user_id = r2.user_id AND h2.ev = ?1
+        WHERE r2.ref_by = h.user_id AND r2.at >= ?2 AND r2.at < ?3) AS refOwn, h.at
+    FROM harvest h LEFT JOIN players p ON p.id = h.user_id WHERE h.ev = ?1 LIMIT 2000`).bind(key, a, b).all();
+  return rows.results.map(r => ({ id: r.id, name: r.name, value: r.own + r.bonus + REF_PUMPKINS * r.refs + Math.floor(REF_SHARE * r.refOwn), at: r.at }))
+    .filter(r => r.value > 0).sort((x, y) => y.value - x.value || x.at - y.at);
+}
+async function harvestBoard(env, user) {
+  await ensureTables(env.DB);
+  const [a, b] = harvestWindow(), key = harvestKey(env, user) || `thanksgiving-${new Date().getUTCFullYear()}`;
+  const list = await harvestRanking(env.DB, key, a, b), champ = await champions(env.DB), i = list.findIndex(r => r.id === user.id);
+  return { board: 'harvest', endsAt: b, top: list.slice(0, 50).map((r, k) => ({ rank: k + 1, name: r.name, value: r.value, me: r.id === user.id, champ: champ.has(r.id) })),
+    me: i >= 0 ? { rank: i + 1, value: list[i].value } : null };
+}
+// once the harvest is over: wreaths for the top places and a note to each winner
+async function awardHarvest(env) {
+  const now = Date.now(), y = new Date(now).getUTCFullYear(), [a, b] = harvestWindow(now);
+  if (now < b || now > b + 3 * DAY) return;
+  const db = env.DB, key = `thanksgiving-${y}`;
+  await ensureTables(db);
+  const done = await db.prepare('INSERT OR IGNORE INTO harvest_awards (ev, at) VALUES (?1, ?2)').bind(key, Math.floor(now / 1000)).run();
+  if (!done.meta.changes) return;
+  const list = await harvestRanking(db, key, a, b);
+  for (let i = 0; i < list.length && i < 20; i++) {
+    const r = list[i], tier = i === 0 ? 0 : i < 6 ? 1 : r.value >= BRONZE_MIN ? 2 : -1;
+    if (tier < 0) continue;
+    await grant(db, r.id, { [['hat_wreath_gold', 'hat_wreath_silver', 'hat_wreath_bronze'][tier]]: 1 });
+    const l = await db.prepare('SELECT lang FROM daily WHERE user_id = ?1').bind(r.id).first(), t = text(l && l.lang);
+    try { await tg(env, 'sendMessage', { chat_id: r.id, text: t.harvestWin(i + 1, r.value, t.wreaths[tier]) }); } catch (e) {}
+  }
 }
 // a friend who was ahead and now is behind gets one note a day
 async function tellPassedFriends(env, user, was, now) {
@@ -1424,7 +1513,7 @@ async function board(db, col, id) {
   }
   return {
     board: col,
-    top: top.results.map((r, i) => ({ rank: i + 1, name: r.name, value: r.value, me: r.id === id })),
+    top: await (async () => { const champ = await champions(db); return top.results.map((r, i) => ({ rank: i + 1, name: r.name, value: r.value, me: r.id === id, champ: champ.has(r.id) })); })(),
     me: mine,
   };
 }

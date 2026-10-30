@@ -1095,14 +1095,14 @@ const I18N = {
     'tag.bounce': ['ВІДСКОК', 'відбивається від ворогів'], 'tag.pierce': ['ПРОШИВАННЯ', 'пролітає ворогів наскрізь'],
     bossTitles: [['Гроза крихт', 'Жодної крихти на підлозі!'], ['Володар пульта', 'Цей диван тепер мій!'], ['Нічний жах', 'Час спати... назавжди!'],
       ['Мильний барон', 'Змию вас у каналізацію!'], ['Буревій', 'Вас здує з балкона!'], ['Горищний привид', 'Тут ніхто не живе... крім мене!'],
-      ['Залізний механік', 'Розберу вас на гвинтики!'], ['Підвальний прядильник', 'Ніхто не вийде з мого підвалу!'], ['Володар даху', 'Над цим дахом тільки я і грім!'], ['Садовий тиран', 'Тут усе буде під лінійку!'], ['Серце дому', 'Усе в цьому домі працює на мене!'], ['Господар поверхів', 'Наступна зупинка — ваша поразка!'], ['Король посилок', 'Усіх розсортую по коробках!'], ['Батько всіх роботів', 'Я зберу вас знову. І знову!'], ['Геній з пробірки', 'Мої експерименти не знають жалю!'], ['Володар орбіти', 'Небо падає на вас за моїм наказом!'], ['Король криги', 'Замету вас разом зі снігом!'], ['Господар глибин', 'Я затоплю вашу квартиру!'], ['Повелитель струму', 'Я вимкну світло в усьому місті!'], ['Володар тунелів', 'Наступна станція — кінцева!'], ['Король атракціонів', 'Покатаю вас до запаморочення!'], ['Майстер іграшок', 'Ще жодна іграшка від мене не втекла!']],
-    bossNames: ['БЛЕНДЕР «МЕГАМІКС»', 'ТЕЛЕБОС 3000', 'БУДИЛЬНИК-ДЗВОНАР', 'ПРАЛЬКА «БАРАБАН»', 'ПОВІТРОДУВ «ШКВАЛ»', 'ПИЛОСОС-ПРИВИД', 'РОБО-БОС 9000', 'ПАВУК «ТЕНЕТА»', 'ДРОН «ГРІМ»', 'КОСАРКА «СТРИЖ»', 'ХАБ «РОЗУМНИЙ ДІМ»', 'ЛІФТ «ЕКСПРЕС»', 'СОРТУВАЛЬНИК «МЕГАСКЛАД»', 'ЗБИРАЧ «ПРАЙМ»', 'ПРОФЕСОР «КОЛБА»', 'КОМАНДОР «ОРБІТА»', 'СНІГООЧИСНИК «ЗАВІРЮХА»', 'КРАКЕН «ГЛИБИНА»', 'ТУРБІНА «ГІГАВАТ»', 'ЛОКОМОТИВ «КОМЕТА»', 'КОЛЕСО ОГЛЯДУ «ВИХОР»', 'АВТОМАТ «ХАПУН»'],
+      ['Залізний механік', 'Розберу вас на гвинтики!'], ['Підвальний прядильник', 'Ніхто не вийде з мого підвалу!'], ['Володар даху', 'Над цим дахом тільки я і грім!'], ['Садовий тиран', 'Тут усе буде під лінійку!'], ['Серце дому', 'Усе в цьому домі працює на мене!'], ['Господар поверхів', 'Наступна зупинка — ваша поразка!'], ['Король посилок', 'Усіх розсортую по коробках!'], ['Батько всіх роботів', 'Я зберу вас знову. І знову!'], ['Геній з пробірки', 'Мої експерименти не знають жалю!'], ['Володар орбіти', 'Небо падає на вас за моїм наказом!'], ['Король криги', 'Замету вас разом зі снігом!'], ['Господар глибин', 'Я затоплю вашу квартиру!'], ['Повелитель струму', 'Я вимкну світло в усьому місті!'], ['Володар тунелів', 'Наступна станція — кінцева!'], ['Король атракціонів', 'Покатаю вас до запаморочення!'], ['Майстер іграшок', 'Ще жодна іграшка від мене не втекла!'], ['Шеф святкового столу', 'Готуйтеся: зараз я вас підрум\'яню!']],
+    bossNames: ['БЛЕНДЕР «МЕГАМІКС»', 'ТЕЛЕБОС 3000', 'БУДИЛЬНИК-ДЗВОНАР', 'ПРАЛЬКА «БАРАБАН»', 'ПОВІТРОДУВ «ШКВАЛ»', 'ПИЛОСОС-ПРИВИД', 'РОБО-БОС 9000', 'ПАВУК «ТЕНЕТА»', 'ДРОН «ГРІМ»', 'КОСАРКА «СТРИЖ»', 'ХАБ «РОЗУМНИЙ ДІМ»', 'ЛІФТ «ЕКСПРЕС»', 'СОРТУВАЛЬНИК «МЕГАСКЛАД»', 'ЗБИРАЧ «ПРАЙМ»', 'ПРОФЕСОР «КОЛБА»', 'КОМАНДОР «ОРБІТА»', 'СНІГООЧИСНИК «ЗАВІРЮХА»', 'КРАКЕН «ГЛИБИНА»', 'ТУРБІНА «ГІГАВАТ»', 'ЛОКОМОТИВ «КОМЕТА»', 'КОЛЕСО ОГЛЯДУ «ВИХОР»', 'АВТОМАТ «ХАПУН»', 'ДУХОВКА «ІНДИЧКА»'],
     bossSkills: [['Смузі-калюжі', 'Після атаки лишає липку калюжу: герої в ній гальмують'], ['Реклама', 'Кожна атака викликає міні-пилосос (до двох одразу)'],
       ['Дзвін', 'Б\'є всіх героїв на ногах одразу, по 1 ♥ кожному'], ['Мильна піна', 'Піна повністю гасить перший удар. Після атаки відростає'],
       ['Шквал', 'Атака відкидає всіх героїв подалі від нього'], ['Хованки', 'Після атаки зникає й з\'являється в іншому місці'],
-      ['Друга фаза', 'На половині міцності лагодить себе й атакує частіше'], ['Павутина', 'Обплутує героя, якого вдарив: той пропускає хід, якщо друг не звільнить його пострілом'], ['Ланцюгова блискавка', 'Удар перескакує на найближчого героя поруч і забирає в нього 1 ♥'], ['Ривок', 'Після атаки мчить до героя, якого вдарила, і розкидає всіх на шляху'], ['Прискорення', 'Після атаки підганяє всіх роботів: їхні атаки настають на хід раніше'], ['Шахта', 'Після атаки б\'є вниз по шахті: кожен герой під ним втрачає 1 ♥'], ['Розворот', 'Після атаки розвертає всі стрічки й пришвидшує їх'], ['Перезбирання', 'Після атаки знову збирає останнього зламаного робота з половиною здоров\'я'], ['Кислотний розлив', 'Після атаки розливає кислоту під героєм, якого вдарив'], ['Метеоритний удар', 'Після атаки викликає метеорити на двох героїв: вони впадуть через хід'], ['Замет', 'Після атаки згортає всіх героїв убік за вітром'], ['Приплив', 'Після атаки вода піднімається одразу на кілька поділок'], ['Перевантаження', 'Після атаки заряджає всі акумулятори до максимуму'], ['Позаплановий рейс', 'Після атаки пускає потяг по колії, де найбільше героїв'], ['Дзеркальна зала', 'Після атаки розвертає всі дзеркала до героїв'], ['Хапун', 'Після атаки хапає вдареного героя: той втрачає ще одне серце (не останнє) і падає в іншому місці']],
-    bossCries: ['ВЖИК-ВЖИК!', 'НЕ ПЕРЕМИКАЙТЕ!', 'ДЗЕЛЕНЬ-ДЗЕЛЕНЬ!', 'ВІДЖИМ!', 'ФУУУХ!', 'У-у-у-у!', 'ТУРБО-ВСМОКТУВАННЯ!', 'ТКУ-ТКУ-ТКУ!', 'БАБАХ!', 'ДР-Р-РИН!', 'ПЕРЕЗАВАНТАЖЕННЯ!', 'ДІНЬ-ДОН!', 'ЗАДНІЙ ХІД!', 'ЗБИРАННЯ!', 'ЕКСПЕРИМЕНТ!', 'ВОГОНЬ З ОРБІТИ!', 'ХУРТОВИНА!', 'ПРИПЛИВ!', 'ПЕРЕВАНТАЖЕННЯ!', 'ПОВНИЙ ВПЕРЕД!', 'ПО КОЛУ!', 'ХАП-ХАП!'],
-    bossFx: ['Липко!', 'Реклама!', 'Дзвін!', 'Піна!', 'Шквал!', 'Бу!', 'Друга фаза!', 'Павутина!', 'Блискавка!', 'Ривок!', 'Прискорення!', 'Вниз!', 'Розворот!', 'Перезібрано!', 'Розлив!', 'Ціль захоплено!', 'Замело!', 'Вода прибуває!', 'Повний заряд!', 'Позаплановий рейс!', 'Дзеркала до вас!', 'Хап!'], skillLabel: 'Уміння',
+      ['Друга фаза', 'На половині міцності лагодить себе й атакує частіше'], ['Павутина', 'Обплутує героя, якого вдарив: той пропускає хід, якщо друг не звільнить його пострілом'], ['Ланцюгова блискавка', 'Удар перескакує на найближчого героя поруч і забирає в нього 1 ♥'], ['Ривок', 'Після атаки мчить до героя, якого вдарила, і розкидає всіх на шляху'], ['Прискорення', 'Після атаки підганяє всіх роботів: їхні атаки настають на хід раніше'], ['Шахта', 'Після атаки б\'є вниз по шахті: кожен герой під ним втрачає 1 ♥'], ['Розворот', 'Після атаки розвертає всі стрічки й пришвидшує їх'], ['Перезбирання', 'Після атаки знову збирає останнього зламаного робота з половиною здоров\'я'], ['Кислотний розлив', 'Після атаки розливає кислоту під героєм, якого вдарив'], ['Метеоритний удар', 'Після атаки викликає метеорити на двох героїв: вони впадуть через хід'], ['Замет', 'Після атаки згортає всіх героїв убік за вітром'], ['Приплив', 'Після атаки вода піднімається одразу на кілька поділок'], ['Перевантаження', 'Після атаки заряджає всі акумулятори до максимуму'], ['Позаплановий рейс', 'Після атаки пускає потяг по колії, де найбільше героїв'], ['Дзеркальна зала', 'Після атаки розвертає всі дзеркала до героїв'], ['Хапун', 'Після атаки хапає вдареного героя: той втрачає ще одне серце (не останнє) і падає в іншому місці'], ['Свіжа випічка', 'Після атаки підлікує інших роботів на 15%']],
+    bossCries: ['ВЖИК-ВЖИК!', 'НЕ ПЕРЕМИКАЙТЕ!', 'ДЗЕЛЕНЬ-ДЗЕЛЕНЬ!', 'ВІДЖИМ!', 'ФУУУХ!', 'У-у-у-у!', 'ТУРБО-ВСМОКТУВАННЯ!', 'ТКУ-ТКУ-ТКУ!', 'БАБАХ!', 'ДР-Р-РИН!', 'ПЕРЕЗАВАНТАЖЕННЯ!', 'ДІНЬ-ДОН!', 'ЗАДНІЙ ХІД!', 'ЗБИРАННЯ!', 'ЕКСПЕРИМЕНТ!', 'ВОГОНЬ З ОРБІТИ!', 'ХУРТОВИНА!', 'ПРИПЛИВ!', 'ПЕРЕВАНТАЖЕННЯ!', 'ПОВНИЙ ВПЕРЕД!', 'ПО КОЛУ!', 'ХАП-ХАП!', 'ПІДРУМ\'ЯНЮЮ!'],
+    bossFx: ['Липко!', 'Реклама!', 'Дзвін!', 'Піна!', 'Шквал!', 'Бу!', 'Друга фаза!', 'Павутина!', 'Блискавка!', 'Ривок!', 'Прискорення!', 'Вниз!', 'Розворот!', 'Перезібрано!', 'Розлив!', 'Ціль захоплено!', 'Замело!', 'Вода прибуває!', 'Повний заряд!', 'Позаплановий рейс!', 'Дзеркала до вас!', 'Хап!', 'Свіжа випічка!'], skillLabel: 'Уміння',
     bossWarn: 'УВАГА · БОС НАБЛИЖАЄТЬСЯ', bossName: 'РОБО-БОС 9000', 'stat.hp': 'Міцність', 'stat.atk': 'Удар', 'stat.every': 'Атакує',
     'stat.everyN': n => `кожні ${n} ходи`, bossHint: 'Бий у жовтий сенсор: потрійна шкода', tapToStart: 'Торкнись, щоб почати',
     turn: n => `Хід ${n}`, hudWave: n => ` · хвиля ${n}`, pullHint: 'Тягни від героя назад і відпускай', par3: n => `3 зірки: пройти за ${n} ходів або швидше`,
@@ -1176,9 +1176,9 @@ const I18N = {
     'st.arc15.1': 'Тоді летимо туди. Коти завжди мріяли про космос.',
     'st.end.1': 'А крихти під диваном — це вже традиція.',
     storySkip: 'Пропустити', storyTap: 'торкнись, щоб продовжити',
-    'ev.halloween': 'Хелловін', 'ev.newyear': 'Новий рік', evSub: (d, n) => `Подія: ${d}/${n} рівнів · нагорода — капелюх`, evLevel: (e, n) => `${e} · ${n}/3`,
+    'ev.halloween': 'Хелловін', 'ev.newyear': 'Новий рік', 'ev.thanksgiving': 'День подяки', boardHarvest: 'Урожай', harvestInfo: '🎃 за кожного робота · +20 за подяку другу · +100 і 10% урожаю за нового друга', thankBtn: 'Дякую', thanked: 'Подяку надіслано: вам обом +20 🎃', thankedAlready: 'Сьогодні подяку вже надіслано, завтра знову можна', evSub: (d, n) => `Подія: ${d}/${n} рівнів · нагорода — капелюх`, evLevel: (e, n) => `${e} · ${n}/3`,
     evDone: 'Рівень події пройдено!', evHat: 'Новий капелюх для команди!',
-    'item.hat_pumpkin': 'Гарбузовий капелюх', 'itemd.hat_pumpkin': 'Нагорода Хелловіну', 'item.hat_santa': 'Новорічна шапка', 'itemd.hat_santa': 'Нагорода Нового року',
+    'item.hat_pumpkin': 'Гарбузовий капелюх', 'itemd.hat_pumpkin': 'Нагорода Хелловіну', 'item.hat_pilgrim': 'Капелюх пілігрима', 'itemd.hat_pilgrim': 'Нагорода Дня подяки', 'item.hat_wreath_gold': 'Золотий вінок урожаю', 'itemd.hat_wreath_gold': '1 місце в рейтингу врожаю: єдиний у грі', 'item.hat_wreath_silver': 'Срібний вінок', 'itemd.hat_wreath_silver': '2–6 місця в рейтингу врожаю', 'item.hat_wreath_bronze': 'Бронзовий вінок', 'itemd.hat_wreath_bronze': '7–20 місця в рейтингу врожаю', 'item.hat_santa': 'Новорічна шапка', 'itemd.hat_santa': 'Нагорода Нового року',
     'hero.rex.name': 'Рекс', 'hero.rex.skill': 'зачеплені друзі отримують +1 серце', 'hero.rex.combo': 'Рятувальна місія',
     'hero.homa.name': 'Хома', 'hero.homa.skill': 'що довше котиться, то сильніше б\'є', 'hero.homa.combo': 'Горіховий дощ',
     'stat.power': 'Удар', 'stat.speed': 'Швидкість', 'stat.size': 'Розмір', comboLabel: 'Комбо', perksLabel: 'Бонуси рівнів', detailWhat: 'Що дає',
@@ -1247,14 +1247,14 @@ const I18N = {
     'tag.bounce': ['BOUNCE', 'rebounds off enemies'], 'tag.pierce': ['PIERCE', 'flies through enemies'],
     bossTitles: [['Crumb Terror', 'Not a single crumb on the floor!'], ['Remote Overlord', 'This couch is mine now!'], ['Night Terror', 'Time to sleep... forever!'],
       ['Soap Baron', 'Down the drain you go!'], ['Stormbringer', 'I\'ll blow you off the balcony!'], ['Attic Phantom', 'Nobody lives up here... but me!'],
-      ['Iron Mechanic', 'I\'ll take you apart, bolt by bolt!'], ['Cellar Spinner', 'Nobody leaves my basement!'], ['Rooftop Ruler', 'Up here it\'s just me and the thunder!'], ['Garden Tyrant', 'Everything here gets cut in straight lines!'], ['Heart of the House', 'Everything in this house works for me!'], ['Lord of the Floors', 'Next stop: your defeat!'], ['King of Parcels', 'I will sort you all into boxes!'], ['Father of All Robots', 'I will build you again. And again!'], ['Test-Tube Genius', 'My experiments know no mercy!'], ['Lord of the Orbit', 'The sky falls on you at my command!'], ['King of the Ice', 'I will sweep you away with the snow!'], ['Lord of the Deep', 'I will flood your flat!'], ['Lord of the Current', 'I\'ll switch off the lights in the whole city!'], ['Lord of the Tunnels', 'Next stop: the end of the line!'], ['King of the Rides', 'I\'ll spin you till you\'re dizzy!'], ['Master of Prizes', 'No prize ever got away from me!']],
-    bossNames: ['MEGAMIX BLENDER', 'TELEBOSS 3000', 'BELLRINGER ALARM', 'DRUM WASHER', 'GALE BLOWER', 'GHOST VACUUM', 'ROBO-BOSS 9000', 'WEB-SPINNER', 'THUNDER DRONE', 'SWIFT MOWER', 'SMART HOME HUB', 'EXPRESS LIFT', 'MEGA SORTER', 'ASSEMBLER PRIME', 'PROFESSOR FLASK', 'COMMANDER ORBIT', 'BLIZZARD SNOWPLOUGH', 'KRAKEN DEEP', 'GIGAWATT TURBINE', 'COMET LOCOMOTIVE', 'WHIRL FERRIS WHEEL', 'GRABBER CLAW MACHINE'],
+      ['Iron Mechanic', 'I\'ll take you apart, bolt by bolt!'], ['Cellar Spinner', 'Nobody leaves my basement!'], ['Rooftop Ruler', 'Up here it\'s just me and the thunder!'], ['Garden Tyrant', 'Everything here gets cut in straight lines!'], ['Heart of the House', 'Everything in this house works for me!'], ['Lord of the Floors', 'Next stop: your defeat!'], ['King of Parcels', 'I will sort you all into boxes!'], ['Father of All Robots', 'I will build you again. And again!'], ['Test-Tube Genius', 'My experiments know no mercy!'], ['Lord of the Orbit', 'The sky falls on you at my command!'], ['King of the Ice', 'I will sweep you away with the snow!'], ['Lord of the Deep', 'I will flood your flat!'], ['Lord of the Current', 'I\'ll switch off the lights in the whole city!'], ['Lord of the Tunnels', 'Next stop: the end of the line!'], ['King of the Rides', 'I\'ll spin you till you\'re dizzy!'], ['Master of Prizes', 'No prize ever got away from me!'], ['Chef of the Feast', 'Get ready: I\'ll roast you golden brown!']],
+    bossNames: ['MEGAMIX BLENDER', 'TELEBOSS 3000', 'BELLRINGER ALARM', 'DRUM WASHER', 'GALE BLOWER', 'GHOST VACUUM', 'ROBO-BOSS 9000', 'WEB-SPINNER', 'THUNDER DRONE', 'SWIFT MOWER', 'SMART HOME HUB', 'EXPRESS LIFT', 'MEGA SORTER', 'ASSEMBLER PRIME', 'PROFESSOR FLASK', 'COMMANDER ORBIT', 'BLIZZARD SNOWPLOUGH', 'KRAKEN DEEP', 'GIGAWATT TURBINE', 'COMET LOCOMOTIVE', 'WHIRL FERRIS WHEEL', 'GRABBER CLAW MACHINE', 'TURKEY OVEN'],
     bossSkills: [['Smoothie puddles', 'After attacking it leaves a sticky puddle that slows heroes down'], ['Commercial break', 'Every attack summons a mini vacuum (up to two at once)'],
       ['Ring!', 'Hits every standing hero at once, 1 ♥ each'], ['Soap foam', 'Foam fully soaks up the first hit. It grows back after an attack'],
       ['Gale', 'Its attack blows all heroes away from it'], ['Hide and seek', 'After attacking it vanishes and reappears elsewhere'],
-      ['Second phase', 'At half toughness it repairs itself and attacks more often'], ['Web', 'Wraps the hero it hits: that hero skips a turn unless a friend frees them with a shot'], ['Chain lightning', 'Its strike jumps to the nearest hero close by and takes 1 ♥ from them'], ['Charge', 'After attacking it races towards the hero it hit and shoves aside anyone in the way'], ['Overclock', 'After attacking it speeds up every robot: their attacks come a turn sooner'], ['Shaft', 'After attacking it strikes down its shaft: every hero below it loses 1 ♥'], ['Reverse', 'After attacking it reverses every belt and speeds them up'], ['Rebuild', 'After attacking it rebuilds the last broken robot with half its health'], ['Acid spill', 'After attacking it spills acid under the hero it hit'], ['Meteor strike', 'After attacking it calls meteors onto two heroes: they land a turn later'], ['Snowdrift', 'After attacking it sweeps every hero aside with the wind'], ['High tide', 'After attacking it raises the water several marks at once'], ['Overload', 'After attacking it charges every battery to the full'], ['Extra train', 'After attacking it sends a train down the track with the most heroes'], ['Hall of mirrors', 'After attacking it turns every mirror toward the heroes'], ['Grab', 'After attacking it grabs the hero it hit: another heart lost (never the last) and a drop somewhere else']],
-    bossCries: ['WHIRR-WHIRR!', 'DON\'T TOUCH THAT DIAL!', 'RING-A-LING!', 'SPIN CYCLE!', 'FWOOOSH!', 'Boooo!', 'TURBO SUCK!', 'SKITTER-SKITTER!', 'KA-BOOM!', 'VROOOM!', 'REBOOTING!', 'DING-DONG!', 'REVERSE!', 'ASSEMBLE!', 'EXPERIMENT!', 'ORBITAL STRIKE!', 'WHITEOUT!', 'HIGH TIDE!', 'OVERLOAD!', 'FULL STEAM AHEAD!', 'ROUND AND ROUND!', 'SNATCH!'],
-    bossFx: ['Sticky!', 'Ad break!', 'Ring!', 'Foam!', 'Gale!', 'Boo!', 'Second phase!', 'Webbed!', 'Zap!', 'Charge!', 'Overclock!', 'Going down!', 'Reversed!', 'Rebuilt!', 'Spill!', 'Target locked!', 'Swept!', 'The water rises!', 'Full charge!', 'Extra train!', 'Mirrors on you!', 'Grabbed!'], skillLabel: 'Ability',
+      ['Second phase', 'At half toughness it repairs itself and attacks more often'], ['Web', 'Wraps the hero it hits: that hero skips a turn unless a friend frees them with a shot'], ['Chain lightning', 'Its strike jumps to the nearest hero close by and takes 1 ♥ from them'], ['Charge', 'After attacking it races towards the hero it hit and shoves aside anyone in the way'], ['Overclock', 'After attacking it speeds up every robot: their attacks come a turn sooner'], ['Shaft', 'After attacking it strikes down its shaft: every hero below it loses 1 ♥'], ['Reverse', 'After attacking it reverses every belt and speeds them up'], ['Rebuild', 'After attacking it rebuilds the last broken robot with half its health'], ['Acid spill', 'After attacking it spills acid under the hero it hit'], ['Meteor strike', 'After attacking it calls meteors onto two heroes: they land a turn later'], ['Snowdrift', 'After attacking it sweeps every hero aside with the wind'], ['High tide', 'After attacking it raises the water several marks at once'], ['Overload', 'After attacking it charges every battery to the full'], ['Extra train', 'After attacking it sends a train down the track with the most heroes'], ['Hall of mirrors', 'After attacking it turns every mirror toward the heroes'], ['Grab', 'After attacking it grabs the hero it hit: another heart lost (never the last) and a drop somewhere else'], ['Fresh batch', 'After attacking it heals the other robots by 15%']],
+    bossCries: ['WHIRR-WHIRR!', 'DON\'T TOUCH THAT DIAL!', 'RING-A-LING!', 'SPIN CYCLE!', 'FWOOOSH!', 'Boooo!', 'TURBO SUCK!', 'SKITTER-SKITTER!', 'KA-BOOM!', 'VROOOM!', 'REBOOTING!', 'DING-DONG!', 'REVERSE!', 'ASSEMBLE!', 'EXPERIMENT!', 'ORBITAL STRIKE!', 'WHITEOUT!', 'HIGH TIDE!', 'OVERLOAD!', 'FULL STEAM AHEAD!', 'ROUND AND ROUND!', 'SNATCH!', 'GOLDEN BROWN!'],
+    bossFx: ['Sticky!', 'Ad break!', 'Ring!', 'Foam!', 'Gale!', 'Boo!', 'Second phase!', 'Webbed!', 'Zap!', 'Charge!', 'Overclock!', 'Going down!', 'Reversed!', 'Rebuilt!', 'Spill!', 'Target locked!', 'Swept!', 'The water rises!', 'Full charge!', 'Extra train!', 'Mirrors on you!', 'Grabbed!', 'Fresh batch!'], skillLabel: 'Ability',
     bossWarn: 'WARNING · BOSS INCOMING', bossName: 'ROBO-BOSS 9000', 'stat.hp': 'Toughness', 'stat.atk': 'Hit', 'stat.every': 'Attacks',
     'stat.everyN': n => `every ${n} turns`, bossHint: 'Hit the yellow sensor: triple damage', tapToStart: 'Tap to start',
     turn: n => `Turn ${n}`, hudWave: n => ` · wave ${n}`, pullHint: 'Pull back from a hero and let go', par3: n => `3 stars: finish in ${n} turns or fewer`,
@@ -1328,9 +1328,9 @@ const I18N = {
     'st.arc15.1': 'Then we fly up there. Cats have always dreamed of space.',
     'st.end.1': 'The crumbs under the couch stay, though. It\'s tradition.',
     storySkip: 'Skip', storyTap: 'tap to continue',
-    'ev.halloween': 'Halloween', 'ev.newyear': 'New Year', evSub: (d, n) => `Event: ${d}/${n} levels · reward: a hat`, evLevel: (e, n) => `${e} · ${n}/3`,
+    'ev.halloween': 'Halloween', 'ev.newyear': 'New Year', 'ev.thanksgiving': 'Thanksgiving', boardHarvest: 'Harvest', harvestInfo: '🎃 for every robot · +20 for thanking a friend · +100 and 10% of their harvest for a new friend', thankBtn: 'Thanks', thanked: 'Thanks sent: +20 🎃 for you both', thankedAlready: 'You already thanked someone today, try again tomorrow', evSub: (d, n) => `Event: ${d}/${n} levels · reward: a hat`, evLevel: (e, n) => `${e} · ${n}/3`,
     evDone: 'Event level complete!', evHat: 'A new hat for the team!',
-    'item.hat_pumpkin': 'Pumpkin hat', 'itemd.hat_pumpkin': 'Halloween reward', 'item.hat_santa': 'Santa hat', 'itemd.hat_santa': 'New Year reward',
+    'item.hat_pumpkin': 'Pumpkin hat', 'itemd.hat_pumpkin': 'Halloween reward', 'item.hat_pilgrim': 'Pilgrim hat', 'itemd.hat_pilgrim': 'Thanksgiving reward', 'item.hat_wreath_gold': 'Golden harvest wreath', 'itemd.hat_wreath_gold': '1st place on the harvest board: one of a kind', 'item.hat_wreath_silver': 'Silver wreath', 'itemd.hat_wreath_silver': '2nd-6th place on the harvest board', 'item.hat_wreath_bronze': 'Bronze wreath', 'itemd.hat_wreath_bronze': '7th-20th place on the harvest board', 'item.hat_santa': 'Santa hat', 'itemd.hat_santa': 'New Year reward',
     'hero.rex.name': 'Rex', 'hero.rex.skill': 'allies he touches get +1 heart', 'hero.rex.combo': 'Rescue mission',
     'hero.homa.name': 'Hammy', 'hero.homa.skill': 'the longer he rolls, the harder he hits', 'hero.homa.combo': 'Nut shower',
     'stat.power': 'Power', 'stat.speed': 'Speed', 'stat.size': 'Size', comboLabel: 'Combo', perksLabel: 'Level perks', detailWhat: 'What it does',
@@ -1399,14 +1399,14 @@ const I18N = {
     'tag.bounce': ['ODBICIE', 'odbija się od wrogów'], 'tag.pierce': ['PRZEBICIE', 'przelatuje przez wrogów'],
     bossTitles: [['Postrach okruszków', 'Ani okruszka na podłodze!'], ['Władca pilota', 'Ta kanapa jest teraz moja!'], ['Nocny koszmar', 'Czas spać... na zawsze!'],
       ['Mydlany baron', 'Spłuczę was do kanalizacji!'], ['Wichrowy', 'Zdmuchnę was z balkonu!'], ['Upiór ze strychu', 'Nikt tu nie mieszka... oprócz mnie!'],
-      ['Żelazny mechanik', 'Rozkręcę was na śrubki!'], ['Piwniczny tkacz', 'Nikt nie wyjdzie z mojej piwnicy!'], ['Władca dachu', 'Tu na górze jestem tylko ja i grom!'], ['Ogrodowy tyran', 'Tu wszystko będzie równo przycięte!'], ['Serce domu', 'Wszystko w tym domu pracuje dla mnie!'], ['Pan pięter', 'Następny przystanek: wasza porażka!'], ['Król paczek', 'Wszystkich was posortuję do pudeł!'], ['Ojciec wszystkich robotów', 'Złożę was znowu. I znowu!'], ['Geniusz z probówki', 'Moje eksperymenty nie znają litości!'], ['Władca orbity', 'Niebo spada na was na mój rozkaz!'], ['Król lodu', 'Zmiotę was razem ze śniegiem!'], ['Władca głębin', 'Zaleję wasze mieszkanie!'], ['Władca prądu', 'Wyłączę światło w całym mieście!'], ['Władca tuneli', 'Następna stacja: pętla!'], ['Król atrakcji', 'Wykręcę was do zawrotów głowy!'], ['Mistrz maskotek', 'Żadna maskotka mi jeszcze nie uciekła!']],
-    bossNames: ['BLENDER MEGAMIX', 'TELEBOSS 3000', 'BUDZIK-DZWONNIK', 'PRALKA «BĘBEN»', 'DMUCHAWA «WICHER»', 'ODKURZACZ-DUCH', 'ROBO-BOSS 9000', 'PAJĄK «SIEĆ»', 'DRON «GROM»', 'KOSIARKA «JERZYK»', 'HUB «INTELIGENTNY DOM»', 'WINDA «EKSPRES»', 'SORTOWNIK «MEGAMAGAZYN»', 'MONTER «PRIME»', 'PROFESOR «KOLBA»', 'KOMANDOR «ORBITA»', 'PŁUG «ZAMIEĆ»', 'KRAKEN «GŁĘBIA»', 'TURBINA «GIGAWAT»', 'LOKOMOTYWA «KOMETA»', 'DIABELSKI MŁYN «WIR»', 'AUTOMAT «CHWYTAK»'],
+      ['Żelazny mechanik', 'Rozkręcę was na śrubki!'], ['Piwniczny tkacz', 'Nikt nie wyjdzie z mojej piwnicy!'], ['Władca dachu', 'Tu na górze jestem tylko ja i grom!'], ['Ogrodowy tyran', 'Tu wszystko będzie równo przycięte!'], ['Serce domu', 'Wszystko w tym domu pracuje dla mnie!'], ['Pan pięter', 'Następny przystanek: wasza porażka!'], ['Król paczek', 'Wszystkich was posortuję do pudeł!'], ['Ojciec wszystkich robotów', 'Złożę was znowu. I znowu!'], ['Geniusz z probówki', 'Moje eksperymenty nie znają litości!'], ['Władca orbity', 'Niebo spada na was na mój rozkaz!'], ['Król lodu', 'Zmiotę was razem ze śniegiem!'], ['Władca głębin', 'Zaleję wasze mieszkanie!'], ['Władca prądu', 'Wyłączę światło w całym mieście!'], ['Władca tuneli', 'Następna stacja: pętla!'], ['Król atrakcji', 'Wykręcę was do zawrotów głowy!'], ['Mistrz maskotek', 'Żadna maskotka mi jeszcze nie uciekła!'], ['Szef świątecznego stołu', 'Szykujcie się: zaraz was przyrumienię!']],
+    bossNames: ['BLENDER MEGAMIX', 'TELEBOSS 3000', 'BUDZIK-DZWONNIK', 'PRALKA «BĘBEN»', 'DMUCHAWA «WICHER»', 'ODKURZACZ-DUCH', 'ROBO-BOSS 9000', 'PAJĄK «SIEĆ»', 'DRON «GROM»', 'KOSIARKA «JERZYK»', 'HUB «INTELIGENTNY DOM»', 'WINDA «EKSPRES»', 'SORTOWNIK «MEGAMAGAZYN»', 'MONTER «PRIME»', 'PROFESOR «KOLBA»', 'KOMANDOR «ORBITA»', 'PŁUG «ZAMIEĆ»', 'KRAKEN «GŁĘBIA»', 'TURBINA «GIGAWAT»', 'LOKOMOTYWA «KOMETA»', 'DIABELSKI MŁYN «WIR»', 'AUTOMAT «CHWYTAK»', 'PIEKARNIK «INDYK»'],
     bossSkills: [['Kałuże smoothie', 'Po ataku zostawia lepką kałużę, która spowalnia bohaterów'], ['Reklama', 'Każdy atak przywołuje mini-odkurzacz (maks. dwa naraz)'],
       ['Dzwonek', 'Trafia wszystkich stojących bohaterów naraz, po 1 ♥'], ['Piana', 'Piana całkowicie pochłania pierwszy cios. Odrasta po ataku'],
       ['Wicher', 'Jego atak odrzuca wszystkich bohaterów'], ['Chowany', 'Po ataku znika i pojawia się w innym miejscu'],
-      ['Druga faza', 'Przy połowie wytrzymałości naprawia się i atakuje częściej'], ['Pajęczyna', 'Oplata trafionego bohatera: traci turę, chyba że przyjaciel uwolni go strzałem'], ['Piorun łańcuchowy', 'Uderzenie przeskakuje na najbliższego bohatera obok i zabiera mu 1 ♥'], ['Szarża', 'Po ataku pędzi do trafionego bohatera i rozrzuca wszystkich po drodze'], ['Podkręcenie', 'Po ataku przyspiesza wszystkie roboty: atakują o turę wcześniej'], ['Szyb', 'Po ataku uderza w dół szybu: każdy bohater pod nią traci 1 ♥'], ['Zawrotka', 'Po ataku odwraca wszystkie taśmy i je przyspiesza'], ['Ponowny montaż', 'Po ataku składa ostatniego zniszczonego robota z połową zdrowia'], ['Kwasowy wyciek', 'Po ataku rozlewa kwas pod trafionym bohaterem'], ['Uderzenie meteorytów', 'Po ataku wzywa meteoryty na dwóch bohaterów: spadną turę później'], ['Zaspa', 'Po ataku spycha wszystkich bohaterów w bok z wiatrem'], ['Przypływ', 'Po ataku woda podnosi się o kilka kresek naraz'], ['Przeciążenie', 'Po ataku ładuje wszystkie akumulatory do pełna'], ['Dodatkowy kurs', 'Po ataku puszcza pociąg po torze, na którym jest najwięcej bohaterów'], ['Gabinet luster', 'Po ataku obraca wszystkie lustra w stronę bohaterów'], ['Chwyt', 'Po ataku łapie trafionego bohatera: traci jeszcze jedno serce (nigdy ostatnie) i spada gdzie indziej']],
-    bossCries: ['WZIUU-WZIUU!', 'NIE PRZEŁĄCZAJ!', 'DRRRYŃ!', 'WIROWANIE!', 'FIUUUCH!', 'Uuuuu!', 'TURBO-SSANIE!', 'TUP-TUP-TUP!', 'BUM-TRACH!', 'WRRRUM!', 'RESTART!', 'DING-DONG!', 'WSTECZNY!', 'MONTAŻ!', 'EKSPERYMENT!', 'OGIEŃ Z ORBITY!', 'ZAWIEJA!', 'PRZYPŁYW!', 'PRZECIĄŻENIE!', 'CAŁA NAPRZÓD!', 'W KÓŁKO!', 'CAP-CAP!'],
-    bossFx: ['Lepko!', 'Reklama!', 'Dzwonek!', 'Piana!', 'Wicher!', 'Buu!', 'Druga faza!', 'Oplątany!', 'Piorun!', 'Szarża!', 'Szybciej!', 'W dół!', 'Odwrót!', 'Złożony!', 'Wyciek!', 'Cel namierzony!', 'Zmiecieni!', 'Woda wzbiera!', 'Pełny ładunek!', 'Dodatkowy kurs!', 'Lustra na was!', 'Cap!'], skillLabel: 'Umiejętność',
+      ['Druga faza', 'Przy połowie wytrzymałości naprawia się i atakuje częściej'], ['Pajęczyna', 'Oplata trafionego bohatera: traci turę, chyba że przyjaciel uwolni go strzałem'], ['Piorun łańcuchowy', 'Uderzenie przeskakuje na najbliższego bohatera obok i zabiera mu 1 ♥'], ['Szarża', 'Po ataku pędzi do trafionego bohatera i rozrzuca wszystkich po drodze'], ['Podkręcenie', 'Po ataku przyspiesza wszystkie roboty: atakują o turę wcześniej'], ['Szyb', 'Po ataku uderza w dół szybu: każdy bohater pod nią traci 1 ♥'], ['Zawrotka', 'Po ataku odwraca wszystkie taśmy i je przyspiesza'], ['Ponowny montaż', 'Po ataku składa ostatniego zniszczonego robota z połową zdrowia'], ['Kwasowy wyciek', 'Po ataku rozlewa kwas pod trafionym bohaterem'], ['Uderzenie meteorytów', 'Po ataku wzywa meteoryty na dwóch bohaterów: spadną turę później'], ['Zaspa', 'Po ataku spycha wszystkich bohaterów w bok z wiatrem'], ['Przypływ', 'Po ataku woda podnosi się o kilka kresek naraz'], ['Przeciążenie', 'Po ataku ładuje wszystkie akumulatory do pełna'], ['Dodatkowy kurs', 'Po ataku puszcza pociąg po torze, na którym jest najwięcej bohaterów'], ['Gabinet luster', 'Po ataku obraca wszystkie lustra w stronę bohaterów'], ['Chwyt', 'Po ataku łapie trafionego bohatera: traci jeszcze jedno serce (nigdy ostatnie) i spada gdzie indziej'], ['Świeży wypiek', 'Po ataku leczy inne roboty o 15%']],
+    bossCries: ['WZIUU-WZIUU!', 'NIE PRZEŁĄCZAJ!', 'DRRRYŃ!', 'WIROWANIE!', 'FIUUUCH!', 'Uuuuu!', 'TURBO-SSANIE!', 'TUP-TUP-TUP!', 'BUM-TRACH!', 'WRRRUM!', 'RESTART!', 'DING-DONG!', 'WSTECZNY!', 'MONTAŻ!', 'EKSPERYMENT!', 'OGIEŃ Z ORBITY!', 'ZAWIEJA!', 'PRZYPŁYW!', 'PRZECIĄŻENIE!', 'CAŁA NAPRZÓD!', 'W KÓŁKO!', 'CAP-CAP!', 'PRZYRUMIENIAM!'],
+    bossFx: ['Lepko!', 'Reklama!', 'Dzwonek!', 'Piana!', 'Wicher!', 'Buu!', 'Druga faza!', 'Oplątany!', 'Piorun!', 'Szarża!', 'Szybciej!', 'W dół!', 'Odwrót!', 'Złożony!', 'Wyciek!', 'Cel namierzony!', 'Zmiecieni!', 'Woda wzbiera!', 'Pełny ładunek!', 'Dodatkowy kurs!', 'Lustra na was!', 'Cap!', 'Świeży wypiek!'], skillLabel: 'Umiejętność',
     bossWarn: 'UWAGA · NADCHODZI BOSS', bossName: 'ROBO-BOSS 9000', 'stat.hp': 'Wytrzymałość', 'stat.atk': 'Cios', 'stat.every': 'Atakuje',
     'stat.everyN': n => `co ${n} tury`, bossHint: 'Trafiaj w żółty czujnik: potrójne obrażenia', tapToStart: 'Dotknij, aby zacząć',
     turn: n => `Tura ${n}`, hudWave: n => ` · fala ${n}`, pullHint: 'Ciągnij od bohatera do tyłu i puszczaj', par3: n => `3 gwiazdki: ukończ w ${n} tur lub mniej`,
@@ -1480,9 +1480,9 @@ const I18N = {
     'st.arc15.1': 'To lecimy tam. Koty zawsze marzyły o kosmosie.',
     'st.end.1': 'A okruchy pod kanapą to już tradycja.',
     storySkip: 'Pomiń', storyTap: 'dotknij, aby kontynuować',
-    'ev.halloween': 'Halloween', 'ev.newyear': 'Nowy Rok', evSub: (d, n) => `Wydarzenie: ${d}/${n} poziomów · nagroda: czapka`, evLevel: (e, n) => `${e} · ${n}/3`,
+    'ev.halloween': 'Halloween', 'ev.newyear': 'Nowy Rok', 'ev.thanksgiving': 'Święto Dziękczynienia', boardHarvest: 'Plony', harvestInfo: '🎃 za każdego robota · +20 za podziękowanie znajomemu · +100 i 10% plonów nowego znajomego', thankBtn: 'Dzięki', thanked: 'Podziękowanie wysłane: obojgu +20 🎃', thankedAlready: 'Dziś już komuś podziękowano, jutro znowu można', evSub: (d, n) => `Wydarzenie: ${d}/${n} poziomów · nagroda: czapka`, evLevel: (e, n) => `${e} · ${n}/3`,
     evDone: 'Poziom wydarzenia ukończony!', evHat: 'Nowa czapka dla drużyny!',
-    'item.hat_pumpkin': 'Dyniowa czapka', 'itemd.hat_pumpkin': 'Nagroda z Halloween', 'item.hat_santa': 'Czapka Mikołaja', 'itemd.hat_santa': 'Nagroda noworoczna',
+    'item.hat_pumpkin': 'Dyniowa czapka', 'itemd.hat_pumpkin': 'Nagroda z Halloween', 'item.hat_pilgrim': 'Kapelusz pielgrzyma', 'itemd.hat_pilgrim': 'Nagroda ze Święta Dziękczynienia', 'item.hat_wreath_gold': 'Złoty wieniec plonów', 'itemd.hat_wreath_gold': '1. miejsce w rankingu plonów: jedyny w grze', 'item.hat_wreath_silver': 'Srebrny wieniec', 'itemd.hat_wreath_silver': 'Miejsca 2–6 w rankingu plonów', 'item.hat_wreath_bronze': 'Brązowy wieniec', 'itemd.hat_wreath_bronze': 'Miejsca 7–20 w rankingu plonów', 'item.hat_santa': 'Czapka Mikołaja', 'itemd.hat_santa': 'Nagroda noworoczna',
     'hero.rex.name': 'Reks', 'hero.rex.skill': 'dotknięci przyjaciele dostają +1 serce', 'hero.rex.combo': 'Misja ratunkowa',
     'hero.homa.name': 'Tomek', 'hero.homa.skill': 'im dłużej się toczy, tym mocniej bije', 'hero.homa.combo': 'Orzechowy deszcz',
     'stat.power': 'Siła', 'stat.speed': 'Szybkość', 'stat.size': 'Rozmiar', comboLabel: 'Kombo', perksLabel: 'Bonusy poziomów', detailWhat: 'Co daje',
@@ -1551,14 +1551,14 @@ const I18N = {
     'tag.bounce': ['ABPRALL', 'prallt von Gegnern ab'], 'tag.pierce': ['DURCHSCHLAG', 'fliegt durch Gegner'],
     bossTitles: [['Krümelschreck', 'Kein Krümel auf dem Boden!'], ['Fernbedienungsfürst', 'Das Sofa gehört jetzt mir!'], ['Nachtmahr', 'Schlafenszeit... für immer!'],
       ['Seifenbaron', 'Ab in den Abfluss mit euch!'], ['Sturmbringer', 'Ich puste euch vom Balkon!'], ['Dachbodengeist', 'Hier wohnt niemand... außer mir!'],
-      ['Eiserner Mechaniker', 'Ich schraub euch auseinander!'], ['Kellerweber', 'Aus meinem Keller kommt keiner raus!'], ['Herr des Daches', 'Hier oben gibt es nur mich und den Donner!'], ['Gartentyrann', 'Hier wird alles schnurgerade gemäht!'], ['Herz des Hauses', 'Alles in diesem Haus arbeitet für mich!'], ['Herr der Etagen', 'Nächster Halt: eure Niederlage!'], ['König der Pakete', 'Ich sortiere euch alle in Kisten!'], ['Vater aller Roboter', 'Ich baue euch wieder zusammen. Und wieder!'], ['Genie aus dem Reagenzglas', 'Meine Experimente kennen kein Erbarmen!'], ['Herr des Orbits', 'Der Himmel fällt auf meinen Befehl auf euch!'], ['König des Eises', 'Ich fege euch mit dem Schnee davon!'], ['Herr der Tiefe', 'Ich setze eure Wohnung unter Wasser!'], ['Herr des Stroms', 'Ich schalte in der ganzen Stadt das Licht aus!'], ['Herr der Tunnel', 'Nächster Halt: Endstation!'], ['König der Fahrgeschäfte', 'Ich dreh euch, bis euch schwindlig wird!'], ['Meister der Kuscheltiere', 'Mir ist noch kein Kuscheltier entwischt!']],
-    bossNames: ['MIXER MEGAMIX', 'TELEBOSS 3000', 'WECKER-BIMMLER', 'WASCHTROMMEL', 'STURMBLÄSER', 'GEISTERSAUGER', 'ROBO-BOSS 9000', 'SPINNE «NETZ»', 'DONNERDROHNE', 'RASENMÄHER «FLITZ»', 'SMART-HOME-HUB', 'EXPRESS-AUFZUG', 'MEGA-SORTIERER', 'MONTEUR PRIME', 'PROFESSOR KOLBEN', 'KOMMANDANT ORBIT', 'SCHNEEPFLUG «BLIZZARD»', 'KRAKE TIEFE', 'TURBINE «GIGAWATT»', 'LOK «KOMET»', 'RIESENRAD «WIRBEL»', 'GREIFAUTOMAT «SCHNAPPER»'],
+      ['Eiserner Mechaniker', 'Ich schraub euch auseinander!'], ['Kellerweber', 'Aus meinem Keller kommt keiner raus!'], ['Herr des Daches', 'Hier oben gibt es nur mich und den Donner!'], ['Gartentyrann', 'Hier wird alles schnurgerade gemäht!'], ['Herz des Hauses', 'Alles in diesem Haus arbeitet für mich!'], ['Herr der Etagen', 'Nächster Halt: eure Niederlage!'], ['König der Pakete', 'Ich sortiere euch alle in Kisten!'], ['Vater aller Roboter', 'Ich baue euch wieder zusammen. Und wieder!'], ['Genie aus dem Reagenzglas', 'Meine Experimente kennen kein Erbarmen!'], ['Herr des Orbits', 'Der Himmel fällt auf meinen Befehl auf euch!'], ['König des Eises', 'Ich fege euch mit dem Schnee davon!'], ['Herr der Tiefe', 'Ich setze eure Wohnung unter Wasser!'], ['Herr des Stroms', 'Ich schalte in der ganzen Stadt das Licht aus!'], ['Herr der Tunnel', 'Nächster Halt: Endstation!'], ['König der Fahrgeschäfte', 'Ich dreh euch, bis euch schwindlig wird!'], ['Meister der Kuscheltiere', 'Mir ist noch kein Kuscheltier entwischt!'], ['Chef der Festtafel', 'Macht euch bereit: Gleich werdet ihr goldbraun!']],
+    bossNames: ['MIXER MEGAMIX', 'TELEBOSS 3000', 'WECKER-BIMMLER', 'WASCHTROMMEL', 'STURMBLÄSER', 'GEISTERSAUGER', 'ROBO-BOSS 9000', 'SPINNE «NETZ»', 'DONNERDROHNE', 'RASENMÄHER «FLITZ»', 'SMART-HOME-HUB', 'EXPRESS-AUFZUG', 'MEGA-SORTIERER', 'MONTEUR PRIME', 'PROFESSOR KOLBEN', 'KOMMANDANT ORBIT', 'SCHNEEPFLUG «BLIZZARD»', 'KRAKE TIEFE', 'TURBINE «GIGAWATT»', 'LOK «KOMET»', 'RIESENRAD «WIRBEL»', 'GREIFAUTOMAT «SCHNAPPER»', 'OFEN «TRUTHAHN»'],
     bossSkills: [['Smoothie-Pfützen', 'Hinterlässt nach dem Angriff eine klebrige Pfütze, die Helden bremst'], ['Werbepause', 'Jeder Angriff ruft einen Mini-Sauger (höchstens zwei)'],
       ['Klingeln', 'Trifft alle stehenden Helden gleichzeitig, je 1 ♥'], ['Seifenschaum', 'Schaum schluckt den ersten Treffer ganz. Wächst nach einem Angriff nach'],
       ['Sturm', 'Sein Angriff bläst alle Helden von ihm weg'], ['Versteckspiel', 'Verschwindet nach dem Angriff und taucht woanders auf'],
-      ['Zweite Phase', 'Bei halber Stärke repariert er sich und greift öfter an'], ['Netz', 'Umspinnt den getroffenen Helden: er setzt einen Zug aus, wenn ihn kein Freund per Schuss befreit'], ['Kettenblitz', 'Der Schlag springt auf den nächsten Helden in der Nähe über und nimmt ihm 1 ♥'], ['Ansturm', 'Nach dem Angriff rast er auf den getroffenen Helden zu und schiebt alle im Weg beiseite'], ['Übertakten', 'Nach dem Angriff treibt er alle Roboter an: sie greifen einen Zug früher an'], ['Schacht', 'Nach dem Angriff schlägt er den Schacht hinunter: jeder Held darunter verliert 1 ♥'], ['Umkehr', 'Nach dem Angriff dreht er alle Bänder um und macht sie schneller'], ['Neubau', 'Nach dem Angriff baut er den zuletzt zerstörten Roboter mit halber Gesundheit wieder auf'], ['Säureguss', 'Nach dem Angriff verschüttet er Säure unter dem getroffenen Helden'], ['Meteorschlag', 'Nach dem Angriff ruft er Meteore auf zwei Helden: sie schlagen einen Zug später ein'], ['Schneewehe', 'Nach dem Angriff schiebt er alle Helden mit dem Wind beiseite'], ['Flut', 'Nach dem Angriff steigt das Wasser mehrere Striche auf einmal'], ['Überlast', 'Lädt nach dem Angriff alle Akkus voll auf'], ['Extrazug', 'Schickt nach dem Angriff einen Zug über das Gleis mit den meisten Helden'], ['Spiegelkabinett', 'Dreht nach dem Angriff alle Spiegel zu den Helden'], ['Zugriff', 'Packt nach dem Angriff den getroffenen Helden: ein weiteres Herz weg (nie das letzte), und er landet woanders']],
-    bossCries: ['WIRR-WIRR!', 'NICHT UMSCHALTEN!', 'RRRRING!', 'SCHLEUDERGANG!', 'FUUUSCH!', 'Huuuu!', 'TURBO-SAUGEN!', 'KRABBEL-KRABBEL!', 'KRAWUMM!', 'BRRRUMM!', 'NEUSTART!', 'DING-DONG!', 'RÜCKWÄRTS!', 'MONTAGE!', 'EXPERIMENT!', 'ORBITALSCHLAG!', 'WHITEOUT!', 'FLUT!', 'ÜBERLAST!', 'VOLLDAMPF!', 'RUNDHERUM!', 'SCHNAPP!'],
-    bossFx: ['Klebrig!', 'Werbung!', 'Klingeling!', 'Schaum!', 'Sturm!', 'Buh!', 'Zweite Phase!', 'Eingesponnen!', 'Blitz!', 'Ansturm!', 'Schneller!', 'Abwärts!', 'Umgedreht!', 'Neu gebaut!', 'Verschüttet!', 'Ziel erfasst!', 'Weggefegt!', 'Das Wasser steigt!', 'Voll geladen!', 'Extrazug!', 'Spiegel auf euch!', 'Geschnappt!'], skillLabel: 'Fähigkeit',
+      ['Zweite Phase', 'Bei halber Stärke repariert er sich und greift öfter an'], ['Netz', 'Umspinnt den getroffenen Helden: er setzt einen Zug aus, wenn ihn kein Freund per Schuss befreit'], ['Kettenblitz', 'Der Schlag springt auf den nächsten Helden in der Nähe über und nimmt ihm 1 ♥'], ['Ansturm', 'Nach dem Angriff rast er auf den getroffenen Helden zu und schiebt alle im Weg beiseite'], ['Übertakten', 'Nach dem Angriff treibt er alle Roboter an: sie greifen einen Zug früher an'], ['Schacht', 'Nach dem Angriff schlägt er den Schacht hinunter: jeder Held darunter verliert 1 ♥'], ['Umkehr', 'Nach dem Angriff dreht er alle Bänder um und macht sie schneller'], ['Neubau', 'Nach dem Angriff baut er den zuletzt zerstörten Roboter mit halber Gesundheit wieder auf'], ['Säureguss', 'Nach dem Angriff verschüttet er Säure unter dem getroffenen Helden'], ['Meteorschlag', 'Nach dem Angriff ruft er Meteore auf zwei Helden: sie schlagen einen Zug später ein'], ['Schneewehe', 'Nach dem Angriff schiebt er alle Helden mit dem Wind beiseite'], ['Flut', 'Nach dem Angriff steigt das Wasser mehrere Striche auf einmal'], ['Überlast', 'Lädt nach dem Angriff alle Akkus voll auf'], ['Extrazug', 'Schickt nach dem Angriff einen Zug über das Gleis mit den meisten Helden'], ['Spiegelkabinett', 'Dreht nach dem Angriff alle Spiegel zu den Helden'], ['Zugriff', 'Packt nach dem Angriff den getroffenen Helden: ein weiteres Herz weg (nie das letzte), und er landet woanders'], ['Frisch gebacken', 'Heilt nach dem Angriff die anderen Roboter um 15%']],
+    bossCries: ['WIRR-WIRR!', 'NICHT UMSCHALTEN!', 'RRRRING!', 'SCHLEUDERGANG!', 'FUUUSCH!', 'Huuuu!', 'TURBO-SAUGEN!', 'KRABBEL-KRABBEL!', 'KRAWUMM!', 'BRRRUMM!', 'NEUSTART!', 'DING-DONG!', 'RÜCKWÄRTS!', 'MONTAGE!', 'EXPERIMENT!', 'ORBITALSCHLAG!', 'WHITEOUT!', 'FLUT!', 'ÜBERLAST!', 'VOLLDAMPF!', 'RUNDHERUM!', 'SCHNAPP!', 'GOLDBRAUN!'],
+    bossFx: ['Klebrig!', 'Werbung!', 'Klingeling!', 'Schaum!', 'Sturm!', 'Buh!', 'Zweite Phase!', 'Eingesponnen!', 'Blitz!', 'Ansturm!', 'Schneller!', 'Abwärts!', 'Umgedreht!', 'Neu gebaut!', 'Verschüttet!', 'Ziel erfasst!', 'Weggefegt!', 'Das Wasser steigt!', 'Voll geladen!', 'Extrazug!', 'Spiegel auf euch!', 'Geschnappt!', 'Frisch gebacken!'], skillLabel: 'Fähigkeit',
     bossWarn: 'ACHTUNG · BOSS NAHT', bossName: 'ROBO-BOSS 9000', 'stat.hp': 'Stärke', 'stat.atk': 'Schlag', 'stat.every': 'Angriff',
     'stat.everyN': n => `alle ${n} Züge`, bossHint: 'Triff den gelben Sensor: dreifacher Schaden', tapToStart: 'Tippen zum Starten',
     turn: n => `Zug ${n}`, hudWave: n => ` · Welle ${n}`, pullHint: 'Vom Helden zurückziehen und loslassen', par3: n => `3 Sterne: in ${n} Zügen oder weniger`,
@@ -1632,9 +1632,9 @@ const I18N = {
     'st.arc15.1': 'Dann fliegen wir hin. Katzen haben schon immer vom Weltall geträumt.',
     'st.end.1': 'Die Krümel unterm Sofa bleiben aber. Tradition.',
     storySkip: 'Überspringen', storyTap: 'tippen zum Fortfahren',
-    'ev.halloween': 'Halloween', 'ev.newyear': 'Neujahr', evSub: (d, n) => `Event: ${d}/${n} Level · Preis: ein Hut`, evLevel: (e, n) => `${e} · ${n}/3`,
+    'ev.halloween': 'Halloween', 'ev.newyear': 'Neujahr', 'ev.thanksgiving': 'Erntedankfest', boardHarvest: 'Ernte', harvestInfo: '🎃 für jeden Roboter · +20 fürs Danken · +100 und 10% der Ernte für einen neuen Freund', thankBtn: 'Danke', thanked: 'Dank gesendet: euch beiden +20 🎃', thankedAlready: 'Heute wurde schon gedankt, morgen geht es wieder', evSub: (d, n) => `Event: ${d}/${n} Level · Preis: ein Hut`, evLevel: (e, n) => `${e} · ${n}/3`,
     evDone: 'Event-Level geschafft!', evHat: 'Ein neuer Hut fürs Team!',
-    'item.hat_pumpkin': 'Kürbishut', 'itemd.hat_pumpkin': 'Halloween-Preis', 'item.hat_santa': 'Weihnachtsmütze', 'itemd.hat_santa': 'Neujahrspreis',
+    'item.hat_pumpkin': 'Kürbishut', 'itemd.hat_pumpkin': 'Halloween-Preis', 'item.hat_pilgrim': 'Pilgerhut', 'itemd.hat_pilgrim': 'Erntedank-Preis', 'item.hat_wreath_gold': 'Goldener Erntekranz', 'itemd.hat_wreath_gold': 'Platz 1 der Ernte-Rangliste: einmalig im Spiel', 'item.hat_wreath_silver': 'Silberkranz', 'itemd.hat_wreath_silver': 'Plätze 2–6 der Ernte-Rangliste', 'item.hat_wreath_bronze': 'Bronzekranz', 'itemd.hat_wreath_bronze': 'Plätze 7–20 der Ernte-Rangliste', 'item.hat_santa': 'Weihnachtsmütze', 'itemd.hat_santa': 'Neujahrspreis',
     'hero.rex.name': 'Rex', 'hero.rex.skill': 'berührte Freunde bekommen +1 Herz', 'hero.rex.combo': 'Rettungseinsatz',
     'hero.homa.name': 'Hamsti', 'hero.homa.skill': 'je länger er rollt, desto härter trifft er', 'hero.homa.combo': 'Nussregen',
     'stat.power': 'Kraft', 'stat.speed': 'Tempo', 'stat.size': 'Größe', comboLabel: 'Kombo', perksLabel: 'Stufenboni', detailWhat: 'Was es bringt',
@@ -1703,14 +1703,14 @@ const I18N = {
     'tag.bounce': ['REBOTE', 'rebota en los enemigos'], 'tag.pierce': ['PERFORAR', 'atraviesa a los enemigos'],
     bossTitles: [['Terror de las migas', '¡Ni una miga en el suelo!'], ['Señor del mando', '¡Este sofá ahora es mío!'], ['Pesadilla nocturna', 'Hora de dormir... ¡para siempre!'],
       ['Barón del jabón', '¡Os mando por el desagüe!'], ['Tormentoso', '¡Os soplaré del balcón!'], ['Fantasma del desván', 'Aquí no vive nadie... ¡salvo yo!'],
-      ['Mecánico de hierro', '¡Os desmonto tornillo a tornillo!'], ['Tejedor del sótano', '¡Nadie sale de mi sótano!'], ['Señor del tejado', '¡Aquí arriba solo estamos el trueno y yo!'], ['Tirano del jardín', '¡Aquí todo se corta en línea recta!'], ['Corazón de la casa', '¡Todo en esta casa trabaja para mí!'], ['Señor de los pisos', '¡Próxima parada: vuestra derrota!'], ['Rey de los paquetes', '¡Os voy a clasificar a todos en cajas!'], ['Padre de todos los robots', '¡Os volveré a montar. Y otra vez!'], ['Genio de probeta', '¡Mis experimentos no conocen la piedad!'], ['Señor de la órbita', '¡El cielo os cae encima a mis órdenes!'], ['Rey del hielo', '¡Os barreré junto con la nieve!'], ['Señor del abismo', '¡Inundaré vuestro piso!'], ['Señor de la corriente', '¡Apagaré las luces de toda la ciudad!'], ['Señor de los túneles', '¡Próxima parada: final de trayecto!'], ['Rey de las atracciones', '¡Os daré vueltas hasta marearos!'], ['Maestro de peluches', '¡Ningún peluche se me ha escapado nunca!']],
-    bossNames: ['BATIDORA MEGAMIX', 'TELEJEFE 3000', 'DESPERTADOR CAMPANERO', 'LAVADORA TAMBOR', 'SOPLADOR VENDAVAL', 'ASPIRADORA FANTASMA', 'ROBO-JEFE 9000', 'ARAÑA «TELARAÑA»', 'DRON «TRUENO»', 'CORTACÉSPED «VENCEJO»', 'HUB «CASA INTELIGENTE»', 'ASCENSOR «EXPRÉS»', 'CLASIFICADORA «MEGAALMACÉN»', 'ENSAMBLADOR «PRIME»', 'PROFESOR «MATRAZ»', 'COMANDANTE «ÓRBITA»', 'QUITANIEVES «VENTISCA»', 'KRAKEN «ABISMO»', 'TURBINA «GIGAVATIO»', 'LOCOMOTORA «COMETA»', 'NORIA «TORBELLINO»', 'MÁQUINA DE GANCHO «GARRA»'],
+      ['Mecánico de hierro', '¡Os desmonto tornillo a tornillo!'], ['Tejedor del sótano', '¡Nadie sale de mi sótano!'], ['Señor del tejado', '¡Aquí arriba solo estamos el trueno y yo!'], ['Tirano del jardín', '¡Aquí todo se corta en línea recta!'], ['Corazón de la casa', '¡Todo en esta casa trabaja para mí!'], ['Señor de los pisos', '¡Próxima parada: vuestra derrota!'], ['Rey de los paquetes', '¡Os voy a clasificar a todos en cajas!'], ['Padre de todos los robots', '¡Os volveré a montar. Y otra vez!'], ['Genio de probeta', '¡Mis experimentos no conocen la piedad!'], ['Señor de la órbita', '¡El cielo os cae encima a mis órdenes!'], ['Rey del hielo', '¡Os barreré junto con la nieve!'], ['Señor del abismo', '¡Inundaré vuestro piso!'], ['Señor de la corriente', '¡Apagaré las luces de toda la ciudad!'], ['Señor de los túneles', '¡Próxima parada: final de trayecto!'], ['Rey de las atracciones', '¡Os daré vueltas hasta marearos!'], ['Maestro de peluches', '¡Ningún peluche se me ha escapado nunca!'], ['Chef del banquete', '¡Preparaos: os voy a dejar doraditos!']],
+    bossNames: ['BATIDORA MEGAMIX', 'TELEJEFE 3000', 'DESPERTADOR CAMPANERO', 'LAVADORA TAMBOR', 'SOPLADOR VENDAVAL', 'ASPIRADORA FANTASMA', 'ROBO-JEFE 9000', 'ARAÑA «TELARAÑA»', 'DRON «TRUENO»', 'CORTACÉSPED «VENCEJO»', 'HUB «CASA INTELIGENTE»', 'ASCENSOR «EXPRÉS»', 'CLASIFICADORA «MEGAALMACÉN»', 'ENSAMBLADOR «PRIME»', 'PROFESOR «MATRAZ»', 'COMANDANTE «ÓRBITA»', 'QUITANIEVES «VENTISCA»', 'KRAKEN «ABISMO»', 'TURBINA «GIGAVATIO»', 'LOCOMOTORA «COMETA»', 'NORIA «TORBELLINO»', 'MÁQUINA DE GANCHO «GARRA»', 'HORNO «PAVO»'],
     bossSkills: [['Charcos de batido', 'Tras atacar deja un charco pegajoso que frena a los héroes'], ['Anuncios', 'Cada ataque invoca una mini aspiradora (hasta dos a la vez)'],
       ['¡Ring!', 'Golpea a todos los héroes en pie a la vez, 1 ♥ a cada uno'], ['Espuma', 'La espuma absorbe del todo el primer golpe. Vuelve a crecer tras atacar'],
       ['Vendaval', 'Su ataque aleja de un soplido a todos los héroes'], ['Escondite', 'Tras atacar desaparece y reaparece en otro sitio'],
-      ['Segunda fase', 'A media vida se repara y ataca más a menudo'], ['Telaraña', 'Envuelve al héroe que golpea: pierde un turno si un amigo no lo libera con un disparo'], ['Rayo en cadena', 'El golpe salta al héroe más cercano y le quita 1 ♥'], ['Embestida', 'Tras atacar corre hacia el héroe que golpeó y aparta a quien esté en medio'], ['Overclock', 'Tras atacar acelera a todos los robots: atacan un turno antes'], ['Hueco', 'Tras atacar golpea hacia abajo por el hueco: cada héroe debajo pierde 1 ♥'], ['Reversa', 'Tras atacar invierte todas las cintas y las acelera'], ['Remontaje', 'Tras atacar reconstruye el último robot roto con la mitad de su salud'], ['Derrame ácido', 'Tras atacar derrama ácido bajo el héroe al que golpeó'], ['Golpe de meteoritos', 'Tras atacar llama meteoritos sobre dos héroes: caen un turno después'], ['Ventisquero', 'Tras atacar empuja a todos los héroes de lado con el viento'], ['Marea alta', 'Tras atacar el agua sube varias marcas de golpe'], ['Sobrecarga', 'Tras atacar carga al máximo todas las baterías'], ['Tren extra', 'Tras atacar manda un tren por la vía con más héroes'], ['Sala de espejos', 'Tras atacar gira todos los espejos hacia los héroes'], ['Agarre', 'Tras atacar atrapa al héroe golpeado: pierde otro corazón (nunca el último) y cae en otro sitio']],
-    bossCries: ['¡BRRR-BRRR!', '¡NO CAMBIES DE CANAL!', '¡RIIING!', '¡CENTRIFUGADO!', '¡FUUUSH!', '¡Buuuu!', '¡TURBOASPIRADO!', '¡TIC-TIC-TIC!', '¡BRRRUM!', '¡RAAAS!', '¡REINICIANDO!', '¡DING-DONG!', '¡MARCHA ATRÁS!', '¡ENSAMBLAJE!', '¡EXPERIMENTO!', '¡FUEGO ORBITAL!', '¡TORMENTA BLANCA!', '¡MAREA!', '¡SOBRECARGA!', '¡A TODA MÁQUINA!', '¡VUELTA Y VUELTA!', '¡ZAS!'],
-    bossFx: ['¡Pegajoso!', '¡Anuncio!', '¡Ring!', '¡Espuma!', '¡Vendaval!', '¡Bu!', '¡Segunda fase!', '¡Atrapado!', '¡Rayo!', '¡Embestida!', '¡Más rápido!', '¡Bajando!', '¡Al revés!', '¡Reconstruido!', '¡Derrame!', '¡Objetivo fijado!', '¡Barridos!', '¡Sube el agua!', '¡Carga completa!', '¡Tren extra!', '¡Espejos hacia vosotros!', '¡Atrapado!'], skillLabel: 'Habilidad',
+      ['Segunda fase', 'A media vida se repara y ataca más a menudo'], ['Telaraña', 'Envuelve al héroe que golpea: pierde un turno si un amigo no lo libera con un disparo'], ['Rayo en cadena', 'El golpe salta al héroe más cercano y le quita 1 ♥'], ['Embestida', 'Tras atacar corre hacia el héroe que golpeó y aparta a quien esté en medio'], ['Overclock', 'Tras atacar acelera a todos los robots: atacan un turno antes'], ['Hueco', 'Tras atacar golpea hacia abajo por el hueco: cada héroe debajo pierde 1 ♥'], ['Reversa', 'Tras atacar invierte todas las cintas y las acelera'], ['Remontaje', 'Tras atacar reconstruye el último robot roto con la mitad de su salud'], ['Derrame ácido', 'Tras atacar derrama ácido bajo el héroe al que golpeó'], ['Golpe de meteoritos', 'Tras atacar llama meteoritos sobre dos héroes: caen un turno después'], ['Ventisquero', 'Tras atacar empuja a todos los héroes de lado con el viento'], ['Marea alta', 'Tras atacar el agua sube varias marcas de golpe'], ['Sobrecarga', 'Tras atacar carga al máximo todas las baterías'], ['Tren extra', 'Tras atacar manda un tren por la vía con más héroes'], ['Sala de espejos', 'Tras atacar gira todos los espejos hacia los héroes'], ['Agarre', 'Tras atacar atrapa al héroe golpeado: pierde otro corazón (nunca el último) y cae en otro sitio'], ['Recién horneado', 'Tras atacar cura a los demás robots un 15%']],
+    bossCries: ['¡BRRR-BRRR!', '¡NO CAMBIES DE CANAL!', '¡RIIING!', '¡CENTRIFUGADO!', '¡FUUUSH!', '¡Buuuu!', '¡TURBOASPIRADO!', '¡TIC-TIC-TIC!', '¡BRRRUM!', '¡RAAAS!', '¡REINICIANDO!', '¡DING-DONG!', '¡MARCHA ATRÁS!', '¡ENSAMBLAJE!', '¡EXPERIMENTO!', '¡FUEGO ORBITAL!', '¡TORMENTA BLANCA!', '¡MAREA!', '¡SOBRECARGA!', '¡A TODA MÁQUINA!', '¡VUELTA Y VUELTA!', '¡ZAS!', '¡DORADITO!'],
+    bossFx: ['¡Pegajoso!', '¡Anuncio!', '¡Ring!', '¡Espuma!', '¡Vendaval!', '¡Bu!', '¡Segunda fase!', '¡Atrapado!', '¡Rayo!', '¡Embestida!', '¡Más rápido!', '¡Bajando!', '¡Al revés!', '¡Reconstruido!', '¡Derrame!', '¡Objetivo fijado!', '¡Barridos!', '¡Sube el agua!', '¡Carga completa!', '¡Tren extra!', '¡Espejos hacia vosotros!', '¡Atrapado!', '¡Recién horneado!'], skillLabel: 'Habilidad',
     bossWarn: 'ATENCIÓN · LLEGA EL JEFE', bossName: 'ROBO-JEFE 9000', 'stat.hp': 'Vida', 'stat.atk': 'Golpe', 'stat.every': 'Ataca',
     'stat.everyN': n => `cada ${n} turnos`, bossHint: 'Golpea el sensor amarillo: daño triple', tapToStart: 'Toca para empezar',
     turn: n => `Turno ${n}`, hudWave: n => ` · oleada ${n}`, pullHint: 'Tira hacia atrás desde un héroe y suelta', par3: n => `3 estrellas: termina en ${n} turnos o menos`,
@@ -1784,9 +1784,9 @@ const I18N = {
     'st.arc15.1': 'Pues volamos allí. Los gatos siempre han soñado con el espacio.',
     'st.end.1': 'Las migas bajo el sofá se quedan. Es tradición.',
     storySkip: 'Saltar', storyTap: 'toca para continuar',
-    'ev.halloween': 'Halloween', 'ev.newyear': 'Año Nuevo', evSub: (d, n) => `Evento: ${d}/${n} niveles · premio: un sombrero`, evLevel: (e, n) => `${e} · ${n}/3`,
+    'ev.halloween': 'Halloween', 'ev.newyear': 'Año Nuevo', 'ev.thanksgiving': 'Acción de Gracias', boardHarvest: 'Cosecha', harvestInfo: '🎃 por cada robot · +20 por dar las gracias · +100 y 10% de su cosecha por un amigo nuevo', thankBtn: 'Gracias', thanked: 'Gracias enviadas: +20 🎃 para los dos', thankedAlready: 'Hoy ya diste las gracias, mañana se puede otra vez', evSub: (d, n) => `Evento: ${d}/${n} niveles · premio: un sombrero`, evLevel: (e, n) => `${e} · ${n}/3`,
     evDone: '¡Nivel del evento completado!', evHat: '¡Un sombrero nuevo para el equipo!',
-    'item.hat_pumpkin': 'Sombrero de calabaza', 'itemd.hat_pumpkin': 'Premio de Halloween', 'item.hat_santa': 'Gorro de Papá Noel', 'itemd.hat_santa': 'Premio de Año Nuevo',
+    'item.hat_pumpkin': 'Sombrero de calabaza', 'itemd.hat_pumpkin': 'Premio de Halloween', 'item.hat_pilgrim': 'Sombrero de peregrino', 'itemd.hat_pilgrim': 'Premio de Acción de Gracias', 'item.hat_wreath_gold': 'Corona dorada de cosecha', 'itemd.hat_wreath_gold': '1.er puesto en la cosecha: única en el juego', 'item.hat_wreath_silver': 'Corona de plata', 'itemd.hat_wreath_silver': 'Puestos 2–6 en la cosecha', 'item.hat_wreath_bronze': 'Corona de bronce', 'itemd.hat_wreath_bronze': 'Puestos 7–20 en la cosecha', 'item.hat_santa': 'Gorro de Papá Noel', 'itemd.hat_santa': 'Premio de Año Nuevo',
     'hero.rex.name': 'Rex', 'hero.rex.skill': 'los aliados que toca reciben +1 corazón', 'hero.rex.combo': 'Misión de rescate',
     'hero.homa.name': 'Hamy', 'hero.homa.skill': 'cuanto más rueda, más fuerte golpea', 'hero.homa.combo': 'Lluvia de nueces',
     'stat.power': 'Fuerza', 'stat.speed': 'Velocidad', 'stat.size': 'Tamaño', comboLabel: 'Combo', perksLabel: 'Bonus de nivel', detailWhat: 'Qué hace',
@@ -1889,6 +1889,8 @@ function mergeProg(a, b) {
   // the team: the latest pick wins across devices (teamAt), so a choice made on the phone reaches the laptop
   r.team = (b.teamAt || 0) > (a.teamAt || 0) ? b.team : a.team || b.team;
   r.teamAt = Math.max(a.teamAt || 0, b.teamAt || 0);
+  const ha = a.harvest, hb = b.harvest;
+  r.harvest = ha && hb ? (ha.k === hb.k ? { k: ha.k, n: Math.max(ha.n, hb.n) } : ha.k.endsWith('-preview') ? hb : ha) : ha || hb;
   // the player's settings: the latest change wins, the same way
   const pa = a.prefs || {}, pb = b.prefs || {};
   if (a.prefs || b.prefs) r.prefs = (pb.at || 0) > (pa.at || 0) ? pb : pa.at ? pa : { ...pb, ...pa };
@@ -4258,7 +4260,8 @@ function freeSpot(m) {
 }
 function spawnSnack() {
   const p = freeSpot(28);
-  G.snacks.push({ ...p, kind: Math.random() < .5 ? 'fish' : 'pizza', ph: Math.random() * 6, taken: false });
+  const feast = G.lvl.event && G.lvl.event.id === 'thanksgiving';
+  G.snacks.push({ ...p, kind: feast ? (Math.random() < .5 ? 'pie' : 'corn') : Math.random() < .5 ? 'fish' : 'pizza', ph: Math.random() * 6, taken: false });
 }
 function placeLaser() {
   const p = freeSpot(45);
@@ -4279,7 +4282,7 @@ function makeEnemy(type, x, y, i) {
   const d = ENEMY[type], m = G.mul;
   // a boss belongs to its room: G.lvl.ch picks which of the seven it is
   const kind = type === 'boss' ? (G.lvl.bossKind != null ? G.lvl.bossKind : G.lvl.ch % BOSS_COUNT) : undefined;
-  const bossHp = kind === 1 ? .85 : 1, bossAtk = kind === 2 ? .8 : kind === 7 ? .75 : kind === 8 ? .85 : kind === 10 ? .85 : kind === 11 ? .9 : kind === 12 ? .9 : kind === 13 ? .85 : kind === 14 ? .85 : kind === 15 ? .85 : kind === 16 ? .85 : kind === 17 ? .85 : kind === 18 ? .85 : kind === 19 ? .85 : kind === 20 ? .85 : kind === 21 ? .85 : 1; // the spider also takes turns away with its web
+  const bossHp = kind === 1 ? .85 : 1, bossAtk = kind === 2 ? .8 : kind === 7 ? .75 : kind === 8 ? .85 : kind === 10 ? .85 : kind === 11 ? .9 : kind === 12 ? .9 : kind === 13 ? .85 : kind === 14 ? .85 : kind === 15 ? .85 : kind === 16 ? .85 : kind === 17 ? .85 : kind === 18 ? .85 : kind === 19 ? .85 : kind === 20 ? .85 : kind === 21 ? .85 : kind === 22 ? .85 : 1; // the spider also takes turns away with its web
   const hp = Math.round(d.hp * m.hp * (type === 'boss' ? m.boss * bossHp : 1) / 50) * 50;
   return { type, kind, x, y, r: d.r, hp, maxHp: hp, timer: d.timer + (i % 2), maxTimer: d.timer, atk: Math.round(d.atk * m.atk * bossAtk / 50) * 50,
     alive: true, flash: 0, ph: Math.random() * 6, weak: Math.PI / 2, weakT: Math.PI / 2, foam: kind === 3, boxed: type === 'mimic', fade: 0, face: Math.PI / 2 };
@@ -4712,6 +4715,12 @@ function stepShot(dt) {
     for (const sn of G.snacks) {
       if (sn.taken || dist(h.x, h.y, sn.x, sn.y) > h.r + 12) continue;
       sn.taken = true;
+      if (sn.kind === 'pie') {
+        // a pie heals the hero that takes it
+        if (h.hearts < h.maxHearts) h.hearts++;
+        burst(sn.x, sn.y, '#e0913a', 10, 120); ftext(sn.x, sn.y - 18, '+1 ♥', '#ff5d7a', 14); Snd.play('snack');
+        continue;
+      }
       const bonus = h.kind === 'raccoon' ? 16 : 8;
       addMeter(bonus);
       burst(sn.x, sn.y, sn.kind === 'fish' ? '#7ec8e3' : '#ffd166', 10, 120);
@@ -5090,8 +5099,8 @@ function heroEyes(h, r, o, mood) {
 // ---------- the seven bosses ----------
 // One per room, in room order: blender, TV, alarm clock, washing machine, leaf blower, ghost vacuum
 // and the Robo-Boss 9000 in the garage. Each keeps the yellow sensor and adds its own ability.
-const BOSS_COUNT = 22; // 21 is the fun park's mid-boss (a level's bossKind), not a room's
-const BOSS_COL = ['#ff8fb1', '#6ec3ff', '#ffc857', '#bfe9ff', '#9ee06a', '#c9b8ff', '#ff4d6d', '#8fd14f', '#7aa2ff', '#d4e157', '#ff6bd6', '#f25f5c', '#ffb000', '#38e0ff', '#b4ff39', '#8c6bff', '#9fe8ff', '#2ec4b6', '#ffd60a', '#ff5a5f', '#c77dff', '#4cc9f0'];
+const BOSS_COUNT = 22; // 21 (the fun park's mid-boss) and 22 (Thanksgiving's oven) come from a level's bossKind, not a room
+const BOSS_COL = ['#ff8fb1', '#6ec3ff', '#ffc857', '#bfe9ff', '#9ee06a', '#c9b8ff', '#ff4d6d', '#8fd14f', '#7aa2ff', '#d4e157', '#ff6bd6', '#f25f5c', '#ffb000', '#38e0ff', '#b4ff39', '#8c6bff', '#9fe8ff', '#2ec4b6', '#ffd60a', '#ff5a5f', '#c77dff', '#4cc9f0', '#e0913a'];
 const bossName = e => (tr('bossNames') || [])[e.kind] || tr('bossName');
 function heroFreeSpot(x, y, e) {
   for (const o of G.enemies) {
@@ -5281,6 +5290,12 @@ function bossAfterAttack(e, t) {
     G.beams.push({ x1: e.x, y1: e.y, x2: t.x, y2: t.y, life: .45, max: .45, col, w: 4 });
     t.x = nx2; t.y = ny2; burst(t.x, t.y, col, 12, 160);
     ftext(e.x, e.y - e.r - 44, fx, col, 18); Snd.play('claw');
+  } else if (e.kind === 22) {
+    // a fresh batch: every other robot heals 15% of its health
+    const others = G.enemies.filter(o => o.alive && o !== e && o.hp < o.maxHp);
+    if (!others.length) return;
+    for (const o of others) { o.hp = Math.min(o.maxHp, o.hp + Math.round(o.maxHp * .15)); burst(o.x, o.y, '#e0913a', 8, 110); }
+    ftext(e.x, e.y - e.r - 44, fx, col, 18); Snd.play('snack');
   }
 }
 function drawPuddles() {
@@ -5523,7 +5538,25 @@ function drawThreats() {
 
 function drawHat(kind, r) {
   ctx.save(); ctx.lineJoin = 'round'; ctx.lineWidth = 1.5;
-  if (kind === 'party') {
+  if (kind === 'pilgrim') {
+    // a tall black hat with a brim and a gold buckle
+    ctx.translate(0, -r * .82);
+    ctx.fillStyle = '#1d1a20'; ctx.beginPath(); ctx.ellipse(0, 0, r * .62, r * .14, 0, 0, TAU); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(-r * .36, 0); ctx.lineTo(-r * .3, -r * .62); ctx.lineTo(r * .3, -r * .62); ctx.lineTo(r * .36, 0); ctx.closePath(); ctx.fill();
+    ctx.fillStyle = '#4a3a2a'; ctx.fillRect(-r * .35, -r * .2, r * .7, r * .12);
+    ctx.strokeStyle = '#ffd166'; ctx.lineWidth = 2; ctx.strokeRect(-r * .1, -r * .22, r * .2, r * .16);
+  } else if (kind === 'wreath_gold' || kind === 'wreath_silver' || kind === 'wreath_bronze') {
+    // a harvest wreath of leaves around the head; gold, silver or bronze
+    const col = { wreath_gold: ['#ffd166', '#c98a1a'], wreath_silver: ['#e8eef4', '#9aa3ad'], wreath_bronze: ['#e0a06a', '#9a5a2a'] }[kind];
+    ctx.translate(0, -r * .7);
+    for (let q = 0; q < 11; q++) {
+      const a = Math.PI + (q / 10) * Math.PI, x = Math.cos(a) * r * .62, y = Math.sin(a) * r * .22;
+      ctx.save(); ctx.translate(x, y); ctx.rotate(a + Math.PI / 2);
+      ctx.fillStyle = q % 2 ? col[0] : col[1]; ctx.beginPath(); ctx.ellipse(0, 0, r * .07, r * .16, 0, 0, TAU); ctx.fill();
+      ctx.restore();
+    }
+    if (kind === 'wreath_gold') star(0, -r * .28, r * .14, '#ffd166', '#c98a1a');
+  } else if (kind === 'party') {
     ctx.translate(r * .1, -r * .82); ctx.rotate(.12);
     ctx.fillStyle = '#ff8fb1'; ctx.strokeStyle = '#c2466e';
     ctx.beginPath(); ctx.moveTo(-r * .38, 0); ctx.lineTo(r * .38, 0); ctx.lineTo(0, -r * .95); ctx.closePath(); ctx.fill();
@@ -6065,7 +6098,7 @@ function drawMop(e, r, t) {
 }
 
 function drawBoss(e, r, t) {
-  [drawBlender, drawTvBoss, drawClockBoss, drawWasher, drawBlower, drawGhostVac, drawRoboBoss, drawSpiderBoss, drawDroneBoss, drawMowerBoss, drawHubBoss, drawLiftBoss, drawSorterBoss, drawAssemblerBoss, drawProfessorBoss, drawCommanderBoss, drawPloughBoss, drawKrakenBoss, drawTurbineBoss, drawLocoBoss, drawWheelBoss, drawClawBoss][e.kind == null ? 6 : e.kind](e, r, t);
+  [drawBlender, drawTvBoss, drawClockBoss, drawWasher, drawBlower, drawGhostVac, drawRoboBoss, drawSpiderBoss, drawDroneBoss, drawMowerBoss, drawHubBoss, drawLiftBoss, drawSorterBoss, drawAssemblerBoss, drawProfessorBoss, drawCommanderBoss, drawPloughBoss, drawKrakenBoss, drawTurbineBoss, drawLocoBoss, drawWheelBoss, drawClawBoss, drawOvenBoss][e.kind == null ? 6 : e.kind](e, r, t);
   drawSensor(e, r);
 }
 function drawSensor(e, r) {
@@ -7215,6 +7248,18 @@ function drawClawBoss(e, r, t) {
   ctx.fillStyle = '#e5484d'; circ(r * .35 + sw * .2, r * .6, r * .09);
   ctx.fillStyle = '#4cc9f0'; circ(r * .62, r * .78, r * .07);
 }
+function drawOvenBoss(e, r, t) {
+  // a roasting oven: a squat body, a glowing window with a turkey inside, knobs, and angry eyes on the panel
+  ctx.fillStyle = '#5a3a24'; rr(-r * .9, -r * .85, r * 1.8, r * 1.75, r * .2); ctx.fill();
+  ctx.strokeStyle = '#e0913a'; ctx.lineWidth = 3; rr(-r * .9, -r * .85, r * 1.8, r * 1.75, r * .2); ctx.stroke();
+  ctx.fillStyle = '#3a2416'; rr(-r * .9, -r * .85, r * 1.8, r * .45, r * .2); ctx.fill();
+  angryEyes(0, -r * .63, r * .6, '#ff3b5c');
+  const glow = .5 + .2 * Math.sin((RM ? 0 : t) * 3);
+  ctx.fillStyle = `rgba(255,140,40,${glow})`; rr(-r * .62, -r * .25, r * 1.24, r * .85, r * .12); ctx.fill();
+  ctx.fillStyle = '#b8742e'; ctx.beginPath(); ctx.ellipse(0, r * .25, r * .38, r * .24, 0, 0, TAU); ctx.fill();
+  ctx.fillStyle = '#f6d39a'; for (const sd of [-1, 1]) { ctx.beginPath(); ctx.ellipse(sd * r * .38, r * .12, r * .08, r * .14, sd * .6, 0, TAU); ctx.fill(); }
+  ctx.fillStyle = '#c9ced6'; for (const kx of [-.55, -.2, .2, .55]) circ(kx * r, r * .74, r * .07);
+}
 function drawKrakenBoss(e, r, t) {
   // KRAKEN DEEP: a submarine with a conning tower and periscope, a porthole face with angry eyes, headlights,
   // a yellow band and four curling tentacles with suckers; bubbles stream up from it
@@ -8316,7 +8361,15 @@ function drawSnack(sn) {
   ctx.save(); ctx.globalCompositeOperation = 'lighter';
   glowAt(0, 0, 22, sn.kind === 'fish' ? '126,200,227' : '255,209,102', .22); ctx.restore();
   ctx.rotate(Math.sin(t * 2 + sn.ph) * .15);
-  if (sn.kind === 'fish') {
+  if (sn.kind === 'pie') {
+    ctx.fillStyle = '#b8742e'; ctx.beginPath(); ctx.ellipse(0, 2, 12, 7, 0, 0, TAU); ctx.fill();
+    ctx.fillStyle = '#e0913a'; ctx.beginPath(); ctx.ellipse(0, 0, 11, 6, 0, 0, TAU); ctx.fill();
+    ctx.strokeStyle = '#f6d39a'; ctx.lineWidth = 1.5; for (const d of [-5, 0, 5]) { ctx.beginPath(); ctx.moveTo(d - 3, -4); ctx.lineTo(d + 3, 4); ctx.stroke(); }
+  } else if (sn.kind === 'corn') {
+    ctx.fillStyle = '#7fb069'; ctx.beginPath(); ctx.moveTo(-4, 9); ctx.quadraticCurveTo(-12, 0, -6, -10); ctx.lineTo(-2, 6); ctx.closePath(); ctx.fill();
+    ctx.fillStyle = '#ffd166'; ctx.beginPath(); ctx.ellipse(1, 0, 5, 10, .2, 0, TAU); ctx.fill();
+    ctx.fillStyle = '#e0a83a'; for (let k = -2; k <= 2; k++) { ctx.beginPath(); ctx.arc(1 + k * .4, k * 3.5, 1.2, 0, TAU); ctx.fill(); }
+  } else if (sn.kind === 'fish') {
     const g = ctx.createLinearGradient(0, -7, 0, 7);
     g.addColorStop(0, '#5aa0c8'); g.addColorStop(.5, '#bfe6f5'); g.addColorStop(1, '#e8f6fb');
     ctx.fillStyle = '#4d8fb5';
@@ -8993,7 +9046,7 @@ async function boardPost(extra) {
   const r = await fetch(BOARD_URL + '/board', {
     method: 'POST', headers: { 'Content-Type': 'application/json' },
     // levels: how many levels are won, so a friend's first room can pay the inviter (see refRoomDone in the worker)
-    body: JSON.stringify({ initData: TG.initData, night: PROG.endless || 0, stars: totalStars(), week: PROG.wk === weekKey() ? PROG.wkBest || 0 : 0, levels: Object.keys(PROG.stars).length, ...extra }),
+    body: JSON.stringify({ initData: TG.initData, night: PROG.endless || 0, stars: totalStars(), week: PROG.wk === weekKey() ? PROG.wkBest || 0 : 0, levels: Object.keys(PROG.stars).length, harvest: harvestNow(), ...extra }),
   });
   if (!r.ok) throw new Error('HTTP ' + r.status);
   return r.json();
@@ -9007,6 +9060,7 @@ async function openBoard(tab) {
   try {
     const d = await boardPost({ board: tab });
     BOARD.data[tab] = d;
+    if (tab === 'friends') BOARD.thanked = !!d.thanked;
     if (BOARD.tab === tab) BOARD.status = 'ok';
   } catch (e) { if (BOARD.tab === tab && !BOARD.data[tab]) BOARD.status = 'error'; }
 }
@@ -9029,11 +9083,23 @@ function drawBoardRow(r, y) {
   } else {
     ctx.fillStyle = '#8f88b5'; fitFont(String(r.rank), 38, 13); ctx.fillText(String(r.rank), x + 22, y + h / 2 + 1);
   }
+  // Thanksgiving: a friend can be thanked once a day (+20 pumpkins each)
+  const thank = tab === 'friends' && r.id && !r.me && harvestKey();
+  if (thank) {
+    const bx = x + w - 196, done = BOARD.thanked;
+    ctx.fillStyle = done ? '#2a2548' : '#e0913a'; rr(bx, y + 5, 62, 24, 12); ctx.fill();
+    ctx.textAlign = 'center'; ctx.fillStyle = done ? '#8f88b5' : '#15122a'; fitFont(done ? '✓' : tr('thankBtn'), 54, 12, 900, FD); ctx.fillText(done ? '✓' : tr('thankBtn'), bx + 31, y + h / 2 + 1);
+    if (!done) UI.push({ x: bx, y: y + 2, w: 62, h: 30, cb: () => thankFriend(r.id) });
+  }
+  const nm = (r.champ ? '🏆 ' : '') + r.name;
   ctx.textAlign = 'left'; ctx.fillStyle = r.me ? '#ffc857' : '#f4efe6';
-  fitFont(r.name, w - 170, 14, 800, FB); ctx.fillText(r.name, x + 46, y + h / 2 + 1);
+  fitFont(nm, w - (thank ? 250 : 170), 14, 800, FB); ctx.fillText(nm, x + 46, y + h / 2 + 1);
   ctx.textAlign = 'right'; ctx.fillStyle = '#f4efe6';
   if (tab === 'chal') {
     ctx.font = `900 15px ${FD}`; ctx.fillText(`⏱ ${r.value}`, x + w - 12, y + h / 2 + 1);
+  } else if (tab === 'harvest') {
+    ctx.font = `900 15px ${FD}`; ctx.fillText(String(r.value), x + w - 32, y + h / 2 + 1);
+    drawEventIcon('halloween', x + w - 17, y + h / 2 + 1, 8);
   } else if (tab === 'stars' || tab === 'friends') {
     ctx.font = `900 15px ${FD}`; ctx.fillText(String(r.value), x + w - 30, y + h / 2 + 1);
     star(x + w - 16, y + h / 2, 7, '#ffc857');
@@ -9048,6 +9114,11 @@ function drawBoardRow(r, y) {
     fitFont(wavesWord(r.value), 110, 14, 800, FB); ctx.fillText(wavesWord(r.value), x + w - 12, y + h / 2 + 1);
   }
 }
+function thankFriend(id) {
+  if (!serverOn() || BOARD.thanked) return;
+  BOARD.thanked = true;
+  api('/thanks', { to: id }).then(d => { BOARD.note = tr(d.ok ? 'thanked' : 'thankedAlready'); BOARD.data.harvest = null; }).catch(() => { BOARD.thanked = false; });
+}
 function drawBoard() {
   ctx.fillStyle = '#110e22'; ctx.fillRect(0, 0, W, H);
   const g = ctx.createRadialGradient(W / 2, 60, 10, W / 2, 60, 320);
@@ -9056,8 +9127,9 @@ function drawBoard() {
   iconBtn(12, 13, 'back', () => setScreen('map'));
   ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
   ctx.fillStyle = '#ffc857'; fitFont(tr('board'), W - 120, 30); ctx.fillText(tr('board'), W / 2, 32);
-  [['week', 'boardWeek'], ['night', 'boardNight'], ['stars', 'boardStars'], ['friends', 'boardFriends']].forEach(([k, label], i) =>
-    uiBtn(16 + i * 106, 72, 100, 44, tr(label), () => openBoard(k), BOARD.tab === k));
+  const tabs = [['week', 'boardWeek'], ['night', 'boardNight'], ['stars', 'boardStars'], ['friends', 'boardFriends']].concat(harvestKey() ? [['harvest', 'boardHarvest']] : []);
+  const tw = (W - 32 - (tabs.length - 1) * 6) / tabs.length;
+  tabs.forEach(([k, label], i) => uiBtn(16 + i * (tw + 6), 72, tw, 44, tr(label), () => openBoard(k), BOARD.tab === k));
   const d = BOARD.data[BOARD.tab];
   const msg = t => { ctx.textAlign = 'center'; ctx.fillStyle = '#c9c2e6'; ctx.font = `800 15px ${FB}`; wrap(t, W / 2, 330, W - 90, 22); };
   if (BOARD.status === 'tgOnly') { msg(tr('boardTgOnly')); return; }
@@ -9084,11 +9156,15 @@ function drawBoard() {
     return;
   }
   if (!d.top.length) msg(tr('boardEmpty'));
-  const wk = BOARD.tab === 'week' || BOARD.tab === 'chal', y0 = wk ? 170 : 140, nRows = wk ? 12 : 13;
+  const wk = BOARD.tab === 'week' || BOARD.tab === 'chal' || BOARD.tab === 'harvest', y0 = wk ? 170 : 140, nRows = wk ? 12 : 13;
   if (BOARD.tab === 'chal') {
     const c = weekChallenge(), head = `${tr('chalTitle')}: ${[CHAPTERS[c.room].name, ...c.mods.map(modName)].join(' · ')}`;
     ctx.textAlign = 'center'; ctx.fillStyle = '#ffc857'; fitFont(head, W - 40, 13, 800, FB); ctx.fillText(head, W / 2, 140);
   }
+  if (BOARD.tab === 'harvest') {
+    ctx.textAlign = 'center'; ctx.fillStyle = '#e0913a'; fitFont(tr('harvestInfo'), W - 40, 12, 800, FB); ctx.fillText(tr('harvestInfo'), W / 2, 140);
+  }
+  if (BOARD.note) { ctx.textAlign = 'center'; ctx.fillStyle = '#5ce1c6'; ctx.font = `800 13px ${FB}`; ctx.fillText(BOARD.note, W / 2, 722); }
   if (BOARD.tab === 'week' && d.endsAt) {
     const left = Math.max(0, d.endsAt - Date.now()), dd = Math.floor(left / 86400000), hh = Math.floor(left % 86400000 / 3600000);
     ctx.textAlign = 'center'; ctx.fillStyle = '#ffc857'; fitFont(`${tr('weekLeft', dd, hh)} · ${tr('weekPrizes')}`, W - 40, 13, 800, FB);
@@ -9602,7 +9678,8 @@ function drawShop() {
   });
 
   // style: every hat on Mochi, and the rainbow yarn
-  const looks = ['hat_party', 'hat_crown', 'hat_bow'].concat(EVENTS.filter(e => PROG.hats && PROG.hats[e.hat]).map(e => 'hat_' + e.hat), ['rainbow']);
+  const looks = ['hat_party', 'hat_crown', 'hat_bow'].concat(EVENTS.filter(e => PROG.hats && PROG.hats[e.hat]).map(e => 'hat_' + e.hat),
+    ['hat_wreath_gold', 'hat_wreath_silver', 'hat_wreath_bronze'].filter(owns), ['rainbow']);
   shopSection(tr('shopLooks'), 430);
   const cols = 3, gw = (W - 32 - (cols - 1) * 10) / cols, rows = Math.ceil(looks.length / cols);
   const gh = Math.min(132, (H - 40 - 442) / rows - 10), mochi = HEROES[0];
@@ -9920,6 +9997,7 @@ function guideArt(key, cx, cy) {
 const ALBUM_TIERS = [10, 50, 200], TIER_COL = ['#6f6893', '#e0a06a', '#d6dee8', '#ffd166'];
 const albumTier = n => ALBUM_TIERS.filter(t => n >= t).length;
 function albumKill(e) {
+  harvestKill(e);
   const k = e.type === 'boss' ? 'boss' : FOE_TYPES.includes(e.type) ? e.type : null;
   if (!k) return;
   PROG.kills = PROG.kills || {};
@@ -10996,6 +11074,7 @@ function drawHeroes() {
 // ---------- seasonal events: a few themed levels and a hat, only while the event runs ----------
 const EVENTS = [
   { id: 'halloween', from: '10-15', to: '11-05', ch: 5, hat: 'pumpkin', col: '#ff8a3c', costume: 'pumpkin', bg: '#2a160c' },
+  { id: 'thanksgiving', from: '11-20', to: '11-29', ch: 0, hat: 'pilgrim', col: '#e0913a', costume: 'pilgrim', bg: '#2a1a0c', harvest: true },
   { id: 'newyear', from: '12-15', to: '01-10', ch: 2, hat: 'santa', col: '#e5484d', costume: 'santa', bg: '#0e1a2a' },
 ];
 const EVENT_LEVELS = {
@@ -11004,14 +11083,37 @@ const EVENT_LEVELS = {
     { par: 15, hpMul: 1.3, atkMul: 1.15, acid: [[120, 470, 46], [330, 470, 46]], waves: [[['mop', 225, 200], ['mimic', 100, 320], ['rc', 350, 320]], [['fan', 225, 220], ['bomb', 110, 340], ['split', 340, 340], ['mole', 225, 420]]] },
     { par: 18, hpMul: 1.3, atkMul: 1.15, boss: .7, acid: [[225, 470, 50]], waves: [[['shield', 110, 300], ['mimic', 225, 180], ['bomb', 340, 300]], [['printer', 110, 220], ['mole', 340, 220], ['brush', 225, 360]], [['boss', 225, 240], ['mimic', 85, 430], ['bomb', 365, 430]]] },
   ],
+  // a festive kitchen: pies on the field heal, corn fills the Mischief meter; the Turkey Oven (bossKind 22) bakes for the robots
+  thanksgiving: [
+    { par: 12, hpMul: 1.3, atkMul: 1.15, waves: [[['vac', 110, 200], ['spray', 340, 200], ['brush', 225, 320]], [['mop', 225, 190], ['rc', 100, 320], ['fan', 350, 320]]] },
+    { par: 15, hpMul: 1.3, atkMul: 1.15, waves: [[['split', 225, 200], ['magnet', 100, 320], ['spray', 350, 320]], [['printer', 110, 210], ['shield', 340, 210], ['vac', 225, 360], ['mimic', 225, 150]]] },
+    { par: 18, hpMul: 1.3, atkMul: 1.15, boss: .7, bossKind: 22, waves: [[['brush', 110, 300], ['bomb', 225, 180], ['mop', 340, 300]], [['fan', 110, 220], ['mole', 340, 220], ['spray', 225, 360]], [['boss', 225, 220], ['brush', 90, 380], ['vac', 360, 380]]] },
+  ],
   newyear: [
     { par: 10, hpMul: 1.3, atkMul: 1.15, waves: [[['vac', 90, 170], ['vac', 360, 170], ['spray', 225, 300]], [['mop', 225, 200], ['brush', 110, 340], ['brush', 340, 340]]] },
     { par: 12, hpMul: 1.3, atkMul: 1.15, waves: [[['fan', 110, 220], ['fan', 340, 220], ['vac', 225, 380]], [['split', 225, 200], ['shield', 110, 330], ['rc', 340, 330]]] },
     { par: 14, hpMul: 1.3, atkMul: 1.15, boss: .6, waves: [[['brush', 110, 300], ['split', 225, 180], ['brush', 340, 300]], [['boss', 225, 240], ['mop', 85, 430], ['mop', 365, 430]]] },
   ],
 };
+const THANKS_FROM = Date.UTC(2026, 10, 20);
+// the harvest: pumpkins count while Thanksgiving runs (in the owner's preview under a separate key, so the real board starts clean)
+function harvestKey() {
+  const ev = activeEvent();
+  if (!ev || !ev.harvest) return null;
+  return evKey(ev) + (Date.now() < THANKS_FROM ? '-preview' : '');
+}
+function harvestKill(e) {
+  const k = harvestKey();
+  if (!k) return;
+  if (!PROG.harvest || PROG.harvest.k !== k) PROG.harvest = { k, n: 0 };
+  PROG.harvest.n++;
+  ftext(e.x + 14, e.y - e.r - 6, '+1 🎃', '#e0913a', 12);
+}
+const harvestNow = () => { const k = harvestKey(); return k && PROG.harvest && PROG.harvest.k === k ? PROG.harvest.n : 0; };
 function activeEvent(ts = Date.now()) {
   if (DEV && window.__event) return EVENTS.find(e => e.id === window.__event) || null;
+  // the owner previews Thanksgiving before it starts
+  if (lsGet('pawsling-preview') === '1' && ts < THANKS_FROM) return EVENTS.find(e => e.id === 'thanksgiving');
   const md = new Date(ts).toISOString().slice(5, 10);
   return EVENTS.find(e => (e.from <= e.to ? md >= e.from && md <= e.to : md >= e.from || md <= e.to)) || null;
 }
@@ -11055,6 +11157,13 @@ function reportEvent(ev = activeEvent()) {
   api('/event', { id: ev.id, level: done }).then(() => lsSet('pawsling-evsent', sent)).catch(() => {});
 }
 function drawEventIcon(id, x, y, s) {
+  if (id === 'thanksgiving') {
+    // a pumpkin pie with a lattice
+    ctx.fillStyle = '#b8742e'; ctx.beginPath(); ctx.ellipse(x, y + s * .12, s, s * .62, 0, 0, TAU); ctx.fill();
+    ctx.fillStyle = '#e0913a'; ctx.beginPath(); ctx.ellipse(x, y, s * .9, s * .52, 0, 0, TAU); ctx.fill();
+    ctx.strokeStyle = '#f6d39a'; ctx.lineWidth = 2; for (const d of [-.5, 0, .5]) { ctx.beginPath(); ctx.moveTo(x + d * s - s * .25, y - s * .38); ctx.lineTo(x + d * s + s * .25, y + s * .38); ctx.stroke(); }
+    return;
+  }
   if (id === 'halloween') {
     ctx.fillStyle = '#ff8a3c'; ctx.strokeStyle = '#b8521a'; ctx.lineWidth = 2;
     ctx.beginPath(); ctx.ellipse(x, y, s, s * .78, 0, 0, TAU); ctx.fill(); ctx.stroke();
