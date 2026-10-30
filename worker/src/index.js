@@ -54,7 +54,7 @@ const BOOSTERS = ['heart', 'meter', 'wind']; // the only items that get used up 
 // login bonus by day of the streak (the 7th day restarts the cycle)
 // the chest ripens every 6 hours; inside: a heart or a quick start, and now and then a free Second wind
 // the robot album: each card's tiers (10 / 50 / 200 wins) pay out once
-const ALBUM_TYPES = ['vac', 'spray', 'mop', 'brush', 'fan', 'rc', 'shield', 'split', 'magnet', 'mole', 'printer', 'bomb', 'mimic', 'turret', 'tesla', 'warp', 'cryo', 'jelly', 'battery', 'signal', 'boss'];
+const ALBUM_TYPES = ['vac', 'spray', 'mop', 'brush', 'fan', 'rc', 'shield', 'split', 'magnet', 'mole', 'printer', 'bomb', 'mimic', 'turret', 'tesla', 'warp', 'cryo', 'jelly', 'battery', 'signal', 'mirror', 'boss'];
 const ALBUM_GIFTS = [null, { meter: 1 }, { heart: 1 }, { wind: 1 }];
 // weekly quests: three a week; each pays once, all three add a free Second wind
 const QUEST_GIFTS = { knots: { meter: 1 }, robots: { heart: 1 }, bosses: { heart: 1 }, noko: { meter: 1 }, stars3: { heart: 1 }, night: { meter: 1 }, combos: { meter: 1 }, lasers: { meter: 1 } };
