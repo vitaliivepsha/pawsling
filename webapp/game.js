@@ -170,7 +170,7 @@ const Snd = {
     try { for (const [at, n, len, ins, v = 1] of notes) INST[ins](this, n == null ? 0 : ins === 'clang' ? n : midi(n), len * b, at * b, v); } catch (e) {}
   },
   toggle() {
-    this.on = !this.on; lsSet('pawsling-sound', this.on ? 'on' : 'off');
+    this.on = !this.on; lsSet('pawsling-sound', this.on ? 'on' : 'off'); notePref('sound', this.on);
     if (this.on) { this.play('click'); if (SCREEN === 'game' && G) Amb.start(G.lvl.ch); }
     else Amb.stop();
   },
@@ -1889,6 +1889,9 @@ function mergeProg(a, b) {
   // the team: the latest pick wins across devices (teamAt), so a choice made on the phone reaches the laptop
   r.team = (b.teamAt || 0) > (a.teamAt || 0) ? b.team : a.team || b.team;
   r.teamAt = Math.max(a.teamAt || 0, b.teamAt || 0);
+  // the player's settings: the latest change wins, the same way
+  const pa = a.prefs || {}, pb = b.prefs || {};
+  if (a.prefs || b.prefs) r.prefs = (pb.at || 0) > (pa.at || 0) ? pb : pa.at ? pa : { ...pb, ...pa };
   r.ev = { ...(a.ev || {}) };
   for (const k in (b.ev || {})) r.ev[k] = Math.max(r.ev[k] || 0, b.ev[k]);
   r.hats = { ...(a.hats || {}), ...(b.hats || {}) };
@@ -1923,12 +1926,22 @@ function loadProg() {
           if (vals[PKEY]) PROG = mergeProg(PROG, JSON.parse(vals[PKEY]));
           if (vals[OLD_PKEY]) PROG = mergeProg(PROG, fromV1(JSON.parse(vals[OLD_PKEY])));
           seedSeen(); lsSet(PKEY, JSON.stringify(PROG));
+          if (PROG.prefs && PROG.prefs.at) applyPrefs(PROG.prefs);
           if (PROG.unlocked !== before) { cloudDirty = true; if (SCREEN === 'map') MAP.focus = true; }
         } catch (e) {}
       }
       cloudLoaded();
     });
   } catch (e) { cloudLoaded(); }
+}
+// settings the player picks, kept with the progress so every device gets them (PROG.prefs, stamped with .at)
+function notePref(k, v) { PROG.prefs = { ...(PROG.prefs || {}), [k]: v, at: Date.now() }; saveProg(); }
+function applyPrefs(p) {
+  if (typeof p.hat === 'string' && p.hat !== COS.hat) { COS.hat = p.hat; lsSet('pawsling-hat', p.hat); }
+  if (typeof p.rainbow === 'boolean' && p.rainbow !== COS.rainbow) { COS.rainbow = p.rainbow; lsSet('pawsling-rainbow', p.rainbow ? 'on' : 'off'); }
+  if (typeof p.sound === 'boolean' && p.sound !== Snd.on) { Snd.on = p.sound; lsSet('pawsling-sound', p.sound ? 'on' : 'off'); if (!Snd.on) Amb.stop(); }
+  if (typeof p.lang === 'string' && p.lang !== (lsGet('pawsling-lang') || '') && (!p.lang || LANGS[p.lang])) { lsSet('pawsling-lang', p.lang); applyLang(p.lang); }
+  if (p.seen) lsSet('pawsling-seen', '1');
 }
 function saveProg() {
   const s = JSON.stringify(PROG);
@@ -4016,7 +4029,7 @@ function setScreen(s) {
   if (TG && tgv('6.1')) { try { TG.setHeaderColor(col); TG.setBackgroundColor(col); } catch (e) {} }
 }
 function goMap() { if (G && G.lvl && G.lvl.endless && G.state !== 'lose') endEndless(); G = null; setScreen('map'); }
-function closeHowto() { lsSet('pawsling-seen', '1'); setScreen('map'); }
+function closeHowto() { lsSet('pawsling-seen', '1'); notePref('seen', 1); setScreen('map'); }
 
 function uiBtn(x, y, w, h, label, cb, primary) {
   UI.push({ x, y, w, h, cb });
@@ -9248,6 +9261,10 @@ function langBtn() {
   ctx.fillStyle = '#f4efe6'; ctx.font = `900 13px ${FD}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
   ctx.fillText(LANG.toUpperCase(), x + w / 2, y + h / 2 + 1);
 }
+function applyLang(k) {
+  LANG = k || autoLang();
+  cv.setAttribute('aria-label', tr('aria')); document.documentElement.lang = LANG;
+}
 function drawLang() {
   drawMap(); UI = [];
   ctx.fillStyle = 'rgba(12,10,26,.9)'; ctx.fillRect(0, 0, W, H);
@@ -9257,8 +9274,8 @@ function drawLang() {
   const saved = lsGet('pawsling-lang'), auto = !(saved && LANGS[saved]);
   const pick = k => {
     if (k) lsSet('pawsling-lang', k); else lsSet('pawsling-lang', '');
-    LANG = k || autoLang();
-    cv.setAttribute('aria-label', tr('aria')); document.documentElement.lang = LANG;
+    notePref('lang', k || '');
+    applyLang(k);
     setScreen('map');
   };
   const list = Object.entries(LANGS).sort((a, b) => a[1].localeCompare(b[1], 'en'));
@@ -9347,8 +9364,8 @@ const rainbowOn = () => COS.rainbow && owns('rainbow');
 // the hat a hero wears: none, a specific one (shop previews) or the equipped one
 const heroHat = o => (o.hat === false ? null : typeof o.hat === 'string' ? o.hat : activeHat());
 const serverOn = () => !!(TG && TG.initData && BOARD_URL);
-function setHat(h) { COS.hat = h; lsSet('pawsling-hat', h); }
-function setRainbow(on) { COS.rainbow = on; lsSet('pawsling-rainbow', on ? 'on' : 'off'); }
+function setHat(h) { COS.hat = h; lsSet('pawsling-hat', h); notePref('hat', h); }
+function setRainbow(on) { COS.rainbow = on; lsSet('pawsling-rainbow', on ? 'on' : 'off'); notePref('rainbow', on); }
 async function api(path, body) {
   const r = await fetch(BOARD_URL + path, {
     method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ initData: TG.initData, ...body }),
