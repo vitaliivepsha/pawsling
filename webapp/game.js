@@ -11251,10 +11251,11 @@ const EVENT_LEVELS = {
     { par: 18, hpMul: 1.3, atkMul: 1.15, boss: .7, acid: [[225, 470, 50]], waves: [[['shield', 110, 300], ['mimic', 225, 180], ['bomb', 340, 300]], [['printer', 110, 220], ['mole', 340, 220], ['brush', 225, 360]], [['boss', 225, 240], ['mimic', 85, 430], ['bomb', 365, 430]]] },
   ],
   // a festive kitchen: pies on the field heal, corn fills the Mischief meter; the Turkey Oven (bossKind 22) bakes for the robots
+  // the par is generous: the event scales with the player's furthest room, so its robots are tough late in the game
   thanksgiving: [
-    { par: 12, hpMul: 1.3, atkMul: 1.15, waves: [[['vac', 110, 200], ['spray', 340, 200], ['brush', 225, 320]], [['mop', 225, 190], ['rc', 100, 320], ['fan', 350, 320]]] },
-    { par: 15, hpMul: 1.3, atkMul: 1.15, waves: [[['split', 225, 200], ['magnet', 100, 320], ['spray', 350, 320]], [['printer', 110, 210], ['shield', 340, 210], ['vac', 225, 360], ['mimic', 225, 150]]] },
-    { par: 18, hpMul: 1.3, atkMul: 1.15, boss: .7, bossKind: 22, waves: [[['brush', 110, 300], ['bomb', 225, 180], ['mop', 340, 300]], [['fan', 110, 220], ['mole', 340, 220], ['spray', 225, 360]], [['boss', 225, 220], ['brush', 90, 380], ['vac', 360, 380]]] },
+    { par: 18, hpMul: 1.3, atkMul: 1.15, waves: [[['vac', 110, 200], ['spray', 340, 200], ['brush', 225, 320]], [['mop', 225, 190], ['rc', 100, 320], ['fan', 350, 320]]] },
+    { par: 22, hpMul: 1.3, atkMul: 1.15, waves: [[['split', 225, 200], ['magnet', 100, 320], ['spray', 350, 320]], [['printer', 110, 210], ['shield', 340, 210], ['vac', 225, 360], ['mimic', 225, 150]]] },
+    { par: 27, hpMul: 1.3, atkMul: 1.15, boss: .7, bossKind: 22, waves: [[['brush', 110, 300], ['bomb', 225, 180], ['mop', 340, 300]], [['fan', 110, 220], ['mole', 340, 220], ['spray', 225, 360]], [['boss', 225, 220], ['brush', 90, 380], ['vac', 360, 380]]] },
   ],
   newyear: [
     { par: 10, hpMul: 1.3, atkMul: 1.15, waves: [[['vac', 90, 170], ['vac', 360, 170], ['spray', 225, 300]], [['mop', 225, 200], ['brush', 110, 340], ['brush', 340, 340]]] },
