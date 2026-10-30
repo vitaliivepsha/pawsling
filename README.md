@@ -245,6 +245,8 @@ channels before it: level and boss counts, the map tip, "the hardest room" and t
 and its announcement goes out on the first run after the opening.
 The fun park (room 21) opens on 6 Nov 07:00 UTC the same way. Rooms can differ in size (`CH_ROOM_SIZE`, 9 levels there) and have a
 mid-room boss (`CH_MID_BOSS`, level 119), so level ranges and the boss count follow `LEVELS` in the game.
+Thanksgiving is a gated event in the channels: nothing goes out until the owner sends `/chan thanksgiving on`; then the
+announcement, a daily harvest board at 18:00 UTC, "3 days left" and the winners on 30 Nov (after `awardHarvest`).
 
 ## Leaderboard
 

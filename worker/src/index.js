@@ -1041,7 +1041,17 @@ function roomLevels(i) {
 }
 // bosses in rooms 0..i: one a room, plus the mid-room ones
 const bossCount = i => i + 1 + Object.keys(CH_MID_BOSS).filter(k => Number(k) <= i).length;
-const CH_EVENTS = [{ id: 'halloween', from: '10-15', to: '11-05', room: 5 }, { id: 'newyear', from: '12-15', to: '01-10', room: 2 }];
+const CH_EVENTS = [{ id: 'halloween', from: '10-15', to: '11-05', room: 5 }, { id: 'thanksgiving', from: '11-20', to: '11-29', room: 0, gated: true },
+  { id: 'newyear', from: '12-15', to: '01-10', room: 2 }];
+// a gated event posts nothing in the channels until the owner's /chan <event> on (a row on-<event>-<year> under chat '*');
+// Thanksgiving also gets a daily harvest board at CH_HARVEST_HOUR and the winners the day after it ends
+const CH_HARVEST_HOUR = 18, CH_HARVEST_TOP = 5;
+const GATED_KINDS = { thanksgiving: 'thanksgiving', thanksgiving_end: 'thanksgiving', harvest: 'thanksgiving', harvest_result: 'thanksgiving' };
+const gateKey = (id, ts = Date.now()) => `on-${id}-${new Date(ts).getUTCFullYear()}`;
+async function gateOpen(db, kind, ts = Date.now()) {
+  const id = GATED_KINDS[kind];
+  return !id || !!await db.prepare("SELECT 1 AS x FROM channel_posts WHERE chat = '*' AND key = ?1").bind(gateKey(id, ts)).first();
+}
 // levels in an event (as EVENT_LEVELS in game.js); the "3 days left" post leaves the hat count out while it is under CH_EV_MIN
 const EV_LEVELS = 3, CH_EV_END = 3, CH_EV_MIN = 10;
 // the community group's announcement: once per channel, the first day it has CH_GROUP_AT subscribers (checked at CH_GROUP_HOUR)
@@ -1065,6 +1075,10 @@ const CH_TEXT = {
     group: '💬 <b>У Pawsling тепер є спільнота!</b>\n\nОбговорюй рівні, ділися рекордами й скріншотами, питай поради в гілці 🇺🇦 UA. Щось не працює — пиши в 🛠 Technical Support, відповімо там.\n\nА в 📣 Events — події й підсумки тижня.',
     groupChat: '💬 Чат українською', groupSupport: '🛠 Підтримка',
     halloween_end: n => `🎃 <b>Хелловін: залишилося 3 дні!</b>\n\n${n ? `Капелюх-гарбуз уже є в ${n} ${ukPlayersGen(n)}. ` : ''}Три святкові рівні, а за всі три — ексклюзивний капелюх. Подія закінчується 5 листопада, і тоді капелюх не здобути аж до наступного року.`,
+    thanksgiving: '🦃 <b>День подяки в Pawsling!</b>\n\nТри святкові рівні на кухні: пироги на полі лікують героїв, кукурудза наповнює шкалу «Бешкету», а бос — духовка «Індичка», що підлікує інших роботів. За всі три — капелюх пілігрима.\n\n🎃 А ще рейтинг урожаю: гарбуз за кожного збитого робота в будь-якому режимі. Подякуй другові на дошці друзів — вам обом +20, а за кожного нового друга за твоїм посиланням +100 і ще 10% його врожаю. Переможець отримає «Золотий вінок урожаю», єдиний у грі. До 29 листопада.',
+    thanksgiving_end: n => `🦃 <b>День подяки: залишилося 3 дні!</b>\n\n${n ? `Капелюх пілігрима вже є в ${n} ${ukPlayersGen(n)}. ` : ''}Три святкові рівні — і капелюх твій, а в рейтингу урожаю ще можна наздогнати лідерів. Подія триває до 29 листопада.`,
+    harvest: (rows, n) => `🎃 <b>Рейтинг урожаю</b>\n\n${rows}\n\nКожен збитий робот — 🎃. Подякуй другові на дошці друзів (+20 вам обом), а за кожного нового друга за твоїм посиланням — +100 і ще 10% його врожаю. Учасників: ${n}.`,
+    harvestResult: (gold, silver, bronze) => `🏆 <b>Підсумки Дня подяки</b>\n\n🥇 ${gold} — «Золотий вінок урожаю» і 🏆 біля імені на всіх дошках.${silver ? `\n🥈 Срібні вінки: ${silver}.` : ''}${bronze ? `\n🥉 Бронзові вінки: ще ${bronze} ${ukPl(bronze, 'гравець', 'гравці', 'гравців')}.` : ''}\n\nДякуємо всім, хто збирав урожай!`,
     newyear_end: n => `🎄 <b>Новий рік: залишилося 3 дні!</b>\n\n${n ? `Шапка Санти вже є в ${n} ${ukPlayersGen(n)}. ` : ''}Три святкові рівні, а за всі три — ексклюзивна шапка. Подія закінчується 10 січня, і тоді шапку не здобути аж до наступної зими.`,
     intro: '🐾 <b>Pawsling</b> — коти та єноти з рогатки проти збунтованої техніки.\n\n{levels}, {bosses}, «Нічна зміна» з турніром щотижня — і все прямо в Telegram, без встановлення.\n\nТут: підсумки турнірів, випробування тижня, події, нові кімнати й поради.',
     room: (i, name, bossLine, what) => `🗺 <b>Кімната ${i + 1}: ${name}</b>\n\n${what}\n\n${bossLine}`,
@@ -1125,6 +1139,10 @@ const CH_TEXT = {
     group: '💬 <b>Pawsling has a community now!</b>\n\nTalk about levels, share records and screenshots, and ask for tips in the 🇬🇧 EN topic. Something broken? Write in 🛠 Technical Support and we\'ll answer there.\n\nAnd 📣 Events has the events and the weekly results.',
     groupChat: '💬 English chat', groupSupport: '🛠 Support',
     halloween_end: n => `🎃 <b>Halloween: 3 days left!</b>\n\n${n ? `${n} players already have the pumpkin hat. ` : ''}Three spooky levels, and the exclusive hat for beating all three. The event ends on 5 November, and then the hat is gone until next year.`,
+    thanksgiving: '🦃 <b>Thanksgiving in Pawsling!</b>\n\nThree festive kitchen levels: pies on the field heal your heroes, corn fills the Mischief meter, and the boss is the Turkey Oven, which heals the other robots. Beat all three for the pilgrim hat.\n\n🎃 And there is a harvest board: a pumpkin for every robot you knock out, in any mode. Thank a friend on the friends board and you both get +20; every new friend who joins through your link brings +100 and 10% of their harvest. The winner gets the Golden harvest wreath, the only one in the game. Until 29 November.',
+    thanksgiving_end: n => `🦃 <b>Thanksgiving: 3 days left!</b>\n\n${n ? `${n} players already have the pilgrim hat. ` : ''}Three festive levels and the hat is yours, and there is still time to catch the leaders on the harvest board. The event ends on 29 November.`,
+    harvest: (rows, n) => `🎃 <b>Harvest board</b>\n\n${rows}\n\nEvery robot you knock out is a 🎃. Thank a friend on the friends board (+20 for you both), and every new friend who joins through your link brings +100 and 10% of their harvest. Players: ${n}.`,
+    harvestResult: (gold, silver, bronze) => `🏆 <b>Thanksgiving results</b>\n\n🥇 ${gold}: the Golden harvest wreath and a 🏆 next to their name on every board.${silver ? `\n🥈 Silver wreaths: ${silver}.` : ''}${bronze ? `\n🥉 Bronze wreaths: ${bronze} more ${bronze === 1 ? 'player' : 'players'}.` : ''}\n\nThanks to everyone who brought in the harvest!`,
     newyear_end: n => `🎄 <b>New Year: 3 days left!</b>\n\n${n ? `${n} players already have the Santa hat. ` : ''}Three festive levels, and the exclusive hat for beating all three. The event ends on 10 January, and then the hat is gone until next winter.`,
     intro: '🐾 <b>Pawsling</b>: slingshot cats and raccoons against rebel household robots.\n\n{levels}, {bosses}, a weekly Night Shift tournament, all right inside Telegram with nothing to install.\n\nHere: tournament results, the weekly challenge, events, new rooms and tips.',
     room: (i, name, bossLine, what) => `🗺 <b>Room ${i + 1}: ${name}</b>\n\n${what}\n\n${bossLine}`,
@@ -1273,6 +1291,19 @@ async function channelPostRaw(env, kind, lang, now) {
     if (!chatUrl || !helpUrl) return null;
     return { img: feed('invite'), caption: t.group, kb: [[{ text: t.groupChat, url: chatUrl }], [{ text: t.groupSupport, url: helpUrl }]] };
   }
+  if (kind === 'harvest' || kind === 'harvest_result') {
+    // the board of this year's harvest (before it starts, the owner's preview board, for /chan preview)
+    const [a, b] = harvestWindow(now), y = new Date(now).getUTCFullYear();
+    const list = await harvestRanking(db, now < a ? `thanksgiving-${y}-preview` : `thanksgiving-${y}`, a, b);
+    if (!list.length) return null;
+    const who = r => `${esc(r.name)} (${r.value} 🎃)`;
+    if (kind === 'harvest_result') {
+      const bronze = list.slice(6, 20).filter(r => r.value >= BRONZE_MIN).length;
+      return { img: feed('album'), caption: t.harvestResult(who(list[0]), list.slice(1, 6).map(who).join(', '), bronze) };
+    }
+    const rows = list.slice(0, CH_HARVEST_TOP).map((r, k) => `${t.medals[k] || `${k + 1}.`} ${esc(r.name)} — ${r.value} 🎃`).join('\n');
+    return { img: feed('invite'), caption: t.harvest(rows, list.length) };
+  }
   const ev = CH_EVENTS.find(e => e.id === kind);
   if (ev) return { img: `raid/raid-${ev.room}.jpg`, caption: t[ev.id] };
   const end = CH_EVENTS.find(e => e.id + '_end' === kind);
@@ -1335,6 +1366,11 @@ async function channelDue(db, chat, ts = Date.now()) {
   if (ev && h >= CH_WEEK_HOUR && h <= CH_HOUR) due.push({ key: 'ev-' + ev.key, kind: ev.id });
   // from 15:00 on, so a missed cron hour still posts it that day
   if (ev && ev.ending && h >= CH_HOUR) due.push({ key: 'evend-' + ev.key, kind: ev.id + '_end' });
+  if (ev && ev.id === 'thanksgiving' && h === CH_HARVEST_HOUR) due.push({ key: 'harvest-' + day, kind: 'harvest' });
+  // the winners, the morning after the harvest ends, once the wreaths have been given out
+  const [, hEnd] = harvestWindow(ts), hKey = `thanksgiving-${new Date(ts).getUTCFullYear()}`;
+  if (ts >= hEnd && ts < hEnd + DAY && h >= CH_WEEK_HOUR && await db.prepare('SELECT 1 AS x FROM harvest_awards WHERE ev = ?1').bind(hKey).first())
+    due.push({ key: 'harvest-result-' + hKey, kind: 'harvest_result' });
   if (CH_FEED_DAYS.includes(wd) && h === CH_HOUR) {
     const n = await db.prepare("SELECT COUNT(*) AS n FROM channel_posts WHERE chat = ?1 AND key LIKE 'feed-%'").bind(chat).first();
     due.push({ key: 'feed-' + day, kind: 'feed' + n.n });
@@ -1352,7 +1388,7 @@ async function sendChannelPosts(env) {
   for (const c of list) if (await db.prepare("SELECT 1 AS x FROM channel_posts WHERE chat = ?1 AND key LIKE 'intro-%'").bind(c.chat).first()) targets.push(c);
   // the group's Events topic (live once /chan group made it) gets the week's results and events, in both languages
   const ev = await groupTopic(env, 'events');
-  if (ev) for (const lang of Object.keys(CH_LANGS)) targets.push({ lang, chat: ev.chat, thread: ev.thread, via: 'grp', only: k => k === 'week' || /^new\d+$/.test(k) || CH_EVENTS.some(e => k === e.id || k === e.id + '_end') });
+  if (ev) for (const lang of Object.keys(CH_LANGS)) targets.push({ lang, chat: ev.chat, thread: ev.thread, via: 'grp', only: k => k === 'week' || k === 'harvest_result' || /^new\d+$/.test(k) || CH_EVENTS.some(e => k === e.id || k === e.id + '_end') });
   for (const { lang, chat, thread, via, only } of targets) {
     const due = await channelDue(db, chat);
     if (!thread && await groupPostDue(env, chat)) due.push({ key: 'group', kind: 'group' });
@@ -1360,6 +1396,7 @@ async function sendChannelPosts(env) {
     if (room) due.push(room);
     for (let { key, kind } of due) {
       if (only && !only(kind)) continue;
+      if (!await gateOpen(db, kind)) continue; // a gated event waits for the owner's go
       if (thread) key += '-' + lang;
       // claim the slot first; give it back if the post could not go out
       const claim = await db.prepare('INSERT OR IGNORE INTO channel_posts (chat, key, at) VALUES (?1, ?2, ?3)').bind(chat, key, now).run();
@@ -1430,6 +1467,14 @@ async function channelCommand(env, m) {
   const db = env.DB, list = channels(env), arg = m.text.trim().split(/\s+/).slice(1), say = s => tg(env, 'sendMessage', { chat_id: m.chat.id, text: s });
   await ensureTables(db);
   await ensureBotName(env);
+  if (GATED_KINDS[arg[0]] === arg[0]) {
+    // /chan thanksgiving on|off: let the event's posts go out (or stop them)
+    const key = gateKey(arg[0]);
+    if (arg[1] === 'on') await db.prepare("INSERT OR IGNORE INTO channel_posts (chat, key, at) VALUES ('*', ?1, ?2)").bind(key, Math.floor(Date.now() / 1000)).run();
+    else if (arg[1] === 'off') await db.prepare("DELETE FROM channel_posts WHERE chat = '*' AND key = ?1").bind(key).run();
+    const on = await gateOpen(db, arg[0]);
+    return say(`${arg[0]}: ${on ? '✅ пости увімкнені' : '⏸ пости вимкнені'} (${key}). /chan ${arg[0]} on | off`);
+  }
   if (arg[0] === 'group') {
     if (!groupChat(env)) return say('Група не налаштована: додай COMMUNITY_GROUP у wrangler.toml ([vars]) і зроби деплой.');
     if (arg[1] === 'reset') { await db.prepare('DELETE FROM group_topics WHERE chat = ?1').bind(groupChat(env)).run(); return say('Збережені гілки забуто. /chan group створить нові.'); }
@@ -1439,7 +1484,7 @@ async function channelCommand(env, m) {
   if (arg[0] === 'preview') {
     for (const { lang } of list) {
       const n = await db.prepare("SELECT COUNT(*) AS n FROM channel_posts WHERE chat = ?1 AND key LIKE 'feed-%'").bind(list.find(c => c.lang === lang).chat).first();
-      for (const kind of ['intro', 'week', 'chal', 'feed' + n.n, 'halloween', 'halloween_end', 'group', 'new' + newestRoom()]) {
+      for (const kind of ['intro', 'week', 'chal', 'feed' + n.n, 'halloween', 'halloween_end', 'group', 'new' + newestRoom(), 'thanksgiving', 'thanksgiving_end', 'harvest', 'harvest_result']) {
         const post = await channelPost(env, kind, lang);
         if (!post) { await say(`${lang} · ${kind}: зараз нема що публікувати`); continue; }
         const r = await sendChannelPost(env, m.chat.id, lang, kind, post);
@@ -1450,7 +1495,7 @@ async function channelCommand(env, m) {
   }
   if (arg[0] === 'intro' || arg[0] === 'post') {
     const kind = arg[0] === 'intro' ? 'intro' : arg[1];
-    if (!['intro', 'week', 'chal', 'feed', 'halloween', 'newyear', 'halloween_end', 'newyear_end', 'group', 'new'].includes(kind)) return say('Що саме? /chan post new | group | week | chal | feed | halloween | newyear | halloween_end | newyear_end');
+    if (!['intro', 'week', 'chal', 'feed', 'halloween', 'newyear', 'halloween_end', 'newyear_end', 'group', 'new', 'thanksgiving', 'thanksgiving_end', 'harvest', 'harvest_result'].includes(kind)) return say('Що саме? /chan post thanksgiving | harvest | harvest_result | new | group | week | chal | feed | halloween | newyear | halloween_end | newyear_end');
     const out = [];
     for (const { lang, chat } of list) {
       let k = kind, key = null;
@@ -1488,13 +1533,14 @@ async function channelCommand(env, m) {
     lines.push(`\n💬 ${gchat}: ${!gi.ok ? '⚠️ недоступна' : gi.result.is_forum ? 'гілки ввімкнені' : '⚠️ гілки вимкнені'} · ${canTopics ? '✅ бот керує гілками' : '⚠️ бот без права «Керувати гілками»'}` +
       `\nучасників: ${n.ok ? n.result : '?'} · гілки: ${topics.length ? topics.join(', ') : 'ще не створені (/chan group)'}`);
   }
+  lines.push(`\n🦃 День подяки: ${await gateOpen(db, 'thanksgiving') ? '✅ пости увімкнені' : '⏸ пости вимкнені (/chan thanksgiving on)'}`);
   // new players by where they came from
   const day = Math.floor(Date.now() / 1000) - 86400;
   const rows = await db.prepare(`SELECT src, COUNT(*) AS n, SUM(at > ?1) AS d1, SUM(at > ?2) AS d7 FROM sources
     GROUP BY src ORDER BY n DESC LIMIT 15`).bind(day, day - 6 * 86400).all();
   lines.push('\nНові гравці за джерелом (доба / 7 днів / усього):');
   lines.push(rows.results.length ? rows.results.map(r => `${r.src}: ${r.d1} / ${r.d7} / ${r.n}`).join('\n') : 'поки нікого');
-  lines.push('\n/chan preview — усі види постів мені\n/chan intro — привітальний пост у канали і закріпити\n/chan post new|group|week|chal|feed|halloween|newyear|halloween_end|newyear_end — опублікувати зараз\n/chan group — створити гілки в групі');
+  lines.push('\n/chan preview — усі види постів мені\n/chan intro — привітальний пост у канали і закріпити\n/chan post new|group|week|chal|feed|halloween|newyear|halloween_end|newyear_end — опублікувати зараз\n/chan group — створити гілки в групі\n/chan thanksgiving on|off — увімкнути пости Дня подяки');
   return say(lines.join('\n'));
 }
 
