@@ -1886,7 +1886,9 @@ function mergeProg(a, b) {
   r.xp = { ...(a.xp || {}) };
   for (const k in (b.xp || {})) r.xp[k] = Math.max(r.xp[k] || 0, b.xp[k]);
   r.hard = { ...(a.hard || {}), ...(b.hard || {}) };
-  r.team = a.team || b.team;
+  // the team: the latest pick wins across devices (teamAt), so a choice made on the phone reaches the laptop
+  r.team = (b.teamAt || 0) > (a.teamAt || 0) ? b.team : a.team || b.team;
+  r.teamAt = Math.max(a.teamAt || 0, b.teamAt || 0);
   r.ev = { ...(a.ev || {}) };
   for (const k in (b.ev || {})) r.ev[k] = Math.max(r.ev[k] || 0, b.ev[k]);
   r.hats = { ...(a.hats || {}), ...(b.hats || {}) };
@@ -10488,6 +10490,7 @@ function toggleTeam(id) {
   if (team.includes(id)) { if (team.length > 4) PROG.team = team.filter(x => x !== id); }
   else if (team.length < 5) PROG.team = [...team, id];
   else { Snd.play('locked'); return; }
+  PROG.teamAt = Date.now();
   saveProg();
 }
 // ---------- details: tap a hero or a shop item to see everything it does ----------
