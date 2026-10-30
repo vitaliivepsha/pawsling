@@ -9643,19 +9643,27 @@ function prepLevel(li) { // li = -1 for Night Shift
   PREP = { li, heart: false, meter: false, hard: false, hardOk };
   setScreen('prep');
 }
+// an event level gets the boosters screen too (when there are boosters to take)
+function prepEvent(i) {
+  if (!owns('heart') && !owns('meter')) { startEventLevel(i); return; }
+  PREP = { li: -1, ev: i, heart: false, meter: false, hard: false, hardOk: false };
+  setScreen('prep');
+}
 function startPrepared() {
   const pr = PREP; PREP = null;
   const boost = () => {
     if (pr.heart && owns('heart')) { useBooster('heart'); for (const h of G.heroes) { h.maxHearts++; h.hearts++; } }
     if (pr.meter && owns('meter')) { useBooster('meter'); G.meter = Math.max(G.meter, 50); }
   };
-  if (pr.li < 0) { startEndless(); boost(); }
+  if (pr.ev != null) { startEventLevel(pr.ev); if (G) boost(); }
+  else if (pr.li < 0) { startEndless(); boost(); }
   else if (pr.hard) { newRun(pr.li); G.hard = true; setScreen('game'); setupWave(0); markDayChallenge(); boost(); }
   else startLevel(pr.li, false, boost);
 }
 function drawPrep() {
   drawMap(); UI = [];
-  const c = PREP.li < 0 ? null : LEVELS[PREP.li].ch, ch = c == null ? null : CHAPTERS[c], col = ch ? ch.col : '#9fa8ff';
+  const pev = PREP.ev != null ? activeEvent() : null;
+  const c = pev ? pev.ch : PREP.li < 0 ? null : LEVELS[PREP.li].ch, ch = c == null ? null : CHAPTERS[c], col = pev ? pev.col : ch ? ch.col : '#9fa8ff';
   ctx.fillStyle = 'rgba(12,10,26,.94)'; ctx.fillRect(0, 0, W, H);
   ctx.save(); ctx.globalCompositeOperation = 'lighter'; glowAt(W / 2, 150, 260, hexRgb(col), .16); ctx.restore();
   // a window onto the level's room
@@ -9666,9 +9674,9 @@ function drawPrep() {
   else { ctx.fillStyle = '#15122a'; ctx.fillRect(wx, wy, ww, wh); for (let k = 0; k < 14; k++) star(wx + 10 + (k * 37) % (ww - 20), wy + 8 + (k * 23) % (wh - 16), 1.6, '#fff3c4'); }
   ctx.restore();
   ctx.strokeStyle = col; ctx.lineWidth = 2.5; rr(wx, wy, ww, wh, 18); ctx.stroke();
-  if (c != null) chIcon(c, W / 2, wy + wh / 2, 34, col); else moonIcon(W / 2, wy + wh / 2, 22);
+  if (pev) drawEventIcon(pev.id, W / 2, wy + wh / 2, 22); else if (c != null) chIcon(c, W / 2, wy + wh / 2, 34, col); else moonIcon(W / 2, wy + wh / 2, 22);
   ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillStyle = '#ffc857';
-  const title = PREP.li < 0 ? tr('night') : tr('levelRoom', PREP.li + 1, ch.name);
+  const title = pev ? `${tr('ev.' + pev.id)} · ${PREP.ev + 1}/${EVENT_LEVELS[pev.id].length}` : PREP.li < 0 ? tr('night') : tr('levelRoom', PREP.li + 1, ch.name);
   fitFont(title, W - 60, 26); ctx.fillText(title, W / 2, 200);
   ctx.fillStyle = '#c9c2e6'; ctx.font = `800 14px ${FB}`; ctx.fillText(tr('boosters'), W / 2, 238);
   // a row: an icon tile on the left, the name and a two-line note, a switch and the count on the right
@@ -11373,7 +11381,7 @@ function drawEventCard(ev, y) {
   ctx.save(); ctx.translate(W - 58, y + 60); drawHat(ev.hat, 30); ctx.restore();
   if (done >= n) { ctx.strokeStyle = '#5ce1c6'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(W - 46, y + 66); ctx.lineTo(W - 40, y + 72); ctx.lineTo(W - 28, y + 58); ctx.stroke(); }
   const sy = y - MAP.y;
-  if (sy + 88 > 0 && sy < MAP_VIEW) UI.push({ x: 12, y: sy, w: W - 24, h: 88, cb: () => startEventLevel(done >= n ? 0 : done) }); // all done: play it again from the first level
+  if (sy + 88 > 0 && sy < MAP_VIEW) UI.push({ x: 12, y: sy, w: W - 24, h: 88, cb: () => prepEvent(done >= n ? 0 : done) }); // all done: play it again from the first level
 }
 function drawEventFx(id) {
   if (LOWFX) return;
@@ -11820,9 +11828,9 @@ function drawEnd() {
     const i = G.lvl.evIdx, more = win && i < EVENT_LEVELS[G.lvl.event.id].length - 1;
     if (win && G.evHat) { ctx.textAlign = 'center'; ctx.fillStyle = '#ffc857'; fitFont(tr('evHat'), W - 40, 16); ctx.fillText(tr('evHat'), W / 2, 572); }
     const wind = !win && drawSecondWind();
-    if (more) uiBtn(75, 600, W - 150, 56, tr('next'), () => startEventLevel(i + 1), true);
-    else uiBtn(75, 600, W - 150, wind ? 50 : 56, win ? tr('toMap') : tr('again'), win ? goMap : () => startEventLevel(i), !wind);
-    if (more || win) uiBtn(75, 670, W - 150, 46, more ? tr('map') : tr('again'), more ? goMap : () => startEventLevel(i), false);
+    if (more) uiBtn(75, 600, W - 150, 56, tr('next'), () => prepEvent(i + 1), true);
+    else uiBtn(75, 600, W - 150, wind ? 50 : 56, win ? tr('toMap') : tr('again'), win ? goMap : () => prepEvent(i), !wind);
+    if (more || win) uiBtn(75, 670, W - 150, 46, more ? tr('map') : tr('again'), more ? goMap : () => prepEvent(i), false);
     else uiBtn(75, 670, W - 150, 46, tr('map'), goMap, false);
     return;
   }
