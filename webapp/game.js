@@ -9603,7 +9603,9 @@ async function api(path, body) {
   if (!r.ok) throw new Error('HTTP ' + r.status);
   return r.json();
 }
+let INV_READY = false; // the server's inventory has arrived at least once
 function setInv(items) {
+  INV_READY = true;
   for (const k in PENDING) { if ((items[k] || 0) >= PENDING[k]) delete PENDING[k]; else items[k] = PENDING[k]; }
   INV = items;
 }
@@ -9639,13 +9641,14 @@ function useBooster(k) {
 let PREP = null;
 function prepLevel(li) { // li = -1 for Night Shift
   const hardOk = li >= 0 && (PROG.stars[String(li + 1)] || 0) > 0;
-  if (!owns('heart') && !owns('meter') && !hardOk) { if (li < 0) startEndless(); else startLevel(li); return; }
+  if ((INV_READY || !serverOn()) && !owns('heart') && !owns('meter') && !hardOk) { if (li < 0) startEndless(); else startLevel(li); return; }
   PREP = { li, heart: false, meter: false, hard: false, hardOk };
   setScreen('prep');
 }
 // an event level gets the boosters screen too (when there are boosters to take)
 function prepEvent(i) {
-  if (!owns('heart') && !owns('meter')) { startEventLevel(i); return; }
+  // skip the screen only when the inventory is known and has no boosters (right after start it may still be on its way)
+  if ((INV_READY || !serverOn()) && !owns('heart') && !owns('meter')) { startEventLevel(i); return; }
   PREP = { li: -1, ev: i, heart: false, meter: false, hard: false, hardOk: false };
   setScreen('prep');
 }
