@@ -940,9 +940,18 @@ const CH_FEED_DAYS = [2, 4, 6], CH_HOUR = 15, CH_WEEK_HOUR = 9;
 const CH_NEW_FROM = 18;
 // rooms that open for everyone at a set time (as SUBWAY_OPEN_AT in game.js): until then the channels act as if they
 // were not there, and the announcement goes out on the first cron run after the opening instead of at CH_HOUR
-const CH_OPEN = { 19: Date.UTC(2026, 9, 30, 7, 0) };
-// a room's levels: the first three rooms have 4, every other room 6
-const roomLevels = i => i < 3 ? [i * 4 + 1, i * 4 + 4] : [12 + (i - 3) * 6 + 1, 12 + (i - 3) * 6 + 6];
+const CH_OPEN = { 19: Date.UTC(2026, 9, 30, 7, 0), 20: Date.UTC(2026, 10, 6, 7, 0) }; // = ROOM_OPEN_AT in game.js
+// a room's levels: the first three rooms have 4, the others 6 unless CH_ROOM_SIZE says otherwise (as LEVELS in game.js);
+// CH_MID_BOSS: a room's second boss, before its last level
+const CH_ROOM_SIZE = { 20: 9 }, CH_MID_BOSS = { 20: 119 };
+const roomSize = i => i < 3 ? 4 : CH_ROOM_SIZE[i] || 6;
+function roomLevels(i) {
+  let first = 1;
+  for (let k = 0; k < i; k++) first += roomSize(k);
+  return [first, first + roomSize(i) - 1];
+}
+// bosses in rooms 0..i: one a room, plus the mid-room ones
+const bossCount = i => i + 1 + Object.keys(CH_MID_BOSS).filter(k => Number(k) <= i).length;
 const CH_EVENTS = [{ id: 'halloween', from: '10-15', to: '11-05', room: 5 }, { id: 'newyear', from: '12-15', to: '01-10', room: 2 }];
 // levels in an event (as EVENT_LEVELS in game.js); the "3 days left" post leaves the hat count out while it is under CH_EV_MIN
 const EV_LEVELS = 3, CH_EV_END = 3, CH_EV_MIN = 10;
@@ -951,11 +960,11 @@ const CH_GROUP_AT = 100, CH_GROUP_HOUR = 12;
 const CH_TEXT = {
   uk: {
     mods: { wind: 'хуртовина', acid: 'кислота', meteors: 'метеорити', fences: 'лазерні бар\'єри', belts: 'конвеєрні стрічки' },
-    bosses: ['блендер «Мегамікс»', 'Телебос 3000', 'Будильник-Дзвонар', 'пралька «Барабан»', 'повітродув «Шквал»', 'пилосос-привид', 'Робо-бос 9000', 'павук «Тенета»', 'дрон «Грім»', 'косарка «Стриж»', 'хаб «Розумний дім»', 'ліфт «Експрес»', 'сортувальник «Мегасклад»', 'збирач «Прайм»', 'професор «Колба»', 'командор «Орбіта»', 'снігоочисник «Завірюха»', 'кракен «Глибина»', 'турбіна «Гігават»', 'локомотив «Комета»'],
+    bosses: ['блендер «Мегамікс»', 'Телебос 3000', 'Будильник-Дзвонар', 'пралька «Барабан»', 'повітродув «Шквал»', 'пилосос-привид', 'Робо-бос 9000', 'павук «Тенета»', 'дрон «Грім»', 'косарка «Стриж»', 'хаб «Розумний дім»', 'ліфт «Експрес»', 'сортувальник «Мегасклад»', 'збирач «Прайм»', 'професор «Колба»', 'командор «Орбіта»', 'снігоочисник «Завірюха»', 'кракен «Глибина»', 'турбіна «Гігават»', 'локомотив «Комета»', ['автомат «Хапун»', 'колесо огляду «Вихор»']],
     play: '🐾 Грати', medals: ['🥇', '🥈', '🥉'],
     // filled into {levels}, {rooms}, {bosses} and {to} from the newest open room; the hardest room and the finale follow it too
-    nLevels: n => `${n} ${ukPl(n, 'рівень', 'рівні', 'рівнів')}`, nRooms: n => `${n} кімнатах`, nBosses: n => `${n} ${ukPl(n, 'бос', 'боси', 'босів')}`,
-    to: { 18: 'електростанції', 19: 'метро' }, names: { 19: 'Метро' },
+    nLevels: n => `${n} ${ukPl(n, 'рівень', 'рівні', 'рівнів')}`, nRooms: n => `${n} ${ukPl(n, 'кімнаті', 'кімнатах', 'кімнатах')}`, nBosses: n => `${n} ${ukPl(n, 'бос', 'боси', 'босів')}`,
+    to: { 18: 'електростанції', 19: 'метро', 20: 'парку атракціонів' }, names: { 19: 'Метро', 20: 'Парк атракціонів' },
     hardest: 'Найважча кімната: ', finale: n => ` Це фінал гри: рівень ${n}.`,
     weekHead: '📅 <b>Підсумки тижня в Pawsling</b>',
     night: rows => `🌙 <b>Турнір «Нічної зміни»</b>\n${rows.map((r, i) => `${CH_TEXT.uk.medals[i]} ${r.name} — ${r.night} ${ukWaves(r.night)}`).join('\n')}`,
@@ -969,8 +978,9 @@ const CH_TEXT = {
     halloween_end: n => `🎃 <b>Хелловін: залишилося 3 дні!</b>\n\n${n ? `Капелюх-гарбуз уже є в ${n} ${ukPlayersGen(n)}. ` : ''}Три святкові рівні, а за всі три — ексклюзивний капелюх. Подія закінчується 5 листопада, і тоді капелюх не здобути аж до наступного року.`,
     newyear_end: n => `🎄 <b>Новий рік: залишилося 3 дні!</b>\n\n${n ? `Шапка Санти вже є в ${n} ${ukPlayersGen(n)}. ` : ''}Три святкові рівні, а за всі три — ексклюзивна шапка. Подія закінчується 10 січня, і тоді шапку не здобути аж до наступної зими.`,
     intro: '🐾 <b>Pawsling</b> — коти та єноти з рогатки проти збунтованої техніки.\n\n{levels}, {bosses}, «Нічна зміна» з турніром щотижня — і все прямо в Telegram, без встановлення.\n\nТут: підсумки турнірів, випробування тижня, події, нові кімнати й поради.',
-    room: (i, name, boss, what) => `🗺 <b>Кімната ${i + 1}: ${name}</b>\n\n${what}\n\nБос: <b>${boss}</b>.`,
-    newRoom: (i, name, boss, what, [a, b]) => `🆕 <b>Нова кімната: ${name}!</b>\n\nКімната ${i + 1}, рівні ${a}–${b}. ${what}\n\nБос: <b>${boss}</b>. Хто першим дійде до кінця?`,
+    room: (i, name, bossLine, what) => `🗺 <b>Кімната ${i + 1}: ${name}</b>\n\n${what}\n\n${bossLine}`,
+    boss: b => `Бос: <b>${b}</b>.`, twoBosses: (a, la, b, lb) => `Боси: <b>${a}</b> на ${la}-му рівні й <b>${b}</b> на ${lb}-му.`,
+    newRoom: (i, name, bossLine, what, [a, b]) => `🆕 <b>Нова кімната: ${name}!</b>\n\nКімната ${i + 1}, рівні ${a}–${b}. ${what}\n\n${bossLine} Хто першим дійде до кінця?`,
     rooms: [
       'Тут усе почалося: пилососи збунтувалися просто біля холодильника. Порада новачкам: бий у жовтий сенсор — потрійна шкода.',
       'Телевізор оголосив себе королем дивана й скликав пульти та пилососи.',
@@ -992,6 +1002,7 @@ const CH_TEXT = {
       'Вода щоходу піднімається знизу й гальмує героїв у польоті. Медузоботи заряджаються за хід до атаки, і герой, що влучить у зарядженого, зупиняється на місці. Бос після кожної атаки здіймає воду одразу на три поділки.',
       'Струмові дуги між клемами вмикаються через хід. Пролетиш крізь увімкнену — удар до кінця польоту у півтора раза сильніший, а хто стоїть на дузі, коли вона вмикається, втрачає серце. Акумулятори щоходу набирають заряд і б\'ють дедалі сильніше, доки влучання їх не розрядить. Бос після атаки заряджає всі акумулятори до максимуму.',
       'По коліях ходять потяги, а лампи на колії показують, скільки ходів лишилось, і червоніють перед потягом. Хто стоїть на коліях, коли проходить потяг, втрачає серце й відлітає вбік, а роботи на коліях втрачають 30% міцності. Поки живий семафор, потяги ходять кожні 2 ходи замість 3. Бос після атаки пускає потяг по колії, де найбільше героїв.',
+      'Тут уперше дев\'ять рівнів і два боси. Бампери, як у пінболі, відкидають героя й розганяють його: кожен відскок від бампера додає удару 10%, до +40%. Дзеркальні боти блокують усе, що в них влучає, і щоходу повертаються на чверть оберту, тож бий збоку чи ззаду. Проміжний бос хапає вдареного героя, забирає ще одне серце й кидає його в інше місце, а фінальний після атаки розвертає всі дзеркала до героїв.',
     ],
     tips: {
       slingshot: '🎯 <b>Як грати</b>\n\nТягни героя назад, цілься й відпускай. Герої відбиваються від стін і прошивають роботів наскрізь — найкращі постріли зачіпають кількох одразу.',
@@ -1010,10 +1021,10 @@ const CH_TEXT = {
   },
   en: {
     mods: { wind: 'blizzard', acid: 'acid', meteors: 'meteors', fences: 'laser fences', belts: 'conveyor belts' },
-    bosses: ['Megamix Blender', 'Teleboss 3000', 'Bellringer Alarm', 'Drum Washer', 'Gale Blower', 'Ghost Vacuum', 'Robo-Boss 9000', 'Web-Spinner', 'Thunder Drone', 'Swift Mower', 'Smart Home Hub', 'Express Lift', 'Mega Sorter', 'Assembler Prime', 'Professor Flask', 'Commander Orbit', 'Blizzard Snowplough', 'Kraken Deep', 'Gigawatt Turbine', 'Comet Locomotive'],
+    bosses: ['Megamix Blender', 'Teleboss 3000', 'Bellringer Alarm', 'Drum Washer', 'Gale Blower', 'Ghost Vacuum', 'Robo-Boss 9000', 'Web-Spinner', 'Thunder Drone', 'Swift Mower', 'Smart Home Hub', 'Express Lift', 'Mega Sorter', 'Assembler Prime', 'Professor Flask', 'Commander Orbit', 'Blizzard Snowplough', 'Kraken Deep', 'Gigawatt Turbine', 'Comet Locomotive', ['Grabber Claw Machine', 'Whirl Ferris Wheel']],
     play: '🐾 Play', medals: ['🥇', '🥈', '🥉'],
     nLevels: n => `${n} levels`, nRooms: n => `${n} rooms`, nBosses: n => `${n} bosses`,
-    to: { 18: 'the power plant', 19: 'the subway' }, names: { 19: 'Subway' },
+    to: { 18: 'the power plant', 19: 'the subway', 20: 'the fun park' }, names: { 19: 'Subway', 20: 'Fun park' },
     hardest: 'The hardest room: ', finale: n => ` This is the finale of the game: level ${n}.`,
     weekHead: '📅 <b>The week in Pawsling</b>',
     night: rows => `🌙 <b>Night Shift tournament</b>\n${rows.map((r, i) => `${CH_TEXT.en.medals[i]} ${r.name} — ${r.night} waves`).join('\n')}`,
@@ -1027,8 +1038,9 @@ const CH_TEXT = {
     halloween_end: n => `🎃 <b>Halloween: 3 days left!</b>\n\n${n ? `${n} players already have the pumpkin hat. ` : ''}Three spooky levels, and the exclusive hat for beating all three. The event ends on 5 November, and then the hat is gone until next year.`,
     newyear_end: n => `🎄 <b>New Year: 3 days left!</b>\n\n${n ? `${n} players already have the Santa hat. ` : ''}Three festive levels, and the exclusive hat for beating all three. The event ends on 10 January, and then the hat is gone until next winter.`,
     intro: '🐾 <b>Pawsling</b>: slingshot cats and raccoons against rebel household robots.\n\n{levels}, {bosses}, a weekly Night Shift tournament, all right inside Telegram with nothing to install.\n\nHere: tournament results, the weekly challenge, events, new rooms and tips.',
-    room: (i, name, boss, what) => `🗺 <b>Room ${i + 1}: ${name}</b>\n\n${what}\n\nBoss: <b>${boss}</b>.`,
-    newRoom: (i, name, boss, what, [a, b]) => `🆕 <b>New room: ${name}!</b>\n\nRoom ${i + 1}, levels ${a}–${b}. ${what}\n\nBoss: <b>${boss}</b>. Who gets to the end first?`,
+    room: (i, name, bossLine, what) => `🗺 <b>Room ${i + 1}: ${name}</b>\n\n${what}\n\n${bossLine}`,
+    boss: b => `Boss: <b>${b}</b>.`, twoBosses: (a, la, b, lb) => `Bosses: <b>${a}</b> on level ${la} and <b>${b}</b> on level ${lb}.`,
+    newRoom: (i, name, bossLine, what, [a, b]) => `🆕 <b>New room: ${name}!</b>\n\nRoom ${i + 1}, levels ${a}–${b}. ${what}\n\n${bossLine} Who gets to the end first?`,
     rooms: [
       'Where it all began: the vacuums rebelled right by the fridge. A tip for beginners: hit the yellow sensor for triple damage.',
       'The TV declared itself king of the sofa and called in the remotes and vacuums.',
@@ -1050,6 +1062,7 @@ const CH_TEXT = {
       'The water rises from the bottom every turn and slows heroes flying through it. Jelly bots charge up the turn before they attack, and a hero that hits a charged one stops dead. After each attack the boss raises the water three marks at once.',
       'Power arcs between the terminals switch on every other turn. Fly through a live one and your hits are 1.5 times stronger for the rest of the flight, but a hero standing on an arc when it switches on loses a heart. Battery bots charge up every turn and hit harder and harder until a hit drains them. After each attack the boss charges every battery to the full.',
       'Trains run along the tracks, and lamps on the track count down the turns and turn red before a train. A hero standing on the tracks when a train passes loses a heart and is thrown aside, and robots on the tracks lose 30% of their health. While a signal bot is alive, trains come every 2 turns instead of 3. After each attack the boss sends a train down the track with the most heroes.',
+      'Nine levels and two bosses for the first time. Pinball bumpers bounce heroes off and speed them up: every bounce adds 10% to the hit, up to +40%. Mirror bots block everything that hits them and turn a quarter every turn, so hit them from the side or the back. The mid-boss grabs the hero it hit, takes one more heart and drops them somewhere else, and the final boss turns every mirror toward the heroes after each attack.',
     ],
     tips: {
       slingshot: '🎯 <b>How to play</b>\n\nPull a hero back, aim and let go. Heroes bounce off walls and pierce right through robots: the best shots hit several at once.',
@@ -1078,7 +1091,7 @@ const CH_FEED = [
   { tip: 'night', img: shot('6-night') }, { room: 6 }, { tip: 'quests', img: feed('quests') }, { room: 7 },
   { tip: 'bosses', img: shot('3-bosses') }, { room: 8 }, { tip: 'raids', img: 'raid/raid-8.jpg' }, { room: 9 },
   { tip: 'album', img: feed('album') }, { room: 10 }, { tip: 'streak', img: feed('streak') }, { room: 11 },
-  { room: 12 }, { room: 13 }, { room: 14 }, { room: 15 }, { room: 16 }, { room: 17 }, { room: 18 }, { room: 19 },
+  { room: 12 }, { room: 13 }, { room: 14 }, { room: 15 }, { room: 16 }, { room: 17 }, { room: 18 }, { room: 19 }, { room: 20 },
 ];
 const ukPl = (n, one, few, many) => n % 10 === 1 && n % 100 !== 11 ? one : [2, 3, 4].includes(n % 10) && ![12, 13, 14].includes(n % 100) ? few : many;
 const ukWaves = n => n % 10 === 1 && n % 100 !== 11 ? 'хвиля' : [2, 3, 4].includes(n % 10) && ![12, 13, 14].includes(n % 100) ? 'хвилі' : 'хвиль';
@@ -1121,10 +1134,15 @@ function roomWhat(lang, i, ts) {
   const what = last ? t.rooms[i][0].toLowerCase() + t.rooms[i].slice(1) : t.rooms[i]; // after "…: " it goes on in lower case
   return (last ? t.hardest : '') + what + (last ? t.finale(roomLevels(i)[1]) : '');
 }
+// bosses[i] is a name, or [mid-boss, final boss] for a room with two
+function bossLine(lang, i) {
+  const t = CH_TEXT[lang], b = t.bosses[i];
+  return Array.isArray(b) ? t.twoBosses(b[0], CH_MID_BOSS[i], b[1], roomLevels(i)[1]) : t.boss(b);
+}
 function fillCounts(lang, text, ts) {
   const t = CH_TEXT[lang], i = newestRoom(ts);
   return text.replace(/\{levels\}/g, t.nLevels(roomLevels(i)[1])).replace(/\{rooms\}/g, t.nRooms(i + 1))
-    .replace(/\{bosses\}/g, t.nBosses(i + 1)).replace(/\{to\}/g, t.to[i] || roomName(lang, i));
+    .replace(/\{bosses\}/g, t.nBosses(bossCount(i))).replace(/\{to\}/g, t.to[i] || roomName(lang, i));
 }
 // a post: { img, caption } for a language, or null when there is nothing to say
 async function channelPost(env, kind, lang, now = Date.now()) {
@@ -1158,7 +1176,7 @@ async function channelPostRaw(env, kind, lang, now) {
   if (nr) {
     const i = Number(nr[1]);
     if (!t.rooms[i] || !roomName(lang, i) || !roomOpen(i, now)) return null;
-    return { img: `raid/raid-${i}.jpg`, caption: t.newRoom(i, roomName(lang, i), t.bosses[i], roomWhat(lang, i, now), roomLevels(i)) };
+    return { img: `raid/raid-${i}.jpg`, caption: t.newRoom(i, roomName(lang, i), bossLine(lang, i), roomWhat(lang, i, now), roomLevels(i)) };
   }
   if (kind === 'group') {
     // buttons straight into the topic of the channel's language and into support (needs a public group)
@@ -1178,7 +1196,7 @@ async function channelPostRaw(env, kind, lang, now) {
     const f = CH_FEED[Number(m[1]) % CH_FEED.length];
     if (f.tip) return { img: typeof f.img === 'function' ? f.img(lang) : f.img, caption: t.tips[f.tip] };
     if (!roomOpen(f.room, now) || !roomName(lang, f.room)) return null; // not open yet: this slot is skipped
-    return { img: `raid/raid-${f.room}.jpg`, caption: t.room(f.room, roomName(lang, f.room), t.bosses[f.room], roomWhat(lang, f.room, now)) };
+    return { img: `raid/raid-${f.room}.jpg`, caption: t.room(f.room, roomName(lang, f.room), bossLine(lang, f.room), roomWhat(lang, f.room, now)) };
   }
   return null;
 }

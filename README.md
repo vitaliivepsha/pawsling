@@ -243,6 +243,8 @@ The weekly challenge post uses the same fixed `CHAL_ROOMS` as the game (19 for n
 A room with an opening time in `CH_OPEN` (the subway: 30 Oct 07:00 UTC, as `SUBWAY_OPEN_AT` in the game) does not exist for the
 channels before it: level and boss counts, the map tip, "the hardest room" and the finale all follow the newest open room,
 and its announcement goes out on the first run after the opening.
+The fun park (room 21) opens on 6 Nov 07:00 UTC the same way. Rooms can differ in size (`CH_ROOM_SIZE`, 9 levels there) and have a
+mid-room boss (`CH_MID_BOSS`, level 119), so level ranges and the boss count follow `LEVELS` in the game.
 
 ## Leaderboard
 
