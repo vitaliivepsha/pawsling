@@ -1889,6 +1889,8 @@ function mergeProg(a, b) {
   // the team: the latest pick wins across devices (teamAt), so a choice made on the phone reaches the laptop
   r.team = (b.teamAt || 0) > (a.teamAt || 0) ? b.team : a.team || b.team;
   r.teamAt = Math.max(a.teamAt || 0, b.teamAt || 0);
+  r.evStars = { ...(a.evStars || {}) };
+  for (const k in (b.evStars || {})) { const x = r.evStars[k] || [], y = b.evStars[k]; r.evStars[k] = y.map((v, i) => Math.max(v || 0, x[i] || 0)).concat(x.slice(y.length)); }
   const ha = a.harvest, hb = b.harvest;
   r.harvest = ha && hb ? (ha.k === hb.k ? { k: ha.k, n: Math.max(ha.n, hb.n) } : ha.k.endsWith('-preview') ? hb : ha) : ha || hb;
   // the player's settings: the latest change wins, the same way
@@ -11306,6 +11308,10 @@ function eventWin() {
   PROG.ev = { ...(PROG.ev || {}) };
   const before = PROG.ev[k] || 0;
   PROG.ev[k] = Math.max(before, G.lvl.evIdx + 1);
+  // the best stars of each event level
+  const st = (PROG.evStars && PROG.evStars[k]) || [];
+  st[G.lvl.evIdx] = Math.max(st[G.lvl.evIdx] || 0, G.stars);
+  PROG.evStars = { ...(PROG.evStars || {}), [k]: st };
   if (PROG.ev[k] >= n && !(PROG.hats && PROG.hats[ev.hat])) {
     PROG.hats = { ...(PROG.hats || {}), [ev.hat]: 1 };
     setHat(ev.hat); G.evHat = true;
@@ -11383,6 +11389,9 @@ function drawEventCard(ev, y) {
   ctx.fillStyle = '#c9c2e6'; fitFont(tr('evSub', done, n), W - 200, 12, 800, FB); ctx.fillText(tr('evSub', done, n), 90, y + 58);
   ctx.save(); ctx.translate(W - 58, y + 60); drawHat(ev.hat, 30); ctx.restore();
   if (done >= n) { ctx.strokeStyle = '#5ce1c6'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(W - 46, y + 66); ctx.lineTo(W - 40, y + 72); ctx.lineTo(W - 28, y + 58); ctx.stroke(); }
+  // the stars won in the event's levels
+  const evs = (PROG.evStars && PROG.evStars[evKey(ev)]) || [], got = evs.reduce((a, v) => a + (v || 0), 0);
+  if (got) { ctx.textAlign = 'right'; ctx.fillStyle = '#ffc857'; ctx.font = `900 13px ${FD}`; ctx.fillText(`${got}/${n * 3}`, W - 92, y + 30); star(W - 82 + 2, y + 30, 7, '#ffc857'); }
   const sy = y - MAP.y;
   if (sy + 88 > 0 && sy < MAP_VIEW) UI.push({ x: 12, y: sy, w: W - 24, h: 88, cb: () => prepEvent(done >= n ? 0 : done) }); // all done: play it again from the first level
 }
@@ -11831,10 +11840,15 @@ function drawEnd() {
     const i = G.lvl.evIdx, more = win && i < EVENT_LEVELS[G.lvl.event.id].length - 1;
     if (win && G.evHat) { ctx.textAlign = 'center'; ctx.fillStyle = '#ffc857'; fitFont(tr('evHat'), W - 40, 16); ctx.fillText(tr('evHat'), W / 2, 572); }
     const wind = !win && drawSecondWind();
-    if (more) uiBtn(75, 600, W - 150, 56, tr('next'), () => prepEvent(i + 1), true);
-    else uiBtn(75, 600, W - 150, wind ? 50 : 56, win ? tr('toMap') : tr('again'), win ? goMap : () => prepEvent(i), !wind);
-    if (more || win) uiBtn(75, 670, W - 150, 46, more ? tr('map') : tr('again'), more ? goMap : () => prepEvent(i), false);
-    else uiBtn(75, 670, W - 150, 46, tr('map'), goMap, false);
+    if (more) {
+      // a win with more to go: next, or this one again (for more stars), or the map
+      uiBtn(75, 600, W - 150, 56, tr('next'), () => prepEvent(i + 1), true);
+      uiBtn(75, 670, (W - 160) / 2, 46, tr('again'), () => prepEvent(i), false);
+      uiBtn(85 + (W - 160) / 2, 670, (W - 160) / 2, 46, tr('map'), goMap, false);
+    } else {
+      uiBtn(75, 600, W - 150, wind ? 50 : 56, win ? tr('toMap') : tr('again'), win ? goMap : () => prepEvent(i), !wind);
+      uiBtn(75, 670, W - 150, 46, win ? tr('again') : tr('map'), win ? () => prepEvent(i) : goMap, false);
+    }
     return;
   }
   const hasNext = win && G.li < LEVELS.length - 1;
