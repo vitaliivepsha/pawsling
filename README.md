@@ -12,8 +12,8 @@ worker/             the leaderboard: a Cloudflare Worker with a D1 database
 
 ## Gameplay
 
-- 108 levels in 19 rooms, each room ends with a boss: Kitchen, Living room, Bedroom (4 levels each),
-  Bathroom, Balcony, Attic, Garage, Basement, Roof, Garden, Server room, Stairwell, Warehouse, Factory, Lab, Space station, Polar station, Underwater base, Power plant (6 levels each). The map scrolls.
+- 114 levels in 20 rooms, each room ends with a boss: Kitchen, Living room, Bedroom (4 levels each),
+  Bathroom, Balcony, Attic, Garage, Basement, Roof, Garden, Server room, Stairwell, Warehouse, Factory, Lab, Space station, Polar station, Underwater base, Power plant, Subway (6 levels each). The map scrolls.
 - The basement mixes every enemy type (toughness ×3.39) and ends with the Web-Spinner: after each
   attack it webs the hero it hit, who skips their next turn unless an ally frees them with a shot.
 - The roof (toughness ×4.06) adds magnets that pull heroes in and bend their shots, and ends with
@@ -57,7 +57,7 @@ worker/             the leaderboard: a Cloudflare Worker with a D1 database
   every other turn. A hero flying through a live arc hits 1.5x for the rest of the flight; a hero standing on
   an arc when it switches on loses a heart (never the last). Battery bots charge up every turn (three at most)
   and hit harder the more they hold (+50% a charge); a hit drains them. It ends with the Gigawatt Turbine: after
-  each attack it charges every battery to the full. Level 108 is the finale: a gold medallion on the map and
+  each attack it charges every battery to the full. Level 108 was the finale until the subway opened: a gold medallion on the map and
   gold rays behind the turbine.
 - The subway (room 20, levels 109-114, toughness ×8.2, the hardest room) opens for everyone on Friday 30 October
   2026 at 09:00 Kyiv (SUBWAY_OPEN_AT in game.js); until then only the owner sees it (/daily says preview: true for
