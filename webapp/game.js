@@ -11373,7 +11373,7 @@ function drawEventCard(ev, y) {
   ctx.save(); ctx.translate(W - 58, y + 60); drawHat(ev.hat, 30); ctx.restore();
   if (done >= n) { ctx.strokeStyle = '#5ce1c6'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(W - 46, y + 66); ctx.lineTo(W - 40, y + 72); ctx.lineTo(W - 28, y + 58); ctx.stroke(); }
   const sy = y - MAP.y;
-  if (sy + 88 > 0 && sy < MAP_VIEW) UI.push({ x: 12, y: sy, w: W - 24, h: 88, cb: () => startEventLevel(Math.min(done, n - 1)) });
+  if (sy + 88 > 0 && sy < MAP_VIEW) UI.push({ x: 12, y: sy, w: W - 24, h: 88, cb: () => startEventLevel(done >= n ? 0 : done) }); // all done: play it again from the first level
 }
 function drawEventFx(id) {
   if (LOWFX) return;
