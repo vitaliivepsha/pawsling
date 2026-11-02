@@ -1939,7 +1939,19 @@ function loadProg() {
   } catch (e) { cloudLoaded(); }
 }
 // settings the player picks, kept with the progress so every device gets them (PROG.prefs, stamped with .at)
-function notePref(k, v) { PROG.prefs = { ...(PROG.prefs || {}), [k]: v, at: Date.now() }; saveProg(); }
+function notePref(k, v) { PROG.prefs = { ...(PROG.prefs || {}), [k]: v, at: Date.now() }; saveProg(); pushSync(); }
+// the team and the settings also go to the game's server: a stale build in another webview can overwrite the cloud copy, not this one
+function pushSync() {
+  if (!serverOn()) return;
+  api('/prefs', { team: PROG.team, teamAt: PROG.teamAt || 0, prefs: PROG.prefs || null }).catch(() => {});
+}
+function applySync(sv) {
+  const la = PROG.teamAt || 0, lp = (PROG.prefs && PROG.prefs.at) || 0;
+  PROG = mergeProg(PROG, sv);
+  if (PROG.prefs && PROG.prefs.at) applyPrefs(PROG.prefs);
+  lsSet(PKEY, JSON.stringify(PROG));
+  if (la > (sv.teamAt || 0) || lp > ((sv.prefs && sv.prefs.at) || 0)) pushSync();
+}
 function applyPrefs(p) {
   if (typeof p.hat === 'string' && p.hat !== COS.hat) { COS.hat = p.hat; lsSet('pawsling-hat', p.hat); }
   if (typeof p.rainbow === 'boolean' && p.rainbow !== COS.rainbow) { COS.rainbow = p.rainbow; lsSet('pawsling-rainbow', p.rainbow ? 'on' : 'off'); }
@@ -10437,6 +10449,7 @@ async function loadDaily() {
     Object.assign(DAILY, { loaded: true, streak: d.streak, run: d.run || d.streak, chestAt: d.chestAt || 0, claimed: d.claimed, challengeDone: d.challengeDone, invited: d.invited, bot: d.bot, today: d.today, news: d.news || null, newsDone: !!d.newsDone });
     if (d.challengeDone && d.today) lsSet('pawsling-ch', d.today);
     if (d.items) setInv(d.items);
+    applySync(d.sync || {});
     if (d.preview && lsGet('pawsling-preview') !== '1' && roomPending()) { lsSet('pawsling-preview', '1'); location.reload(); return; }
     if (d.gifted) DAILY.msg = tr('giftedMsg');
     if (d.bonus) DAILY.msg = tr(d.bonus.hat_party ? 'streakHat' : 'streakWind', d.run);
@@ -10753,7 +10766,7 @@ function toggleTeam(id) {
   else if (team.length < 5) PROG.team = [...team, id];
   else { Snd.play('locked'); return; }
   PROG.teamAt = Date.now();
-  saveProg();
+  saveProg(); pushSync();
 }
 // ---------- details: tap a hero or a shop item to see everything it does ----------
 // ---------- the chest: ripe every 6 hours, a heart or a quick start inside (now and then a free Second wind) ----------

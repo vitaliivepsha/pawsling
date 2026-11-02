@@ -198,7 +198,7 @@ export default {
     const json = (body, status = 200) => new Response(JSON.stringify(body), { status, headers: { ...cors, 'Content-Type': 'application/json' } });
     if (req.method === 'OPTIONS') return new Response(null, { headers: cors });
     const url = new URL(req.url), path = url.pathname;
-    if (req.method !== 'POST' || !['/board', '/invoice', '/inventory', '/use', '/daily', '/challenge', '/share', '/notify', '/raid', '/chest', '/album', '/quest', '/chal', '/subscribed', '/event', '/thanks', '/tg'].includes(path)) return json({ error: 'not found' }, 404);
+    if (req.method !== 'POST' || !['/board', '/invoice', '/inventory', '/use', '/daily', '/challenge', '/share', '/notify', '/raid', '/chest', '/album', '/quest', '/chal', '/subscribed', '/event', '/thanks', '/prefs', '/tg'].includes(path)) return json({ error: 'not found' }, 404);
 
     if (path === '/tg') {
       // only Telegram knows the secret we gave it in setWebhook
@@ -305,6 +305,20 @@ export default {
         ON CONFLICT(ev, user_id) DO UPDATE SET bonus = bonus + excluded.bonus`).bind(hk, id, THANKS_BONUS, now).run();
       const fl = await env.DB.prepare('SELECT lang FROM daily WHERE user_id = ?1').bind(to).first();
       try { await tg(env, 'sendMessage', { chat_id: to, text: text(fl && fl.lang).thanksGot(displayName(user)) }); } catch (e) {}
+      return json({ ok: true });
+    }
+    if (path === '/prefs') {
+      // the picked team and the settings, so every device gets them; the newer stamp wins for each
+      await ensureTables(env.DB);
+      const maxAt = Date.now() + DAY, stamp = v => { const n = Math.floor(Number(v)); return n > 0 && n <= maxAt ? n : 0; };
+      const teamOk = Array.isArray(body.team) && body.team.length <= 7 && body.team.every(x => typeof x === 'string' && x.length <= 12);
+      const team = teamOk ? JSON.stringify(body.team) : null, teamAt = teamOk ? stamp(body.teamAt) : 0;
+      const p = body.prefs && typeof body.prefs === 'object' ? JSON.stringify(body.prefs) : null, prefs = p && p.length <= 500 ? p : null, prefsAt = prefs ? stamp(body.prefs.at) : 0;
+      await env.DB.prepare(`INSERT INTO sync_state (user_id, team, team_at, prefs, prefs_at) VALUES (?1, ?2, ?3, ?4, ?5)
+        ON CONFLICT(user_id) DO UPDATE SET
+          team = CASE WHEN excluded.team_at > team_at THEN excluded.team ELSE team END, team_at = MAX(team_at, excluded.team_at),
+          prefs = CASE WHEN excluded.prefs_at > prefs_at THEN excluded.prefs ELSE prefs END, prefs_at = MAX(prefs_at, excluded.prefs_at)`)
+        .bind(user.id, team, teamAt, prefs, prefsAt).run();
       return json({ ok: true });
     }
     if (path === '/album') {
@@ -441,7 +455,9 @@ async function daily(env, user, body = {}) {
   if (!botName) { const me = await tg(env, 'getMe', {}); botName = me.ok ? me.result.username : null; }
   const news = newsChat(env, (nrow && nrow.lang) || user.language_code), newsUrl = channelUrl(news); // the game opens it by @username
   const newsDone = !!await db.prepare('SELECT 1 AS x FROM subs WHERE user_id = ?1').bind(user.id).first();
-  return { claimed, streak, run, bonus, chestAt: chest.ready_at * 1000, reward, gifted, challengeDone: !!row && row.challenge_day === today, invited: inv.n, bot: botName, preview: isAdmin(env, user),
+  const st = await db.prepare('SELECT team, team_at, prefs, prefs_at FROM sync_state WHERE user_id = ?1').bind(user.id).first();
+  const sync = st ? { team: st.team ? JSON.parse(st.team) : undefined, teamAt: st.team_at, prefs: st.prefs ? JSON.parse(st.prefs) : undefined } : null;
+  return { claimed, streak, run, bonus, chestAt: chest.ready_at * 1000, reward, gifted, challengeDone: !!row && row.challenge_day === today, invited: inv.n, bot: botName, preview: isAdmin(env, user), sync,
     notify: !!(nrow && nrow.enabled), raid: raid ? { id: raid.id, room: raid.room, expires: raid.expires * 1000 } : null,
     items: await inventory(db, user.id), today, weekEnds: weekStart() + 7 * DAY, news: newsUrl ? news : null, newsDone };
 }
@@ -546,6 +562,7 @@ async function ensureTables(db) {
     // when a player away for days was last sent the 'we miss you' gift
     db.prepare('CREATE TABLE IF NOT EXISTS comebacks (user_id INTEGER PRIMARY KEY, at INTEGER NOT NULL)'),
     db.prepare('CREATE TABLE IF NOT EXISTS ref_rooms (user_id INTEGER PRIMARY KEY, at INTEGER NOT NULL)'),
+    db.prepare('CREATE TABLE IF NOT EXISTS sync_state (user_id INTEGER PRIMARY KEY, team TEXT, team_at INTEGER NOT NULL DEFAULT 0, prefs TEXT, prefs_at INTEGER NOT NULL DEFAULT 0)'),
     db.prepare('CREATE TABLE IF NOT EXISTS harvest (ev TEXT NOT NULL, user_id INTEGER NOT NULL, own INTEGER NOT NULL DEFAULT 0, bonus INTEGER NOT NULL DEFAULT 0, at INTEGER NOT NULL, PRIMARY KEY (ev, user_id))'),
     db.prepare('CREATE TABLE IF NOT EXISTS thanks (ev TEXT NOT NULL, from_id INTEGER NOT NULL, day TEXT NOT NULL, to_id INTEGER NOT NULL, PRIMARY KEY (ev, from_id, day))'),
     db.prepare('CREATE TABLE IF NOT EXISTS harvest_awards (ev TEXT PRIMARY KEY, at INTEGER NOT NULL)'),
