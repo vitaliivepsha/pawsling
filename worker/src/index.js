@@ -1245,11 +1245,11 @@ const CH_FEED = [
   { room: 12 }, { room: 13 }, { room: 14 }, { room: 15 }, { room: 16 }, { room: 17 }, { room: 18 }, { room: 19 }, { room: 20 }, { room: 21 },
 ];
 // one-off posts at a set time (UTC, the first cron run from then on, between CH_SCHED_HOURS), each once, channels only;
-// `gate` holds one back until the owner's /chan <gate> on (the new Armour and Hourglass boosters, not in the game yet)
+// `gate` (optional) holds one back until the owner's /chan <gate> on
 const CH_SCHEDULED = [
   { id: 'boosters-free', at: Date.UTC(2026, 10, 8, 12), img: feed('chest') },
-  { id: 'boosters-new', at: Date.UTC(2026, 10, 11, 12), img: shot('4-map'), gate: 'boosters' },
-  { id: 'shop-boosters', at: Date.UTC(2026, 10, 15, 12), img: 'welcome-1280x720.jpg', gate: 'boosters' },
+  { id: 'boosters-new', at: Date.UTC(2026, 10, 11, 12), img: shot('4-map') },
+  { id: 'shop-boosters', at: Date.UTC(2026, 10, 15, 12), img: 'welcome-1280x720.jpg' },
   { id: 'shop-heroes', at: Date.UTC(2026, 10, 18, 12), img: shot('5-heroes') },
 ];
 const CH_SCHED_HOURS = [9, 18];
