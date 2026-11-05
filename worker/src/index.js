@@ -1076,10 +1076,10 @@ const CH_EVENTS = [{ id: 'halloween', from: '10-15', to: '11-05', room: 5 }, { i
 // a gated event posts nothing in the channels until the owner's /chan <event> on (a row on-<event>-<year> under chat '*');
 // Thanksgiving also gets a daily harvest board at CH_HARVEST_HOUR and the winners the day after it ends
 const CH_HARVEST_HOUR = 18, CH_HARVEST_TOP = 5;
-const GATED_KINDS = { thanksgiving: 'thanksgiving', thanksgiving_end: 'thanksgiving', harvest: 'thanksgiving', harvest_result: 'thanksgiving' };
+const GATED_KINDS = { boosters: 'boosters', thanksgiving: 'thanksgiving', thanksgiving_end: 'thanksgiving', harvest: 'thanksgiving', harvest_result: 'thanksgiving' };
 const gateKey = (id, ts = Date.now()) => `on-${id}-${new Date(ts).getUTCFullYear()}`;
 async function gateOpen(db, kind, ts = Date.now()) {
-  const id = GATED_KINDS[kind];
+  const sched = CH_SCHEDULED.find(x => 'sched-' + x.id === kind), id = GATED_KINDS[kind] || (sched && sched.gate);
   return !id || !!await db.prepare("SELECT 1 AS x FROM channel_posts WHERE chat = '*' AND key = ?1").bind(gateKey(id, ts)).first();
 }
 // levels in an event (as EVENT_LEVELS in game.js); the "3 days left" post leaves the hat count out while it is under CH_EV_MIN
@@ -1108,6 +1108,12 @@ const CH_TEXT = {
     thanksgiving: '🦃 <b>День подяки в Pawsling!</b>\n\nТри святкові рівні на кухні: пироги на полі лікують героїв, кукурудза наповнює шкалу «Бешкету», а бос — духовка «Індичка», що підлікує інших роботів. За всі три — капелюх пілігрима.\n\n🎃 А ще рейтинг урожаю: гарбуз за кожного збитого робота в будь-якому режимі. Подякуй другові на дошці друзів — вам обом +20, а за кожного нового друга за твоїм посиланням +100 і ще 10% його врожаю. Переможець отримає «Золотий вінок урожаю», єдиний у грі. До 29 листопада.',
     thanksgiving_end: n => `🦃 <b>День подяки: залишилося 3 дні!</b>\n\n${n ? `Капелюх пілігрима вже є в ${n} ${ukPlayersGen(n)}. ` : ''}Три святкові рівні — і капелюх твій, а в рейтингу урожаю ще можна наздогнати лідерів. Подія триває до 29 листопада.`,
     harvest: (rows, n) => `🎃 <b>Рейтинг урожаю</b>\n\n${rows}\n\nКожен збитий робот — 🎃. Подякуй другові на дошці друзів (+20 вам обом), а за кожного нового друга за твоїм посиланням — +100 і ще 10% його врожаю. Учасників: ${n}.`,
+    sched: {
+      'boosters-free': '🎒 <b>Підсилювачі: як отримати безкоштовно</b>\n\nКожен рівень можна пройти без покупок, а підсилювачі допомагають узяти три зірки. Вмикай їх на екрані перед рівнем, кожен діє один рівень:\n• ❤️ Серце+ — +1 серце кожному героєві\n• ⚡ Швидкий старт — шкала «Бешкету» одразу наполовину заповнена\n• 🌀 Друге дихання — продовжити рівень після поразки\n\nДе взяти задарма:\n• скриня на карті кожні 6 годин (а іноді й Друге дихання)\n• щоденний бонус: на 7-й день серії — дихання, серце й старт разом\n• альбом роботів: 10, 50 і 200 перемог над роботом\n• квести тижня: за всі три — Друге дихання\n• перша перемога в тижневому випробуванні\n• підписка на цей канал — забери подарунок на екрані «Щодня»\n• друг за твоїм посиланням пройде першу кімнату — тобі Друге дихання',
+      'boosters-new': '🛡 <b>Нові підсилювачі: Броня й Пісочний годинник</b>\n\n• 🛡 Броня — квартира отримує щит на 25% міцності, і удари роботів спершу б\'ють по ньому\n• ⏳ Пісочний годинник — +3 ходи до норми трьох зірок (у «Нічній зміні» не діє)\n\nЗі скрині вони не випадають — їх треба заслужити:\n• перші три зірки на рівні з босом — +1 Пісочний годинник\n• уся кімната на три зірки — +1 Броня\n• турнір «Нічної зміни»: 1 місце тижня — 2 Броні, 2–3 місця — по одній\n\nВмикаються, як і решта, на екрані перед рівнем.',
+      'shop-boosters': '⭐ <b>Магазин: підсилювачі</b>\n\nУсі рівні проходяться без покупок. А якщо хочеш швидше до трьох зірок, у магазині є набори за Telegram Stars:\n• ❤️ Серце+ ×3 — 15⭐\n• ⚡ Швидкий старт ×3 — 15⭐\n• 🛡 Броня ×3 — 20⭐\n• ⏳ Пісочний годинник ×3 — 20⭐\n• 🌀 Друге дихання — 10⭐ одразу після поразки (друге за той самий забіг — 20⭐)\n\nІ не забувай про безкоштовні: скриня, щоденний бонус, квести й альбом роботів.',
+      'shop-heroes': '🐾 <b>Магазин: герої й прикраси</b>\n\n• ⚡ Іскра — її удар перескакує блискавкою на сусіднього робота, 150⭐\n• 🐶 Рекс — пес-рятувальник, що лікує друзів, яких зачепить, 150⭐\n• 🎉 святковий ковпак — 20⭐ (або безкоштовно за 30 днів поспіль)\n• 👑 корона — 40⭐, 🎀 бантик — 20⭐\n• 🌈 райдужна нитка — 25⭐\n\nПрикраси вдягає вся команда, назавжди. А хом\'як Хеммі приєднується безкоштовно після 24 рівня.',
+    },
     harvestResult: (gold, silver, bronze) => `🏆 <b>Підсумки Дня подяки</b>\n\n🥇 ${gold} — «Золотий вінок урожаю» і 🏆 біля імені на всіх дошках.${silver ? `\n🥈 Срібні вінки: ${silver}.` : ''}${bronze ? `\n🥉 Бронзові вінки: ще ${bronze} ${ukPl(bronze, 'гравець', 'гравці', 'гравців')}.` : ''}\n\nДякуємо всім, хто збирав урожай!`,
     newyear_end: n => `🎄 <b>Новий рік: залишилося 3 дні!</b>\n\n${n ? `Шапка Санти вже є в ${n} ${ukPlayersGen(n)}. ` : ''}Три святкові рівні, а за всі три — ексклюзивна шапка. Подія закінчується 10 січня, і тоді шапку не здобути аж до наступної зими.`,
     intro: '🐾 <b>Pawsling</b> — коти та єноти з рогатки проти збунтованої техніки.\n\n{levels}, {bosses}, «Нічна зміна» з турніром щотижня — і все прямо в Telegram, без встановлення.\n\nТут: підсумки турнірів, випробування тижня, події, нові кімнати й поради.',
@@ -1173,6 +1179,12 @@ const CH_TEXT = {
     thanksgiving: '🦃 <b>Thanksgiving in Pawsling!</b>\n\nThree festive kitchen levels: pies on the field heal your heroes, corn fills the Mischief meter, and the boss is the Turkey Oven, which heals the other robots. Beat all three for the pilgrim hat.\n\n🎃 And there is a harvest board: a pumpkin for every robot you knock out, in any mode. Thank a friend on the friends board and you both get +20; every new friend who joins through your link brings +100 and 10% of their harvest. The winner gets the Golden harvest wreath, the only one in the game. Until 29 November.',
     thanksgiving_end: n => `🦃 <b>Thanksgiving: 3 days left!</b>\n\n${n ? `${n} players already have the pilgrim hat. ` : ''}Three festive levels and the hat is yours, and there is still time to catch the leaders on the harvest board. The event ends on 29 November.`,
     harvest: (rows, n) => `🎃 <b>Harvest board</b>\n\n${rows}\n\nEvery robot you knock out is a 🎃. Thank a friend on the friends board (+20 for you both), and every new friend who joins through your link brings +100 and 10% of their harvest. Players: ${n}.`,
+    sched: {
+      'boosters-free': '🎒 <b>Boosters: how to get them for free</b>\n\nEvery level can be won without buying anything; boosters help you take three stars. Turn them on before a level, each one lasts a level:\n• ❤️ Heart+: +1 heart for every hero\n• ⚡ Quick start: the Mischief meter starts half full\n• 🌀 Second wind: carry on after a loss\n\nWhere to get them for free:\n• the chest on the map, every 6 hours (now and then a Second wind)\n• the daily bonus: day 7 of a streak gives a Second wind, a heart and a quick start\n• the robot album: 10, 50 and 200 wins over a robot\n• weekly quests: all three give a Second wind\n• your first win in the weekly challenge\n• subscribing to this channel: pick up the gift on the Daily screen\n• a friend who joins through your link beats the first room: a Second wind for you',
+      'boosters-new': '🛡 <b>New boosters: Armour and Hourglass</b>\n\n• 🛡 Armour: the flat gets a shield of 25% of its strength, and the robots\' hits land on it first\n• ⏳ Hourglass: +3 turns to the three-star par (not in Night Shift)\n\nThey never drop from the chest, they have to be earned:\n• your first three stars on a boss level: +1 Hourglass\n• a whole room on three stars: +1 Armour\n• the Night Shift tournament: #1 of the week gets 2 Armour, #2 and #3 one each\n\nTurn them on before a level, like the others.',
+      'shop-boosters': '⭐ <b>Shop: boosters</b>\n\nEvery level can be won without buying anything. If you want three stars sooner, the shop has packs for Telegram Stars:\n• ❤️ Heart+ ×3: 15⭐\n• ⚡ Quick start ×3: 15⭐\n• 🛡 Armour ×3: 20⭐\n• ⏳ Hourglass ×3: 20⭐\n• 🌀 Second wind: 10⭐ right after a loss (a second one in the same run: 20⭐)\n\nAnd don\'t forget the free ones: the chest, the daily bonus, quests and the robot album.',
+      'shop-heroes': '🐾 <b>Shop: heroes and looks</b>\n\n• ⚡ Sparky: her hits arc like lightning to the nearest robot, 150⭐\n• 🐶 Rex: a rescue dog who heals every friend he touches, 150⭐\n• 🎉 party hat: 20⭐ (or free for 30 days in a row)\n• 👑 crown: 40⭐, 🎀 bow: 20⭐\n• 🌈 rainbow yarn: 25⭐\n\nLooks are for the whole team, forever. And Hammy the hamster joins for free after level 24.',
+    },
     harvestResult: (gold, silver, bronze) => `🏆 <b>Thanksgiving results</b>\n\n🥇 ${gold}: the Golden harvest wreath and a 🏆 next to their name on every board.${silver ? `\n🥈 Silver wreaths: ${silver}.` : ''}${bronze ? `\n🥉 Bronze wreaths: ${bronze} more ${bronze === 1 ? 'player' : 'players'}.` : ''}\n\nThanks to everyone who brought in the harvest!`,
     newyear_end: n => `🎄 <b>New Year: 3 days left!</b>\n\n${n ? `${n} players already have the Santa hat. ` : ''}Three festive levels, and the exclusive hat for beating all three. The event ends on 10 January, and then the hat is gone until next winter.`,
     intro: '🐾 <b>Pawsling</b>: slingshot cats and raccoons against rebel household robots.\n\n{levels}, {bosses}, a weekly Night Shift tournament, all right inside Telegram with nothing to install.\n\nHere: tournament results, the weekly challenge, events, new rooms and tips.',
@@ -1232,6 +1244,15 @@ const CH_FEED = [
   { tip: 'album', img: feed('album') }, { room: 10 }, { tip: 'streak', img: feed('streak') }, { room: 11 },
   { room: 12 }, { room: 13 }, { room: 14 }, { room: 15 }, { room: 16 }, { room: 17 }, { room: 18 }, { room: 19 }, { room: 20 }, { room: 21 },
 ];
+// one-off posts at a set time (UTC, the first cron run from then on, between CH_SCHED_HOURS), each once, channels only;
+// `gate` holds one back until the owner's /chan <gate> on (the new Armour and Hourglass boosters, not in the game yet)
+const CH_SCHEDULED = [
+  { id: 'boosters-free', at: Date.UTC(2026, 10, 8, 12), img: feed('chest') },
+  { id: 'boosters-new', at: Date.UTC(2026, 10, 11, 12), img: shot('4-map'), gate: 'boosters' },
+  { id: 'shop-boosters', at: Date.UTC(2026, 10, 15, 12), img: 'welcome-1280x720.jpg', gate: 'boosters' },
+  { id: 'shop-heroes', at: Date.UTC(2026, 10, 18, 12), img: shot('5-heroes') },
+];
+const CH_SCHED_HOURS = [9, 18];
 const ukPl = (n, one, few, many) => n % 10 === 1 && n % 100 !== 11 ? one : [2, 3, 4].includes(n % 10) && ![12, 13, 14].includes(n % 100) ? few : many;
 const ukWaves = n => n % 10 === 1 && n % 100 !== 11 ? 'хвиля' : [2, 3, 4].includes(n % 10) && ![12, 13, 14].includes(n % 100) ? 'хвилі' : 'хвиль';
 const ukPlayersGen = n => n % 10 === 1 && n % 100 !== 11 ? 'гравця' : 'гравців'; // "у 21 гравця", "у 25 гравців"
@@ -1323,6 +1344,8 @@ async function channelPostRaw(env, kind, lang, now) {
     if (!chatUrl || !helpUrl) return null;
     return { img: feed('invite'), caption: t.group, kb: [[{ text: t.groupChat, url: chatUrl }], [{ text: t.groupSupport, url: helpUrl }]] };
   }
+  const sc = CH_SCHEDULED.find(x => 'sched-' + x.id === kind);
+  if (sc) return t.sched[sc.id] ? { img: typeof sc.img === 'function' ? sc.img(lang) : sc.img, caption: t.sched[sc.id] } : null;
   if (kind === 'harvest' || kind === 'harvest_result') {
     // the board of this year's harvest (before it starts, the owner's preview board, for /chan preview)
     const [a, b] = harvestWindow(now), y = new Date(now).getUTCFullYear();
@@ -1398,6 +1421,13 @@ async function channelDue(db, chat, ts = Date.now()) {
   if (ev && h >= CH_WEEK_HOUR && h <= CH_HOUR) due.push({ key: 'ev-' + ev.key, kind: ev.id });
   // from 15:00 on, so a missed cron hour still posts it that day
   if (ev && ev.ending && h >= CH_HOUR) due.push({ key: 'evend-' + ev.key, kind: ev.id + '_end' });
+  // scheduled posts: one a day at most, the earliest that is due, posted yet and not held back by its switch
+  if (h >= CH_SCHED_HOURS[0] && h <= CH_SCHED_HOURS[1] && !await db.prepare("SELECT 1 AS x FROM channel_posts WHERE chat = ?1 AND key LIKE 'sched-%' AND at >= ?2").bind(chat, Math.floor(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), d.getUTCDate()) / 1000)).first())
+    for (const sc of CH_SCHEDULED) {
+      if (ts < sc.at || await db.prepare('SELECT 1 AS x FROM channel_posts WHERE chat = ?1 AND key = ?2').bind(chat, 'sched-' + sc.id).first() || !await gateOpen(db, 'sched-' + sc.id, ts)) continue;
+      due.push({ key: 'sched-' + sc.id, kind: 'sched-' + sc.id });
+      break;
+    }
   if (ev && ev.id === 'thanksgiving' && h === CH_HARVEST_HOUR) due.push({ key: 'harvest-' + day, kind: 'harvest' });
   // the winners, the morning after the harvest ends, once the wreaths have been given out
   const [, hEnd] = harvestWindow(ts), hKey = `thanksgiving-${new Date(ts).getUTCFullYear()}`;
@@ -1499,7 +1529,7 @@ async function channelCommand(env, m) {
   const db = env.DB, list = channels(env), arg = m.text.trim().split(/\s+/).slice(1), say = s => tg(env, 'sendMessage', { chat_id: m.chat.id, text: s });
   await ensureTables(db);
   await ensureBotName(env);
-  if (GATED_KINDS[arg[0]] === arg[0]) {
+  if (arg[0] && GATED_KINDS[arg[0]] === arg[0]) {
     // /chan thanksgiving on|off: let the event's posts go out (or stop them)
     const key = gateKey(arg[0]);
     if (arg[1] === 'on') await db.prepare("INSERT OR IGNORE INTO channel_posts (chat, key, at) VALUES ('*', ?1, ?2)").bind(key, Math.floor(Date.now() / 1000)).run();
@@ -1516,7 +1546,7 @@ async function channelCommand(env, m) {
   if (arg[0] === 'preview') {
     for (const { lang } of list) {
       const n = await db.prepare("SELECT COUNT(*) AS n FROM channel_posts WHERE chat = ?1 AND key LIKE 'feed-%'").bind(list.find(c => c.lang === lang).chat).first();
-      for (const kind of ['intro', 'week', 'chal', 'feed' + n.n, 'halloween', 'halloween_end', 'group', 'new' + newestRoom(), 'thanksgiving', 'thanksgiving_end', 'harvest', 'harvest_result']) {
+      for (const kind of ['intro', 'week', 'chal', 'feed' + n.n, 'halloween', 'halloween_end', 'group', 'new' + newestRoom(), 'thanksgiving', 'thanksgiving_end', 'harvest', 'harvest_result', ...CH_SCHEDULED.map(x => 'sched-' + x.id)]) {
         const post = await channelPost(env, kind, lang);
         if (!post) { await say(`${lang} · ${kind}: зараз нема що публікувати`); continue; }
         const r = await sendChannelPost(env, m.chat.id, lang, kind, post);
@@ -1527,7 +1557,7 @@ async function channelCommand(env, m) {
   }
   if (arg[0] === 'intro' || arg[0] === 'post') {
     const kind = arg[0] === 'intro' ? 'intro' : arg[1];
-    if (!['intro', 'week', 'chal', 'feed', 'halloween', 'newyear', 'halloween_end', 'newyear_end', 'group', 'new', 'thanksgiving', 'thanksgiving_end', 'harvest', 'harvest_result'].includes(kind)) return say('Що саме? /chan post thanksgiving | harvest | harvest_result | new | group | week | chal | feed | halloween | newyear | halloween_end | newyear_end');
+    if (!['intro', 'week', 'chal', 'feed', 'halloween', 'newyear', 'halloween_end', 'newyear_end', 'group', 'new', 'thanksgiving', 'thanksgiving_end', 'harvest', 'harvest_result'].includes(kind) && !CH_SCHEDULED.some(x => 'sched-' + x.id === kind)) return say('Що саме? /chan post thanksgiving | harvest | harvest_result | new | group | week | chal | feed | halloween | newyear | halloween_end | newyear_end');
     const out = [];
     for (const { lang, chat } of list) {
       let k = kind, key = null;
@@ -1537,6 +1567,7 @@ async function channelCommand(env, m) {
       }
       if (kind === 'intro') key = `intro-${Date.now()}`; // the channel is live from now on
       if (kind === 'group') key = 'group'; // posted by hand: the automatic one is then skipped
+      if (kind.startsWith('sched-')) key = kind; // so is a scheduled one
       if (kind === 'new') { k = 'new' + newestRoom(); key = 'new-' + newestRoom(); } // the newest room, by hand
       const post = await channelPost(env, k, lang);
       if (!post) { out.push(`${chat}: нема що публікувати`); continue; }
@@ -1566,13 +1597,14 @@ async function channelCommand(env, m) {
       `\nучасників: ${n.ok ? n.result : '?'} · гілки: ${topics.length ? topics.join(', ') : 'ще не створені (/chan group)'}`);
   }
   lines.push(`\n🦃 День подяки: ${await gateOpen(db, 'thanksgiving') ? '✅ пости увімкнені' : '⏸ пости вимкнені (/chan thanksgiving on)'}`);
+  lines.push(`🛡 Броня й Годинник: ${await gateOpen(db, 'boosters') ? '✅ пости увімкнені' : '⏸ пости вимкнені (/chan boosters on)'}`);
   // new players by where they came from
   const day = Math.floor(Date.now() / 1000) - 86400;
   const rows = await db.prepare(`SELECT src, COUNT(*) AS n, SUM(at > ?1) AS d1, SUM(at > ?2) AS d7 FROM sources
     GROUP BY src ORDER BY n DESC LIMIT 15`).bind(day, day - 6 * 86400).all();
   lines.push('\nНові гравці за джерелом (доба / 7 днів / усього):');
   lines.push(rows.results.length ? rows.results.map(r => `${r.src}: ${r.d1} / ${r.d7} / ${r.n}`).join('\n') : 'поки нікого');
-  lines.push('\n/chan preview — усі види постів мені\n/chan intro — привітальний пост у канали і закріпити\n/chan post new|group|week|chal|feed|halloween|newyear|halloween_end|newyear_end — опублікувати зараз\n/chan group — створити гілки в групі\n/chan thanksgiving on|off — увімкнути пости Дня подяки');
+  lines.push('\n/chan preview — усі види постів мені\n/chan intro — привітальний пост у канали і закріпити\n/chan post new|group|week|chal|feed|halloween|newyear|halloween_end|newyear_end — опублікувати зараз\n/chan group — створити гілки в групі\n/chan thanksgiving on|off — увімкнути пости Дня подяки\n/chan boosters on|off — пости про Броню й Годинник');
   return say(lines.join('\n'));
 }
 

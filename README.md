@@ -251,6 +251,8 @@ channels before it: level and boss counts, the map tip, "the hardest room" and t
 and its announcement goes out on the first run after the opening.
 The fun park (room 21, 6 Nov) and the junkyard (room 22, 13 Nov) open at 07:00 UTC the same way. Rooms can differ in size (`CH_ROOM_SIZE`, 9 levels in both) and have a
 mid-room boss (`CH_MID_BOSS`, levels 119 and 128), so level ranges and the boss count follow `LEVELS` in the game.
+One-off posts (`CH_SCHEDULED`: free boosters, the new Armour and Hourglass, the shop) go out from their date, one a day at most;
+the ones about Armour and Hourglass wait for the owner's `/chan boosters on`.
 Thanksgiving is a gated event in the channels: nothing goes out until the owner sends `/chan thanksgiving on`; then the
 announcement, a daily harvest board at 18:00 UTC, "3 days left" and the winners on 30 Nov (after `awardHarvest`).
 
