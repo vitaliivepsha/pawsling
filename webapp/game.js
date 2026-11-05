@@ -2003,20 +2003,62 @@ function loadProg() {
   if (!TG_CLOUD) return;
   setTimeout(cloudLoaded, 6000); // some clients never answer
   try {
-    TG.CloudStorage.getItems([OLD_PKEY, PKEY], (err, vals) => {
-      if (!err && vals && (vals[OLD_PKEY] || vals[PKEY])) {
+    TG.CloudStorage.getItems([OLD_PKEY, PKEY, CKEY], (err, vals) => {
+      if (err || !vals) { cloudLoaded(); return; }
+      const parse = v => { try { return v ? JSON.parse(v) : null; } catch (e) { return null; } };
+      const merge = cur => {
+        const v2 = parse(vals[PKEY]), v1 = parse(vals[OLD_PKEY]);
         try {
           const before = PROG.unlocked;
-          if (vals[PKEY]) PROG = mergeProg(PROG, JSON.parse(vals[PKEY]));
-          if (vals[OLD_PKEY]) PROG = mergeProg(PROG, fromV1(JSON.parse(vals[OLD_PKEY])));
-          seedSeen(); lsSet(PKEY, JSON.stringify(PROG));
-          if (PROG.prefs && PROG.prefs.at) applyPrefs(PROG.prefs);
+          if (cur) PROG = mergeProg(PROG, cur);
+          if (v2) PROG = mergeProg(PROG, v2);
+          if (v1) PROG = mergeProg(PROG, fromV1(v1));
+          if (cur || v2 || v1) {
+            seedSeen(); lsSet(PKEY, JSON.stringify(PROG));
+            if (PROG.prefs && PROG.prefs.at) applyPrefs(PROG.prefs);
+          }
           if (PROG.unlocked !== before) { cloudDirty = true; if (SCREEN === 'map') MAP.focus = true; }
         } catch (e) {}
-      }
-      cloudLoaded();
+        if (!cur) cloudDirty = true; // nothing readable in the chunks yet: write them
+        cloudLoaded();
+      };
+      const m = parse(vals[CKEY]);
+      if (!m || (m.s !== 0 && m.s !== 1) || !(m.n > 0 && m.n <= CHUNK_MAX)) { merge(null); return; }
+      cloudSlot = m.s;
+      const keys = [...Array(m.n).keys()].map(i => `${CKEY}-${m.s}-${i}`);
+      TG.CloudStorage.getItems(keys, (e2, parts) => {
+        const joined = !e2 && parts ? keys.map(k => parts[k] || '').join('') : '';
+        merge(joined.length === m.len ? parse(joined) : null);
+      });
     });
   } catch (e) { cloudLoaded(); }
+}
+// Telegram's cloud holds 4096 characters per value, so the progress goes in chunks. They are written to the slot not in
+// use and the header comes last: a write cut short leaves the previous copy whole. One write at a time, the latest wins
+const CKEY = 'pawsling-progress-v3', CHUNK = 3800, CHUNK_MAX = 64;
+let cloudSlot = 0, cloudBusy = false, cloudAgain = false, cloudLast = '';
+function cloudWrite() {
+  if (cloudBusy) { cloudAgain = true; return; }
+  const s = JSON.stringify(PROG);
+  if (s === cloudLast) return;
+  cloudBusy = true;
+  const slot = 1 - cloudSlot, n = Math.ceil(s.length / CHUNK);
+  let left = n, failed = false, finished = false;
+  const finish = ok => {
+    if (finished) return;
+    finished = true; clearTimeout(guard); cloudBusy = false;
+    if (ok) { cloudSlot = slot; cloudLast = s; }
+    if (cloudAgain) { cloudAgain = false; cloudWrite(); }
+  };
+  const guard = setTimeout(() => finish(false), 8000); // some clients never answer
+  const wrote = err => {
+    if (finished) return;
+    if (err) failed = true;
+    if (--left) return;
+    if (failed) { finish(false); return; }
+    TG.CloudStorage.setItem(CKEY, JSON.stringify({ s: slot, n, len: s.length }), e => finish(!e));
+  };
+  try { for (let i = 0; i < n; i++) TG.CloudStorage.setItem(`${CKEY}-${slot}-${i}`, s.slice(i * CHUNK, (i + 1) * CHUNK), wrote); } catch (e) { finish(false); }
 }
 // settings the player picks, kept with the progress so every device gets them (PROG.prefs, stamped with .at)
 function notePref(k, v) { PROG.prefs = { ...(PROG.prefs || {}), [k]: v, at: Date.now() }; saveProg(); pushSync(); }
@@ -2045,7 +2087,7 @@ function saveProg() {
   if (!TG_CLOUD) return;
   if (!cloudReady) { cloudDirty = true; return; }
   cloudDirty = false;
-  try { TG.CloudStorage.setItem(PKEY, s, () => {}); } catch (e) {}
+  cloudWrite();
 }
 const totalStars = () => Object.values(PROG.stars).reduce((a, b) => a + b, 0);
 
