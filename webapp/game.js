@@ -7848,6 +7848,53 @@ function drawOvenBoss(e, r, t) {
   ctx.strokeStyle = '#6a3412'; ctx.lineWidth = 2; rr(wx, wy, ww, wh, r * .1); ctx.stroke();
   ctx.save(); ctx.globalCompositeOperation = 'lighter'; glowAt(0, wy + wh * .5, r * .9, angry ? '255,70,40' : '255,150,50', .18 + .06 * Math.sin(tt * 3)); ctx.restore();
 }
+function drawArmorDome() {
+  // Armour: a shimmering energy dome over the heroes' end of the field while the shield lasts. It flares when it soaks
+  // a hit and shatters into shards when it runs out (both read from G.armor here, so the game logic stays untouched)
+  const a = G.armor || 0, tt = RM ? 0 : T;
+  if (G.armorSeen == null) G.armorSeen = a;
+  if (a > (G.armorTop || 0)) G.armorTop = a;
+  if (a < G.armorSeen) { G.armorHitAt = T; if (a <= 0) G.armorBrokeAt = T; }
+  G.armorSeen = a;
+  const broke = G.armorBrokeAt != null && T - G.armorBrokeAt < .9;
+  if (a <= 0 && !broke) return;
+  const cx = W / 2, cy = BOT + 60, rx = W * .64, ry = 136;
+  ctx.save(); ctx.beginPath(); ctx.rect(0, TOP, W, BOT - TOP); ctx.clip();
+  if (a > 0) {
+    const f = Math.min(1, a / (G.armorTop || a)), hit = G.armorHitAt != null && !RM ? Math.max(0, 1 - (T - G.armorHitAt) / .55) : 0, al = .45 + .55 * f;
+    const g = ctx.createRadialGradient(cx, cy, ry * .5, cx, cy, rx);
+    g.addColorStop(0, 'rgba(110,195,255,0)'); g.addColorStop(.8, `rgba(110,195,255,${.07 * al + .12 * hit})`); g.addColorStop(1, `rgba(150,215,255,${.16 * al + .2 * hit})`);
+    ctx.fillStyle = g; ctx.beginPath(); ctx.ellipse(cx, cy, rx, ry, 0, 0, TAU); ctx.fill();
+    // a honeycomb of light near the rim
+    ctx.save(); ctx.beginPath(); ctx.ellipse(cx, cy, rx, ry, 0, 0, TAU); ctx.clip();
+    ctx.strokeStyle = `rgba(170,225,255,${.1 * al + .3 * hit})`; ctx.lineWidth = 1; ctx.beginPath();
+    const hs = 13, hw = hs * Math.sqrt(3);
+    for (let row = 0, y = BOT - ry - 20; y < BOT + 4; y += hs * 1.5, row++) for (let x = (row % 2) * hw / 2 - hw; x < W + hw; x += hw) {
+      const dx = (x - cx) / rx, dy = (y - cy) / ry; if (dx * dx + dy * dy < .55) continue;
+      for (let k = 0; k < 6; k++) { const a1 = Math.PI / 6 + k * Math.PI / 3, a2 = a1 + Math.PI / 3; ctx.moveTo(x + Math.cos(a1) * hs, y + Math.sin(a1) * hs); ctx.lineTo(x + Math.cos(a2) * hs, y + Math.sin(a2) * hs); }
+    }
+    ctx.stroke(); ctx.restore();
+    // the rim, with a glint running along it
+    ctx.strokeStyle = `rgba(160,225,255,${.45 * al + .45 * hit})`; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.ellipse(cx, cy, rx, ry, 0, Math.PI, TAU); ctx.stroke();
+    const ga = Math.PI + frac(tt * .18) * Math.PI;
+    ctx.save(); ctx.globalCompositeOperation = 'lighter';
+    glowAt(cx + Math.cos(ga) * rx, cy + Math.sin(ga) * ry, 34, '190,235,255', .45 * al);
+    if (hit > 0) { glowAt(cx, cy - ry, 160 * (1.2 - hit * .2), '150,215,255', .45 * hit); ctx.strokeStyle = `rgba(220,245,255,${hit})`; ctx.lineWidth = 3; ctx.beginPath(); ctx.ellipse(cx, cy, rx * (1 + (1 - hit) * .06), ry * (1 + (1 - hit) * .18), 0, Math.PI, TAU); ctx.stroke(); }
+    ctx.restore();
+  }
+  if (broke) {
+    const k = (T - G.armorBrokeAt) / .9;
+    ctx.save(); ctx.globalCompositeOperation = 'lighter'; glowAt(cx, cy - ry, 220, '150,215,255', .5 * (1 - k)); ctx.restore();
+    for (let q = 0; q < 22; q++) {
+      const th = Math.PI + (q + .5) / 22 * Math.PI, nx = Math.cos(th), ny = Math.sin(th), sp = 90 + (q * 37) % 70;
+      const px = cx + nx * rx + nx * sp * k, py = cy + ny * ry + ny * sp * k * .6 + 260 * k * k;
+      ctx.save(); ctx.translate(px, py); ctx.rotate(q + k * (6 + q % 4));
+      ctx.fillStyle = `rgba(190,235,255,${.85 * (1 - k)})`; ctx.beginPath(); ctx.moveTo(-7, -3); ctx.lineTo(6, -5); ctx.lineTo(1, 6); ctx.closePath(); ctx.fill();
+      ctx.restore();
+    }
+  }
+  ctx.restore();
+}
 function drawPress() {
   // scrap piles on the floor, then the press: where the walls will reach next turn (a red striped zone with chevrons
   // and a ring round any hero standing in it), then two heavy steel walls driven by hydraulic rods, which slam in
@@ -9485,6 +9532,7 @@ function drawHUD() {
     if (G.lvl.raid) ctx.fillText(`${G.ch.name} · ${tr('raidLeft', mmss(G.lvl.raid.expires - Date.now()))}`, 56, 45); else
     ctx.fillText(G.lvl.endless ? `${tr('record', wavesWord(PROG.endless || 0))} · ${G.ch.name}`
       : G.hard ? tr('hardLeft', Math.max(0, G.lvl.par - G.turn + 1)) : G.li === 0 ? tr('pullHint') : tr('par3', G.lvl.par + (G.parBonus || 0)), 56, 45);
+    if (G.parBonus > 0 && !G.lvl.raid && !G.lvl.endless && !G.hard && G.li !== 0) boostIcon('hourglass', 56 + ctx.measureText(tr('par3', G.lvl.par + G.parBonus)).width + 11, 45, 7);
   }
 
   G.heroes.forEach((h, i) => {
@@ -9556,7 +9604,12 @@ function drawHUD() {
     ctx.fillStyle = 'rgba(255,255,255,.25)'; rr(20, 758, Math.max(10, (W - 32) * ratio - 8), 5, 3); ctx.fill();
   }
   // Armour: a blue band over the home bar for the shield left
-  if (G.armor > 0) { ctx.fillStyle = 'rgba(110,195,255,.85)'; rr(16, 756, Math.max(10, (W - 32) * Math.min(1, G.armor / G.maxHp)), 7, 4); ctx.fill(); }
+  if (G.armor > 0) {
+    const aw = Math.max(10, (W - 32) * Math.min(1, G.armor / G.maxHp));
+    ctx.fillStyle = 'rgba(110,195,255,.85)'; rr(16, 756, aw, 7, 4); ctx.fill();
+    ctx.fillStyle = 'rgba(255,255,255,.4)'; rr(18, 757, Math.max(4, aw - 4), 2, 1); ctx.fill();
+    boostIcon('armor', 16 + aw, 759, 8);
+  }
   ctx.fillStyle = 'rgba(13,11,29,.35)';
   for (let q = 1; q < 12; q++) ctx.fillRect(16 + (W - 32) * q / 12, 756, 1.5, 18);
   ctx.fillStyle = '#15122a'; circ(26, 765, 12);
@@ -10469,17 +10522,41 @@ function drawPrep() {
 
 // the Armour shield and the Hourglass
 function boostIcon(k, x, y, s) {
+  ctx.save(); ctx.lineJoin = 'round'; ctx.lineCap = 'round';
   if (k === 'armor') {
-    ctx.fillStyle = '#6ec3ff'; ctx.strokeStyle = '#2a6f9a'; ctx.lineWidth = Math.max(1.2, s * .12);
-    ctx.beginPath(); ctx.moveTo(x, y - s); ctx.lineTo(x + s * .85, y - s * .6); ctx.quadraticCurveTo(x + s * .8, y + s * .5, x, y + s); ctx.quadraticCurveTo(x - s * .8, y + s * .5, x - s * .85, y - s * .6); ctx.closePath(); ctx.fill(); ctx.stroke();
-    ctx.fillStyle = 'rgba(255,255,255,.45)'; ctx.beginPath(); ctx.moveTo(x - s * .1, y - s * .75); ctx.lineTo(x - s * .6, y - s * .45); ctx.quadraticCurveTo(x - s * .55, y + s * .2, x - s * .1, y + s * .6); ctx.closePath(); ctx.fill();
+    // a kite shield: a steel rim, a sky-blue face with a paw emblem and a shine
+    const path = (q) => { ctx.beginPath(); ctx.moveTo(x, y - s * q); ctx.quadraticCurveTo(x + s * .5 * q, y - s * .72 * q, x + s * .9 * q, y - s * .7 * q); ctx.quadraticCurveTo(x + s * .92 * q, y + s * .3 * q, x, y + s * q); ctx.quadraticCurveTo(x - s * .92 * q, y + s * .3 * q, x - s * .9 * q, y - s * .7 * q); ctx.quadraticCurveTo(x - s * .5 * q, y - s * .72 * q, x, y - s * q); ctx.closePath(); };
+    ctx.fillStyle = 'rgba(0,0,0,.3)'; ctx.save(); ctx.translate(s * .06, s * .1); path(1); ctx.fill(); ctx.restore();
+    const rg = ctx.createLinearGradient(x - s, y - s, x + s, y + s); rg.addColorStop(0, '#e8f4ff'); rg.addColorStop(.5, '#8fb4d0'); rg.addColorStop(1, '#3a6a8f');
+    ctx.fillStyle = rg; path(1); ctx.fill();
+    const fg = ctx.createLinearGradient(x, y - s, x, y + s); fg.addColorStop(0, '#9fdcff'); fg.addColorStop(.55, '#6ec3ff'); fg.addColorStop(1, '#2f86c4');
+    ctx.fillStyle = fg; path(.78); ctx.fill();
+    ctx.fillStyle = 'rgba(255,255,255,.92)';
+    circ(x, y + s * .14, s * .2);
+    for (const [dx, dy] of [[-.25, -.14], [-.09, -.3], [.09, -.3], [.25, -.14]]) circ(x + dx * s, y + dy * s, s * .085);
+    ctx.fillStyle = 'rgba(255,255,255,.35)'; ctx.beginPath(); ctx.moveTo(x - s * .08, y - s * .7); ctx.quadraticCurveTo(x - s * .5, y - s * .56, x - s * .62, y - s * .5); ctx.quadraticCurveTo(x - s * .6, y + s * .1, x - s * .2, y + s * .5); ctx.quadraticCurveTo(x - s * .4, y, x - s * .08, y - s * .7); ctx.fill();
+    ctx.strokeStyle = '#1f4a6a'; ctx.lineWidth = Math.max(1, s * .08); path(1); ctx.stroke();
   } else {
-    ctx.strokeStyle = '#c98a1a'; ctx.lineWidth = Math.max(1.2, s * .14); ctx.lineCap = 'round';
-    ctx.beginPath(); ctx.moveTo(x - s * .6, y - s); ctx.lineTo(x + s * .6, y - s); ctx.moveTo(x - s * .6, y + s); ctx.lineTo(x + s * .6, y + s); ctx.stroke();
-    ctx.fillStyle = 'rgba(255,240,200,.25)'; ctx.beginPath(); ctx.moveTo(x - s * .5, y - s * .9); ctx.lineTo(x + s * .5, y - s * .9); ctx.lineTo(x, y); ctx.lineTo(x + s * .5, y + s * .9); ctx.lineTo(x - s * .5, y + s * .9); ctx.lineTo(x, y); ctx.closePath(); ctx.fill();
-    ctx.strokeStyle = '#ffe08a'; ctx.lineWidth = Math.max(1, s * .08); ctx.stroke();
-    ctx.fillStyle = '#ffd166'; ctx.beginPath(); ctx.moveTo(x - s * .3, y + s * .85); ctx.lineTo(x + s * .3, y + s * .85); ctx.lineTo(x, y + s * .35); ctx.closePath(); ctx.fill();
+    // an hourglass: gold caps and posts round two glass bulbs, sand running from the top into a heap below
+    const gw = s * .62;
+    const bulbs = () => { ctx.beginPath(); ctx.moveTo(x - gw, y - s * .78); ctx.lineTo(x + gw, y - s * .78); ctx.quadraticCurveTo(x + gw, y - s * .2, x + s * .1, y); ctx.quadraticCurveTo(x + gw, y + s * .2, x + gw, y + s * .78); ctx.lineTo(x - gw, y + s * .78); ctx.quadraticCurveTo(x - gw, y + s * .2, x - s * .1, y); ctx.quadraticCurveTo(x - gw, y - s * .2, x - gw, y - s * .78); ctx.closePath(); };
+    ctx.fillStyle = 'rgba(210,235,255,.22)'; bulbs(); ctx.fill();
+    ctx.save(); bulbs(); ctx.clip();
+    ctx.fillStyle = '#ffd166';
+    ctx.beginPath(); ctx.moveTo(x - gw, y - s * .3); ctx.quadraticCurveTo(x, y - s * .38, x + gw, y - s * .3); ctx.lineTo(x + gw, y); ctx.lineTo(x - gw, y); ctx.closePath(); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(x - gw, y + s * .8); ctx.lineTo(x - gw * .9, y + s * .62); ctx.quadraticCurveTo(x, y + s * .22, x + gw * .9, y + s * .62); ctx.lineTo(x + gw, y + s * .8); ctx.closePath(); ctx.fill();
+    ctx.fillStyle = '#e0a83a'; ctx.fillRect(x - s * .04, y - s * .02, s * .08, s * .5);
+    ctx.restore();
+    ctx.strokeStyle = 'rgba(255,255,255,.75)'; ctx.lineWidth = Math.max(1, s * .07); bulbs(); ctx.stroke();
+    ctx.strokeStyle = 'rgba(255,255,255,.6)'; ctx.lineWidth = Math.max(1, s * .08); ctx.beginPath(); ctx.moveTo(x - gw * .62, y - s * .64); ctx.quadraticCurveTo(x - gw * .66, y - s * .32, x - s * .2, y - s * .14); ctx.stroke();
+    const cg = ctx.createLinearGradient(x, y - s, x, y - s * .74); cg.addColorStop(0, '#fff3c4'); cg.addColorStop(1, '#c98a1a');
+    ctx.fillStyle = '#9a6410'; for (const sd of [-1, 1]) rr(x + sd * gw - s * .08, y - s * .82, s * .16, s * 1.64, s * .06), ctx.fill();
+    for (const cy of [-1, 1]) {
+      ctx.fillStyle = cg; rr(x - s * .86, cy < 0 ? y - s : y + s * .74, s * 1.72, s * .26, s * .1); ctx.fill();
+      ctx.strokeStyle = '#7a4c0c'; ctx.lineWidth = Math.max(1, s * .06); rr(x - s * .86, cy < 0 ? y - s : y + s * .74, s * 1.72, s * .26, s * .1); ctx.stroke();
+    }
   }
+  ctx.restore();
 }
 function drawShopIcon(id, x, y) {
   if (id === 'armor3' || id === 'hourglass3') { boostIcon(id === 'armor3' ? 'armor' : 'hourglass', x, y, 13); return; }
@@ -12595,7 +12672,25 @@ function drawEnd() {
     ctx.textAlign = 'center'; ctx.fillStyle = '#5ce1c6'; ctx.font = `800 14px ${FB}`;
     ctx.fillText(tr('newBestLevel'), W / 2, y0 + 150);
   }
-  if (win && G.achMsg) { ctx.textAlign = 'center'; ctx.fillStyle = '#6ec3ff'; fitFont(G.achMsg, W - 40, 14, 800, FB); ctx.fillText(G.achMsg, W / 2, y0 + 172); }
+  if (win && G.achMsg) {
+    // an achievement reward: it pops in on a glowing pill with a gift icon and a glint passing over
+    if (G.achAt == null) G.achAt = T;
+    const ak = RM ? 1 : Math.min(1, (T - G.achAt) / .4), sc = RM ? 1 : easeOutBack(ak), ay = y0 + 172;
+    ctx.save(); ctx.globalAlpha = Math.min(1, ak * 2); ctx.translate(W / 2, ay); ctx.scale(sc, sc); ctx.translate(-W / 2, -ay);
+    ctx.font = `800 14px ${FB}`; fitFont(G.achMsg, W - 92, 14, 800, FB);
+    const tw = Math.min(W - 92, ctx.measureText(G.achMsg).width), pw = tw + 58, px = W / 2 - pw / 2;
+    if (!RM) { ctx.save(); ctx.globalCompositeOperation = 'lighter'; glowAt(W / 2, ay, pw * .7, '110,195,255', .18 + .06 * Math.sin(T * 4)); ctx.restore(); }
+    ctx.fillStyle = 'rgba(20,40,70,.85)'; rr(px, ay - 15, pw, 30, 15); ctx.fill();
+    ctx.strokeStyle = 'rgba(110,195,255,.75)'; ctx.lineWidth = 1.5; rr(px, ay - 15, pw, 30, 15); ctx.stroke();
+    if (!RM) { ctx.save(); rr(px, ay - 15, pw, 30, 15); ctx.clip(); const gx = px - 40 + frac(T * .35) * (pw + 80); const gg = ctx.createLinearGradient(gx - 24, 0, gx + 24, 0); gg.addColorStop(0, 'rgba(255,255,255,0)'); gg.addColorStop(.5, 'rgba(255,255,255,.18)'); gg.addColorStop(1, 'rgba(255,255,255,0)'); ctx.fillStyle = gg; ctx.fillRect(px, ay - 15, pw, 30); ctx.restore(); }
+    const gx2 = px + 20, gy = ay;
+    ctx.fillStyle = '#6ec3ff'; rr(gx2 - 8, gy - 4, 16, 11, 2); ctx.fill();
+    ctx.fillStyle = '#9fdcff'; rr(gx2 - 9, gy - 8, 18, 5, 2); ctx.fill();
+    ctx.fillStyle = '#ffd166'; ctx.fillRect(gx2 - 1.5, gy - 8, 3, 15);
+    ctx.strokeStyle = '#ffd166'; ctx.lineWidth = 1.6; ctx.beginPath(); ctx.ellipse(gx2 - 3.5, gy - 10, 3.5, 2.2, -.4, 0, TAU); ctx.ellipse(gx2 + 3.5, gy - 10, 3.5, 2.2, .4, 0, TAU); ctx.stroke();
+    ctx.textAlign = 'left'; ctx.fillStyle = '#bfe6ff'; ctx.fillText(G.achMsg, px + 36, ay + 1);
+    ctx.restore();
+  }
   if (G.lvl.endless) {
     ctx.textAlign = 'center'; ctx.font = `800 14px ${FB}`;
     ctx.fillStyle = G.newBest ? '#5ce1c6' : '#8f88b5';
@@ -12773,6 +12868,7 @@ function drawGame() {
   drawRails();
   drawBumpers();
   drawPress();
+  drawArmorDome();
   drawBelts();
   drawFences();
   drawPuddles();
