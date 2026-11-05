@@ -570,7 +570,7 @@ const HEROES = [
 ];
 const HOMA_UNLOCK = 24; // Hammy joins after this level is won
 // the legendary heroes show in the shop and the hero list once LEGENDS_OPEN; until then only to whoever owns one, and in the owner's preview
-const LEGENDS = ['possum', 'panda'], LEGENDS_OPEN = false;
+const LEGENDS = ['possum', 'panda'], LEGENDS_OPEN = true;
 const heroVisible = id => !LEGENDS.includes(id) || LEGENDS_OPEN || heroOwned(id) || lsGet('pawsling-preview') === '1';
 function heroOwned(id) {
   if (id === 'spark') return owns('hero_spark');

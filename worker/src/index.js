@@ -98,6 +98,7 @@ const TEXT = {
     refJoined: n => `${n} тепер у грі за твоїм запрошенням! Вам обом: +1 серце і +1 швидкий старт. А коли друг пройде першу кімнату, тобі — безкоштовне друге дихання.`,
     refRoom: n => `🎉 У ${n} уже позаду перша кімната! Подарунок за запрошеного друга: безкоштовне друге дихання 🌬, воно вже в грі.`,
     thanksGot: n => `🎃 ${n} дякує тобі! Вам обом +20 гарбузів у рейтингу врожаю.`,
+    heroGift: n => `🎁 Pawsling дарує тобі героя «${n}»! Відкрий гру: герой уже чекає у списку героїв, додай його до команди.`,
     harvestWin: (place, n, prize) => `🏆 День подяки завершено: ти на ${place} місці (${n} 🎃)! Твоя нагорода — «${prize}». Вона вже в магазині серед прикрас: одягай!`,
     wreaths: ['Золотий вінок урожаю', 'Срібний вінок', 'Бронзовий вінок'],
     weekWin: (place, w, p) => `Тиждень «Нічної зміни» завершено: ти на ${place} місці (${w} хвиль)! Приз: ❤️ +${p.heart} «Серце+», ⚡ +${p.meter} «Швидкий старт» і 🛡 +${p.armor} «Броня». Вони вже у тебе: вмикай їх перед будь-яким рівнем.`,
@@ -116,6 +117,7 @@ const TEXT = {
     refJoined: n => `${n} joined the game with your invite! You both get +1 heart and +1 quick start. And once your friend clears the first room, you get a free Second wind.`,
     refRoom: n => `🎉 ${n} has cleared the first room! Your gift for bringing a friend: a free Second wind 🌬, already in the game.`,
     thanksGot: n => `🎃 ${n} says thanks! +20 pumpkins on the harvest board for you both.`,
+    heroGift: n => `🎁 Pawsling gives you a hero: ${n}! Open the game, the hero is waiting on the Heroes screen. Add them to your team.`,
     harvestWin: (place, n, prize) => `🏆 Thanksgiving is over: you finished #${place} (${n} 🎃)! Your reward: the ${prize}. It is in the shop among your looks: put it on!`,
     wreaths: ['Golden harvest wreath', 'Silver wreath', 'Bronze wreath'],
     weekWin: (place, w, p) => `The Night Shift week is over: you finished #${place} (${w} waves)! Your prize: ❤️ +${p.heart} Heart+, ⚡ +${p.meter} Quick start and 🛡 +${p.armor} Armour. They are already yours: switch them on before any level.`,
@@ -134,6 +136,7 @@ const TEXT = {
     refJoined: n => `${n} dołączył(a) do gry z twojego zaproszenia! Oboje dostajecie +1 serce i +1 szybki start. A gdy znajomy przejdzie pierwszy pokój, dostaniesz darmowy Drugi oddech.`,
     refRoom: n => `🎉 ${n} ma już za sobą pierwszy pokój! Prezent za zaproszenie znajomego: darmowy Drugi oddech 🌬, już czeka w grze.`,
     thanksGot: n => `🎃 ${n} dziękuje! Obojgu +20 dyń w rankingu plonów.`,
+    heroGift: n => `🎁 Pawsling daje ci bohatera: ${n}! Otwórz grę, bohater czeka na liście bohaterów. Dodaj go do drużyny.`,
     harvestWin: (place, n, prize) => `🏆 Święto Dziękczynienia zakończone: zajmujesz ${place}. miejsce (${n} 🎃)! Nagroda: «${prize}». Czeka w sklepie wśród ozdób: załóż ją!`,
     wreaths: ['Złoty wieniec plonów', 'Srebrny wieniec', 'Brązowy wieniec'],
     weekWin: (place, w, p) => `Tydzień nocnej zmiany zakończony: zajmujesz ${place}. miejsce (${w} fal)! Nagroda: ❤️ +${p.heart} Serce+, ⚡ +${p.meter} Szybki start i 🛡 +${p.armor} Pancerz. Już są twoje: włącz je przed dowolnym poziomem.`,
@@ -152,6 +155,7 @@ const TEXT = {
     refJoined: n => `${n} ist über deine Einladung ins Spiel gekommen! Ihr bekommt beide +1 Herz und +1 Schnellstart. Und schafft dein Freund den ersten Raum, bekommst du eine Zweite Luft gratis.`,
     refRoom: n => `🎉 ${n} hat den ersten Raum geschafft! Dein Geschenk fürs Einladen: eine Zweite Luft gratis 🌬, schon im Spiel.`,
     thanksGot: n => `🎃 ${n} sagt danke! Euch beiden +20 Kürbisse in der Ernte-Rangliste.`,
+    heroGift: n => `🎁 Pawsling schenkt dir einen Helden: ${n}! Öffne das Spiel, der Held wartet in der Heldenliste. Nimm ihn ins Team.`,
     harvestWin: (place, n, prize) => `🏆 Erntedank ist vorbei: Platz ${place} (${n} 🎃)! Dein Preis: «${prize}». Er liegt im Shop bei deinen Looks: setz ihn auf!`,
     wreaths: ['Goldener Erntekranz', 'Silberkranz', 'Bronzekranz'],
     weekWin: (place, w, p) => `Die Nachtschicht-Woche ist vorbei: Platz ${place} (${w} Wellen)! Dein Preis: ❤️ +${p.heart} Herz+, ⚡ +${p.meter} Schnellstart und 🛡 +${p.armor} Panzer. Sie gehören schon dir: schalte sie vor jedem Level ein.`,
@@ -170,6 +174,7 @@ const TEXT = {
     refJoined: n => `¡${n} se unió al juego con tu invitación! Los dos recibís +1 corazón y +1 inicio rápido. Y cuando tu amigo supere la primera sala, recibirás un Segundo aliento gratis.`,
     refRoom: n => `🎉 ¡${n} ya superó la primera sala! Tu regalo por traer a un amigo: un Segundo aliento gratis 🌬, ya está en el juego.`,
     thanksGot: n => `🎃 ¡${n} te da las gracias! +20 calabazas en la cosecha para los dos.`,
+    heroGift: n => `🎁 ¡Pawsling te regala un héroe: ${n}! Abre el juego, te espera en la lista de héroes. Añádelo a tu equipo.`,
     harvestWin: (place, n, prize) => `🏆 Terminó Acción de Gracias: quedaste en el puesto ${place} (${n} 🎃). Tu premio: «${prize}». Está en la tienda, en tus looks: ¡póntela!`,
     wreaths: ['Corona dorada de cosecha', 'Corona de plata', 'Corona de bronce'],
     weekWin: (place, w, p) => `Terminó la semana del turno de noche: quedaste en el puesto ${place} (${w} oleadas). Tu premio: ❤️ +${p.heart} Corazón+, ⚡ +${p.meter} Inicio rápido y 🛡 +${p.armor} Armadura. Ya son tuyos: actívalos antes de cualquier nivel.`,
@@ -726,6 +731,10 @@ async function onUpdate(env, u) {
     await channelCommand(env, m);
     return;
   }
+  if (typeof m.text === 'string' && /^\/gift\b/.test(m.text) && isAdmin(env, m.from)) {
+    await giftCommand(env, m);
+    return;
+  }
   if (typeof m.text === 'string' && /^\/sales\b/.test(m.text) && isAdmin(env, m.from)) {
     await tg(env, 'sendMessage', { chat_id: m.chat.id, text: await salesReport(env.DB) });
     return;
@@ -768,6 +777,37 @@ ${m.text.slice(0, 3500)}
 ↩️ Відповідь: зроби реплай на це повідомлення`);
     await tg(env, 'sendMessage', { chat_id: m.chat.id, text: text(m.from && m.from.language_code).sent });
   }
+}
+
+// ---------- owner: /gift, a hero from the game itself ----------
+// /gift <id> <hero>, or a reply to a player's support message with /gift <hero>; /gift <name> finds the id
+const GIFT_HEROES = { possum: 'hero_possum', 'опі': 'hero_possum', 'опосум': 'hero_possum', panda: 'hero_panda', 'вогник': 'hero_panda', 'панда': 'hero_panda',
+  spark: 'hero_spark', 'іскра': 'hero_spark', rex: 'hero_rex', 'рекс': 'hero_rex' };
+async function giftCommand(env, m) {
+  const say = t => tg(env, 'sendMessage', { chat_id: m.chat.id, text: t });
+  const args = m.text.trim().split(/\s+/).slice(1);
+  const ref = m.reply_to_message && /#u(\d+)/.exec(m.reply_to_message.text || '');
+  let id = ref ? Number(ref[1]) : null;
+  if (!ref && args.length && /^\d+$/.test(args[0])) id = Number(args.shift());
+  const item = GIFT_HEROES[(args[args.length - 1] || '').toLowerCase()];
+  await ensureTables(env.DB);
+  if (!id && args.length && !item) {
+    // a name: list the players it matches
+    const q = args.join(' ');
+    const rows = (await env.DB.prepare('SELECT id, name FROM players WHERE name LIKE ?1 ORDER BY id LIMIT 10').bind('%' + q + '%').all()).results || [];
+    return say(rows.length ? `Знайдено:\n${rows.map(r => `${r.name} — ${r.id}`).join('\n')}\n\nДалі: /gift <id> <герой>` : `Нікого з іменем «${q}» не знайдено.`);
+  }
+  if (!id || !item) return say('🎁 Подарувати героя від імені гри:\n/gift <id> <герой>\nабо реплай на повідомлення гравця: /gift <герой>\n/gift <ім\'я> шукає id\n\nГерої: possum (Опі), panda (Вогник), spark (Іскра), rex (Рекс)');
+  const has = await env.DB.prepare('SELECT count FROM inventory WHERE user_id = ?1 AND item = ?2').bind(id, item).first();
+  const p = await env.DB.prepare('SELECT name FROM players WHERE id = ?1').bind(id).first();
+  const who = `${p ? p.name : 'гравець'} (id ${id})`;
+  if (has && has.count > 0) return say(`У ${who} вже є «${itemName(item)}».`);
+  await grant(env.DB, id, { [item]: 1 });
+  const lr = await env.DB.prepare('SELECT lang FROM notify WHERE user_id = ?1').bind(id).first();
+  const t = text(lr && lr.lang);
+  const r = await tg(env, 'sendMessage', { chat_id: id, text: t.heroGift((t.items[item] || [])[0] || itemName(item)),
+    reply_markup: env.WEBAPP_URL ? { inline_keyboard: [[{ text: t.play, web_app: { url: env.WEBAPP_URL } }]] } : undefined });
+  return say(`✅ «${itemName(item)}» подаровано: ${who}.` + (r.ok ? ' Гра надіслала гравцеві повідомлення.' : ` Повідомлення не дійшло (${r.description || 'бот заблоковано?'}), але герой уже в грі.`));
 }
 
 // ---------- owner: purchase notifications and /sales ----------
