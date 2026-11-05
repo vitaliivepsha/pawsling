@@ -63,7 +63,7 @@ worker/             the leaderboard: a Cloudflare Worker with a D1 database
   turn before a train; heroes on the track lose a heart (never the last) and are thrown aside, robots on it take 30%
   of their health (a boss 6%). Signal bots make trains come every 2 turns instead of 3 while they stand. It ends
   with the Comet Locomotive: after each attack it sends an extra train down the track with the most heroes.
-- The fun park (room 21, levels 115-123, toughness ×10, attack ×3.9, the hardest room) opens for everyone on Friday
+- The fun park (room 21, levels 115-123, toughness ×10, attack ×3.9) opens for everyone on Friday
   6 November 2026 at 09:00 Kyiv (ROOM_OPEN_AT in game.js); until then only the owner sees it (/daily says
   preview: true for ADMIN_ID, the game remembers it and reloads once). From now on rooms have nine levels, with a
   lighter mid-boss on the fifth (a level's bossKind; the map lays nine levels out in three rows of three).
@@ -72,6 +72,12 @@ worker/             the leaderboard: a Cloudflare Worker with a D1 database
   Mid-boss on level 119: the Grabber claw machine; after attacking it grabs the hero it hit, who loses another
   heart (never the last) and is dropped somewhere else. Boss on level 123: the Whirl Ferris wheel; after attacking
   it turns every mirror toward the heroes.
+- The junkyard (room 22, levels 124-132, toughness ×10, attack ×3.75 with a harder mechanic, the hardest room) opens
+  for everyone on Friday 13 November 2026 at 09:00 Kyiv, the same way. The press walls close in from both sides every
+  turn (up to 85 px each) and open again with each wave: a hero they reach loses a heart (never the last) and a robot
+  20% of its health (a boss 5%). Scrap bots leave a pile of scrap heroes bounce off until the wave ends. Mid-boss on
+  level 128: the Hook Crane drops two piles by the hero it hit. Boss on level 132: the Monolith Press moves the walls
+  two marks at once. No portal boxes here, the walls would swallow them.
   The last level is always the finale, and the weekly challenge keeps a fixed count of 19 rooms (CHAL_ROOMS).
 - Weekly challenge (from level 12, on the Daily screen's week tab): one level a week, the same for
   everyone, in a room from the balcony on with two modifiers from the newer rooms (blizzard, acid,
