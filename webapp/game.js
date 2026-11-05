@@ -1292,7 +1292,7 @@ const I18N = {
     boostMeterD: 'Пів шкали «Бешкету» одразу',
     owned: n => `у вас: ${n}`,
     'item.heart3': 'Серце+ ×3', 'itemd.heart3': '+1 серце кожному героєві, 3 рівні',
-    'item.meter3': 'Швидкий старт ×3', 'itemd.meter3': 'Пів шкали «Бешкету» на старті, 3 рівні',
+    'item.meter3': 'Швидкий старт ×3', 'itemd.meter3': 'Пів шкали «Бешкету» на старті, 3 рівні', 'item.armor3': 'Броня ×3', 'itemd.armor3': 'Щит на 25% міцності квартири на 3 рівні', 'item.hourglass3': 'Пісочний годинник ×3', 'itemd.hourglass3': '+3 ходи до норми трьох зірок на 3 рівні', boostArmor: 'Броня', boostArmorD: 'Квартира отримує щит на 25% міцності', boostHourglass: 'Пісочний годинник', boostHourglassD: '+3 ходи до норми трьох зірок', achHourglass: 'Три зірки на босі: +1 «Пісочний годинник»!', achArmor: 'Уся кімната на три зірки: +1 «Броня»!', armorFx: 'Броня',
     'item.hero_spark': 'Іскра', 'itemd.hero_spark': 'Удар перескакує блискавкою на сусіда',
     'item.hat_party': 'Святковий ковпак', 'itemd.hat_party': 'Для всієї команди',
     'item.hat_crown': 'Корона', 'itemd.hat_crown': 'Для всієї команди',
@@ -1446,7 +1446,7 @@ const I18N = {
     boostMeterD: 'Half a Mischief meter right away',
     owned: n => `you have: ${n}`,
     'item.heart3': 'Heart+ ×3', 'itemd.heart3': '+1 heart for every hero, 3 levels',
-    'item.meter3': 'Quick start ×3', 'itemd.meter3': 'Half a Mischief meter at the start, 3 levels',
+    'item.meter3': 'Quick start ×3', 'itemd.meter3': 'Half a Mischief meter at the start, 3 levels', 'item.armor3': 'Armour ×3', 'itemd.armor3': 'A shield of 25% home strength for 3 levels', 'item.hourglass3': 'Hourglass ×3', 'itemd.hourglass3': '+3 turns to the 3-star par for 3 levels', boostArmor: 'Armour', boostArmorD: 'The home gets a shield of 25% of its strength', boostHourglass: 'Hourglass', boostHourglassD: '+3 turns to the 3-star par', achHourglass: 'Three stars on a boss: +1 Hourglass!', achArmor: 'A whole room on three stars: +1 Armour!', armorFx: 'Armour',
     'item.hero_spark': 'Sparky', 'itemd.hero_spark': 'Her hits arc like lightning to a neighbor',
     'item.hat_party': 'Party hat', 'itemd.hat_party': 'For the whole team',
     'item.hat_crown': 'Crown', 'itemd.hat_crown': 'For the whole team',
@@ -1600,7 +1600,7 @@ const I18N = {
     boostMeterD: 'Pół paska psot od razu',
     owned: n => `masz: ${n}`,
     'item.heart3': 'Serce+ ×3', 'itemd.heart3': '+1 serce dla każdego bohatera, 3 poziomy',
-    'item.meter3': 'Szybki start ×3', 'itemd.meter3': 'Pół paska psot na starcie, 3 poziomy',
+    'item.meter3': 'Szybki start ×3', 'itemd.meter3': 'Pół paska psot na starcie, 3 poziomy', 'item.armor3': 'Pancerz ×3', 'itemd.armor3': 'Tarcza na 25% wytrzymałości mieszkania na 3 poziomy', 'item.hourglass3': 'Klepsydra ×3', 'itemd.hourglass3': '+3 tury do normy na 3 gwiazdki na 3 poziomy', boostArmor: 'Pancerz', boostArmorD: 'Mieszkanie dostaje tarczę na 25% wytrzymałości', boostHourglass: 'Klepsydra', boostHourglassD: '+3 tury do normy na 3 gwiazdki', achHourglass: 'Trzy gwiazdki na bossie: +1 Klepsydra!', achArmor: 'Cały pokój na trzy gwiazdki: +1 Pancerz!', armorFx: 'Pancerz',
     'item.hero_spark': 'Iskra', 'itemd.hero_spark': 'Jej ciosy przeskakują piorunem na sąsiada',
     'item.hat_party': 'Czapeczka imprezowa', 'itemd.hat_party': 'Dla całej drużyny',
     'item.hat_crown': 'Korona', 'itemd.hat_crown': 'Dla całej drużyny',
@@ -1754,7 +1754,7 @@ const I18N = {
     boostMeterD: 'Halbe Unfug-Leiste sofort',
     owned: n => `du hast: ${n}`,
     'item.heart3': 'Herz+ ×3', 'itemd.heart3': '+1 Herz für jeden Helden, 3 Level',
-    'item.meter3': 'Schnellstart ×3', 'itemd.meter3': 'Halbe Unfug-Leiste zum Start, 3 Level',
+    'item.meter3': 'Schnellstart ×3', 'itemd.meter3': 'Halbe Unfug-Leiste zum Start, 3 Level', 'item.armor3': 'Panzer ×3', 'itemd.armor3': 'Ein Schild von 25 % der Wohnungsstärke für 3 Level', 'item.hourglass3': 'Sanduhr ×3', 'itemd.hourglass3': '+3 Züge auf die 3-Sterne-Norm für 3 Level', boostArmor: 'Panzer', boostArmorD: 'Die Wohnung bekommt einen Schild von 25 % ihrer Stärke', boostHourglass: 'Sanduhr', boostHourglassD: '+3 Züge auf die 3-Sterne-Norm', achHourglass: 'Drei Sterne beim Boss: +1 Sanduhr!', achArmor: 'Ein ganzer Raum mit drei Sternen: +1 Panzer!', armorFx: 'Panzer',
     'item.hero_spark': 'Funke', 'itemd.hero_spark': 'Ihre Treffer springen als Blitz weiter',
     'item.hat_party': 'Partyhut', 'itemd.hat_party': 'Für das ganze Team',
     'item.hat_crown': 'Krone', 'itemd.hat_crown': 'Für das ganze Team',
@@ -1908,7 +1908,7 @@ const I18N = {
     boostMeterD: 'Media barra de travesura desde el inicio',
     owned: n => `tienes: ${n}`,
     'item.heart3': 'Corazón+ ×3', 'itemd.heart3': '+1 corazón para cada héroe, 3 niveles',
-    'item.meter3': 'Inicio rápido ×3', 'itemd.meter3': 'Media barra de travesura al empezar, 3 niveles',
+    'item.meter3': 'Inicio rápido ×3', 'itemd.meter3': 'Media barra de travesura al empezar, 3 niveles', 'item.armor3': 'Armadura ×3', 'itemd.armor3': 'Un escudo del 25 % de la resistencia del piso durante 3 niveles', 'item.hourglass3': 'Reloj de arena ×3', 'itemd.hourglass3': '+3 turnos al límite de 3 estrellas durante 3 niveles', boostArmor: 'Armadura', boostArmorD: 'El piso recibe un escudo del 25 % de su resistencia', boostHourglass: 'Reloj de arena', boostHourglassD: '+3 turnos al límite de 3 estrellas', achHourglass: 'Tres estrellas con un jefe: ¡+1 Reloj de arena!', achArmor: 'Una sala entera con tres estrellas: ¡+1 Armadura!', armorFx: 'Armadura',
     'item.hero_spark': 'Chispa', 'itemd.hero_spark': 'Sus golpes saltan como un rayo al vecino',
     'item.hat_party': 'Gorro de fiesta', 'itemd.hat_party': 'Para todo el equipo',
     'item.hat_crown': 'Corona', 'itemd.hat_crown': 'Para todo el equipo',
@@ -4605,6 +4605,26 @@ function playDead(h) {
 }
 // Ember the red panda hits through armour, shields, boxes and mirrors
 const pandaShot = () => !!(G && G.shot && G.shot.hero && G.shot.hero.id === 'panda');
+// the home takes a hit; Armour soaks it first
+// a boss level on three stars for the first time: an Hourglass; the last level of a room to reach three stars: an Armour
+function checkAchievements(prev) {
+  if (G.stars < 3 || prev >= 3) return;
+  if (G.lvl.boss) claimAch('boss3:' + (G.li + 1), 'achHourglass');
+  const ids = CH_LEVELS[G.lvl.ch];
+  if (ids && ids.every(li => (PROG.stars[String(li + 1)] || 0) >= 3)) claimAch('room3:' + G.lvl.ch, 'achArmor');
+}
+function claimAch(key, msg) {
+  if (!serverOn()) return;
+  const run = G;
+  api('/achieve', { key }).then(r => { if (r.items) setInv(r.items); if (r.ok && run) run.achMsg = (run.achMsg ? run.achMsg + ' · ' : '') + tr(msg); }).catch(() => {});
+}
+function hurtHome(dmg) {
+  if (G.armor > 0) {
+    const a = Math.min(G.armor, dmg); G.armor -= a; dmg -= a;
+    ftext(W / 2, 730, tr('armorFx') + ' −' + a, '#6ec3ff', 14);
+  }
+  G.hp = Math.max(0, G.hp - dmg);
+}
 function damageEnemy(e, amt, crit) {
   if (!e.alive || e.under) return;
   if (e.boxed) {
@@ -5151,7 +5171,7 @@ function nextAttack() {
   // a battery hits harder the more charge it holds, and empties itself into the hit
   const atk = e.type === 'battery' ? Math.round(e.atk * (1 + .5 * (e.charge || 0)) / 50) * 50 : e.atk;
   if (e.type === 'battery') e.charge = 0;
-  G.hp = Math.max(0, G.hp - atk);
+  hurtHome(atk);
   ftext(t.x, t.y - 30, '-' + atk, '#ff6b85', 20);
   const cry = boss ? tr('bossCries')[e.kind] : tr('cry.' + e.type);
   ftext(e.x, e.y - e.r - 22, cry, '#ffc857', 14);
@@ -5215,7 +5235,7 @@ function nextTurn() {
 function waveClear() {
   if (!G.lvl.endless && G.wave >= G.lvl.waves.length - 1) {
     G.state = 'win';
-    const par = G.lvl.par;
+    const par = G.lvl.par + (G.parBonus || 0);
     G.stars = G.turn <= par ? 3 : G.turn <= Math.round(par * 1.5) ? 2 : 1;
     if (!G.everKo) questAdd('noko');
     if (G.stars === 3 && !G.lvl.raid && !G.lvl.event && !G.lvl.chal) questAdd('stars3');
@@ -5228,7 +5248,9 @@ function waveClear() {
     const prevBest = PROG.best[key];
     G.newBest = !prevBest || G.turn < prevBest;
     PROG.best[key] = prevBest ? Math.min(prevBest, G.turn) : G.turn;
+    const prevStars = PROG.stars[key] || 0;
     PROG.stars[key] = Math.max(PROG.stars[key] || 0, G.stars);
+    checkAchievements(prevStars);
     PROG.unlocked = Math.min(LEVELS.length, Math.max(PROG.unlocked, G.li + 2));
     checkChallenge();
     if (G.hard) PROG.hard = { ...(PROG.hard || {}), [String(G.li + 1)]: 1 };
@@ -5463,7 +5485,7 @@ function bossAfterAttack(e, t) {
     pts.push([n.x, n.y]);
     for (let k = 0; k < pts.length - 1; k++) G.beams.push({ x1: pts[k][0], y1: pts[k][1], x2: pts[k + 1][0], y2: pts[k + 1][1], life: .5, max: .5, col: '#ffe066', w: 4 });
     const dmg = Math.round(e.atk * .3 / 50) * 50;
-    G.hp = Math.max(0, G.hp - dmg);
+    hurtHome(dmg);
     n.hurt = .7; n.hearts = Math.max(0, n.hearts - 1);
     ftext(n.x, n.y - 30, '-' + dmg, '#ff6b85', 18); ftext(n.x, n.y - 52, '-1 ♥', '#ff5d7a', 16);
     if (n.hearts === 0 && !playDead(n)) { G.everKo = true; n.ko = KO_TURNS; ftext(n.x, n.y + n.r + 18, tr('ko'), '#ffc857', 18); haptic('heavy'); }
@@ -9462,7 +9484,7 @@ function drawHUD() {
     ctx.textAlign = 'left'; ctx.font = `700 11.5px ${FB}`; ctx.fillStyle = G.lvl.raid ? '#ff6b85' : '#8f88b5';
     if (G.lvl.raid) ctx.fillText(`${G.ch.name} · ${tr('raidLeft', mmss(G.lvl.raid.expires - Date.now()))}`, 56, 45); else
     ctx.fillText(G.lvl.endless ? `${tr('record', wavesWord(PROG.endless || 0))} · ${G.ch.name}`
-      : G.hard ? tr('hardLeft', Math.max(0, G.lvl.par - G.turn + 1)) : G.li === 0 ? tr('pullHint') : tr('par3', G.lvl.par), 56, 45);
+      : G.hard ? tr('hardLeft', Math.max(0, G.lvl.par - G.turn + 1)) : G.li === 0 ? tr('pullHint') : tr('par3', G.lvl.par + (G.parBonus || 0)), 56, 45);
   }
 
   G.heroes.forEach((h, i) => {
@@ -9533,6 +9555,8 @@ function drawHUD() {
     rr(16, 756, Math.max(18, (W - 32) * ratio), 18, 9); ctx.fill();
     ctx.fillStyle = 'rgba(255,255,255,.25)'; rr(20, 758, Math.max(10, (W - 32) * ratio - 8), 5, 3); ctx.fill();
   }
+  // Armour: a blue band over the home bar for the shield left
+  if (G.armor > 0) { ctx.fillStyle = 'rgba(110,195,255,.85)'; rr(16, 756, Math.max(10, (W - 32) * Math.min(1, G.armor / G.maxHp)), 7, 4); ctx.fill(); }
   ctx.fillStyle = 'rgba(13,11,29,.35)';
   for (let q = 1; q < 12; q++) ctx.fillRect(16 + (W - 32) * q / 12, 756, 1.5, 18);
   ctx.fillStyle = '#15122a'; circ(26, 765, 12);
@@ -10299,11 +10323,11 @@ function useFreeWind() {
 
 // ---------- shop: boosters, hats, rainbow yarn, a new hero ----------
 // The worker keeps each player's inventory; a paid item is credited there by the payment webhook.
-const PRICES = { heart3: 15, meter3: 15, hat_party: 20, hat_crown: 40, hat_bow: 20, rainbow: 25, hero_spark: 150, hero_rex: 150, hero_possum: 350, hero_panda: 350 }; // = ITEMS in the worker
+const PRICES = { heart3: 15, meter3: 15, armor3: 20, hourglass3: 20, hat_party: 20, hat_crown: 40, hat_bow: 20, rainbow: 25, hero_spark: 150, hero_rex: 150, hero_possum: 350, hero_panda: 350 }; // = ITEMS in the worker
 const OLD_PRICES = { hero_spark: 250, hero_rex: 250 }; // shown struck through, as a discount
-const GRANTS = { hero_rex: { hero_rex: 1 }, heart3: { heart: 3 }, meter3: { meter: 3 }, hat_party: { hat_party: 1 }, hat_crown: { hat_crown: 1 }, hat_bow: { hat_bow: 1 },
+const GRANTS = { hero_rex: { hero_rex: 1 }, heart3: { heart: 3 }, meter3: { meter: 3 }, armor3: { armor: 3 }, hourglass3: { hourglass: 3 }, hat_party: { hat_party: 1 }, hat_crown: { hat_crown: 1 }, hat_bow: { hat_bow: 1 },
   rainbow: { rainbow: 1 }, hero_spark: { hero_spark: 1 } };
-const SHOP_LIST = ['heart3', 'meter3', 'hero_spark', 'hero_rex', 'hero_possum', 'hero_panda', 'hat_party', 'hat_crown', 'hat_bow', 'rainbow'];
+const SHOP_LIST = ['heart3', 'meter3', 'armor3', 'hourglass3', 'hero_spark', 'hero_rex', 'hero_possum', 'hero_panda', 'hat_party', 'hat_crown', 'hat_bow', 'rainbow'];
 let INV = {};
 const PENDING = {}; // bought here but not yet confirmed by the server
 const COS = { hat: lsGet('pawsling-hat') || '', rainbow: lsGet('pawsling-rainbow') !== 'off' };
@@ -10361,15 +10385,15 @@ function useBooster(k) {
 let PREP = null;
 function prepLevel(li) { // li = -1 for Night Shift
   const hardOk = li >= 0 && (PROG.stars[String(li + 1)] || 0) > 0;
-  if ((INV_READY || !serverOn()) && !owns('heart') && !owns('meter') && !hardOk) { if (li < 0) startEndless(); else startLevel(li); return; }
-  PREP = { li, heart: false, meter: false, hard: false, hardOk };
+  if ((INV_READY || !serverOn()) && !owns('heart') && !owns('meter') && !owns('armor') && !owns('hourglass') && !hardOk) { if (li < 0) startEndless(); else startLevel(li); return; }
+  PREP = { li, heart: false, meter: false, armor: false, hourglass: false, hard: false, hardOk };
   setScreen('prep');
 }
 // an event level gets the boosters screen too (when there are boosters to take)
 function prepEvent(i) {
   // skip the screen only when the inventory is known and has no boosters (right after start it may still be on its way)
-  if ((INV_READY || !serverOn()) && !owns('heart') && !owns('meter')) { startEventLevel(i); return; }
-  PREP = { li: -1, ev: i, heart: false, meter: false, hard: false, hardOk: false };
+  if ((INV_READY || !serverOn()) && !owns('heart') && !owns('meter') && !owns('armor') && !owns('hourglass')) { startEventLevel(i); return; }
+  PREP = { li: -1, ev: i, heart: false, meter: false, armor: false, hourglass: false, hard: false, hardOk: false };
   setScreen('prep');
 }
 function startPrepared() {
@@ -10377,6 +10401,8 @@ function startPrepared() {
   const boost = () => {
     if (pr.heart && owns('heart')) { useBooster('heart'); for (const h of G.heroes) { h.maxHearts++; h.hearts++; } }
     if (pr.meter && owns('meter')) { useBooster('meter'); G.meter = Math.max(G.meter, 50); }
+    if (pr.armor && owns('armor')) { useBooster('armor'); G.armor = Math.round(G.maxHp * .25); }
+    if (pr.hourglass && owns('hourglass')) { useBooster('hourglass'); G.parBonus = 3; }
   };
   if (pr.ev != null) { startEventLevel(pr.ev); if (G) boost(); }
   else if (pr.li < 0) { startEndless(); boost(); }
@@ -10428,17 +10454,35 @@ function drawPrep() {
     if (right) { ctx.textAlign = 'right'; ctx.fillStyle = enabled ? '#ffc857' : '#6f6893'; fitFont(right, 70, 12, 900, FD); ctx.fillText(right, W - 56, y + 54); }
   };
   const hv = INV.heart || 0, mv = INV.meter || 0;
-  row(268, PREP.heart, hv > 0, '#ff5d7a', (x, y) => heart(x, y + 1, 12, '#ff5d7a'), tr('boostHeart'), tr('boostHeartD'), tr('owned', hv), () => { if (hv) PREP.heart = !PREP.heart; });
-  row(352, PREP.meter, mv > 0, '#ff8fb1', (x, y) => { ctx.fillStyle = '#15122a'; rr(x - 15, y - 7, 30, 14, 7); ctx.fill(); ctx.fillStyle = '#ff8fb1'; rr(x - 15, y - 7, 16, 14, 7); ctx.fill(); ctx.strokeStyle = '#ffd166'; ctx.lineWidth = 1.5; rr(x - 15, y - 7, 30, 14, 7); ctx.stroke(); }, tr('boostMeter'), tr('boostMeterD'), tr('owned', mv), () => { if (mv) PREP.meter = !PREP.meter; });
+  const av = INV.armor || 0, gv = INV.hourglass || 0, parOk = PREP.li >= 0 || PREP.ev != null; // Night Shift has no par
+  row(250, PREP.heart, hv > 0, '#ff5d7a', (x, y) => heart(x, y + 1, 12, '#ff5d7a'), tr('boostHeart'), tr('boostHeartD'), tr('owned', hv), () => { if (hv) PREP.heart = !PREP.heart; });
+  row(324, PREP.meter, mv > 0, '#ff8fb1', (x, y) => { ctx.fillStyle = '#15122a'; rr(x - 15, y - 7, 30, 14, 7); ctx.fill(); ctx.fillStyle = '#ff8fb1'; rr(x - 15, y - 7, 16, 14, 7); ctx.fill(); ctx.strokeStyle = '#ffd166'; ctx.lineWidth = 1.5; rr(x - 15, y - 7, 30, 14, 7); ctx.stroke(); }, tr('boostMeter'), tr('boostMeterD'), tr('owned', mv), () => { if (mv) PREP.meter = !PREP.meter; });
+  row(398, PREP.armor, av > 0, '#6ec3ff', (x, y) => boostIcon('armor', x, y, 13), tr('boostArmor'), tr('boostArmorD'), tr('owned', av), () => { if (av) PREP.armor = !PREP.armor; });
+  row(472, PREP.hourglass, gv > 0 && parOk, '#ffd166', (x, y) => boostIcon('hourglass', x, y, 13), tr('boostHourglass'), tr('boostHourglassD'), tr('owned', gv), () => { if (gv && parOk) PREP.hourglass = !PREP.hourglass; });
   if (PREP.hardOk) {
     const won = PROG.hard && PROG.hard[String(PREP.li + 1)];
-    row(436, PREP.hard, true, '#ffc857', (x, y) => { ctx.save(); ctx.translate(x, y + 12); drawHat('crown', 22); ctx.restore(); }, tr('hardName'), tr('hardDesc', LEVELS[PREP.li].par), won ? '✓' : '', () => { PREP.hard = !PREP.hard; });
+    row(546, PREP.hard, true, '#ffc857', (x, y) => { ctx.save(); ctx.translate(x, y + 12); drawHat('crown', 22); ctx.restore(); }, tr('hardName'), tr('hardDesc', LEVELS[PREP.li].par), won ? '✓' : '', () => { PREP.hard = !PREP.hard; });
   }
-  uiBtn(75, 530, W - 150, 56, tr('startLvl'), startPrepared, true);
-  uiBtn(75, 600, W - 150, 46, tr('cancel'), () => { PREP = null; setScreen('map'); }, false);
+  uiBtn(75, 630, W - 150, 56, tr('startLvl'), startPrepared, true);
+  uiBtn(75, 698, W - 150, 46, tr('cancel'), () => { PREP = null; setScreen('map'); }, false);
 }
 
+// the Armour shield and the Hourglass
+function boostIcon(k, x, y, s) {
+  if (k === 'armor') {
+    ctx.fillStyle = '#6ec3ff'; ctx.strokeStyle = '#2a6f9a'; ctx.lineWidth = Math.max(1.2, s * .12);
+    ctx.beginPath(); ctx.moveTo(x, y - s); ctx.lineTo(x + s * .85, y - s * .6); ctx.quadraticCurveTo(x + s * .8, y + s * .5, x, y + s); ctx.quadraticCurveTo(x - s * .8, y + s * .5, x - s * .85, y - s * .6); ctx.closePath(); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = 'rgba(255,255,255,.45)'; ctx.beginPath(); ctx.moveTo(x - s * .1, y - s * .75); ctx.lineTo(x - s * .6, y - s * .45); ctx.quadraticCurveTo(x - s * .55, y + s * .2, x - s * .1, y + s * .6); ctx.closePath(); ctx.fill();
+  } else {
+    ctx.strokeStyle = '#c98a1a'; ctx.lineWidth = Math.max(1.2, s * .14); ctx.lineCap = 'round';
+    ctx.beginPath(); ctx.moveTo(x - s * .6, y - s); ctx.lineTo(x + s * .6, y - s); ctx.moveTo(x - s * .6, y + s); ctx.lineTo(x + s * .6, y + s); ctx.stroke();
+    ctx.fillStyle = 'rgba(255,240,200,.25)'; ctx.beginPath(); ctx.moveTo(x - s * .5, y - s * .9); ctx.lineTo(x + s * .5, y - s * .9); ctx.lineTo(x, y); ctx.lineTo(x + s * .5, y + s * .9); ctx.lineTo(x - s * .5, y + s * .9); ctx.lineTo(x, y); ctx.closePath(); ctx.fill();
+    ctx.strokeStyle = '#ffe08a'; ctx.lineWidth = Math.max(1, s * .08); ctx.stroke();
+    ctx.fillStyle = '#ffd166'; ctx.beginPath(); ctx.moveTo(x - s * .3, y + s * .85); ctx.lineTo(x + s * .3, y + s * .85); ctx.lineTo(x, y + s * .35); ctx.closePath(); ctx.fill();
+  }
+}
 function drawShopIcon(id, x, y) {
+  if (id === 'armor3' || id === 'hourglass3') { boostIcon(id === 'armor3' ? 'armor' : 'hourglass', x, y, 13); return; }
   if (id === 'heart3') { heart(x, y + 2, 11, '#ff5d7a'); ctx.fillStyle = '#fff'; ctx.font = `900 11px ${FD}`; ctx.textAlign = 'center'; ctx.fillText('+1', x, y + 1); }
   else if (id === 'meter3') {
     ctx.fillStyle = '#231e44'; rr(x - 20, y - 8, 40, 16, 8); ctx.fill();
@@ -10452,7 +10496,7 @@ function drawShopIcon(id, x, y) {
 }
 // what an item's button says and does right now
 function shopAction(id) {
-  const g0 = GRANTS[id] || { [id]: 1 }, perm = !g0.heart && !g0.meter, key = Object.keys(g0)[0];
+  const g0 = GRANTS[id] || { [id]: 1 }, perm = !['heart', 'meter', 'armor', 'hourglass'].some(k => g0[k]), key = Object.keys(g0)[0];
   const have = (INV[key] || 0) + (PROG.hats && PROG.hats[id.slice(4)] ? 1 : 0);
   let label = `★ ${PRICES[id]}`, cb = () => buyItem(id), primary = true, on = false;
   if (SHOP.busy === id) label = tr('payWait');
@@ -10487,7 +10531,7 @@ function drawShop() {
   // what you already have: prizes and gifts land here, and they are switched on before a level.
   // Coloured chips with big icons; a chip whose count just went up bounces and flashes
   {
-    const items = [['heart', INV.heart || 0, '#ff5d7a'], ['meter', INV.meter || 0, '#ff8fb1'], ['wind', INV.wind || 0, '#5ce1c6']], cw = 60, ch = 22, cy = 55;
+    const items = [['heart', INV.heart || 0, '#ff5d7a'], ['meter', INV.meter || 0, '#ff8fb1'], ['armor', INV.armor || 0, '#6ec3ff'], ['hourglass', INV.hourglass || 0, '#ffd166'], ['wind', INV.wind || 0, '#5ce1c6']], cw = 54, ch = 22, cy = 55;
     ctx.font = `800 12px ${FB}`; const lw = ctx.measureText(tr('shopHave')).width;
     const x0 = W - 18 - items.length * cw - lw - 8;
     ctx.fillStyle = '#110e22'; ctx.fillRect(x0 - 8, cy - 2, W - 18 - x0 + 8, ch + 4);
@@ -10507,6 +10551,7 @@ function drawShop() {
       ctx.save(); if (!n) ctx.globalAlpha = .45;
       if (k === 'heart') heart(x + 13, my + 1, 9, '#ff5d7a');
       else if (k === 'meter') { ctx.fillStyle = '#15122a'; rr(x + 4, my - 5, 19, 10, 5); ctx.fill(); ctx.fillStyle = '#ff8fb1'; rr(x + 4, my - 5, 10, 10, 5); ctx.fill(); ctx.strokeStyle = '#ffd166'; ctx.lineWidth = 1.2; rr(x + 4, my - 5, 19, 10, 5); ctx.stroke(); }
+      else if (k === 'armor' || k === 'hourglass') boostIcon(k, x + 13, my, 7.5);
       else windIcon(x + 13, my, 8.5);
       ctx.restore();
       ctx.textAlign = 'right'; ctx.fillStyle = n ? '#ffffff' : '#6f6893'; ctx.font = `900 14px ${FD}`; ctx.fillText(String(n), x + w - 9, my + 1);
@@ -10514,30 +10559,30 @@ function drawShop() {
       ctx.font = `800 12px ${FB}`;
     });
   }
-  ['heart3', 'meter3'].forEach((id, i) => {
-    const y = 82 + i * 64, a = shopAction(id);
-    ctx.fillStyle = '#1d1938'; rr(16, y, W - 32, 56, 14); ctx.fill();
-    ctx.strokeStyle = '#3b3563'; ctx.lineWidth = 1.5; rr(16, y, W - 32, 56, 14); ctx.stroke();
-    const ts = 40, tx = 26, ty = y + 8;
+  ['heart3', 'meter3', 'armor3', 'hourglass3'].forEach((id, i) => {
+    const y = 82 + i * 50, a = shopAction(id);
+    ctx.fillStyle = '#1d1938'; rr(16, y, W - 32, 46, 12); ctx.fill();
+    ctx.strokeStyle = '#3b3563'; ctx.lineWidth = 1.5; rr(16, y, W - 32, 46, 12); ctx.stroke();
+    const ts = 34, tx = 24, ty = y + 6;
     const tg = ctx.createLinearGradient(tx, ty, tx + ts, ty + ts);
     tg.addColorStop(0, '#d9577f'); tg.addColorStop(1, '#5a2440');
     ctx.fillStyle = tg; rr(tx, ty, ts, ts, 11); ctx.fill();
     ctx.fillStyle = 'rgba(255,255,255,.14)'; rr(tx + 3, ty + 3, ts - 6, ts * .34, 8); ctx.fill();
     ctx.save(); ctx.translate(tx + ts / 2, ty + ts / 2); ctx.scale(.85, .85); drawShopIcon(id, 0, 0); ctx.restore();
-    ctx.textAlign = 'left'; ctx.fillStyle = '#f4efe6'; fitFont(tr('item.' + id), W - 246, 15); ctx.fillText(tr('item.' + id), 78, y + 19);
+    ctx.textAlign = 'left'; ctx.fillStyle = '#f4efe6'; fitFont(tr('item.' + id), W - 246, 14); ctx.fillText(tr('item.' + id), 70, y + 15);
     const desc = `${tr('itemd.' + id)} · ${tr('owned', a.have)}`;
-    ctx.fillStyle = '#b9b2da'; fitFont(desc, W - 246, 11.5, 700, FB); ctx.fillText(desc, 78, y + 40);
-    UI.push({ x: 16, y, w: W - 32, h: 56, cb: () => openDetail('item', id) });
-    infoDot(W - 148, y + 28);
-    uiBtn(W - 130, y + 8, 104, 40, a.label, a.cb, a.primary);
+    ctx.fillStyle = '#b9b2da'; fitFont(desc, W - 246, 11, 700, FB); ctx.fillText(desc, 70, y + 33);
+    UI.push({ x: 16, y, w: W - 32, h: 46, cb: () => openDetail('item', id) });
+    infoDot(W - 148, y + 23);
+    uiBtn(W - 130, y + 6, 104, 34, a.label, a.cb, a.primary);
   });
 
   // heroes: big cards
-  shopSection(tr('shopHeroes'), 224);
+  shopSection(tr('shopHeroes'), 290);
   // two wide cards, or four narrow ones once the legendary heroes show
   const heroIds = ['hero_spark', 'hero_rex', 'hero_possum', 'hero_panda'].filter(id => heroVisible(id.slice(5))), wide = heroIds.length <= 2;
   heroIds.forEach((id, i) => {
-    const gap = wide ? 12 : 8, cw = (W - 32 - (heroIds.length - 1) * gap) / heroIds.length, x = 16 + i * (cw + gap), y = 236, ch = 178, a = shopAction(id), h = HEROES.find(d => d.id === id.slice(5));
+    const gap = wide ? 12 : 8, cw = (W - 32 - (heroIds.length - 1) * gap) / heroIds.length, x = 16 + i * (cw + gap), y = 302, ch = 168, a = shopAction(id), h = HEROES.find(d => d.id === id.slice(5));
     const cg = ctx.createLinearGradient(0, y, 0, y + ch);
     cg.addColorStop(0, '#3a2b6b'); cg.addColorStop(1, '#1d1938');
     ctx.fillStyle = cg; rr(x, y, cw, ch, 16); ctx.fill();
@@ -10582,11 +10627,11 @@ function drawShop() {
   // style: every hat on Mochi, and the rainbow yarn
   const looks = ['hat_party', 'hat_crown', 'hat_bow'].concat(EVENTS.filter(e => PROG.hats && PROG.hats[e.hat]).map(e => 'hat_' + e.hat),
     ['hat_wreath_gold', 'hat_wreath_silver', 'hat_wreath_bronze'].filter(owns), ['rainbow']);
-  shopSection(tr('shopLooks'), 430);
+  shopSection(tr('shopLooks'), 484);
   const cols = 3, gw = (W - 32 - (cols - 1) * 10) / cols, rows = Math.ceil(looks.length / cols);
-  const gh = Math.min(132, (H - 40 - 442) / rows - 10), mochi = HEROES[0];
+  const gh = Math.min(132, (H - 40 - 496) / rows - 10), mochi = HEROES[0];
   looks.forEach((id, i) => {
-    const x = 16 + (i % cols) * (gw + 10), y = 442 + Math.floor(i / cols) * (gh + 10), a = shopAction(id);
+    const x = 16 + (i % cols) * (gw + 10), y = 496 + Math.floor(i / cols) * (gh + 10), a = shopAction(id);
     const cg = ctx.createLinearGradient(0, y, 0, y + gh);
     if (id === 'rainbow') { cg.addColorStop(0, '#3b2b5a'); cg.addColorStop(1, '#1d1938'); }
     else { cg.addColorStop(0, '#4a3512'); cg.addColorStop(1, '#1d1938'); }
@@ -11863,7 +11908,7 @@ function drawQuestDetail(id, x, y, w, ph, t, col) {
 }
 function drawItemDetail(id, x, y, w, ph, t, col) {
   const a = shopAction(id), cx = W / 2, L = x + 26, R = x + w - 26, py = y + 112;
-  if (id === 'heart3' || id === 'meter3') {
+  if (id === 'heart3' || id === 'meter3' || id === 'armor3' || id === 'hourglass3') {
     const ts = 112, tx = cx - ts / 2, ty = py - ts / 2 + Math.sin(t * 2.4) * 3;
     const tg = ctx.createLinearGradient(tx, ty, tx + ts, ty + ts);
     tg.addColorStop(0, '#d9577f'); tg.addColorStop(1, '#5a2440');
@@ -12489,7 +12534,7 @@ function drawEnd() {
   const endTitle = win ? (G.lvl.chal ? tr('chalDone', G.turn) : G.lvl.raid ? tr('raidDone') : G.lvl.event ? tr('evDone') : G.hard ? tr('hardDone', G.li + 1) : tr('levelDone', G.li + 1)) : G.lvl.endless ? tr('shiftOver') : tr('vacWon');
   fitFont(endTitle, W - 40, 34); ctx.fillText(endTitle, W / 2, 235);
   ctx.fillStyle = '#f4efe6'; ctx.font = `800 15px ${FB}`;
-  ctx.fillText(win ? tr('winSub', G.turn, G.lvl.par) : G.lvl.endless ? tr('survived', wavesWord(G.wave)) : (G.loseReason === 'turns' ? tr('hardTurns') : G.loseReason === 'ko' ? tr('allKo') : tr('waveTry', G.wave + 1, G.lvl.waves.length)), W / 2, 272);
+  ctx.fillText(win ? tr('winSub', G.turn, G.lvl.par + (G.parBonus || 0)) : G.lvl.endless ? tr('survived', wavesWord(G.wave)) : (G.loseReason === 'turns' ? tr('hardTurns') : G.loseReason === 'ko' ? tr('allKo') : tr('waveTry', G.wave + 1, G.lvl.waves.length)), W / 2, 272);
   let y0 = 320;
   if (win) {
     for (let s = 0; s < 3; s++) {
@@ -12550,6 +12595,7 @@ function drawEnd() {
     ctx.textAlign = 'center'; ctx.fillStyle = '#5ce1c6'; ctx.font = `800 14px ${FB}`;
     ctx.fillText(tr('newBestLevel'), W / 2, y0 + 150);
   }
+  if (win && G.achMsg) { ctx.textAlign = 'center'; ctx.fillStyle = '#6ec3ff'; fitFont(G.achMsg, W - 40, 14, 800, FB); ctx.fillText(G.achMsg, W / 2, y0 + 172); }
   if (G.lvl.endless) {
     ctx.textAlign = 'center'; ctx.font = `800 14px ${FB}`;
     ctx.fillStyle = G.newBest ? '#5ce1c6' : '#8f88b5';
