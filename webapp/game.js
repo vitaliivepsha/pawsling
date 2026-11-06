@@ -6111,11 +6111,15 @@ function drawPossum(h, r, o, mood, t) {
   }
   if (mood === 'sad') { ctx.fillStyle = '#7ec8e3'; ctx.beginPath(); ctx.moveTo(r * .38, -r * .02); ctx.quadraticCurveTo(r * .48, r * .14, r * .38, r * .18); ctx.quadraticCurveTo(r * .28, r * .14, r * .38, -r * .02); ctx.fill(); }
   // the long pointed snout, its pink nose at the tip
-  const snout = () => { ctx.beginPath(); ctx.moveTo(-r * .3, -r * .02); ctx.quadraticCurveTo(-r * .3, r * .38, -r * .1, r * .7); ctx.quadraticCurveTo(0, r * .8, r * .1, r * .7); ctx.quadraticCurveTo(r * .3, r * .38, r * .3, -r * .02); ctx.quadraticCurveTo(0, -r * .12, -r * .3, -r * .02); };
-  ctx.save(); ctx.translate(0, r * .05); ctx.fillStyle = 'rgba(110,95,110,.28)'; snout(); ctx.fill(); ctx.restore();
-  const mg = ctx.createLinearGradient(0, -r * .05, 0, r * .75); mg.addColorStop(0, '#ffffff'); mg.addColorStop(1, '#efe6e2');
+  // the snout melts into the face at the top; only its sides and tip get a soft edge and shadow
+  const side = sd => { ctx.moveTo(sd * r * .34, -r * .08); ctx.bezierCurveTo(sd * r * .34, r * .3, sd * r * .2, r * .62, sd * r * .09, r * .73); };
+  const snout = () => { ctx.beginPath(); ctx.moveTo(-r * .34, -r * .08); ctx.bezierCurveTo(-r * .34, r * .3, -r * .2, r * .62, -r * .09, r * .73); ctx.quadraticCurveTo(0, r * .8, r * .09, r * .73); ctx.bezierCurveTo(r * .2, r * .62, r * .34, r * .3, r * .34, -r * .08); ctx.quadraticCurveTo(0, -r * .2, -r * .34, -r * .08); };
+  const shg = ctx.createLinearGradient(0, r * .1, 0, r * .8); shg.addColorStop(0, 'rgba(110,95,110,0)'); shg.addColorStop(1, 'rgba(110,95,110,.3)');
+  ctx.save(); ctx.translate(0, r * .05); ctx.fillStyle = shg; snout(); ctx.fill(); ctx.restore();
+  const mg = ctx.createLinearGradient(0, r * .05, 0, r * .78); mg.addColorStop(0, face); mg.addColorStop(1, '#efe5e1');
   ctx.fillStyle = mg; snout(); ctx.fill();
-  ctx.strokeStyle = 'rgba(150,130,145,.55)'; ctx.lineWidth = 1.5; snout(); ctx.stroke();
+  const eg = ctx.createLinearGradient(0, r * .12, 0, r * .62); eg.addColorStop(0, 'rgba(150,130,145,0)'); eg.addColorStop(1, 'rgba(150,130,145,.5)');
+  ctx.strokeStyle = eg; ctx.lineWidth = 1.5; ctx.beginPath(); side(-1); ctx.quadraticCurveTo(0, r * .8, r * .09, r * .73); ctx.bezierCurveTo(r * .2, r * .62, r * .34, r * .3, r * .34, -r * .08); ctx.stroke();
   ctx.strokeStyle = 'rgba(74,69,80,.5)'; ctx.lineWidth = 1;
   for (const sd of [-1, 1]) for (const [y0, y1] of [[.36, .26], [.44, .44], [.52, .62]]) { ctx.beginPath(); ctx.moveTo(sd * r * .2, r * y0); ctx.lineTo(sd * r * .82, r * y1); ctx.stroke(); }
   ctx.fillStyle = 'rgba(255,120,150,.3)'; for (const sd of [-1, 1]) { ctx.beginPath(); ctx.ellipse(sd * r * .5, r * .2, r * .12, r * .07, 0, 0, TAU); ctx.fill(); }
