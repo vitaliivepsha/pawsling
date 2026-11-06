@@ -28,19 +28,19 @@ Everything needed to list the game in Telegram's app catalog and in other catalo
 **Tagline (EN, ≤ 30):** Slingshot cats vs rebel robots
 **Tagline (UK):** Коти з рогатки проти роботів
 
-**Short description (EN, ≤ 120):** Launch cats & raccoons like a slingshot and save the flat from rebel robots! 114 levels, 20 bosses. Free to play.
+**Short description (EN, ≤ 120):** Launch cats & raccoons like a slingshot and save the flat from rebel robots! 123 levels, 22 bosses. Free to play.
 
-**Short description (UK):** Запускай котів і єнотів, як з рогатки, і рятуй квартиру від збунтованої техніки! 114 рівнів, 20 босів. Безкоштовно.
+**Short description (UK):** Запускай котів і єнотів, як з рогатки, і рятуй квартиру від збунтованої техніки! 123 рівні, 22 боси. Безкоштовно.
 
 **Description (EN):**
-Pull back, aim and launch your heroes like a slingshot. Bounce off walls, pierce through robots, cross your yarn to tie exploding knots and beat 20 wild robot bosses across 114 levels, from the kitchen to the subway.
+Pull back, aim and launch your heroes like a slingshot. Bounce off walls, pierce through robots, cross your yarn to tie exploding knots and beat 22 wild robot bosses across 123 levels, from the kitchen to the fun park.
 - 7 heroes with superpowers that level up
 - Night Shift: endless waves and a weekly tournament with prizes
 - Daily bonus, daily challenges and story comics
 - 5 languages: English, Ukrainian, Polish, German, Spanish
 
 **Опис (UK):**
-Тягни, цілься й запускай героїв, як з рогатки. Відбивайся від стін, прошивай роботів наскрізь, перетинай нитки, щоб в'язати вибухові вузли, і перемагай 20 шалених босів у 114 рівнях, від кухні до метро.
+Тягни, цілься й запускай героїв, як з рогатки. Відбивайся від стін, прошивай роботів наскрізь, перетинай нитки, щоб в'язати вибухові вузли, і перемагай 22 шалені боси у 123 рівнях, від кухні до парку атракціонів.
 - 7 героїв із суперсилами, які прокачуються
 - «Нічна зміна»: нескінченні хвилі й турнір тижня з призами
 - Щоденний бонус, завдання дня й комікси
