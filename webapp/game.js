@@ -6097,19 +6097,6 @@ function drawPossum(h, r, o, mood, t) {
   const sg = ctx.createRadialGradient(-r * .35, -r * .45, r * .1, 0, 0, r * 1.05);
   sg.addColorStop(0, 'rgba(255,255,255,.22)'); sg.addColorStop(.55, 'rgba(255,255,255,0)'); sg.addColorStop(1, 'rgba(0,0,0,.18)');
   ctx.fillStyle = sg; ctx.beginPath(); ctx.ellipse(0, -r * .02, r * .96, r * .88, 0, 0, TAU); ctx.fill();
-  // dark patches round the eyes, slanting down toward the snout, and the eyes
-  for (const sd of [-1, 1]) {
-    const ex = sd * r * .32, ey = -r * .2;
-    ctx.fillStyle = '#3a3540'; ctx.beginPath(); ctx.ellipse(ex + sd * r * .02, ey + r * .03, r * .22, r * .17, sd * -.5, 0, TAU); ctx.fill();
-    ctx.strokeStyle = '#fbf8f5'; ctx.lineWidth = Math.max(1.5, r * .08);
-    if (mood === 'dead') { ctx.beginPath(); ctx.moveTo(ex - r * .1, ey - r * .1); ctx.lineTo(ex + r * .1, ey + r * .1); ctx.moveTo(ex + r * .1, ey - r * .1); ctx.lineTo(ex - r * .1, ey + r * .1); ctx.stroke(); continue; }
-    if (mood === 'happy') { ctx.beginPath(); ctx.moveTo(ex - r * .12, ey + r * .05); ctx.quadraticCurveTo(ex, ey - r * .12, ex + r * .12, ey + r * .05); ctx.stroke(); continue; }
-    if (blink) { ctx.beginPath(); ctx.moveTo(ex - r * .12, ey); ctx.quadraticCurveTo(ex, ey + r * .07, ex + r * .12, ey); ctx.stroke(); continue; }
-    if (mood === 'hurt') { ctx.beginPath(); ctx.moveTo(ex - sd * r * .1, ey - r * .09); ctx.lineTo(ex + sd * r * .08, ey); ctx.lineTo(ex - sd * r * .1, ey + r * .09); ctx.stroke(); continue; }
-    ctx.fillStyle = '#0e0c12'; circ(ex + lx, ey + ly, r * .14);
-    ctx.fillStyle = '#fff'; circ(ex + lx + r * .055, ey + ly - r * .055, r * .055); circ(ex + lx - r * .045, ey + ly + r * .045, r * .025);
-  }
-  if (mood === 'sad') { ctx.fillStyle = '#7ec8e3'; ctx.beginPath(); ctx.moveTo(r * .38, -r * .02); ctx.quadraticCurveTo(r * .48, r * .14, r * .38, r * .18); ctx.quadraticCurveTo(r * .28, r * .14, r * .38, -r * .02); ctx.fill(); }
   // the long pointed snout, its pink nose at the tip
   // the snout melts into the face at the top; only its sides and tip get a soft edge and shadow
   const side = sd => { ctx.moveTo(sd * r * .34, -r * .08); ctx.bezierCurveTo(sd * r * .34, r * .3, sd * r * .2, r * .62, sd * r * .09, r * .73); };
@@ -6126,6 +6113,19 @@ function drawPossum(h, r, o, mood, t) {
   ctx.fillStyle = '#f48aa8'; ctx.beginPath(); ctx.moveTo(-r * .14, r * .56); ctx.quadraticCurveTo(0, r * .5, r * .14, r * .56); ctx.quadraticCurveTo(r * .12, r * .72, 0, r * .74); ctx.quadraticCurveTo(-r * .12, r * .72, -r * .14, r * .56); ctx.fill();
   ctx.fillStyle = '#c9587a'; for (const sd of [-1, 1]) circ(sd * r * .05, r * .63, r * .022);
   ctx.fillStyle = 'rgba(255,255,255,.65)'; ctx.beginPath(); ctx.ellipse(-r * .05, r * .56, r * .045, r * .02, -.2, 0, TAU); ctx.fill();
+  // dark patches round the eyes, slanting down toward the snout, and the eyes
+  for (const sd of [-1, 1]) {
+    const ex = sd * r * .32, ey = -r * .2;
+    ctx.fillStyle = '#3a3540'; ctx.beginPath(); ctx.ellipse(ex + sd * r * .02, ey + r * .03, r * .22, r * .17, sd * -.5, 0, TAU); ctx.fill();
+    ctx.strokeStyle = '#fbf8f5'; ctx.lineWidth = Math.max(1.5, r * .08);
+    if (mood === 'dead') { ctx.beginPath(); ctx.moveTo(ex - r * .1, ey - r * .1); ctx.lineTo(ex + r * .1, ey + r * .1); ctx.moveTo(ex + r * .1, ey - r * .1); ctx.lineTo(ex - r * .1, ey + r * .1); ctx.stroke(); continue; }
+    if (mood === 'happy') { ctx.beginPath(); ctx.moveTo(ex - r * .12, ey + r * .05); ctx.quadraticCurveTo(ex, ey - r * .12, ex + r * .12, ey + r * .05); ctx.stroke(); continue; }
+    if (blink) { ctx.beginPath(); ctx.moveTo(ex - r * .12, ey); ctx.quadraticCurveTo(ex, ey + r * .07, ex + r * .12, ey); ctx.stroke(); continue; }
+    if (mood === 'hurt') { ctx.beginPath(); ctx.moveTo(ex - sd * r * .1, ey - r * .09); ctx.lineTo(ex + sd * r * .08, ey); ctx.lineTo(ex - sd * r * .1, ey + r * .09); ctx.stroke(); continue; }
+    ctx.fillStyle = '#0e0c12'; circ(ex + lx, ey + ly, r * .14);
+    ctx.fillStyle = '#fff'; circ(ex + lx + r * .055, ey + ly - r * .055, r * .055); circ(ex + lx - r * .045, ey + ly + r * .045, r * .025);
+  }
+  if (mood === 'sad') { ctx.fillStyle = '#7ec8e3'; ctx.beginPath(); ctx.moveTo(r * .38, -r * .02); ctx.quadraticCurveTo(r * .48, r * .14, r * .38, r * .18); ctx.quadraticCurveTo(r * .28, r * .14, r * .38, -r * .02); ctx.fill(); }
   // the mouth runs back along the snout: a grin with little teeth, or a tongue lolling when playing dead
   ctx.strokeStyle = '#1b1b22'; ctx.lineWidth = Math.max(1.2, r * .045);
   if (mood === 'dead') {
