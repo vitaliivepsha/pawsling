@@ -6053,96 +6053,92 @@ function drawRex(h, r, o, mood, t) {
   }
 }
 function drawPossum(h, r, o, mood, t) {
-  // Opie the opossum: what makes an opossum read at a glance - a grizzled grey head, a white face that narrows into a
-  // long pointed snout with a pink nose at the tip, dark patches round shiny black eyes, thin black ears with pale
-  // rims, a dark streak down the forehead, pink grasping hands and a long bare pink tail
-  const face = '#fbf8f5', grey = '#a29ca6', lk = o.look || [0, 0], lx = lk[0] * r * .05, ly = lk[1] * r * .04;
-  const blink = !mood && !RM && frac(t * .21 + .3) < .035;
-  // tail
-  const sw = RM ? 0 : Math.sin(t * (mood === 'happy' ? 7 : 2.4)) * .12;
-  ctx.save(); ctx.translate(r * .5, r * .55); ctx.rotate(sw);
-  const tail = () => { ctx.beginPath(); ctx.moveTo(0, 0); ctx.bezierCurveTo(r * .7, r * .25, r * 1.05, -r * .2, r * .9, -r * .62); ctx.bezierCurveTo(r * .8, -r * .92, r * .5, -r * .86, r * .56, -r * .64); };
-  ctx.lineCap = 'round';
-  ctx.strokeStyle = h.yarn; ctx.lineWidth = r * .2 + 4; tail(); ctx.stroke();
-  ctx.strokeStyle = '#f2b8c6'; ctx.lineWidth = r * .2; tail(); ctx.stroke();
-  ctx.strokeStyle = 'rgba(200,110,140,.45)'; ctx.lineWidth = 1;
-  for (let k = 1; k < 7; k++) { const f = k / 7, px = r * (.12 + f * .82), py = r * (.12 - f * .7); ctx.beginPath(); ctx.moveTo(px - r * .06, py - r * .05); ctx.lineTo(px + r * .06, py + r * .05); ctx.stroke(); }
-  ctx.strokeStyle = h.yarn; ctx.lineWidth = r * .24 + 3; ctx.beginPath(); ctx.moveTo(-r * .02, r * .02); ctx.lineTo(r * .1, r * .05); ctx.stroke();
-  ctx.strokeStyle = '#6a6470'; ctx.lineWidth = r * .24; ctx.beginPath(); ctx.moveTo(-r * .02, r * .02); ctx.lineTo(r * .1, r * .05); ctx.stroke();
+  // Opie the opossum, kept simple: a shaggy grey body, a head that tapers to a small pink nose, a white heart of a face
+  // under a grey streak and eye bands, charcoal ears, dark legs with pink feet and a long tapering ringed tail
+  const grey = '#9b96a2', deep = '#6d6875', face = '#fbf8f5', ink = '#1b1b22', lk = o.look || [0, 0], lx = lk[0] * r * .04, ly = lk[1] * r * .03;
+  const blink = !mood && !RM && frac(t * .21 + .3) < .035, sw = RM ? 0 : Math.sin(t * (mood === 'happy' ? 7 : 2.4)) * .1;
+  ctx.lineJoin = 'round'; ctx.lineCap = 'round';
+  // the tail: wide at the root, thin at the tip, with rings across it
+  ctx.save(); ctx.translate(r * .55, r * .58); ctx.rotate(sw);
+  const pts = [];
+  for (let k = 0; k <= 18; k++) {
+    const f = k / 18, u = 1 - f, x = 3 * u * u * f * r * .95 + 3 * u * f * f * r * .98 + f * f * f * r * .5, y = 3 * u * u * f * r * .12 + 3 * u * f * f * -r * .62 + f * f * f * -r * 1.42;
+    pts.push([x, y, r * (.17 * u + .025)]);
+  }
+  const edge = (sd, k) => { const [x, y, w] = pts[k], q = pts[Math.min(18, k + 1)], m = pts[Math.max(0, k - 1)], dx = q[0] - m[0], dy = q[1] - m[1], d = Math.hypot(dx, dy) || 1; ctx.lineTo(x - dy / d * w * sd, y + dx / d * w * sd); };
+  ctx.beginPath(); for (let k = 0; k <= 18; k++) edge(1, k); for (let k = 18; k >= 0; k--) edge(-1, k); ctx.closePath();
+  ctx.strokeStyle = h.yarn; ctx.lineWidth = 3; ctx.stroke();
+  ctx.fillStyle = '#f2b5c2'; ctx.fill();
+  ctx.strokeStyle = 'rgba(190,100,130,.55)'; ctx.lineWidth = Math.max(.8, r * .022);
+  for (let k = 2; k < 17; k += 2) { const [x, y, w] = pts[k], dx = pts[k + 1][0] - pts[k - 1][0], dy = pts[k + 1][1] - pts[k - 1][1], d = Math.hypot(dx, dy) || 1; ctx.beginPath(); ctx.moveTo(x - dy / d * w, y + dx / d * w); ctx.lineTo(x + dy / d * w, y - dx / d * w); ctx.stroke(); }
   ctx.restore();
-  // thin black ears with pale rims
+  // legs and pink feet
+  for (const sd of [-1, 1]) {
+    ctx.fillStyle = '#322e39'; rr(sd * r * .5 - r * .15, r * .5, r * .3, r * .44, r * .11); ctx.fill();
+    ctx.fillStyle = '#f5c3cf'; ctx.strokeStyle = h.yarn; ctx.lineWidth = 1.5;
+    ctx.beginPath(); ctx.ellipse(sd * r * .52, r * .94, r * .19, r * .1, 0, 0, TAU); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#f5c3cf'; for (const d of [-.13, -.04, .05, .14]) circ(sd * r * .52 + r * d, r * 1.0, r * .045);
+  }
+  // the shaggy body behind the head
+  ctx.fillStyle = grey; ctx.strokeStyle = h.yarn; ctx.lineWidth = 2;
+  ctx.beginPath();
+  for (let k = 0; k <= 22; k++) {
+    const a = -.2 + k / 22 * (Math.PI + .4), rad = k % 2 ? 1 : .88, px = Math.cos(a) * r * .9 * rad, py = r * .3 + Math.sin(a) * r * .42 * rad;
+    k ? ctx.lineTo(px, py) : ctx.moveTo(px, py);
+  }
+  ctx.closePath(); ctx.fill(); ctx.stroke();
+  // charcoal ears with a grey inside
   for (const sd of [-1, 1]) {
     const flick = !RM && sd === 1 && frac(t * .27) < .05 ? .2 : 0;
-    ctx.save(); ctx.translate(sd * r * .62, -r * .74); ctx.rotate(sd * (.32 + flick));
-    ctx.fillStyle = '#f4ece8'; ctx.strokeStyle = h.yarn; ctx.lineWidth = 2; ctx.beginPath(); ctx.ellipse(0, -r * .02, r * .29, r * .33, 0, 0, TAU); ctx.fill(); ctx.stroke();
-    ctx.fillStyle = '#25212b'; ctx.beginPath(); ctx.ellipse(0, r * .03, r * .25, r * .28, 0, 0, TAU); ctx.fill();
-    ctx.fillStyle = 'rgba(242,167,187,.45)'; ctx.beginPath(); ctx.ellipse(sd * -r * .03, r * .07, r * .11, r * .15, 0, 0, TAU); ctx.fill();
+    ctx.save(); ctx.translate(sd * r * .66, -r * .66); ctx.rotate(sd * (.3 + flick));
+    ctx.fillStyle = '#2b2731'; ctx.strokeStyle = h.yarn; ctx.lineWidth = 2; ctx.beginPath(); ctx.ellipse(0, 0, r * .32, r * .34, 0, 0, TAU); ctx.fill(); ctx.stroke();
+    ctx.fillStyle = '#857f8c'; ctx.beginPath(); ctx.ellipse(sd * -r * .03, r * .05, r * .16, r * .19, 0, 0, TAU); ctx.fill();
     ctx.restore();
   }
-  // shaggy grey cheek fluff
-  ctx.fillStyle = grey; ctx.strokeStyle = h.yarn; ctx.lineWidth = 2;
-  for (const sd of [-1, 1]) {
-    ctx.beginPath(); ctx.moveTo(sd * r * .8, -r * .12); ctx.lineTo(sd * r * 1.12, r * .02); ctx.lineTo(sd * r * .97, r * .16);
-    ctx.lineTo(sd * r * 1.1, r * .32); ctx.lineTo(sd * r * .93, r * .44); ctx.lineTo(sd * r * 1.0, r * .58); ctx.lineTo(sd * r * .62, r * .66); ctx.closePath(); ctx.fill(); ctx.stroke();
-  }
-  // the head: grizzled grey, a white face, a dark streak down the forehead
-  ctx.fillStyle = grey; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.ellipse(0, -r * .02, r * .96, r * .88, 0, 0, TAU); ctx.fill(); ctx.stroke();
-  ctx.save(); ctx.beginPath(); ctx.ellipse(0, -r * .02, r * .96, r * .88, 0, 0, TAU); ctx.clip();
-  ctx.fillStyle = 'rgba(255,255,255,.35)';
-  for (let k = 0; k < 26; k++) { const a = k * 2.399, d = r * (.55 + (k % 4) * .1), px = Math.cos(a) * d, py = Math.sin(a) * d * .9 - r * .02; ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(px + Math.cos(a) * r * .1, py + Math.sin(a) * r * .1); ctx.lineWidth = 1.2; ctx.strokeStyle = 'rgba(255,255,255,.22)'; ctx.stroke(); }
-  ctx.fillStyle = face; ctx.beginPath(); ctx.moveTo(0, -r * .62); ctx.bezierCurveTo(r * .42, -r * .64, r * .78, -r * .24, r * .72, r * .12); ctx.bezierCurveTo(r * .68, r * .5, r * .3, r * .7, 0, r * .74);
-  ctx.bezierCurveTo(-r * .3, r * .7, -r * .68, r * .5, -r * .72, r * .12); ctx.bezierCurveTo(-r * .78, -r * .24, -r * .42, -r * .64, 0, -r * .62); ctx.fill();
-  ctx.fillStyle = '#4a4550'; ctx.beginPath(); ctx.moveTo(-r * .12, -r * .92); ctx.quadraticCurveTo(-r * .04, -r * .5, 0, -r * .3); ctx.quadraticCurveTo(r * .04, -r * .5, r * .12, -r * .92); ctx.closePath(); ctx.fill();
+  // the head tapers from wide cheeks down to the nose
+  const head = () => { ctx.beginPath(); ctx.moveTo(0, -r * .9); ctx.bezierCurveTo(r * .56, -r * .92, r * .94, -r * .56, r * .92, -r * .14); ctx.bezierCurveTo(r * .9, r * .22, r * .38, r * .54, r * .14, r * .68); ctx.quadraticCurveTo(0, r * .77, -r * .14, r * .68); ctx.bezierCurveTo(-r * .38, r * .54, -r * .9, r * .22, -r * .92, -r * .14); ctx.bezierCurveTo(-r * .94, -r * .56, -r * .56, -r * .92, 0, -r * .9); ctx.closePath(); };
+  ctx.fillStyle = grey; ctx.strokeStyle = h.yarn; ctx.lineWidth = 2.5; head(); ctx.fill(); ctx.stroke();
+  ctx.save(); head(); ctx.clip();
+  // a heart of white under the crown
+  ctx.fillStyle = face; ctx.beginPath(); ctx.moveTo(0, -r * .28); ctx.bezierCurveTo(r * .16, -r * .7, r * .68, -r * .68, r * .84, -r * .2); ctx.bezierCurveTo(r * .86, r * .2, r * .38, r * .56, r * .14, r * .72); ctx.lineTo(-r * .14, r * .72); ctx.bezierCurveTo(-r * .38, r * .56, -r * .86, r * .2, -r * .84, -r * .2); ctx.bezierCurveTo(-r * .68, -r * .68, -r * .16, -r * .7, 0, -r * .28); ctx.fill();
+  // the darker streak on the crown
+  ctx.fillStyle = deep; ctx.beginPath(); ctx.moveTo(-r * .17, -r * .95); ctx.quadraticCurveTo(-r * .08, -r * .55, 0, -r * .3); ctx.quadraticCurveTo(r * .08, -r * .55, r * .17, -r * .95); ctx.closePath(); ctx.fill();
+  // grey bands round the eyes, running in to the streak
+  ctx.fillStyle = grey; ctx.strokeStyle = grey; ctx.lineWidth = r * .13; ctx.lineCap = 'round';
+  for (const sd of [-1, 1]) { ctx.beginPath(); ctx.ellipse(sd * r * .32, -r * .17, r * .22, r * .18, sd * .18, 0, TAU); ctx.fill(); ctx.beginPath(); ctx.moveTo(sd * r * .03, -r * .34); ctx.quadraticCurveTo(sd * r * .1, -r * .24, sd * r * .2, -r * .22); ctx.stroke(); }
   ctx.restore();
-  const sg = ctx.createRadialGradient(-r * .35, -r * .45, r * .1, 0, 0, r * 1.05);
-  sg.addColorStop(0, 'rgba(255,255,255,.22)'); sg.addColorStop(.55, 'rgba(255,255,255,0)'); sg.addColorStop(1, 'rgba(0,0,0,.18)');
-  ctx.fillStyle = sg; ctx.beginPath(); ctx.ellipse(0, -r * .02, r * .96, r * .88, 0, 0, TAU); ctx.fill();
-  // the long pointed snout, its pink nose at the tip
-  // the snout melts into the face at the top; only its sides and tip get a soft edge and shadow
-  const side = sd => { ctx.moveTo(sd * r * .34, -r * .08); ctx.bezierCurveTo(sd * r * .34, r * .3, sd * r * .2, r * .62, sd * r * .09, r * .73); };
-  const snout = () => { ctx.beginPath(); ctx.moveTo(-r * .34, -r * .08); ctx.bezierCurveTo(-r * .34, r * .3, -r * .2, r * .62, -r * .09, r * .73); ctx.quadraticCurveTo(0, r * .8, r * .09, r * .73); ctx.bezierCurveTo(r * .2, r * .62, r * .34, r * .3, r * .34, -r * .08); ctx.quadraticCurveTo(0, -r * .2, -r * .34, -r * .08); };
-  const shg = ctx.createLinearGradient(0, r * .1, 0, r * .8); shg.addColorStop(0, 'rgba(110,95,110,0)'); shg.addColorStop(1, 'rgba(110,95,110,.3)');
-  ctx.save(); ctx.translate(0, r * .05); ctx.fillStyle = shg; snout(); ctx.fill(); ctx.restore();
-  const mg = ctx.createLinearGradient(0, r * .05, 0, r * .78); mg.addColorStop(0, face); mg.addColorStop(1, '#efe5e1');
-  ctx.fillStyle = mg; snout(); ctx.fill();
-  const eg = ctx.createLinearGradient(0, r * .12, 0, r * .62); eg.addColorStop(0, 'rgba(150,130,145,0)'); eg.addColorStop(1, 'rgba(150,130,145,.5)');
-  ctx.strokeStyle = eg; ctx.lineWidth = 1.5; ctx.beginPath(); side(-1); ctx.quadraticCurveTo(0, r * .8, r * .09, r * .73); ctx.bezierCurveTo(r * .2, r * .62, r * .34, r * .3, r * .34, -r * .08); ctx.stroke();
-  ctx.strokeStyle = 'rgba(74,69,80,.5)'; ctx.lineWidth = 1;
-  for (const sd of [-1, 1]) for (const [y0, y1] of [[.36, .26], [.44, .44], [.52, .62]]) { ctx.beginPath(); ctx.moveTo(sd * r * .2, r * y0); ctx.lineTo(sd * r * .82, r * y1); ctx.stroke(); }
-  ctx.fillStyle = 'rgba(255,120,150,.3)'; for (const sd of [-1, 1]) { ctx.beginPath(); ctx.ellipse(sd * r * .5, r * .2, r * .12, r * .07, 0, 0, TAU); ctx.fill(); }
-  ctx.fillStyle = '#f48aa8'; ctx.beginPath(); ctx.moveTo(-r * .14, r * .56); ctx.quadraticCurveTo(0, r * .5, r * .14, r * .56); ctx.quadraticCurveTo(r * .12, r * .72, 0, r * .74); ctx.quadraticCurveTo(-r * .12, r * .72, -r * .14, r * .56); ctx.fill();
-  ctx.fillStyle = '#c9587a'; for (const sd of [-1, 1]) circ(sd * r * .05, r * .63, r * .022);
-  ctx.fillStyle = 'rgba(255,255,255,.65)'; ctx.beginPath(); ctx.ellipse(-r * .05, r * .56, r * .045, r * .02, -.2, 0, TAU); ctx.fill();
-  // dark patches round the eyes, slanting down toward the snout, and the eyes
+  const sg = ctx.createRadialGradient(-r * .35, -r * .5, r * .1, 0, -r * .1, r * 1.05);
+  sg.addColorStop(0, 'rgba(255,255,255,.2)'); sg.addColorStop(.55, 'rgba(255,255,255,0)'); sg.addColorStop(1, 'rgba(0,0,0,.14)');
+  ctx.fillStyle = sg; head(); ctx.fill();
+  // little cheek tufts
+  ctx.fillStyle = grey; ctx.strokeStyle = h.yarn; ctx.lineWidth = 1.8;
+  for (const sd of [-1, 1]) { ctx.beginPath(); ctx.moveTo(sd * r * .86, -r * .22); ctx.lineTo(sd * r * 1.08, -r * .1); ctx.lineTo(sd * r * .92, r * .0); ctx.lineTo(sd * r * 1.0, r * .14); ctx.lineTo(sd * r * .74, r * .2); ctx.fill(); ctx.stroke(); }
+  // blush
+  ctx.fillStyle = 'rgba(255,125,155,.35)'; for (const sd of [-1, 1]) { ctx.beginPath(); ctx.ellipse(sd * r * .47, r * .16, r * .13, r * .08, 0, 0, TAU); ctx.fill(); }
+  // eyes
   for (const sd of [-1, 1]) {
-    const ex = sd * r * .32, ey = -r * .2;
-    ctx.fillStyle = '#3a3540'; ctx.beginPath(); ctx.ellipse(ex + sd * r * .02, ey + r * .03, r * .22, r * .17, sd * -.5, 0, TAU); ctx.fill();
-    ctx.strokeStyle = '#fbf8f5'; ctx.lineWidth = Math.max(1.5, r * .08);
+    const ex = sd * r * .31, ey = -r * .19;
+    ctx.strokeStyle = ink; ctx.lineWidth = Math.max(1.5, r * .08);
     if (mood === 'dead') { ctx.beginPath(); ctx.moveTo(ex - r * .1, ey - r * .1); ctx.lineTo(ex + r * .1, ey + r * .1); ctx.moveTo(ex + r * .1, ey - r * .1); ctx.lineTo(ex - r * .1, ey + r * .1); ctx.stroke(); continue; }
     if (mood === 'happy') { ctx.beginPath(); ctx.moveTo(ex - r * .12, ey + r * .05); ctx.quadraticCurveTo(ex, ey - r * .12, ex + r * .12, ey + r * .05); ctx.stroke(); continue; }
     if (blink) { ctx.beginPath(); ctx.moveTo(ex - r * .12, ey); ctx.quadraticCurveTo(ex, ey + r * .07, ex + r * .12, ey); ctx.stroke(); continue; }
     if (mood === 'hurt') { ctx.beginPath(); ctx.moveTo(ex - sd * r * .1, ey - r * .09); ctx.lineTo(ex + sd * r * .08, ey); ctx.lineTo(ex - sd * r * .1, ey + r * .09); ctx.stroke(); continue; }
-    ctx.fillStyle = '#0e0c12'; circ(ex + lx, ey + ly, r * .14);
-    ctx.fillStyle = '#fff'; circ(ex + lx + r * .055, ey + ly - r * .055, r * .055); circ(ex + lx - r * .045, ey + ly + r * .045, r * .025);
+    ctx.fillStyle = '#0e0c12'; circ(ex + lx, ey + ly, r * .135);
+    ctx.fillStyle = '#fff'; circ(ex + lx + r * .05, ey + ly - r * .05, r * .05); circ(ex + lx - r * .04, ey + ly + r * .045, r * .024);
   }
-  if (mood === 'sad') { ctx.fillStyle = '#7ec8e3'; ctx.beginPath(); ctx.moveTo(r * .38, -r * .02); ctx.quadraticCurveTo(r * .48, r * .14, r * .38, r * .18); ctx.quadraticCurveTo(r * .28, r * .14, r * .38, -r * .02); ctx.fill(); }
-  // the mouth runs back along the snout: a grin with little teeth, or a tongue lolling when playing dead
-  ctx.strokeStyle = '#1b1b22'; ctx.lineWidth = Math.max(1.2, r * .045);
+  if (mood === 'sad') { ctx.fillStyle = '#7ec8e3'; ctx.beginPath(); ctx.moveTo(r * .36, r * .0); ctx.quadraticCurveTo(r * .46, r * .16, r * .36, r * .2); ctx.quadraticCurveTo(r * .26, r * .16, r * .36, r * .0); ctx.fill(); }
+  // the small pink nose at the point of the face, and a tiny mouth
+  ctx.fillStyle = '#f08aa6'; ctx.beginPath(); ctx.moveTo(-r * .17, r * .4); ctx.quadraticCurveTo(0, r * .33, r * .17, r * .4); ctx.quadraticCurveTo(r * .14, r * .56, 0, r * .6); ctx.quadraticCurveTo(-r * .14, r * .56, -r * .17, r * .4); ctx.fill();
+  ctx.fillStyle = 'rgba(255,255,255,.7)'; ctx.beginPath(); ctx.ellipse(-r * .06, r * .41, r * .05, r * .025, -.2, 0, TAU); ctx.fill();
+  ctx.strokeStyle = ink; ctx.lineWidth = Math.max(1.1, r * .04);
   if (mood === 'dead') {
-    ctx.beginPath(); ctx.moveTo(-r * .2, r * .5); ctx.quadraticCurveTo(0, r * .8, r * .2, r * .5); ctx.stroke();
-    ctx.fillStyle = '#ff7a9c'; ctx.beginPath(); ctx.moveTo(r * .03, r * .76); ctx.quadraticCurveTo(r * .06, r * .98, r * .17, r * .95); ctx.quadraticCurveTo(r * .23, r * .86, r * .15, r * .72); ctx.closePath(); ctx.fill();
+    ctx.beginPath(); ctx.moveTo(-r * .1, r * .66); ctx.lineTo(r * .1, r * .66); ctx.stroke();
+    ctx.fillStyle = '#ff7a9c'; ctx.beginPath(); ctx.moveTo(r * .01, r * .66); ctx.quadraticCurveTo(r * .03, r * .86, r * .12, r * .84); ctx.quadraticCurveTo(r * .18, r * .76, r * .11, r * .66); ctx.closePath(); ctx.fill();
   } else if (mood === 'hurt' || mood === 'sad') {
-    for (const sd of [-1, 1]) { ctx.beginPath(); ctx.moveTo(sd * r * .22, r * .5); ctx.quadraticCurveTo(sd * r * .16, r * .62, sd * r * .06, r * .7); ctx.stroke(); }
+    ctx.beginPath(); ctx.moveTo(-r * .08, r * .68); ctx.quadraticCurveTo(0, r * .62, r * .08, r * .68); ctx.stroke();
   } else {
-    for (const sd of [-1, 1]) { ctx.beginPath(); ctx.moveTo(sd * r * .06, r * .74); ctx.quadraticCurveTo(sd * r * .2, r * .66, sd * r * .25, r * .46); ctx.stroke(); }
-    ctx.fillStyle = '#fff'; for (const sd of [-1, 1]) { ctx.beginPath(); ctx.moveTo(sd * r * .16, r * .62); ctx.lineTo(sd * r * .15, r * .69); ctx.lineTo(sd * r * .2, r * .6); ctx.closePath(); ctx.fill(); }
-    if (mood === 'happy') { ctx.fillStyle = '#ff7a9c'; ctx.beginPath(); ctx.ellipse(0, r * .79, r * .06, r * .05, 0, 0, TAU); ctx.fill(); }
-  }
-  // pink grasping hands
-  for (const sd of [-1, 1]) {
-    ctx.fillStyle = '#f5c3cf'; ctx.strokeStyle = h.yarn; ctx.lineWidth = 1.5;
-    ctx.beginPath(); ctx.ellipse(sd * r * .52, r * .9, r * .17, r * .12, 0, 0, TAU); ctx.fill(); ctx.stroke();
-    for (const d of [-.13, -.04, .05, .14]) { ctx.beginPath(); ctx.ellipse(sd * r * .52 + r * d, r * .79, r * .04, r * .065, d * 2, 0, TAU); ctx.fill(); }
+    ctx.beginPath(); ctx.moveTo(0, r * .59); ctx.lineTo(0, r * .63); ctx.moveTo(-r * .09, r * .63); ctx.quadraticCurveTo(-r * .04, r * .68, 0, r * .63); ctx.quadraticCurveTo(r * .04, r * .68, r * .09, r * .63); ctx.stroke();
+    if (mood === 'happy') { ctx.fillStyle = '#ff7a9c'; ctx.beginPath(); ctx.ellipse(0, r * .69, r * .05, r * .04, 0, 0, TAU); ctx.fill(); }
   }
 }
 function drawPanda(h, r, o, mood, t) {
