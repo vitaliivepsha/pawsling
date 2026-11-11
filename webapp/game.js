@@ -17,11 +17,13 @@ const TG_CLOUD = !!(TG && TG.CloudStorage && tgv('6.9'));
 const TG_NAME = (TG && TG.initDataUnsafe && TG.initDataUnsafe.user && TG.initDataUnsafe.user.first_name) || '';
 
 let scale = 1, dpr = 1, T = 0;
+// graphics, chosen per device (each phone has its own power, so it is not synced): 'auto', 'high' or 'low' (saver)
+let GFX = ['auto', 'high', 'low'].includes(lsGet('pawsling-gfx')) ? lsGet('pawsling-gfx') : 'auto';
 function resize() {
   const b = document.body, narrow = b.clientWidth < 520; // phones use the full width: the 16px gutters cost ~8% of the text size
   const aw = Math.max(240, b.clientWidth - (narrow ? 0 : 32)), ah = Math.max(320, b.clientHeight - (narrow ? 0 : 16));
   scale = Math.min(aw / W, ah / H);
-  dpr = Math.min(2, window.devicePixelRatio || 1);
+  dpr = GFX === 'low' ? 1 : Math.min(2, window.devicePixelRatio || 1);
   cv.style.width = (W * scale) + 'px';
   cv.style.height = (H * scale) + 'px';
   cv.width = Math.round(W * scale * dpr);
@@ -1298,7 +1300,7 @@ const I18N = {
     'item.hat_crown': 'Корона', 'itemd.hat_crown': 'Для всієї команди',
     'item.hat_bow': 'Бантик', 'itemd.hat_bow': 'Для всієї команди',
     'item.rainbow': 'Райдужна нитка', 'itemd.rainbow': 'Нитки переливаються веселкою',
-    'hero.spark.name': 'Іскра', 'hero.spark.skill': 'удар перескакує блискавкою на найближчого ворога', 'hero.spark.combo': 'Грозова хмара', secondWind: 'Друге дихання', secondWindSub: 'Повна міцність і всі герої на ногах', secondWindGo: 'Друге дихання!', almostWon: p => `Перемога була зовсім близько: роботам лишилося ${p}%!`, robotsLeft: p => `Роботам лишилося ${p}% міцності`, windFree: n => `безкоштовно${n > 1 ? ` (${n})` : ''}`, payWait: 'Відкриваю оплату…', payFailed: 'Оплата не пройшла. Спробуй ще раз', langAuto: 'Автоматично',
+    'hero.spark.name': 'Іскра', 'hero.spark.skill': 'удар перескакує блискавкою на найближчого ворога', 'hero.spark.combo': 'Грозова хмара', secondWind: 'Друге дихання', secondWindSub: 'Повна міцність і всі герої на ногах', secondWindGo: 'Друге дихання!', almostWon: p => `Перемога була зовсім близько: роботам лишилося ${p}%!`, robotsLeft: p => `Роботам лишилося ${p}% міцності`, windFree: n => `безкоштовно${n > 1 ? ` (${n})` : ''}`, payWait: 'Відкриваю оплату…', payFailed: 'Оплата не пройшла. Спробуй ще раз', langAuto: 'Автоматично', gfx: 'Графіка', 'gfx.auto': 'Авто', 'gfx.high': 'Висока', 'gfx.low': 'Економна', 'gfxd.auto': 'Ефекти спрощуються, якщо телефон не встигає', 'gfxd.high': 'Повна чіткість і всі ефекти завжди', 'gfxd.low': 'Менша чіткість, без ефектів: для старих телефонів',
     aria: 'Гра Pawsling. Потягни від героя назад і відпусти, щоб запустити його, як з рогатки.',
     board: 'Рейтинг', boardNight: 'Нічна зміна', boardStars: 'Зірки', boardFriends: 'Друзі', boardFriendsEmpty: 'Тут з\'являться друзі, яких ти запросиш, і той, хто запросив тебе. Змагайтеся за зірки й хвилі «Нічної зміни»!', boardYou: 'ти', boardEmpty: 'Поки що нікого. Займи перше місце!',
     boardLoading: 'Завантаження…', boardError: 'Не вдалося завантажити рейтинг. Перевір інтернет і спробуй ще.',
@@ -1452,7 +1454,7 @@ const I18N = {
     'item.hat_crown': 'Crown', 'itemd.hat_crown': 'For the whole team',
     'item.hat_bow': 'Bow', 'itemd.hat_bow': 'For the whole team',
     'item.rainbow': 'Rainbow yarn', 'itemd.rainbow': 'Threads shimmer like a rainbow',
-    'hero.spark.name': 'Sparky', 'hero.spark.skill': 'each hit arcs like lightning to the nearest enemy', 'hero.spark.combo': 'Thundercloud', secondWind: 'Second wind', secondWindSub: 'Full home strength, every hero back up', secondWindGo: 'Second wind!', almostWon: p => `So close: the robots had only ${p}% left!`, robotsLeft: p => `The robots have ${p}% of their strength left`, windFree: n => `free${n > 1 ? ` (${n})` : ''}`, payWait: 'Opening payment…', payFailed: 'Payment failed. Try again', langAuto: 'Automatic',
+    'hero.spark.name': 'Sparky', 'hero.spark.skill': 'each hit arcs like lightning to the nearest enemy', 'hero.spark.combo': 'Thundercloud', secondWind: 'Second wind', secondWindSub: 'Full home strength, every hero back up', secondWindGo: 'Second wind!', almostWon: p => `So close: the robots had only ${p}% left!`, robotsLeft: p => `The robots have ${p}% of their strength left`, windFree: n => `free${n > 1 ? ` (${n})` : ''}`, payWait: 'Opening payment…', payFailed: 'Payment failed. Try again', langAuto: 'Automatic', gfx: 'Graphics', 'gfx.auto': 'Auto', 'gfx.high': 'High', 'gfx.low': 'Saver', 'gfxd.auto': 'Effects get simpler if the phone can\'t keep up', 'gfxd.high': 'Full sharpness and every effect, always', 'gfxd.low': 'Lower sharpness, no effects: for older phones',
     aria: 'Pawsling. Pull back from a hero and let go to launch it like a slingshot.',
     board: 'Leaderboard', boardNight: 'Night Shift', boardStars: 'Stars', boardFriends: 'Friends', boardFriendsEmpty: 'Friends you invite, and whoever invited you, show up here. Race each other for stars and Night Shift waves!', boardYou: 'you', boardEmpty: 'Nobody here yet. Be the first!',
     boardLoading: 'Loading…', boardError: 'Could not load the leaderboard. Check your connection and try again.',
@@ -1606,7 +1608,7 @@ const I18N = {
     'item.hat_crown': 'Korona', 'itemd.hat_crown': 'Dla całej drużyny',
     'item.hat_bow': 'Kokardka', 'itemd.hat_bow': 'Dla całej drużyny',
     'item.rainbow': 'Tęczowa włóczka', 'itemd.rainbow': 'Nitki mienią się tęczą',
-    'hero.spark.name': 'Iskra', 'hero.spark.skill': 'każde trafienie przeskakuje piorunem na najbliższego wroga', 'hero.spark.combo': 'Chmura burzowa', secondWind: 'Drugi oddech', secondWindSub: 'Pełna wytrzymałość i wszyscy bohaterowie na nogach', secondWindGo: 'Drugi oddech!', almostWon: p => `Tak blisko: robotom zostało tylko ${p}%!`, robotsLeft: p => `Robotom zostało ${p}% wytrzymałości`, windFree: n => `za darmo${n > 1 ? ` (${n})` : ''}`, payWait: 'Otwieram płatność…', payFailed: 'Płatność nie powiodła się. Spróbuj ponownie', langAuto: 'Automatycznie',
+    'hero.spark.name': 'Iskra', 'hero.spark.skill': 'każde trafienie przeskakuje piorunem na najbliższego wroga', 'hero.spark.combo': 'Chmura burzowa', secondWind: 'Drugi oddech', secondWindSub: 'Pełna wytrzymałość i wszyscy bohaterowie na nogach', secondWindGo: 'Drugi oddech!', almostWon: p => `Tak blisko: robotom zostało tylko ${p}%!`, robotsLeft: p => `Robotom zostało ${p}% wytrzymałości`, windFree: n => `za darmo${n > 1 ? ` (${n})` : ''}`, payWait: 'Otwieram płatność…', payFailed: 'Płatność nie powiodła się. Spróbuj ponownie', langAuto: 'Automatycznie', gfx: 'Grafika', 'gfx.auto': 'Auto', 'gfx.high': 'Wysoka', 'gfx.low': 'Oszczędna', 'gfxd.auto': 'Efekty upraszczają się, gdy telefon nie nadąża', 'gfxd.high': 'Pełna ostrość i wszystkie efekty, zawsze', 'gfxd.low': 'Mniejsza ostrość, bez efektów: dla starszych telefonów',
     aria: 'Pawsling. Pociągnij od bohatera do tyłu i puść, żeby wystrzelić go jak z procy.',
     board: 'Ranking', boardNight: 'Nocna zmiana', boardStars: 'Gwiazdki', boardFriends: 'Znajomi', boardFriendsEmpty: 'Tu pojawią się znajomi, których zaprosisz, i osoba, która zaprosiła ciebie. Ścigajcie się o gwiazdki i fale Nocnej zmiany!', boardYou: 'ty', boardEmpty: 'Jeszcze nikogo tu nie ma. Bądź pierwszy!',
     boardLoading: 'Ładowanie…', boardError: 'Nie udało się wczytać rankingu. Sprawdź internet i spróbuj ponownie.',
@@ -1760,7 +1762,7 @@ const I18N = {
     'item.hat_crown': 'Krone', 'itemd.hat_crown': 'Für das ganze Team',
     'item.hat_bow': 'Schleife', 'itemd.hat_bow': 'Für das ganze Team',
     'item.rainbow': 'Regenbogenwolle', 'itemd.rainbow': 'Fäden schimmern wie ein Regenbogen',
-    'hero.spark.name': 'Funke', 'hero.spark.skill': 'jeder Treffer springt als Blitz auf den nächsten Gegner über', 'hero.spark.combo': 'Gewitterwolke', secondWind: 'Zweite Luft', secondWindSub: 'Volle Stärke und alle Helden wieder auf den Beinen', secondWindGo: 'Zweite Luft!', almostWon: p => `So knapp: die Roboter hatten nur noch ${p} %!`, robotsLeft: p => `Die Roboter haben noch ${p} % Stärke`, windFree: n => `gratis${n > 1 ? ` (${n})` : ''}`, payWait: 'Zahlung wird geöffnet…', payFailed: 'Zahlung fehlgeschlagen. Versuch es nochmal', langAuto: 'Automatisch',
+    'hero.spark.name': 'Funke', 'hero.spark.skill': 'jeder Treffer springt als Blitz auf den nächsten Gegner über', 'hero.spark.combo': 'Gewitterwolke', secondWind: 'Zweite Luft', secondWindSub: 'Volle Stärke und alle Helden wieder auf den Beinen', secondWindGo: 'Zweite Luft!', almostWon: p => `So knapp: die Roboter hatten nur noch ${p} %!`, robotsLeft: p => `Die Roboter haben noch ${p} % Stärke`, windFree: n => `gratis${n > 1 ? ` (${n})` : ''}`, payWait: 'Zahlung wird geöffnet…', payFailed: 'Zahlung fehlgeschlagen. Versuch es nochmal', langAuto: 'Automatisch', gfx: 'Grafik', 'gfx.auto': 'Auto', 'gfx.high': 'Hoch', 'gfx.low': 'Sparsam', 'gfxd.auto': 'Effekte werden einfacher, wenn das Handy nicht mitkommt', 'gfxd.high': 'Volle Schärfe und alle Effekte, immer', 'gfxd.low': 'Weniger Schärfe, keine Effekte: für ältere Handys',
     aria: 'Pawsling. Zieh vom Helden zurück und lass los, um ihn wie mit einer Schleuder abzufeuern.',
     board: 'Rangliste', boardNight: 'Nachtschicht', boardStars: 'Sterne', boardFriends: 'Freunde', boardFriendsEmpty: 'Hier erscheinen Freunde, die du einlädst, und wer dich eingeladen hat. Messt euch bei Sternen und Wellen der Nachtschicht!', boardYou: 'du', boardEmpty: 'Noch niemand hier. Sei der Erste!',
     boardLoading: 'Wird geladen…', boardError: 'Rangliste konnte nicht geladen werden. Prüfe die Verbindung und versuch es nochmal.',
@@ -1914,7 +1916,7 @@ const I18N = {
     'item.hat_crown': 'Corona', 'itemd.hat_crown': 'Para todo el equipo',
     'item.hat_bow': 'Lazo', 'itemd.hat_bow': 'Para todo el equipo',
     'item.rainbow': 'Hilo arcoíris', 'itemd.rainbow': 'Los hilos brillan como un arcoíris',
-    'hero.spark.name': 'Chispa', 'hero.spark.skill': 'cada golpe salta como un rayo al enemigo más cercano', 'hero.spark.combo': 'Nube de tormenta', secondWind: 'Segundo aliento', secondWindSub: 'Resistencia completa y todos los héroes en pie', secondWindGo: '¡Segundo aliento!', almostWon: p => `¡Casi: a los robots solo les quedaba un ${p}%!`, robotsLeft: p => `A los robots les queda un ${p}% de fuerza`, windFree: n => `gratis${n > 1 ? ` (${n})` : ''}`, payWait: 'Abriendo el pago…', payFailed: 'El pago falló. Inténtalo de nuevo', langAuto: 'Automático',
+    'hero.spark.name': 'Chispa', 'hero.spark.skill': 'cada golpe salta como un rayo al enemigo más cercano', 'hero.spark.combo': 'Nube de tormenta', secondWind: 'Segundo aliento', secondWindSub: 'Resistencia completa y todos los héroes en pie', secondWindGo: '¡Segundo aliento!', almostWon: p => `¡Casi: a los robots solo les quedaba un ${p}%!`, robotsLeft: p => `A los robots les queda un ${p}% de fuerza`, windFree: n => `gratis${n > 1 ? ` (${n})` : ''}`, payWait: 'Abriendo el pago…', payFailed: 'El pago falló. Inténtalo de nuevo', langAuto: 'Automático', gfx: 'Gráficos', 'gfx.auto': 'Auto', 'gfx.high': 'Alta', 'gfx.low': 'Ahorro', 'gfxd.auto': 'Los efectos se simplifican si el móvil no da abasto', 'gfxd.high': 'Máxima nitidez y todos los efectos, siempre', 'gfxd.low': 'Menos nitidez y sin efectos: para móviles antiguos',
     aria: 'Pawsling. Tira hacia atrás desde un héroe y suelta para lanzarlo como con un tirachinas.',
     board: 'Clasificación', boardNight: 'Turno de noche', boardStars: 'Estrellas', boardFriends: 'Amigos', boardFriendsEmpty: 'Aquí aparecerán los amigos que invites y quien te invitó a ti. ¡Competid por estrellas y oleadas del Turno de noche!', boardYou: 'tú', boardEmpty: 'Aún no hay nadie. ¡Sé el primero!',
     boardLoading: 'Cargando…', boardError: 'No se pudo cargar la clasificación. Revisa la conexión e inténtalo de nuevo.',
@@ -3784,12 +3786,14 @@ function bg(c) {
 }
 // the small copies: the strip y 300..670 (game units) at 1:1, a quarter of the full size's pixels and a fifth of its rows
 const THUMB_Y = 300, THUMB_H = 370, THUMBS = [];
+const thumbScale = () => (GFX === 'high' ? 2 : 1);
 function makeThumb(c, src) {
   const t = document.createElement('canvas');
-  t.width = W; t.height = THUMB_H;
+  const k = thumbScale();
+  t.width = W * k; t.height = THUMB_H * k; t.k = k;
   const x = t.getContext('2d');
   x.imageSmoothingQuality = 'high';
-  x.drawImage(src, 0, THUMB_Y * 2, W * 2, THUMB_H * 2, 0, 0, W, THUMB_H);
+  x.drawImage(src, 0, THUMB_Y * 2, W * 2, THUMB_H * 2, 0, 0, t.width, t.height);
   THUMBS[c] = t;
 }
 function roomThumb(c) {
@@ -3802,7 +3806,7 @@ function roomThumb(c) {
 }
 // part of a room's picture, given in game units, drawn at (dx, dy, dw, dh): from the small copy when it holds that part
 function drawRoomPart(c, sx, sy, sw, sh, dx, dy, dw, dh) {
-  if (sy >= THUMB_Y && sy + sh <= THUMB_Y + THUMB_H) ctx.drawImage(roomThumb(c), sx, sy - THUMB_Y, sw, sh, dx, dy, dw, dh);
+  if (sy >= THUMB_Y && sy + sh <= THUMB_Y + THUMB_H) { const t = roomThumb(c), k = t.k || 1; ctx.drawImage(t, sx * k, (sy - THUMB_Y) * k, sw * k, sh * k, dx, dy, dw, dh); }
   else ctx.drawImage(bg(c), sx * 2, sy * 2, sw * 2, sh * 2, dx, dy, dw, dh);
 }
 
@@ -10386,6 +10390,13 @@ function applyLang(k) {
   LANG = k || autoLang();
   cv.setAttribute('aria-label', tr('aria')); document.documentElement.lang = LANG;
 }
+function setGfx(g) {
+  if (g === GFX) return;
+  GFX = g; lsSet('pawsling-gfx', g);
+  LOWFX = g === 'low'; slowMs = 0;
+  THUMBS.length = 0; // remade at the new resolution when next shown
+  resize();
+}
 function drawLang() {
   drawMap(); UI = [];
   ctx.fillStyle = 'rgba(12,10,26,.9)'; ctx.fillRect(0, 0, W, H);
@@ -10402,6 +10413,13 @@ function drawLang() {
   const list = Object.entries(LANGS).sort((a, b) => a[1].localeCompare(b[1], 'en'));
   uiBtn(75, 170, W - 150, 54, `${tr('langAuto')} · ${LANGS[autoLang()]}`, () => pick(null), auto);
   list.forEach(([k, name], i) => uiBtn(75, 240 + i * 68, W - 150, 54, name, () => pick(k), !auto && k === LANG));
+  // graphics: three choices in a row, what the picked one does underneath
+  const gy = 240 + list.length * 68 + 26;
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillStyle = '#ffc857'; ctx.font = `900 20px ${FD}`; ctx.fillText(tr('gfx'), W / 2, gy);
+  const gw = (W - 150 - 16) / 3;
+  ['auto', 'high', 'low'].forEach((g, i) => uiBtn(75 + i * (gw + 8), gy + 22, gw, 46, tr('gfx.' + g), () => setGfx(g), GFX === g));
+  ctx.textAlign = 'center'; ctx.fillStyle = '#b9b2da'; fitFont(tr('gfxd.' + GFX), W - 60, 13, 800, FB); ctx.fillText(tr('gfxd.' + GFX), W / 2, gy + 90);
 }
 
 // ---------- shop: Second wind for Telegram Stars ----------
@@ -13238,12 +13256,12 @@ if (DEV) window.__pawsling = { get G() { return G; }, set G(v) { G = v; }, openC
 reportEvent(); // after DEV: activeEvent() reads it
 let last = performance.now();
 // Slow devices: if frames keep taking longer than ~45 ms, drop the animated room lights.
-let LOWFX = false, slowMs = 0, failed = false, failN = 0;
+let LOWFX = GFX === 'low', slowMs = 0, failed = false, failN = 0;
 function frame(now) {
   if (DEV && window.__pause) { last = now; nextFrame(frame); return; }
   const raw = now - last, dt = Math.min(.033, raw / 1000);
   last = now; T += dt;
-  if (!LOWFX && !DEV) { slowMs = raw > 45 ? slowMs + raw : Math.max(0, slowMs - raw); if (slowMs > 1500) LOWFX = true; }
+  if (!LOWFX && !DEV && GFX === 'auto') { slowMs = raw > 45 ? slowMs + raw : Math.max(0, slowMs - raw); if (slowMs > 1500) LOWFX = true; }
   try {
     update(dt);
     draw();
