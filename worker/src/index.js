@@ -34,7 +34,7 @@
 //   bot goes to the owner as a support message; the owner's reply to it goes back to that player.
 
 const MAX_AGE = 7 * 24 * 3600; // initData older than this is refused
-const LIMITS = { night: 500, stars: 400 }; // anything above is not a real result
+const LIMITS = { night: 500, stars: 600 }; // anything above is not a real result (stars: 3 per level, with room for new rooms)
 const TOP = 20;
 // Items sold for Telegram Stars (currency XTR). The price is checked again at pre-checkout.
 // `grant` is what lands in the player's inventory once the payment succeeds.
@@ -212,12 +212,18 @@ export default {
     if (path === '/tg') {
       // only Telegram knows the secret we gave it in setWebhook
       if (req.headers.get('X-Telegram-Bot-Api-Secret-Token') !== await hookSecret(env)) return new Response('forbidden', { status: 403 });
-      try { await onUpdate(env, await req.json()); } catch (e) { console.log('update failed', e && e.message); }
+      let upd = null;
+      try { upd = await req.json(); await onUpdate(env, upd); } catch (e) {
+        console.log('update failed', e && e.message);
+        // a payment that was not recorded must come again: Telegram repeats an update answered with an error
+        if (upd && upd.message && upd.message.successful_payment) return new Response('retry', { status: 500 });
+      }
       return new Response('ok');
     }
 
     let body;
     try { body = await req.json(); } catch { return json({ error: 'bad json' }, 400); }
+    if (!body || typeof body !== 'object') return json({ error: 'bad json' }, 400);
     const user = await verify(body.initData, env.BOT_TOKEN);
     if (!user || !user.id) return json({ error: 'unauthorized' }, 401);
     try { await ensureHook(env, url.origin); } catch (e) { console.log('webhook check failed', e && e.message); }
@@ -291,13 +297,17 @@ export default {
       const id = String(body.id || ''), week = weekKey();
       if (!QUEST_GIFTS[id] || body.week !== week) return json({ error: 'bad quest' }, 400);
       await ensureTables(env.DB);
-      const had = await env.DB.prepare('SELECT COUNT(*) AS n FROM quests WHERE user_id = ?1 AND week = ?2').bind(user.id, week).first();
-      if (had.n >= 3) return json({ ok: false, items: await inventory(env.DB, user.id) });
-      const r = await env.DB.prepare('INSERT OR IGNORE INTO quests (user_id, week, quest) VALUES (?1, ?2, ?3)').bind(user.id, week, id).run();
+      // the row goes in only while the week has fewer than three (one statement, so requests at the same moment cannot all pass)
+      const r = await env.DB.prepare(`INSERT OR IGNORE INTO quests (user_id, week, quest) SELECT ?1, ?2, ?3
+        WHERE (SELECT COUNT(*) FROM quests WHERE user_id = ?1 AND week = ?2) < 3`).bind(user.id, week, id).run();
       let bonus = null;
       if (r.meta.changes > 0) {
         await grant(env.DB, user.id, QUEST_GIFTS[id]);
-        if (had.n + 1 === 3) { bonus = QUESTS_ALL; await grant(env.DB, user.id, bonus); }
+        const had = await env.DB.prepare('SELECT COUNT(*) AS n FROM quests WHERE user_id = ?1 AND week = ?2').bind(user.id, week).first();
+        if (had.n >= 3) {
+          const mark = await env.DB.prepare('INSERT OR IGNORE INTO album (user_id, card) VALUES (?1, ?2)').bind(user.id, 'qall:' + week).run();
+          if (mark.meta.changes > 0) { bonus = QUESTS_ALL; await grant(env.DB, user.id, bonus); }
+        }
       }
       return json({ ok: r.meta.changes > 0, bonus, items: await inventory(env.DB, user.id) });
     }
@@ -312,18 +322,26 @@ export default {
       const now = Math.floor(Date.now() / 1000);
       for (const id of [user.id, to]) await env.DB.prepare(`INSERT INTO harvest (ev, user_id, bonus, at) VALUES (?1, ?2, ?3, ?4)
         ON CONFLICT(ev, user_id) DO UPDATE SET bonus = bonus + excluded.bonus`).bind(hk, id, THANKS_BONUS, now).run();
-      const fl = await env.DB.prepare('SELECT lang FROM daily WHERE user_id = ?1').bind(to).first();
+      const fl = { lang: await langOf(env.DB, to) };
       try { await tg(env, 'sendMessage', { chat_id: to, text: text(fl && fl.lang).thanksGot(displayName(user)) }); } catch (e) {}
       return json({ ok: true });
     }
     if (path === '/achieve') {
       // an achievement pays once: a boss level on three stars (an Hourglass), a whole room on three stars (an Armour)
-      const m = /^(boss3|room3):(\d{1,3})$/.exec(String(body.key || ''));
-      if (!m) return json({ error: 'bad key' }, 400);
+      // several at once (the game sends again the ones that did not get through), each only for a boss level or a room
+      // that is open, and only with at least the stars it takes to get there
+      const keys = [...new Set((Array.isArray(body.keys) ? body.keys : [body.key]).map(k => String(k || '')))].slice(0, 80);
       await ensureTables(env.DB);
-      const r = await env.DB.prepare('INSERT OR IGNORE INTO album (user_id, card) VALUES (?1, ?2)').bind(user.id, 'ach:' + m[0]).run();
-      if (r.meta.changes > 0) await grant(env.DB, user.id, { [m[1] === 'boss3' ? 'hourglass' : 'armor']: 1 });
-      return json({ ok: r.meta.changes > 0, items: await inventory(env.DB, user.id) });
+      const p = await env.DB.prepare('SELECT stars FROM players WHERE id = ?1').bind(user.id).first();
+      const stars = Math.max(p ? p.stars : 0, clampInt(body.stars, LIMITS.stars));
+      const got = [];
+      for (const key of keys) {
+        const m = /^(boss3|room3):(\d{1,3})$/.exec(key), need = m ? achNeed(m[1], Number(m[2])) : null;
+        if (need == null || stars < need) continue;
+        const r = await env.DB.prepare('INSERT OR IGNORE INTO album (user_id, card) VALUES (?1, ?2)').bind(user.id, 'ach:' + key).run();
+        if (r.meta.changes > 0) { await grant(env.DB, user.id, { [m[1] === 'boss3' ? 'hourglass' : 'armor']: 1 }); got.push(key); }
+      }
+      return json({ ok: got.length > 0, got, items: await inventory(env.DB, user.id) });
     }
     if (path === '/prefs') {
       // the picked team and the settings, so every device gets them; the newer stamp wins for each
@@ -384,7 +402,7 @@ export default {
       return r.ok ? json({ id: r.result.id }) : json({ error: 'share failed' }, 502);
     }
     if (path === '/challenge') {
-      if (!BOOSTERS.includes(body.reward)) return json({ error: 'bad reward' }, 400);
+      if (!['heart', 'meter'].includes(body.reward)) return json({ error: 'bad reward' }, 400); // the daily challenge pays only these
       await ensureTables(env.DB);
       const today = utcDay();
       const r = await env.DB.prepare(`INSERT INTO daily (user_id, streak, challenge_day, lang) VALUES (?1, 0, ?2, ?3)
@@ -411,7 +429,7 @@ export default {
     return json(await board(env.DB, body.board, user.id));
   },
 
-  async scheduled(event, env, ctx) { ctx.waitUntil(event.cron === '5 0 * * 1' ? awardWeek(env) : Promise.all([sendRaids(env), sendStreakReminders(env), sendChestPings(env), sendMissYou(env), sendChannelPosts(env), awardHarvest(env)])); },
+  async scheduled(event, env, ctx) { ctx.waitUntil(event.cron === '5 0 * * 1' ? awardWeek(env) : Promise.all([new Date().getUTCDay() === 1 ? awardWeek(env) : null, sendRaids(env), sendStreakReminders(env), sendChestPings(env), sendMissYou(env), sendChannelPosts(env), awardHarvest(env)])); },
 };
 
 // ---------- daily bonus, challenge, invites ----------
@@ -465,7 +483,7 @@ async function daily(env, user, body = {}) {
     const r = await db.prepare('INSERT OR IGNORE INTO referrals (user_id, ref_by, at) VALUES (?1, ?2, ?3)').bind(user.id, inviter, Math.floor(Date.now() / 1000)).run();
     if (r.meta.changes > 0) {
       await grant(db, user.id, REF_GIFT); await grant(db, inviter, REF_GIFT); gifted = true;
-      const il = await db.prepare('SELECT lang FROM daily WHERE user_id = ?1').bind(inviter).first();
+      const il = { lang: await langOf(db, inviter) };
       await tg(env, 'sendMessage', { chat_id: inviter, text: text(il && il.lang).refJoined(displayName(user)) });
     }
   }
@@ -486,13 +504,20 @@ async function refRoomDone(env, user) {
   const r = await db.prepare('INSERT OR IGNORE INTO ref_rooms (user_id, at) VALUES (?1, ?2)').bind(user.id, Math.floor(Date.now() / 1000)).run();
   if (!r.meta.changes) return;
   await grant(db, ref.ref_by, REF_ROOM_GIFT);
-  const il = await db.prepare('SELECT lang FROM daily WHERE user_id = ?1').bind(ref.ref_by).first();
+  const il = { lang: await langOf(db, ref.ref_by) };
   await tg(env, 'sendMessage', { chat_id: ref.ref_by, text: text(il && il.lang).refRoom(displayName(user)) });
 }
+const grantStmts = (db, id, g) => Object.entries(g).map(([k, n]) => db.prepare(
+  'INSERT INTO inventory (user_id, item, count) VALUES (?1, ?2, ?3) ON CONFLICT(user_id, item) DO UPDATE SET count = count + excluded.count',
+).bind(id, k, n));
 async function grant(db, id, g) {
-  await db.batch(Object.entries(g).map(([k, n]) => db.prepare(
-    'INSERT INTO inventory (user_id, item, count) VALUES (?1, ?2, ?3) ON CONFLICT(user_id, item) DO UPDATE SET count = count + excluded.count',
-  ).bind(id, k, n)));
+  const st = grantStmts(db, id, g);
+  if (st.length) await db.batch(st);
+}
+// the game's language for a player: the one picked in the game, else Telegram's
+async function langOf(db, id) {
+  const r = await db.prepare('SELECT (SELECT lang FROM notify WHERE user_id = ?1) AS a, (SELECT lang FROM daily WHERE user_id = ?1) AS b').bind(id).first();
+  return (r && (r.a || r.b)) || '';
 }
 
 // ---------- weekly Night Shift tournament ----------
@@ -519,13 +544,16 @@ async function awardWeek(env) {
   const db = env.DB;
   await ensureTables(db);
   const wk = weekKey(Date.now() - 3 * DAY); // the cron runs early on Monday: award the week that just ended
-  const done = await db.prepare('INSERT OR IGNORE INTO week_awards (week, at) VALUES (?1, ?2)').bind(wk, Math.floor(Date.now() / 1000)).run();
-  if (done.meta.changes === 0) return;
+  if (await db.prepare('SELECT 1 AS x FROM week_awards WHERE week = ?1').bind(wk).first()) return;
   const top = await db.prepare('SELECT user_id, lang, night FROM weekly WHERE week = ?1 AND night > 0 ORDER BY night DESC, at ASC LIMIT 3').bind(wk).all();
   for (const [i, r] of top.results.entries()) {
+    // each winner once, even if a run stops halfway and the next one starts over
+    const paid = await db.prepare('INSERT OR IGNORE INTO album (user_id, card) VALUES (?1, ?2)').bind(r.user_id, 'wk:' + wk).run();
+    if (!paid.meta.changes) continue;
     await grant(db, r.user_id, WEEK_PRIZES[i]);
     try { await tg(env, 'sendMessage', { chat_id: r.user_id, text: text(r.lang).weekWin(i + 1, r.night, WEEK_PRIZES[i]) }); } catch {}
   }
+  await db.prepare('INSERT OR IGNORE INTO week_awards (week, at) VALUES (?1, ?2)').bind(wk, Math.floor(Date.now() / 1000)).run();
 }
 
 // ---------- Telegram Bot API ----------
@@ -691,13 +719,23 @@ async function onUpdate(env, u) {
     let item = '';
     try { item = JSON.parse(p.invoice_payload).item; } catch {}
     await ensureTables(env.DB);
-    const ins = await env.DB.prepare('INSERT OR IGNORE INTO purchases (charge_id, user_id, item, stars, at) VALUES (?1, ?2, ?3, ?4, ?5)')
-      .bind(p.telegram_payment_charge_id, m.from.id, item, p.total_amount, Math.floor(Date.now() / 1000)).run();
-    const g = ITEMS[item] && ITEMS[item].grant;
-    if (ins.meta.changes > 0) {
-      if (g) await grant(env.DB, m.from.id, g);
-      await notifyAdmin(env, `💰 ${buyer(m.from)} купує «${itemName(item)}» за ${p.total_amount} ⭐`);
+    // the purchase and what it gives go in one batch (a transaction in D1): both land or neither does, and a repeat
+    // of the same charge finds it recorded (a plain INSERT, so a repeat running at the same moment fails as a whole)
+    const charge = p.telegram_payment_charge_id;
+    const seen = () => env.DB.prepare('SELECT 1 AS x FROM purchases WHERE charge_id = ?1').bind(charge).first();
+    if (await seen()) return;
+    const g = (ITEMS[item] && ITEMS[item].grant) || {};
+    try {
+      await env.DB.batch([
+        env.DB.prepare('INSERT INTO purchases (charge_id, user_id, item, stars, at) VALUES (?1, ?2, ?3, ?4, ?5)')
+          .bind(charge, m.from.id, item, p.total_amount, Math.floor(Date.now() / 1000)),
+        ...grantStmts(env.DB, m.from.id, g),
+      ]);
+    } catch (e) {
+      if (await seen()) return; // the same charge, recorded by a repeat at the same moment
+      throw e;
     }
+    await notifyAdmin(env, `💰 ${buyer(m.from)} купує «${itemName(item)}» за ${p.total_amount} ⭐`);
     return;
   }
   if (m.refunded_payment) {
@@ -763,7 +801,7 @@ async function onUpdate(env, u) {
   // support: players write to the bot, the owner gets the message and answers by replying to it
   if (m.chat && m.chat.type === 'private' && typeof m.text === 'string' && env.ADMIN_ID) {
     if (isAdmin(env, m.from)) {
-      const ref = m.reply_to_message && /#u(\d+)/.exec(m.reply_to_message.text || '');
+      const ref = m.reply_to_message && supportMark(m.reply_to_message.text);
       if (!ref) return;
       const r = await tg(env, 'sendMessage', { chat_id: Number(ref[1]), text: `💬 ${m.text}` });
       await tg(env, 'sendMessage', { chat_id: m.chat.id, text: r.ok ? '✅ Відповідь надіслано' : `⚠️ Не вдалося надіслати: ${r.description || ''}` });
@@ -779,6 +817,10 @@ ${m.text.slice(0, 3500)}
   }
 }
 
+// a forwarded support message ends its first line with #u<id>; the name before it is the player's own and could hold a
+// fake one, so the last mark counts
+const supportMark = t => { const all = [...String(t || '').matchAll(/#u(\d+)/g)]; return all.length ? all[all.length - 1] : null; };
+
 // ---------- owner: /gift, a hero from the game itself ----------
 // /gift <id> <hero>, or a reply to a player's support message with /gift <hero>; /gift <name> finds the id
 const GIFT_HEROES = { possum: 'hero_possum', 'опі': 'hero_possum', 'опосум': 'hero_possum', panda: 'hero_panda', 'вогник': 'hero_panda', 'панда': 'hero_panda',
@@ -786,7 +828,7 @@ const GIFT_HEROES = { possum: 'hero_possum', 'опі': 'hero_possum', 'опос�
 async function giftCommand(env, m) {
   const say = t => tg(env, 'sendMessage', { chat_id: m.chat.id, text: t });
   const args = m.text.trim().split(/\s+/).slice(1);
-  const ref = m.reply_to_message && /#u(\d+)/.exec(m.reply_to_message.text || '');
+  const ref = m.reply_to_message && supportMark(m.reply_to_message.text);
   let id = ref ? Number(ref[1]) : null;
   if (!ref && args.length && /^\d+$/.test(args[0])) id = Number(args.shift());
   const item = GIFT_HEROES[(args[args.length - 1] || '').toLowerCase()];
@@ -864,7 +906,7 @@ async function sendRaids(env) {
   const now = Math.floor(Date.now() / 1000), d = new Date();
   // alerts are on, not blocked, nothing sent in the last 20 hours, and not playing in the last 2 hours
   const rows = await db.prepare(`SELECT user_id, lang, tz, room FROM notify WHERE enabled = 1 AND blocked = 0
-    AND (last_raid IS NULL OR last_raid < ?1) AND (last_seen IS NULL OR last_seen < ?2) LIMIT 300`).bind(now - 20 * 3600, now - 2 * 3600).all();
+    AND (last_raid IS NULL OR last_raid < ?1) AND (last_seen IS NULL OR last_seen < ?2) ORDER BY RANDOM() LIMIT 300`).bind(now - 20 * 3600, now - 2 * 3600).all();
   let checked = 0, sent = 0, failed = 0, err = null;
   for (const r of rows.results) {
     const hour = Math.floor(((d.getUTCHours() * 60 + d.getUTCMinutes() - r.tz) % 1440 + 1440) % 1440 / 60);
@@ -964,7 +1006,7 @@ async function harvestRanking(db, key, from, to) {
       (SELECT COUNT(*) FROM referrals r WHERE r.ref_by = h.user_id AND r.at >= ?2 AND r.at < ?3) AS refs,
       (SELECT COALESCE(SUM(h2.own), 0) FROM referrals r2 JOIN harvest h2 ON h2.user_id = r2.user_id AND h2.ev = ?1
         WHERE r2.ref_by = h.user_id AND r2.at >= ?2 AND r2.at < ?3) AS refOwn, h.at
-    FROM harvest h LEFT JOIN players p ON p.id = h.user_id WHERE h.ev = ?1 LIMIT 2000`).bind(key, a, b).all();
+    FROM harvest h LEFT JOIN players p ON p.id = h.user_id WHERE h.ev = ?1 ORDER BY h.own + h.bonus DESC LIMIT 2000`).bind(key, a, b).all();
   return rows.results.map(r => ({ id: r.id, name: r.name, value: r.own + r.bonus + REF_PUMPKINS * r.refs + Math.floor(REF_SHARE * r.refOwn), at: r.at }))
     .filter(r => r.value > 0).sort((x, y) => y.value - x.value || x.at - y.at);
 }
@@ -988,7 +1030,7 @@ async function awardHarvest(env) {
     const r = list[i], tier = i === 0 ? 0 : i < 6 ? 1 : r.value >= BRONZE_MIN ? 2 : -1;
     if (tier < 0) continue;
     await grant(db, r.id, { [['hat_wreath_gold', 'hat_wreath_silver', 'hat_wreath_bronze'][tier]]: 1 });
-    const l = await db.prepare('SELECT lang FROM daily WHERE user_id = ?1').bind(r.id).first(), t = text(l && l.lang);
+    const t = text(await langOf(db, r.id));
     try { await tg(env, 'sendMessage', { chat_id: r.id, text: t.harvestWin(i + 1, r.value, t.wreaths[tier]) }); } catch (e) {}
   }
 }
@@ -1019,7 +1061,7 @@ async function sendChestPings(env) {
   await ensureTables(db);
   const now = Math.floor(Date.now() / 1000), d = new Date(), today = utcDay();
   const rows = await db.prepare(`SELECT c.user_id, n.lang, n.tz FROM chests c JOIN notify n ON n.user_id = c.user_id
-    WHERE c.ready_at <= ?1 AND n.last_seen < ?2 AND n.last_seen > ?3 AND n.enabled = 1 AND n.blocked = 0 AND (c.ping_day IS NULL OR c.ping_day <> ?4) LIMIT 300`)
+    WHERE c.ready_at <= ?1 AND n.last_seen < ?2 AND n.last_seen > ?3 AND n.enabled = 1 AND n.blocked = 0 AND (c.ping_day IS NULL OR c.ping_day <> ?4) ORDER BY RANDOM() LIMIT 300`)
     .bind(now - 2 * 3600, now - 8 * 3600, now - 3 * DAY / 1000, today).all();
   if (!rows.results.length) return;
   if (!botName) { const me = await tg(env, 'getMe', {}); botName = me.ok ? me.result.username : null; }
@@ -1041,7 +1083,7 @@ async function sendMissYou(env) {
   await ensureTables(db);
   const now = Math.floor(Date.now() / 1000), d = new Date(), wk = 7 * 24 * 3600;
   const rows = await db.prepare(`SELECT n.user_id, n.lang, n.tz FROM notify n LEFT JOIN comebacks b ON b.user_id = n.user_id
-    WHERE n.last_seen < ?1 AND n.last_seen > ?2 AND n.enabled = 1 AND n.blocked = 0 AND (b.at IS NULL OR b.at < ?3) LIMIT 300`)
+    WHERE n.last_seen < ?1 AND n.last_seen > ?2 AND n.enabled = 1 AND n.blocked = 0 AND (b.at IS NULL OR b.at < ?3) ORDER BY RANDOM() LIMIT 300`)
     .bind(now - 3 * 24 * 3600, now - 30 * 24 * 3600, now - wk).all();
   if (!rows.results.length) return;
   if (!botName) { const me = await tg(env, 'getMe', {}); botName = me.ok ? me.result.username : null; }
@@ -1066,7 +1108,7 @@ async function sendStreakReminders(env) {
   if (left < 2 || left > 5) return;
   const rows = await db.prepare(`SELECT s.user_id, s.run, n.lang, n.tz FROM streaks s JOIN daily y ON y.user_id = s.user_id
     JOIN notify n ON n.user_id = s.user_id LEFT JOIN pings g ON g.user_id = s.user_id
-    WHERE s.run >= 5 AND y.last_day = ?1 AND n.enabled = 1 AND n.blocked = 0 AND (g.streak_day IS NULL OR g.streak_day <> ?2) LIMIT 300`)
+    WHERE s.run >= 5 AND y.last_day = ?1 AND n.enabled = 1 AND n.blocked = 0 AND (g.streak_day IS NULL OR g.streak_day <> ?2) ORDER BY RANDOM() LIMIT 300`)
     .bind(yesterday, today).all();
   if (!rows.results.length) return;
   if (!botName) { const me = await tg(env, 'getMe', {}); botName = me.ok ? me.result.username : null; }
@@ -1108,6 +1150,14 @@ function roomLevels(i) {
   let first = 1;
   for (let k = 0; k < i; k++) first += roomSize(k);
   return [first, first + roomSize(i) - 1];
+}
+// the stars an achievement takes at the least: every level before it won (1 star each), and its own on three stars;
+// null when there is no such boss level or room, or it is not open yet
+const achRoomOpen = i => i >= 0 && (i < ROOMS_N || (CH_OPEN[i] && Date.now() >= CH_OPEN[i]));
+function achNeed(kind, n) {
+  if (kind === 'room3') { if (!achRoomOpen(n)) return null; const [a] = roomLevels(n); return a - 1 + 3 * roomSize(n); }
+  for (let i = 0; achRoomOpen(i); i++) if (roomLevels(i)[1] === n || CH_MID_BOSS[i] === n) return n - 1 + 3;
+  return null;
 }
 // bosses in rooms 0..i: one a room, plus the mid-room ones
 const bossCount = i => i + 1 + Object.keys(CH_MID_BOSS).filter(k => Number(k) <= i).length;

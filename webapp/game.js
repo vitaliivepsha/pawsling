@@ -1997,78 +1997,114 @@ function mergeProg(a, b) {
   for (const k in (b.kills || {})) r.kills[k] = Math.max(r.kills[k] || 0, b.kills[k]);
   return r;
 }
-// The cloud copy is written only after it has been read and merged, so a save made in the
-// first moments on a new device cannot wipe progress kept in Telegram.
-let cloudReady = !TG_CLOUD, cloudDirty = false;
+// The cloud copy is written only after it has been read and merged, so a save made in the first moments on a new
+// device cannot wipe progress kept in Telegram. A read that fails or never answers is retried, never taken for "empty"
+let cloudReady = !TG_CLOUD, cloudDirty = false, cloudFails = 0, cloudBad = 0;
 function cloudLoaded() {
   if (cloudReady) return;
   cloudReady = true;
   if (cloudDirty) saveProg();
+}
+const cloudParse = v => { try { return v ? JSON.parse(v) : null; } catch (e) { return null; } };
+// Reads the chunked copy. cb(state, data, header, vals, meta): 'ok' (data, or null when there is no copy yet),
+// 'same' (the header is the one we know: chunks not read), 'bad' (read, but the copy does not add up),
+// 'fail' (could not read: nothing may be written)
+function cloudRead(extra, known, cb, wait = 6000) {
+  let done = false;
+  const end = (...a) => { if (done) return; done = true; clearTimeout(t); cb(...a); };
+  const t = setTimeout(() => end('fail'), wait);
+  try {
+    TG.CloudStorage.getItems([CKEY, ...extra], (err, vals) => {
+      if (err || !vals) { end('fail'); return; }
+      const hs = vals[CKEY] || '', m = cloudParse(hs);
+      if (known != null && hs === known) { end('same', null, hs, vals, m); return; }
+      if (!hs) { end('ok', null, '', vals, null); return; }
+      if (!m || (m.s !== 0 && m.s !== 1) || !(m.n > 0 && m.n <= CHUNK_MAX)) { end('bad', null, hs, vals, null); return; }
+      const keys = [...Array(m.n).keys()].map(i => `${CKEY}-${m.s}-${i}`);
+      TG.CloudStorage.getItems(keys, (e2, parts) => {
+        if (e2 || !parts) { end('fail'); return; }
+        const joined = keys.map(k => parts[k] || '').join(''), d = joined.length === m.len ? cloudParse(joined) : null;
+        end(d ? 'ok' : 'bad', d, hs, vals, m);
+      });
+    });
+  } catch (e) { end('fail'); }
 }
 function loadProg() {
   const old = lsGet(OLD_PKEY), s = lsGet(PKEY);
   // v2 first: where the two disagree on a single choice (the team), the earlier one in the merge wins
   if (s) { try { PROG = mergeProg(PROG, JSON.parse(s)); } catch (e) {} }
   if (old) { try { PROG = mergeProg(PROG, fromV1(JSON.parse(old))); } catch (e) {} }
-  if (!TG_CLOUD) return;
-  setTimeout(cloudLoaded, 6000); // some clients never answer
-  try {
-    TG.CloudStorage.getItems([OLD_PKEY, PKEY, CKEY], (err, vals) => {
-      if (err || !vals) { cloudLoaded(); return; }
-      const parse = v => { try { return v ? JSON.parse(v) : null; } catch (e) { return null; } };
-      const merge = cur => {
-        const v2 = parse(vals[PKEY]), v1 = parse(vals[OLD_PKEY]);
-        try {
-          const before = PROG.unlocked;
-          if (cur) PROG = mergeProg(PROG, cur);
-          if (v2) PROG = mergeProg(PROG, v2);
-          if (v1) PROG = mergeProg(PROG, fromV1(v1));
-          if (cur || v2 || v1) {
-            seedSeen(); lsSet(PKEY, JSON.stringify(PROG));
-            if (PROG.prefs && PROG.prefs.at) applyPrefs(PROG.prefs);
-          }
-          if (PROG.unlocked !== before) { cloudDirty = true; if (SCREEN === 'map') MAP.focus = true; }
-        } catch (e) {}
-        if (!cur) cloudDirty = true; // nothing readable in the chunks yet: write them
-        cloudLoaded();
-      };
-      const m = parse(vals[CKEY]);
-      if (!m || (m.s !== 0 && m.s !== 1) || !(m.n > 0 && m.n <= CHUNK_MAX)) { merge(null); return; }
-      cloudSlot = m.s;
-      const keys = [...Array(m.n).keys()].map(i => `${CKEY}-${m.s}-${i}`);
-      TG.CloudStorage.getItems(keys, (e2, parts) => {
-        const joined = !e2 && parts ? keys.map(k => parts[k] || '').join('') : '';
-        merge(joined.length === m.len ? parse(joined) : null);
-      });
-    });
-  } catch (e) { cloudLoaded(); }
+  if (TG_CLOUD) cloudLoad();
+}
+function cloudLoad() {
+  cloudRead([OLD_PKEY, PKEY], null, (st, cur, hs, vals, m) => {
+    // a failed read is tried again with growing pauses; a copy that reads but does not add up gets three chances
+    if (st === 'fail' || (st === 'bad' && ++cloudBad < 3)) {
+      cloudFails++;
+      setTimeout(cloudLoad, Math.min(60000, 1500 * 2 ** Math.min(cloudFails, 6)));
+      return;
+    }
+    if (m) cloudSlot = m.s;
+    cloudHdr = st === 'ok' ? hs : null;
+    const v2 = cloudParse(vals[PKEY]), v1 = cloudParse(vals[OLD_PKEY]);
+    try {
+      const before = PROG.unlocked;
+      if (cur) PROG = mergeProg(PROG, cur);
+      if (v2) PROG = mergeProg(PROG, v2);
+      if (v1) PROG = mergeProg(PROG, fromV1(v1));
+      if (cur || v2 || v1) {
+        seedSeen(); lsSet(PKEY, JSON.stringify(PROG));
+        if (PROG.prefs && PROG.prefs.at) applyPrefs(PROG.prefs);
+      }
+      if (PROG.unlocked !== before) { cloudDirty = true; if (SCREEN === 'map') MAP.focus = true; }
+    } catch (e) {}
+    if (!cur) cloudDirty = true; // nothing readable in the chunks yet: write them
+    cloudLoaded();
+  }, Math.min(20000, 6000 + cloudFails * 3000)); // a slow client gets longer to answer each time
 }
 // Telegram's cloud holds 4096 characters per value, so the progress goes in chunks. They are written to the slot not in
-// use and the header comes last: a write cut short leaves the previous copy whole. One write at a time, the latest wins
+// use and the header comes last: a write cut short leaves the previous copy whole. One write at a time, the latest wins.
+// Before writing, the header is read again: if another device wrote meanwhile, its copy is merged in and its slot kept
 const CKEY = 'pawsling-progress-v3', CHUNK = 3800, CHUNK_MAX = 64;
-let cloudSlot = 0, cloudBusy = false, cloudAgain = false, cloudLast = '';
+let cloudSlot = 0, cloudBusy = false, cloudAgain = false, cloudLast = '', cloudHdr = null, cloudWriteFails = 0, cloudRetry = 0;
 function cloudWrite() {
   if (cloudBusy) { cloudAgain = true; return; }
-  const s = JSON.stringify(PROG);
-  if (s === cloudLast) return;
   cloudBusy = true;
-  const slot = 1 - cloudSlot, n = Math.ceil(s.length / CHUNK);
-  let left = n, failed = false, finished = false;
+  let finished = false, guard = 0;
   const finish = ok => {
     if (finished) return;
     finished = true; clearTimeout(guard); cloudBusy = false;
-    if (ok) { cloudSlot = slot; cloudLast = s; }
+    if (ok) cloudWriteFails = 0;
+    else if (!cloudRetry) { // try again later, waiting longer each time
+      cloudWriteFails++;
+      cloudRetry = setTimeout(() => { cloudRetry = 0; cloudWrite(); }, Math.min(300000, 10000 * 2 ** Math.min(cloudWriteFails - 1, 5)));
+    }
     if (cloudAgain) { cloudAgain = false; cloudWrite(); }
   };
-  const guard = setTimeout(() => finish(false), 8000); // some clients never answer
-  const wrote = err => {
-    if (finished) return;
-    if (err) failed = true;
-    if (--left) return;
-    if (failed) { finish(false); return; }
-    TG.CloudStorage.setItem(CKEY, JSON.stringify({ s: slot, n, len: s.length }), e => finish(!e));
-  };
-  try { for (let i = 0; i < n; i++) TG.CloudStorage.setItem(`${CKEY}-${slot}-${i}`, s.slice(i * CHUNK, (i + 1) * CHUNK), wrote); } catch (e) { finish(false); }
+  cloudRead([], cloudHdr, (st, cur, hs, vals, m) => {
+    if (st === 'fail') { finish(false); return; }
+    if (st !== 'same') {
+      if (cur) { try { PROG = mergeProg(PROG, cur); lsSet(PKEY, JSON.stringify(PROG)); } catch (e) {} }
+      if (m) cloudSlot = m.s;
+      cloudHdr = hs;
+    }
+    const s = JSON.stringify(PROG);
+    if (st === 'same' && s === cloudLast) { finish(true); return; }
+    const slot = 1 - cloudSlot, n = Math.ceil(s.length / CHUNK), hdr = JSON.stringify({ s: slot, n, len: s.length });
+    let left = n, failed = false;
+    guard = setTimeout(() => finish(false), 8000); // some clients never answer
+    const wrote = err => {
+      if (finished) return;
+      if (err) failed = true;
+      if (--left) return;
+      if (failed) { finish(false); return; }
+      TG.CloudStorage.setItem(CKEY, hdr, e => {
+        if (!e && !finished) { cloudSlot = slot; cloudLast = s; cloudHdr = hdr; }
+        finish(!e);
+      });
+    };
+    try { for (let i = 0; i < n; i++) TG.CloudStorage.setItem(`${CKEY}-${slot}-${i}`, s.slice(i * CHUNK, (i + 1) * CHUNK), wrote); } catch (e) { finish(false); }
+  });
 }
 // settings the player picks, kept with the progress so every device gets them (PROG.prefs, stamped with .at)
 function notePref(k, v) { PROG.prefs = { ...(PROG.prefs || {}), [k]: v, at: Date.now() }; saveProg(); pushSync(); }
