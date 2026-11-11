@@ -16,12 +16,12 @@ const tgv = v => !!(TG && TG.isVersionAtLeast && TG.isVersionAtLeast(v));
 const TG_CLOUD = !!(TG && TG.CloudStorage && tgv('6.9'));
 const TG_NAME = (TG && TG.initDataUnsafe && TG.initDataUnsafe.user && TG.initDataUnsafe.user.first_name) || '';
 
-let scale = 1, dpr = 1, T = 0, lowRes = false; // lowRes: a slow device draws 1 device pixel per game pixel
+let scale = 1, dpr = 1, T = 0;
 function resize() {
   const b = document.body, narrow = b.clientWidth < 520; // phones use the full width: the 16px gutters cost ~8% of the text size
   const aw = Math.max(240, b.clientWidth - (narrow ? 0 : 32)), ah = Math.max(320, b.clientHeight - (narrow ? 0 : 16));
   scale = Math.min(aw / W, ah / H);
-  dpr = lowRes ? 1 : Math.min(2, window.devicePixelRatio || 1);
+  dpr = Math.min(2, window.devicePixelRatio || 1);
   cv.style.width = (W * scale) + 'px';
   cv.style.height = (H * scale) + 'px';
   cv.width = Math.round(W * scale * dpr);
@@ -13243,7 +13243,7 @@ function frame(now) {
   if (DEV && window.__pause) { last = now; nextFrame(frame); return; }
   const raw = now - last, dt = Math.min(.033, raw / 1000);
   last = now; T += dt;
-  if (!LOWFX && !DEV) { slowMs = raw > 45 ? slowMs + raw : Math.max(0, slowMs - raw); if (slowMs > 1500) { LOWFX = true; lowRes = true; resize(); } }
+  if (!LOWFX && !DEV) { slowMs = raw > 45 ? slowMs + raw : Math.max(0, slowMs - raw); if (slowMs > 1500) LOWFX = true; }
   try {
     update(dt);
     draw();
