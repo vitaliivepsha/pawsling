@@ -19,3 +19,8 @@
     box-shadow:0 18px 60px rgba(0,0,0,.55);outline:none;
   }
   canvas:focus-visible{outline:3px solid var(--lamp);outline-offset:3px}
+  @media (max-width:519px){
+    body{padding-inline:0;padding-block:0}
+    canvas{border-radius:0;box-shadow:none}
+    canvas:focus-visible{outline-offset:-3px}
+  }
