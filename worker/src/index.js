@@ -82,7 +82,7 @@ function harvestKey(env, user, ts = Date.now()) {
   if (ts < a && isAdmin(env, user)) return `thanksgiving-${y}-preview`;
   return null;
 }
-const REF_ROOM_GIFT = { wind: 1 }, REF_ROOM_LEVELS = 4; // for the inviter, once the friend has won the first room
+const REF_ROOM_GIFT = { wind: 1 }, REF_ROOM_LEVELS = 4, REF_ROOM_MIN_S = 240; // for the inviter, once the friend has won the first room
 const WEEK_PRIZES = [{ heart: 3, meter: 3, armor: 2 }, { heart: 2, meter: 2, armor: 1 }, { heart: 1, meter: 1, armor: 1 }];
 const DAY = 86400000;
 const utcDay = (ts = Date.now()) => new Date(ts).toISOString().slice(0, 10);
@@ -413,10 +413,10 @@ export default {
     }
 
     await ensureTables(env.DB);
-    const night = clampInt(body.night, LIMITS.night), stars = clampInt(body.stars, LIMITS.stars), week = clampInt(body.week, LIMITS.night);
+    const raw = { night: clampInt(body.night, LIMITS.night), stars: clampInt(body.stars, LIMITS.stars), week: clampInt(body.week, LIMITS.night) };
+    const { night, stars, week, harvest: hv, hk } = await paceResults(env, user, raw, clampInt(body.harvest, HARVEST_CAP));
     if (night || stars) await save(env, user, night, stars);
     if (clampInt(body.levels, 500) >= REF_ROOM_LEVELS) await refRoomDone(env, user);
-    const hk = harvestKey(env, user), hv = clampInt(body.harvest, HARVEST_CAP);
     if (hk && hv) await env.DB.prepare(`INSERT INTO harvest (ev, user_id, own, at) VALUES (?1, ?2, ?3, ?4)
       ON CONFLICT(ev, user_id) DO UPDATE SET own = MAX(own, excluded.own), at = excluded.at`).bind(hk, user.id, hv, Math.floor(Date.now() / 1000)).run();
     if (week) await saveWeek(env.DB, user, week);
@@ -499,8 +499,9 @@ async function daily(env, user, body = {}) {
 }
 // an invited player has won the first room: the inviter's gift, once per invited player
 async function refRoomDone(env, user) {
-  const db = env.DB, ref = await db.prepare('SELECT ref_by FROM referrals WHERE user_id = ?1').bind(user.id).first();
+  const db = env.DB, ref = await db.prepare('SELECT ref_by, at FROM referrals WHERE user_id = ?1').bind(user.id).first();
   if (!ref) return;
+  if (Math.floor(Date.now() / 1000) - ref.at < REF_ROOM_MIN_S) return; // four levels take longer than that
   const r = await db.prepare('INSERT OR IGNORE INTO ref_rooms (user_id, at) VALUES (?1, ?2)').bind(user.id, Math.floor(Date.now() / 1000)).run();
   if (!r.meta.changes) return;
   await grant(db, ref.ref_by, REF_ROOM_GIFT);
@@ -518,6 +519,39 @@ async function grant(db, id, g) {
 async function langOf(db, id) {
   const r = await db.prepare('SELECT (SELECT lang FROM notify WHERE user_id = ?1) AS a, (SELECT lang FROM daily WHERE user_id = ?1) AS b').bind(id).first();
   return (r && (r.a || r.b)) || '';
+}
+
+// ---------- results that cannot grow faster than the game allows ----------
+// value -> at most: the last one + slack + perMin for every minute since it last went up, counting at most maxMin minutes
+// (so a long pause does not store up room for a jump). A real player stays far below (Night Shift's best so far: 29 waves);
+// one who played offline for a while catches up over the next posts, as the game sends its whole total each time
+const PACE = { stars: [15, 9, 120], night: [15, 2, 60], week: [15, 2, 60], harvest: [60, 15, 60] };
+function paced(kind, val, old, since, now) {
+  const [slack, perMin, maxMin] = PACE[kind], mins = Math.min(maxMin, Math.max(0, now - (since || now)) / 60);
+  const cap = (old || 0) + slack + Math.floor(perMin * mins);
+  return val > cap ? cap : val;
+}
+async function paceResults(env, user, raw, harvestRaw) {
+  const db = env.DB, now = Math.floor(Date.now() / 1000), hk = harvestKey(env, user);
+  const p = await db.prepare('SELECT night, stars, night_at, stars_at FROM players WHERE id = ?1').bind(user.id).first();
+  const wk = await db.prepare('SELECT night, at FROM weekly WHERE week = ?1 AND user_id = ?2').bind(weekKey(), user.id).first();
+  const h = hk && harvestRaw ? await db.prepare('SELECT own, at FROM harvest WHERE ev = ?1 AND user_id = ?2').bind(hk, user.id).first() : null;
+  const out = {
+    stars: paced('stars', raw.stars, p && p.stars, p && p.stars_at, now),
+    night: paced('night', raw.night, p && p.night, p && p.night_at, now),
+    // a week's first result: one long run at most (half an hour), and never above the player's best of all time
+    week: paced('week', raw.week, wk && wk.night, wk ? wk.at : now - 1800, now),
+    harvest: hk && harvestRaw ? paced('harvest', harvestRaw, h && h.own, h ? h.at : now - 600, now) : 0, hk,
+  };
+  out.week = Math.min(out.week, Math.max(out.night, p ? p.night : 0));
+  const cut = ['stars', 'night', 'week'].filter(k => out[k] < raw[k]).map(k => `${k} ${raw[k]} → ${out[k]}`);
+  if (out.harvest < harvestRaw && hk) cut.push(`harvest ${harvestRaw} → ${out.harvest}`);
+  if (cut.length) {
+    // the owner hears about a player once a day
+    const mark = await db.prepare('INSERT OR IGNORE INTO album (user_id, card) VALUES (?1, ?2)').bind(user.id, 'pace:' + utcDay()).run();
+    if (mark.meta.changes > 0) await notifyAdmin(env, `⚠️ Завеликий стрибок результату, обрізано: ${buyer(user)}\n${cut.join('\n')}`);
+  }
+  return out;
 }
 
 // ---------- weekly Night Shift tournament ----------
