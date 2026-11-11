@@ -1202,6 +1202,7 @@ const CH_TEXT = {
       'boosters-free': '🎒 <b>Підсилювачі: як отримати безкоштовно</b>\n\nКожен рівень можна пройти без покупок, а підсилювачі допомагають узяти три зірки. Вмикай їх на екрані перед рівнем, кожен діє один рівень:\n• ❤️ Серце+ — +1 серце кожному героєві\n• ⚡ Швидкий старт — шкала «Бешкету» одразу наполовину заповнена\n• 🌀 Друге дихання — продовжити рівень після поразки\n\nДе взяти задарма:\n• скриня на карті кожні 6 годин (а іноді й Друге дихання)\n• щоденний бонус: на 7-й день серії — дихання, серце й старт разом\n• альбом роботів: 10, 50 і 200 перемог над роботом\n• квести тижня: за всі три — Друге дихання\n• перша перемога в тижневому випробуванні\n• підписка на цей канал — забери подарунок на екрані «Щодня»\n• друг за твоїм посиланням пройде першу кімнату — тобі Друге дихання',
       'boosters-new': '🛡 <b>Нові підсилювачі: Броня й Пісочний годинник</b>\n\n• 🛡 Броня — квартира отримує щит на 25% міцності, і удари роботів спершу б\'ють по ньому\n• ⏳ Пісочний годинник — +3 ходи до норми трьох зірок (у «Нічній зміні» не діє)\n\nЗі скрині вони не випадають — їх треба заслужити:\n• перші три зірки на рівні з босом — +1 Пісочний годинник\n• уся кімната на три зірки — +1 Броня\n• турнір «Нічної зміни»: 1 місце тижня — 2 Броні, 2–3 місця — по одній\n\nВмикаються, як і решта, на екрані перед рівнем.',
       'shop-boosters': '⭐ <b>Магазин: підсилювачі</b>\n\nУсі рівні проходяться без покупок. А якщо хочеш швидше до трьох зірок, у магазині є набори за Telegram Stars:\n• ❤️ Серце+ ×3 — 15⭐\n• ⚡ Швидкий старт ×3 — 15⭐\n• 🛡 Броня ×3 — 20⭐\n• ⏳ Пісочний годинник ×3 — 20⭐\n• 🌀 Друге дихання — 10⭐ одразу після поразки (друге за той самий забіг — 20⭐)\n\nІ не забувай про безкоштовні: скриня, щоденний бонус, квести й альбом роботів.',
+      'thanksgiving-clip': '🦃 <b>День подяки в Pawsling уже почався!</b>\n\nДо 29 листопада: три святкові рівні на кухні, де пироги лікують героїв, а кукурудза наповнює шкалу «Бешкету». У фіналі — бос Духовка «Індичка». За три рівні — капелюх пілігрима, а в рейтингу урожаю перше місце отримує Золотий вінок, лише один у грі.\n\nГарбузи, капелюхи й бос — у ролику 🎃',
       'shop-heroes': '🐾 <b>Магазин: герої й прикраси</b>\n\n• ⚡ Іскра — її удар перескакує блискавкою на сусіднього робота, 150⭐\n• 🐶 Рекс — пес-рятувальник, що лікує друзів, яких зачепить, 150⭐\n• 🌟 легендарні, по 350⭐: опосум Опі вдає мертвого й замість нокауту встає з усіма серцями, а удар червоної панди Вогника пробиває броню, щити, коробки й дзеркала\n• 🎉 святковий ковпак — 20⭐ (або безкоштовно за 30 днів поспіль)\n• 👑 корона — 40⭐, 🎀 бантик — 20⭐\n• 🌈 райдужна нитка — 25⭐\n\nПрикраси вдягає вся команда, назавжди. А хом\'як Хеммі приєднується безкоштовно після 24 рівня.',
     },
     harvestResult: (gold, silver, bronze) => `🏆 <b>Підсумки Дня подяки</b>\n\n🥇 ${gold} — «Золотий вінок урожаю» і 🏆 біля імені на всіх дошках.${silver ? `\n🥈 Срібні вінки: ${silver}.` : ''}${bronze ? `\n🥉 Бронзові вінки: ще ${bronze} ${ukPl(bronze, 'гравець', 'гравці', 'гравців')}.` : ''}\n\nДякуємо всім, хто збирав урожай!`,
@@ -1273,6 +1274,7 @@ const CH_TEXT = {
       'boosters-free': '🎒 <b>Boosters: how to get them for free</b>\n\nEvery level can be won without buying anything; boosters help you take three stars. Turn them on before a level, each one lasts a level:\n• ❤️ Heart+: +1 heart for every hero\n• ⚡ Quick start: the Mischief meter starts half full\n• 🌀 Second wind: carry on after a loss\n\nWhere to get them for free:\n• the chest on the map, every 6 hours (now and then a Second wind)\n• the daily bonus: day 7 of a streak gives a Second wind, a heart and a quick start\n• the robot album: 10, 50 and 200 wins over a robot\n• weekly quests: all three give a Second wind\n• your first win in the weekly challenge\n• subscribing to this channel: pick up the gift on the Daily screen\n• a friend who joins through your link beats the first room: a Second wind for you',
       'boosters-new': '🛡 <b>New boosters: Armour and Hourglass</b>\n\n• 🛡 Armour: the flat gets a shield of 25% of its strength, and the robots\' hits land on it first\n• ⏳ Hourglass: +3 turns to the three-star par (not in Night Shift)\n\nThey never drop from the chest, they have to be earned:\n• your first three stars on a boss level: +1 Hourglass\n• a whole room on three stars: +1 Armour\n• the Night Shift tournament: #1 of the week gets 2 Armour, #2 and #3 one each\n\nTurn them on before a level, like the others.',
       'shop-boosters': '⭐ <b>Shop: boosters</b>\n\nEvery level can be won without buying anything. If you want three stars sooner, the shop has packs for Telegram Stars:\n• ❤️ Heart+ ×3: 15⭐\n• ⚡ Quick start ×3: 15⭐\n• 🛡 Armour ×3: 20⭐\n• ⏳ Hourglass ×3: 20⭐\n• 🌀 Second wind: 10⭐ right after a loss (a second one in the same run: 20⭐)\n\nAnd don\'t forget the free ones: the chest, the daily bonus, quests and the robot album.',
+      'thanksgiving-clip': '🦃 <b>Thanksgiving in Pawsling has begun!</b>\n\nUntil 29 November: three festive levels in a kitchen where pies heal your heroes and corn fills the Mischief meter. At the end waits the Turkey Oven boss. Win all three for the pilgrim hat, and first place on the harvest board takes the Golden harvest wreath, the only one in the game.\n\nPumpkins, hats and the boss are in the clip 🎃',
       'shop-heroes': '🐾 <b>Shop: heroes and looks</b>\n\n• ⚡ Sparky: her hits arc like lightning to the nearest robot, 150⭐\n• 🐶 Rex: a rescue dog who heals every friend he touches, 150⭐\n• 🌟 legendary, 350⭐ each: Opie the opossum plays dead and gets up with all hearts instead of a knockout, and Ember the red panda hits through armour, shields, boxes and mirrors\n• 🎉 party hat: 20⭐ (or free for 30 days in a row)\n• 👑 crown: 40⭐, 🎀 bow: 20⭐\n• 🌈 rainbow yarn: 25⭐\n\nLooks are for the whole team, forever. And Hammy the hamster joins for free after level 24.',
     },
     harvestResult: (gold, silver, bronze) => `🏆 <b>Thanksgiving results</b>\n\n🥇 ${gold}: the Golden harvest wreath and a 🏆 next to their name on every board.${silver ? `\n🥈 Silver wreaths: ${silver}.` : ''}${bronze ? `\n🥉 Bronze wreaths: ${bronze} more ${bronze === 1 ? 'player' : 'players'}.` : ''}\n\nThanks to everyone who brought in the harvest!`,
@@ -1335,12 +1337,15 @@ const CH_FEED = [
   { room: 12 }, { room: 13 }, { room: 14 }, { room: 15 }, { room: 16 }, { room: 17 }, { room: 18 }, { room: 19 }, { room: 20 }, { room: 21 },
 ];
 // one-off posts at a set time (UTC, the first cron run from then on, between CH_SCHED_HOURS), each once, channels only;
-// `gate` (optional) holds one back until the owner's /chan <gate> on
+// `gate` (optional) holds one back until the owner's /chan <gate> on; `video` (with its `cover`) goes out as a clip
 const CH_SCHEDULED = [
   { id: 'boosters-free', at: Date.UTC(2026, 10, 8, 12), img: feed('chest') },
   { id: 'boosters-new', at: Date.UTC(2026, 10, 11, 12), img: shot('4-map') },
   { id: 'shop-boosters', at: Date.UTC(2026, 10, 15, 12), img: 'welcome-1280x720.jpg' },
   { id: 'shop-heroes', at: Date.UTC(2026, 10, 18, 12), img: shot('5-heroes') },
+  // the Thanksgiving promo clip (promo/video, 1080x1920, 25 s), the afternoon the event opens (18:00 in Kyiv)
+  { id: 'thanksgiving-clip', at: Date.UTC(2026, 10, 20, 16), gate: 'thanksgiving',
+    video: l => ({ src: `video/pawsling-thanksgiving-${l}.mp4`, cover: `video/pawsling-thanksgiving-${l}.jpg`, width: 1080, height: 1920, duration: 25 }) },
 ];
 const CH_SCHED_HOURS = [9, 18];
 const ukPl = (n, one, few, many) => n % 10 === 1 && n % 100 !== 11 ? one : [2, 3, 4].includes(n % 10) && ![12, 13, 14].includes(n % 100) ? few : many;
@@ -1435,7 +1440,7 @@ async function channelPostRaw(env, kind, lang, now) {
     return { img: feed('invite'), caption: t.group, kb: [[{ text: t.groupChat, url: chatUrl }], [{ text: t.groupSupport, url: helpUrl }]] };
   }
   const sc = CH_SCHEDULED.find(x => 'sched-' + x.id === kind);
-  if (sc) return t.sched[sc.id] ? { img: typeof sc.img === 'function' ? sc.img(lang) : sc.img, caption: t.sched[sc.id] } : null;
+  if (sc) return t.sched[sc.id] ? { img: typeof sc.img === 'function' ? sc.img(lang) : sc.img, video: sc.video && sc.video(lang), caption: t.sched[sc.id] } : null;
   if (kind === 'harvest' || kind === 'harvest_result') {
     // the board of this year's harvest (before it starts, the owner's preview board, for /chan preview)
     const [a, b] = harvestWindow(now), y = new Date(now).getUTCFullYear();
@@ -1467,7 +1472,10 @@ async function channelPostRaw(env, kind, lang, now) {
 }
 async function sendChannelPost(env, chat, lang, kind, post, thread = null, via = 'ch') {
   const src = `${via}_${lang}_${kind.replace(/\d+$/, '')}`;
-  return tg(env, 'sendPhoto', { chat_id: chat, photo: ART + post.img, caption: post.caption, parse_mode: 'HTML', ...(thread ? { message_thread_id: thread } : {}),
+  const v = post.video, media = v
+    ? ['sendVideo', { video: ART + v.src, cover: ART + v.cover, width: v.width, height: v.height, duration: v.duration, supports_streaming: true }]
+    : ['sendPhoto', { photo: ART + post.img }];
+  return tg(env, media[0], { chat_id: chat, ...media[1], caption: post.caption, parse_mode: 'HTML', ...(thread ? { message_thread_id: thread } : {}),
     reply_markup: { inline_keyboard: post.kb || [[{ text: CH_TEXT[lang].play, url: `https://t.me/${botName}?startapp=${src}` }]] } });
 }
 // the group's announcement is due once the channel has grown to CH_GROUP_AT subscribers (and the group has its topics)
