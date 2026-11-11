@@ -4645,14 +4645,16 @@ const pandaShot = () => !!(G && G.shot && G.shot.hero && G.shot.hero.id === 'pan
 // a boss level on three stars for the first time: an Hourglass; the last level of a room to reach three stars: an Armour
 function checkAchievements(prev) {
   if (G.stars < 3 || prev >= 3) return;
-  if (G.lvl.boss) claimAch('boss3:' + (G.li + 1), 'achHourglass');
+  const keys = [];
+  if (G.lvl.boss) keys.push('boss3:' + (G.li + 1));
   const ids = CH_LEVELS[G.lvl.ch];
-  if (ids && ids.every(li => (PROG.stars[String(li + 1)] || 0) >= 3)) claimAch('room3:' + G.lvl.ch, 'achArmor');
-}
-function claimAch(key, msg) {
-  if (!serverOn()) return;
+  if (ids && ids.every(li => (PROG.stars[String(li + 1)] || 0) >= 3)) keys.push('room3:' + G.lvl.ch);
+  if (!keys.length) return;
   const run = G;
-  api('/achieve', { key }).then(r => { if (r.items) setInv(r.items); if (r.ok && run) run.achMsg = (run.achMsg ? run.achMsg + ' · ' : '') + tr(msg); }).catch(() => {});
+  // the stars go along: the server checks there are enough to have got this far
+  claim('/achieve', { keys, stars: totalStars() }, r => {
+    for (const k of r.got || []) if (run) run.achMsg = (run.achMsg ? run.achMsg + ' · ' : '') + tr(k.startsWith('boss3') ? 'achHourglass' : 'achArmor');
+  });
 }
 function hurtHome(dmg) {
   if (G.armor > 0) {
@@ -5232,7 +5234,7 @@ function nextAttack() {
     }
   }
   e.timer = e.maxTimer;
-  if (boss) bossAfterAttack(e, t);
+  if (boss) { if (e.alive) bossAfterAttack(e, t); }
   else if (e.type === 'printer') printMini(e);
   else if (e.type === 'cryo' && !t.ko && !t.webbed) { t.webbed = true; t.ice = true; burst(t.x, t.y, '#9fe8ff', 14, 160); ftext(t.x, t.y + t.r + 20, tr('frozen'), '#9fe8ff', 15); Snd.play('freeze'); }
   else if (e.type === 'mimic' && !e.boxed) { e.boxed = true; burst(e.x, e.y, '#c68a4f', 10, 140); }
@@ -5247,6 +5249,7 @@ function outOfTurns() {
   return true;
 }
 function nextTurn() {
+  if (!G.enemies.some(e => e.alive)) { waveClear(); return; } // the last robot fell during the robots' turn
   G.turn++;
   if (outOfTurns()) return;
   burnAcid();
@@ -10411,7 +10414,7 @@ function lossCloseness() {
 }
 function drawSecondWind() {
   const free = (INV.wind || 0) > 0, n = G.winds || 0;
-  if (n >= WIND_PRICES.length || G.loseReason === 'turns' || G.lvl.chal || (!free && !canPay())) return false;
+  if (n >= WIND_PRICES.length || G.loseReason === 'turns' || G.lvl.chal || (G.hard && G.turn >= G.lvl.par) || (!free && !canPay())) return false;
   // a nudge: how close the win was
   const c = lossCloseness();
   ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
@@ -10438,9 +10441,11 @@ function useFreeWind() {
 const PRICES = { heart3: 15, meter3: 15, armor3: 20, hourglass3: 20, hat_party: 20, hat_crown: 40, hat_bow: 20, rainbow: 25, hero_spark: 150, hero_rex: 150, hero_possum: 350, hero_panda: 350 }; // = ITEMS in the worker
 const OLD_PRICES = { hero_spark: 250, hero_rex: 250 }; // shown struck through, as a discount
 const GRANTS = { hero_rex: { hero_rex: 1 }, heart3: { heart: 3 }, meter3: { meter: 3 }, armor3: { armor: 3 }, hourglass3: { hourglass: 3 }, hat_party: { hat_party: 1 }, hat_crown: { hat_crown: 1 }, hat_bow: { hat_bow: 1 },
-  rainbow: { rainbow: 1 }, hero_spark: { hero_spark: 1 } };
+  rainbow: { rainbow: 1 }, hero_spark: { hero_spark: 1 }, hero_possum: { hero_possum: 1 }, hero_panda: { hero_panda: 1 } };
 const SHOP_LIST = ['heart3', 'meter3', 'armor3', 'hourglass3', 'hero_spark', 'hero_rex', 'hero_possum', 'hero_panda', 'hat_party', 'hat_crown', 'hat_bow', 'rainbow'];
-let INV = {};
+// heroes, hats and the rainbow are kept on the device too, so a launch without the server still has them
+const KEEP_INV = k => /^(hero_|hat_|rainbow$)/.test(k);
+let INV = (() => { try { return JSON.parse(lsGet('pawsling-inv') || '{}') || {}; } catch (e) { return {}; } })();
 const PENDING = {}; // bought here but not yet confirmed by the server
 const COS = { hat: lsGet('pawsling-hat') || '', rainbow: lsGet('pawsling-rainbow') !== 'off' };
 const SHOP = { busy: null, msg: null };
@@ -10459,17 +10464,38 @@ async function api(path, body) {
   if (!r.ok) throw new Error('HTTP ' + r.status);
   return r.json();
 }
+const CLAIMS_KEY = 'pawsling-claims', CLAIM_DAYS = 7;
+function claimQueue() { try { return JSON.parse(lsGet(CLAIMS_KEY) || '[]') || []; } catch (e) { return []; } }
+function claim(path, body, done) {
+  if (!serverOn()) return;
+  api(path, body).then(r => { if (r.items) setInv(r.items); if (done) done(r); }).catch(e => {
+    if (/HTTP 4/.test(String(e && e.message))) return; // refused: sending it again will not help
+    const q = claimQueue().filter(c => Date.now() - c.at < CLAIM_DAYS * 864e5);
+    q.push({ path, body, at: Date.now() });
+    lsSet(CLAIMS_KEY, JSON.stringify(q.slice(-60)));
+  });
+}
+function flushClaims() {
+  const q = claimQueue();
+  if (!q.length || !serverOn()) return;
+  lsSet(CLAIMS_KEY, '[]');
+  for (const c of q) if (Date.now() - c.at < CLAIM_DAYS * 864e5) claim(c.path, c.body, c.path === '/quest' ? r => { if (r.bonus) DAILY.msg = tr('questAll'); } : null);
+}
 let INV_READY = false; // the server's inventory has arrived at least once
 function setInv(items) {
   INV_READY = true;
   for (const k in PENDING) { if ((items[k] || 0) >= PENDING[k]) delete PENDING[k]; else items[k] = PENDING[k]; }
   INV = items;
+  const keep = {};
+  for (const k in items) if (KEEP_INV(k) && items[k] > 0) keep[k] = items[k];
+  lsSet('pawsling-inv', JSON.stringify(keep));
 }
 async function refreshInv(tries = 1) {
   if (!serverOn()) return;
   for (let i = 0; i < tries; i++) {
-    try { setInv((await api('/inventory', {})).items || {}); } catch (e) {}
-    if (!Object.keys(PENDING).length) return;
+    let ok = false;
+    try { setInv((await api('/inventory', {})).items || {}); ok = true; } catch (e) {}
+    if (ok && !Object.keys(PENDING).length) return;
     await new Promise(r => setTimeout(r, 1500));
   }
 }
@@ -10514,7 +10540,7 @@ function startPrepared() {
     if (pr.heart && owns('heart')) { useBooster('heart'); for (const h of G.heroes) { h.maxHearts++; h.hearts++; } }
     if (pr.meter && owns('meter')) { useBooster('meter'); G.meter = Math.max(G.meter, 50); }
     if (pr.armor && owns('armor')) { useBooster('armor'); G.armor = Math.round(G.maxHp * .25); }
-    if (pr.hourglass && owns('hourglass')) { useBooster('hourglass'); G.parBonus = 3; }
+    if (pr.hourglass && !pr.hard && owns('hourglass')) { useBooster('hourglass'); G.parBonus = 3; }
   };
   if (pr.ev != null) { startEventLevel(pr.ev); if (G) boost(); }
   else if (pr.li < 0) { startEndless(); boost(); }
@@ -10570,7 +10596,9 @@ function drawPrep() {
   row(250, PREP.heart, hv > 0, '#ff5d7a', (x, y) => heart(x, y + 1, 12, '#ff5d7a'), tr('boostHeart'), tr('boostHeartD'), tr('owned', hv), () => { if (hv) PREP.heart = !PREP.heart; });
   row(324, PREP.meter, mv > 0, '#ff8fb1', (x, y) => { ctx.fillStyle = '#15122a'; rr(x - 15, y - 7, 30, 14, 7); ctx.fill(); ctx.fillStyle = '#ff8fb1'; rr(x - 15, y - 7, 16, 14, 7); ctx.fill(); ctx.strokeStyle = '#ffd166'; ctx.lineWidth = 1.5; rr(x - 15, y - 7, 30, 14, 7); ctx.stroke(); }, tr('boostMeter'), tr('boostMeterD'), tr('owned', mv), () => { if (mv) PREP.meter = !PREP.meter; });
   row(398, PREP.armor, av > 0, '#6ec3ff', (x, y) => boostIcon('armor', x, y, 13), tr('boostArmor'), tr('boostArmorD'), tr('owned', av), () => { if (av) PREP.armor = !PREP.armor; });
-  row(472, PREP.hourglass, gv > 0 && parOk, '#ffd166', (x, y) => boostIcon('hourglass', x, y, 13), tr('boostHourglass'), tr('boostHourglassD'), tr('owned', gv), () => { if (gv && parOk) PREP.hourglass = !PREP.hourglass; });
+  const hgOk = gv > 0 && parOk && !PREP.hard; // the crown's limit stays as it is, so no Hourglass with it
+  if (!hgOk) PREP.hourglass = false;
+  row(472, PREP.hourglass, hgOk, '#ffd166', (x, y) => boostIcon('hourglass', x, y, 13), tr('boostHourglass'), tr('boostHourglassD'), tr('owned', gv), () => { if (hgOk) PREP.hourglass = !PREP.hourglass; });
   if (PREP.hardOk) {
     const won = PROG.hard && PROG.hard[String(PREP.li + 1)];
     row(546, PREP.hard, true, '#ffc857', (x, y) => { ctx.save(); ctx.translate(x, y + 12); drawHat('crown', 22); ctx.restore(); }, tr('hardName'), tr('hardDesc', LEVELS[PREP.li].par), won ? '✓' : '', () => { PREP.hard = !PREP.hard; });
@@ -11091,7 +11119,7 @@ function albumKill(e) {
     // a new tier: say so on the field and collect the gift
     const name = tr('foe.' + k)[0];
     ftext(e.x, e.y - e.r - 56, tr('albumTier', name, tr('tier' + now)), TIER_COL[now], 15);
-    if (serverOn()) api('/album', { type: k, tier: now }).then(r => r.items && setInv(r.items)).catch(() => {});
+    claim('/album', { type: k, tier: now });
   }
 }
 // ---------- weekly quests: three goals a week, the same for everyone, picked by the week ----------
@@ -11117,7 +11145,7 @@ function questProgress(id, v, max) {
     q.c[id] = true; saveProg();
     if (G && SCREEN === 'game') ftext(W / 2, TOP + 120, tr('questDone', tr('q.' + id + '.t')), '#ffc857', 16);
     Snd.play('ding');
-    if (serverOn()) api('/quest', { id, week: q.wk }).then(r => { if (r.items) setInv(r.items); if (r.bonus) DAILY.msg = tr('questAll'); }).catch(() => {});
+    claim('/quest', { id, week: q.wk }, r => { if (r.bonus) DAILY.msg = tr('questAll'); });
   }
 }
 // a quest's icon on a round tile, drawn in the game's style
@@ -11354,6 +11382,7 @@ async function loadDaily() {
     if (d.challengeDone && d.today) lsSet('pawsling-ch', d.today);
     if (d.items) setInv(d.items);
     applySync(d.sync || {});
+    flushClaims();
     if (d.preview && lsGet('pawsling-preview') !== '1' && roomPending()) { lsSet('pawsling-preview', '1'); location.reload(); return; }
     if (d.gifted) DAILY.msg = tr('giftedMsg');
     if (d.bonus) DAILY.msg = tr(d.bonus.hat_party ? 'streakHat' : 'streakWind', d.run);
@@ -11385,7 +11414,7 @@ function checkChallenge() {
   if (!ch || challengeDone() || !CHALLENGES[ch.type].ok(G)) return;
   G.challengeWon = ch.reward;
   DAILY.challengeDone = true; lsSet('pawsling-ch', ch.today);
-  if (serverOn()) api('/challenge', { reward: ch.reward }).then(r => r.items && setInv(r.items)).catch(() => {});
+  claim('/challenge', { reward: ch.reward });
 }
 function inviteFriend() {
   const uid = TG && TG.initDataUnsafe && TG.initDataUnsafe.user && TG.initDataUnsafe.user.id;
@@ -13143,7 +13172,7 @@ cv.addEventListener('keydown', ev => {
 // ---------- boot ----------
 loadProg();
 seedSeen();
-refreshInv();
+refreshInv(3);
 setScreen(lsGet('pawsling-seen') || PROG.unlocked > 1 ? 'map' : 'howto');
 loadDaily();
 // #dev: timer-driven loop (keeps running in hidden tabs) plus a state hook for testing
