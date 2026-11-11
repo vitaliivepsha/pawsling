@@ -3764,16 +3764,46 @@ function roomYard(b, ch) {
 }
 
 const ROOMS = [roomKitchen, roomLiving, roomBedroom, roomBath, roomBalcony, roomAttic, roomGarage, roomBasement, roomRoof, roomGarden, roomServer, roomStairs, roomStore, roomFactory, roomLab, roomSpace, roomPolar, roomDeep, roomPlant, roomSubway, roomPark, roomYard];
-// Each room is painted the first time it is needed (the rest are warmed up after start),
-// so the game opens without painting all ten rooms first.
-const BGS = [];
+// Each room is painted the first time it is needed. A full picture is 900x1600 (about 6 MB), so only the last few
+// used are kept (most recent last in the Map) and the older ones let go. The little windows onto a room (map, boosters
+// screen, daily screen, raids) come from a small copy of the strip they show, made for every room after the start.
+const BGS = new Map(), BG_KEEP = 4;
+const paintRoom = c => { const ch = CHAPTERS[c]; return layer(b => { b.fillStyle = ch.hud; b.fillRect(0, 0, W, H); ROOMS[c](b, ch); }); };
+function freePic(p) { try { if (p.close) p.close(); else { p.width = 0; p.height = 0; } } catch (e) {} }
 function bg(c) {
-  if (!BGS[c]) {
-    const ch = CHAPTERS[c], canvas = layer(b => { b.fillStyle = ch.hud; b.fillRect(0, 0, W, H); ROOMS[c](b, ch); });
-    BGS[c] = canvas;
-    if (window.createImageBitmap) createImageBitmap(canvas).then(bm => { BGS[c] = bm; }).catch(() => {});
+  const have = BGS.get(c);
+  if (have) { BGS.delete(c); BGS.set(c, have); return have; }
+  const canvas = paintRoom(c);
+  if (!THUMBS[c]) makeThumb(c, canvas);
+  BGS.set(c, canvas);
+  if (window.createImageBitmap) createImageBitmap(canvas).then(bm => {
+    if (BGS.get(c) === canvas) { BGS.set(c, bm); freePic(canvas); } else freePic(bm);
+  }).catch(() => {});
+  while (BGS.size > BG_KEEP) { const [k, old] = BGS.entries().next().value; BGS.delete(k); freePic(old); }
+  return canvas;
+}
+// the small copies: the strip y 300..670 (game units) at 1:1, a quarter of the full size's pixels and a fifth of its rows
+const THUMB_Y = 300, THUMB_H = 370, THUMBS = [];
+function makeThumb(c, src) {
+  const t = document.createElement('canvas');
+  t.width = W; t.height = THUMB_H;
+  const x = t.getContext('2d');
+  x.imageSmoothingQuality = 'high';
+  x.drawImage(src, 0, THUMB_Y * 2, W * 2, THUMB_H * 2, 0, 0, W, THUMB_H);
+  THUMBS[c] = t;
+}
+function roomThumb(c) {
+  if (!THUMBS[c]) {
+    const have = BGS.get(c);
+    if (have) makeThumb(c, have);
+    else { const full = paintRoom(c); makeThumb(c, full); freePic(full); } // painted for the copy only, not kept
   }
-  return BGS[c];
+  return THUMBS[c];
+}
+// part of a room's picture, given in game units, drawn at (dx, dy, dw, dh): from the small copy when it holds that part
+function drawRoomPart(c, sx, sy, sw, sh, dx, dy, dw, dh) {
+  if (sy >= THUMB_Y && sy + sh <= THUMB_Y + THUMB_H) ctx.drawImage(roomThumb(c), sx, sy - THUMB_Y, sw, sh, dx, dy, dw, dh);
+  else ctx.drawImage(bg(c), sx * 2, sy * 2, sw * 2, sh * 2, dx, dy, dw, dh);
 }
 
 // animated room life: drawn under the actors (steam, TV glow, moonbeam) and over them (motes, fireflies)
@@ -10257,7 +10287,7 @@ function drawMap() {
     const chOpen = ids[0] + 1 <= PROG.unlocked;
     // the chapter's room seen through a window
     ctx.save(); rr(bx, by, bw, bh, 18); ctx.clip();
-    ctx.drawImage(bg(c), bx * 2, 300 * 2, bw * 2, bh * 2, bx, by, bw, bh);
+    drawRoomPart(c, bx, 300, bw, bh, bx, by, bw, bh);
     ctx.translate(0, by - 300); drawRoomOver(c); ctx.translate(0, 300 - by);
     const sh = ctx.createLinearGradient(0, by, 0, by + bh);
     sh.addColorStop(0, 'rgba(10,8,20,.82)'); sh.addColorStop(.3, 'rgba(10,8,20,.45)'); sh.addColorStop(1, 'rgba(10,8,20,.6)');
@@ -10557,7 +10587,7 @@ function drawPrep() {
   const wx = W / 2 - 92, wy = 92, ww = 184, wh = 76;
   ctx.fillStyle = 'rgba(0,0,0,.35)'; rr(wx, wy + 5, ww, wh, 18); ctx.fill();
   ctx.save(); rr(wx, wy, ww, wh, 18); ctx.clip();
-  if (c != null) { ctx.drawImage(bg(c), 130 * 2, 300 * 2, 184 * 2, 76 * 2, wx, wy, ww, wh); ctx.fillStyle = 'rgba(12,10,26,.35)'; ctx.fillRect(wx, wy, ww, wh); }
+  if (c != null) { drawRoomPart(c, 130, 300, 184, 76, wx, wy, ww, wh); ctx.fillStyle = 'rgba(12,10,26,.35)'; ctx.fillRect(wx, wy, ww, wh); }
   else { ctx.fillStyle = '#15122a'; ctx.fillRect(wx, wy, ww, wh); for (let k = 0; k < 14; k++) star(wx + 10 + (k * 37) % (ww - 20), wy + 8 + (k * 23) % (wh - 16), 1.6, '#fff3c4'); }
   ctx.restore();
   ctx.strokeStyle = col; ctx.lineWidth = 2.5; rr(wx, wy, ww, wh, 18); ctx.stroke();
@@ -10902,7 +10932,7 @@ function drawChallengeCard(y) {
   // a little window onto the room, top right
   const rs = 56, rx = W - 32 - rs, ry = y + 12;
   ctx.save(); rr(rx, ry, rs, rs, 12); ctx.clip();
-  ctx.drawImage(bg(c.room), 150 * 2, 300 * 2, 150 * 2, 150 * 2, rx, ry, rs, rs);
+  drawRoomPart(c.room, 150, 300, 150, 150, rx, ry, rs, rs);
   ctx.fillStyle = 'rgba(12,10,26,.4)'; ctx.fillRect(rx, ry, rs, rs);
   ctx.restore();
   ctx.strokeStyle = ch.col; ctx.lineWidth = 2; rr(rx, ry, rs, rs, 12); ctx.stroke();
@@ -11609,7 +11639,7 @@ function drawDaily() {
   // a little window onto the room
   const rx = 32, ry = Y2 + 44, rs = 76;
   ctx.save(); rr(rx, ry, rs, rs, 16); ctx.clip();
-  ctx.drawImage(bg(c), 150 * 2, 300 * 2, 150 * 2, 150 * 2, rx, ry, rs, rs);
+  drawRoomPart(c, 150, 300, 150, 150, rx, ry, rs, rs);
   ctx.fillStyle = 'rgba(12,10,26,.45)'; ctx.fillRect(rx, ry, rs, rs);
   ctx.restore();
   ctx.strokeStyle = room.col; ctx.lineWidth = 2; rr(rx, ry, rs, rs, 16); ctx.stroke();
@@ -13206,6 +13236,6 @@ nextFrame(frame);
 (function warm(c) {
   if (c >= CHAPTERS.length) return;
   const later = window.requestIdleCallback ? f => requestIdleCallback(f, { timeout: 2000 }) : f => setTimeout(f, 300);
-  later(() => { bg(c); warm(c + 1); });
+  later(() => { roomThumb(c); warm(c + 1); }); // the small copies only; full pictures are painted when a room is played
 })(0);
 })();
