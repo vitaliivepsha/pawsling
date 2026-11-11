@@ -1201,7 +1201,7 @@ const I18N = {
     allKo: 'Усі герої в нокауті. Спробуй ще раз', waveTry: (a, b) => `Хвиля ${a} з ${b}. Спробуй ще раз`,
     'st.knots': 'Вузлів зав\'язано', 'st.lasers': 'Лазер спіймано', 'st.crits': 'Критів по сенсору', 'st.portals': 'Телепортів',
     newBestLevel: 'Новий рекорд для цього рівня!', newBestNight: 'Новий рекорд нічної зміни!', again: 'Ще раз', map: 'Карта', next: 'Далі',
-    toMap: 'До карти', allDone: 'Квартиру врятовано! Усі рівні пройдено', lang: 'Мова',
+    toMap: 'До карти', allDone: 'Квартиру врятовано! Усі рівні пройдено', lang: 'Мова', settings: 'Налаштування',
     'st.0.0': 'Опівночі прокинулася вся техніка в квартирі, від пилососів до блендерів, і вирішила, що тут забагато котячої шерсті.',
     'st.0.1': 'Моя шерсть — моя справа! Команда, до бою!',
     'st.1.0': 'Не перемикайтеся! Вітальня тепер моя!',
@@ -1355,7 +1355,7 @@ const I18N = {
     allKo: 'All heroes knocked out. Try again', waveTry: (a, b) => `Wave ${a} of ${b}. Try again`,
     'st.knots': 'Knots tied', 'st.lasers': 'Lasers caught', 'st.crits': 'Sensor crits', 'st.portals': 'Teleports',
     newBestLevel: 'New record for this level!', newBestNight: 'New Night Shift record!', again: 'Again', map: 'Map', next: 'Next',
-    toMap: 'To the map', allDone: 'Home saved! All levels complete', lang: 'Language',
+    toMap: 'To the map', allDone: 'Home saved! All levels complete', lang: 'Language', settings: 'Settings',
     'st.0.0': 'At midnight every gadget in the flat woke up, from vacuums to blenders, and decided there was far too much cat hair.',
     'st.0.1': 'My fur, my business! Team, let\'s go!',
     'st.1.0': 'Don\'t touch that dial! The living room is mine now!',
@@ -1509,7 +1509,7 @@ const I18N = {
     allKo: 'Wszyscy bohaterowie znokautowani. Spróbuj jeszcze raz', waveTry: (a, b) => `Fala ${a} z ${b}. Spróbuj jeszcze raz`,
     'st.knots': 'Zawiązane supły', 'st.lasers': 'Złapane lasery', 'st.crits': 'Kryty w czujnik', 'st.portals': 'Teleporty',
     newBestLevel: 'Nowy rekord tego poziomu!', newBestNight: 'Nowy rekord nocnej zmiany!', again: 'Jeszcze raz', map: 'Mapa', next: 'Dalej',
-    toMap: 'Do mapy', allDone: 'Mieszkanie uratowane! Wszystkie poziomy ukończone', lang: 'Język',
+    toMap: 'Do mapy', allDone: 'Mieszkanie uratowane! Wszystkie poziomy ukończone', lang: 'Język', settings: 'Ustawienia',
     'st.0.0': 'O północy obudził się cały sprzęt w mieszkaniu, od odkurzaczy po blendery, i uznał, że jest tu za dużo kociej sierści.',
     'st.0.1': 'Moja sierść, moja sprawa! Drużyna, do boju!',
     'st.1.0': 'Nie przełączajcie! Salon jest teraz mój!',
@@ -1663,7 +1663,7 @@ const I18N = {
     allKo: 'Alle Helden k.o. Versuch es nochmal', waveTry: (a, b) => `Welle ${a} von ${b}. Versuch es nochmal`,
     'st.knots': 'Geknüpfte Knoten', 'st.lasers': 'Laser gefangen', 'st.crits': 'Sensor-Krits', 'st.portals': 'Teleports',
     newBestLevel: 'Neuer Rekord für dieses Level!', newBestNight: 'Neuer Nachtschicht-Rekord!', again: 'Nochmal', map: 'Karte', next: 'Weiter',
-    toMap: 'Zur Karte', allDone: 'Wohnung gerettet! Alle Level geschafft', lang: 'Sprache',
+    toMap: 'Zur Karte', allDone: 'Wohnung gerettet! Alle Level geschafft', lang: 'Sprache', settings: 'Einstellungen',
     'st.0.0': 'Um Mitternacht wachten alle Geräte in der Wohnung auf, vom Sauger bis zum Mixer, und beschlossen, dass es viel zu viele Katzenhaare gibt.',
     'st.0.1': 'Mein Fell, meine Sache! Team, los geht\'s!',
     'st.1.0': 'Bleiben Sie dran! Das Wohnzimmer gehört jetzt mir!',
@@ -1817,7 +1817,7 @@ const I18N = {
     allKo: 'Todos los héroes K.O. Inténtalo de nuevo', waveTry: (a, b) => `Oleada ${a} de ${b}. Inténtalo de nuevo`,
     'st.knots': 'Nudos atados', 'st.lasers': 'Láseres atrapados', 'st.crits': 'Críticos al sensor', 'st.portals': 'Teletransportes',
     newBestLevel: '¡Nuevo récord en este nivel!', newBestNight: '¡Nuevo récord del turno de noche!', again: 'Otra vez', map: 'Mapa', next: 'Siguiente',
-    toMap: 'Al mapa', allDone: '¡Piso salvado! Todos los niveles completados', lang: 'Idioma',
+    toMap: 'Al mapa', allDone: '¡Piso salvado! Todos los niveles completados', lang: 'Idioma', settings: 'Ajustes',
     'st.0.0': 'A medianoche despertaron todos los aparatos del piso, de las aspiradoras a las batidoras, y decidieron que había demasiado pelo de gato.',
     'st.0.1': '¡Mi pelo, mi asunto! ¡Equipo, al ataque!',
     'st.1.0': '¡No cambien de canal! ¡El salón ahora es mío!',
@@ -10397,11 +10397,39 @@ function setGfx(g) {
   THUMBS.length = 0; // remade at the new resolution when next shown
   resize();
 }
+function gfxIcon(g, x, y, s, on) {
+  // the three graphics choices: Auto adjusts itself (a gauge with an A), High is crisp and sparkly, Saver is a battery with a leaf
+  ctx.save(); ctx.lineCap = 'round'; ctx.lineJoin = 'round';
+  const c = on ? '#15122a' : '#ffc857';
+  if (g === 'auto') {
+    ctx.strokeStyle = c; ctx.lineWidth = s * .16; ctx.beginPath(); ctx.arc(x, y + s * .1, s * .78, Math.PI * .85, Math.PI * 2.15); ctx.stroke();
+    ctx.lineWidth = s * .1; for (let k = 0; k <= 4; k++) { const a = Math.PI * (.95 + k * .275); ctx.beginPath(); ctx.moveTo(x + Math.cos(a) * s * .5, y + s * .1 + Math.sin(a) * s * .5); ctx.lineTo(x + Math.cos(a) * s * .6, y + s * .1 + Math.sin(a) * s * .6); ctx.stroke(); }
+    const na = Math.PI * 1.5 + (RM ? .4 : Math.sin(T * 1.6) * .7);
+    ctx.strokeStyle = on ? '#b8402a' : '#ff8fb1'; ctx.lineWidth = s * .14; ctx.beginPath(); ctx.moveTo(x, y + s * .1); ctx.lineTo(x + Math.cos(na) * s * .55, y + s * .1 + Math.sin(na) * s * .55); ctx.stroke();
+    ctx.fillStyle = c; circ(x, y + s * .1, s * .14);
+    ctx.font = `900 ${Math.round(s * .55)}px ${FD}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('A', x, y + s * .72);
+  } else if (g === 'high') {
+    star(x - s * .12, y + s * .05, s * .72, on ? '#15122a' : '#ffc857');
+    star(x + s * .62, y - s * .55, s * .3, on ? '#15122a' : '#fff3c4');
+    star(x + s * .55, y + s * .62, s * .22, on ? '#15122a' : '#fff3c4');
+  } else {
+    ctx.strokeStyle = c; ctx.lineWidth = s * .14; rr(x - s * .8, y - s * .42, s * 1.45, s * .84, s * .18); ctx.stroke();
+    ctx.fillStyle = c; rr(x + s * .68, y - s * .18, s * .16, s * .36, s * .05); ctx.fill();
+    ctx.fillStyle = on ? '#3f8a3c' : '#9ee06a'; rr(x - s * .66, y - s * .28, s * .42, s * .56, s * .08); ctx.fill();
+    ctx.save(); ctx.translate(x + s * .2, y); ctx.rotate(-.6);
+    ctx.fillStyle = on ? '#3f8a3c' : '#9ee06a'; ctx.beginPath(); ctx.moveTo(-s * .3, 0); ctx.quadraticCurveTo(0, -s * .32, s * .3, 0); ctx.quadraticCurveTo(0, s * .32, -s * .3, 0); ctx.fill();
+    ctx.strokeStyle = on ? '#ffd87a' : '#1d1938'; ctx.lineWidth = Math.max(1, s * .05); ctx.beginPath(); ctx.moveTo(-s * .22, 0); ctx.lineTo(s * .22, 0); ctx.stroke();
+    ctx.restore();
+  }
+  ctx.restore();
+}
 function drawLang() {
+  // Settings: the language list, then a card with the three graphics choices
   drawMap(); UI = [];
-  ctx.fillStyle = 'rgba(12,10,26,.9)'; ctx.fillRect(0, 0, W, H);
+  ctx.fillStyle = 'rgba(12,10,26,.97)'; ctx.fillRect(0, 0, W, H);
+  iconBtn(12, 13, 'back', () => setScreen('map'));
   ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-  ctx.fillStyle = '#ffc857'; ctx.font = `900 28px ${FD}`; ctx.fillText(tr('lang'), W / 2, 130);
+  ctx.fillStyle = '#ffc857'; fitFont(tr('settings'), W - 120, 28); ctx.fillText(tr('settings'), W / 2, 32);
   // "Automatic" first, then the languages alphabetically by their own names
   const saved = lsGet('pawsling-lang'), auto = !(saved && LANGS[saved]);
   const pick = k => {
@@ -10411,15 +10439,35 @@ function drawLang() {
     setScreen('map');
   };
   const list = Object.entries(LANGS).sort((a, b) => a[1].localeCompare(b[1], 'en'));
-  uiBtn(75, 170, W - 150, 54, `${tr('langAuto')} · ${LANGS[autoLang()]}`, () => pick(null), auto);
-  list.forEach(([k, name], i) => uiBtn(75, 240 + i * 68, W - 150, 54, name, () => pick(k), !auto && k === LANG));
-  // graphics: three choices in a row, what the picked one does underneath
-  const gy = 240 + list.length * 68 + 26;
-  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-  ctx.fillStyle = '#ffc857'; ctx.font = `900 20px ${FD}`; ctx.fillText(tr('gfx'), W / 2, gy);
-  const gw = (W - 150 - 16) / 3;
-  ['auto', 'high', 'low'].forEach((g, i) => uiBtn(75 + i * (gw + 8), gy + 22, gw, 46, tr('gfx.' + g), () => setGfx(g), GFX === g));
-  ctx.textAlign = 'center'; ctx.fillStyle = '#b9b2da'; fitFont(tr('gfxd.' + GFX), W - 60, 13, 800, FB); ctx.fillText(tr('gfxd.' + GFX), W / 2, gy + 90);
+  shopSection(tr('lang'), 88);
+  uiBtn(40, 106, W - 80, 48, `${tr('langAuto')} · ${LANGS[autoLang()]}`, () => pick(null), auto);
+  list.forEach(([k, name], i) => uiBtn(40, 166 + i * 58, W - 80, 48, name, () => pick(k), !auto && k === LANG));
+  // graphics: a card like the booster rows, three tiles with icons, what the picked one does underneath
+  const gy = 166 + list.length * 58 + 30;
+  shopSection(tr('gfx'), gy);
+  const cx = 16, cw = W - 32, cy = gy + 16, ch = 182;
+  ctx.fillStyle = 'rgba(0,0,0,.3)'; rr(cx, cy + 4, cw, ch, 18); ctx.fill();
+  const cg = ctx.createLinearGradient(0, cy, 0, cy + ch); cg.addColorStop(0, '#231e44'); cg.addColorStop(1, '#1a1733');
+  ctx.fillStyle = cg; rr(cx, cy, cw, ch, 18); ctx.fill();
+  ctx.strokeStyle = '#3b3563'; ctx.lineWidth = 2; rr(cx, cy, cw, ch, 18); ctx.stroke();
+  const tw = (cw - 24 - 16) / 3, ty = cy + 12, th = 112;
+  ['auto', 'high', 'low'].forEach((g, i) => {
+    const tx = cx + 12 + i * (tw + 8), on = GFX === g;
+    UI.push({ x: tx, y: ty, w: tw, h: th, cb: () => setGfx(g) });
+    if (on) { ctx.save(); ctx.globalCompositeOperation = 'lighter'; glowAt(tx + tw / 2, ty + th / 2, tw * .8, '255,200,87', .16); ctx.restore(); }
+    const tg = ctx.createLinearGradient(0, ty, 0, ty + th);
+    tg.addColorStop(0, on ? '#ffd87a' : '#2e2859'); tg.addColorStop(1, on ? '#ffb938' : '#1f1a40');
+    ctx.fillStyle = on ? '#b8791f' : '#0d0b1d'; rr(tx, ty + 4, tw, th, 14); ctx.fill();
+    ctx.fillStyle = tg; rr(tx, ty, tw, th, 14); ctx.fill();
+    ctx.fillStyle = on ? 'rgba(255,255,255,.16)' : 'rgba(255,255,255,.05)'; rr(tx + 6, ty + 4, tw - 12, th * .26, 10); ctx.fill();
+    if (!on) { ctx.strokeStyle = '#4a4278'; ctx.lineWidth = 2; rr(tx, ty, tw, th, 14); ctx.stroke(); }
+    gfxIcon(g, tx + tw / 2, ty + 42, 20, on);
+    ctx.fillStyle = on ? '#15122a' : '#f4efe6'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+    fitFont(tr('gfx.' + g), tw - 14, 15); ctx.fillText(tr('gfx.' + g), tx + tw / 2, ty + 88);
+    if (on) { ctx.strokeStyle = '#15122a'; ctx.lineWidth = 2.5; ctx.beginPath(); ctx.moveTo(tx + tw - 22, ty + 14); ctx.lineTo(tx + tw - 17, ty + 19); ctx.lineTo(tx + tw - 9, ty + 9); ctx.stroke(); }
+  });
+  ctx.textAlign = 'center'; ctx.fillStyle = '#c9c2e6'; ctx.font = `800 13px ${FB}`;
+  splitLines(tr('gfxd.' + GFX), cw - 40).slice(0, 2).forEach((ln, k, a) => ctx.fillText(ln, W / 2, cy + 152 + (k - (a.length - 1) / 2) * 17));
 }
 
 // ---------- shop: Second wind for Telegram Stars ----------
