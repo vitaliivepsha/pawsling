@@ -16,12 +16,12 @@ const tgv = v => !!(TG && TG.isVersionAtLeast && TG.isVersionAtLeast(v));
 const TG_CLOUD = !!(TG && TG.CloudStorage && tgv('6.9'));
 const TG_NAME = (TG && TG.initDataUnsafe && TG.initDataUnsafe.user && TG.initDataUnsafe.user.first_name) || '';
 
-let scale = 1, dpr = 1, T = 0;
+let scale = 1, dpr = 1, T = 0, lowRes = false; // lowRes: a slow device draws 1 device pixel per game pixel
 function resize() {
   const b = document.body, narrow = b.clientWidth < 520; // phones use the full width: the 16px gutters cost ~8% of the text size
   const aw = Math.max(240, b.clientWidth - (narrow ? 0 : 32)), ah = Math.max(320, b.clientHeight - (narrow ? 0 : 16));
   scale = Math.min(aw / W, ah / H);
-  dpr = Math.min(2, window.devicePixelRatio || 1);
+  dpr = lowRes ? 1 : Math.min(2, window.devicePixelRatio || 1);
   cv.style.width = (W * scale) + 'px';
   cv.style.height = (H * scale) + 'px';
   cv.width = Math.round(W * scale * dpr);
@@ -4333,6 +4333,7 @@ function chIcon(c, x, y, s, col) {
 let SCREEN = 'map', G = null, drag = null, UI = [], DETAIL = null, CHEST = null;
 function setScreen(s) {
   SCREEN = s; drag = null; DETAIL = null; CHEST = null;
+  dropUnderlay(); // the saved picture under a covering screen belongs to the screen being left
   if (s === 'map') MAP.focus = true;
   if (TG && tgv('6.1')) { try { if (s === 'map') TG.BackButton.hide(); else TG.BackButton.show(); } catch (e) {} }
   if (s === 'game' && G) Amb.start(G.lvl.ch); else Amb.stop();
@@ -9402,7 +9403,8 @@ function drawTrails() {
       ctx.beginPath(); ctx.moveTo(t.pts[0][0], t.pts[0][1]);
       for (let i = 1; i < t.pts.length; i++) ctx.lineTo(t.pts[i][0], t.pts[i][1]);
     } else ctx.stroke();
-    // twisted-yarn look: dark twists plus a soft highlight strand
+    // twisted-yarn look: dark twists plus a soft highlight strand (a slow device keeps it for the thread in flight only)
+    if (LOWFX && age > 0) continue;
     ctx.strokeStyle = 'rgba(0,0,0,.28)'; ctx.lineWidth = 4.5; ctx.setLineDash([1.5, 4.5]); ctx.stroke();
     ctx.strokeStyle = 'rgba(255,255,255,.45)'; ctx.lineWidth = 1.2; ctx.setLineDash([3, 3]); ctx.lineDashOffset = 2.5; ctx.stroke();
     ctx.setLineDash([]); ctx.lineDashOffset = 0;
@@ -10577,8 +10579,23 @@ function startPrepared() {
   else if (pr.hard) { newRun(pr.li); G.hard = true; setScreen('game'); setupWave(0); markDayChallenge(); boost(); }
   else startLevel(pr.li, false, boost);
 }
+// A screen that covers what is under it almost entirely paints that underlay once, then reuses the picture while
+// the same screen is open (key) and the canvas keeps its size
+let UNDER = null;
+function underlay(key, paint) {
+  if (UNDER && UNDER.key === key && UNDER.pic.width === cv.width && UNDER.pic.height === cv.height) {
+    ctx.save(); ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.drawImage(UNDER.pic, 0, 0); ctx.restore();
+    return;
+  }
+  paint();
+  const pic = UNDER ? UNDER.pic : document.createElement('canvas');
+  pic.width = cv.width; pic.height = cv.height;
+  pic.getContext('2d').drawImage(cv, 0, 0);
+  UNDER = { key, pic };
+}
+function dropUnderlay() { if (UNDER) { UNDER.pic.width = UNDER.pic.height = 0; UNDER = null; } }
 function drawPrep() {
-  drawMap(); UI = [];
+  underlay(PREP, drawMap); UI = [];
   const pev = PREP.ev != null ? activeEvent() : null;
   const c = pev ? pev.ch : PREP.li < 0 ? null : LEVELS[PREP.li].ch, ch = c == null ? null : CHAPTERS[c], col = pev ? pev.col : ch ? ch.col : '#9fa8ff';
   ctx.fillStyle = 'rgba(12,10,26,.94)'; ctx.fillRect(0, 0, W, H);
@@ -12973,6 +12990,13 @@ function comicPanel() {
 }
 
 function drawGame() {
+  if (G.state !== 'win' && G.state !== 'lose') { G.endKey = null; drawGameScene(); return; }
+  // the result screen covers the level at .9: the level is painted once for it (a new key each time it opens)
+  if (!G.endKey || G.endKey.state !== G.state) G.endKey = { state: G.state };
+  underlay(G.endKey, drawGameScene);
+  UI = []; drawEnd();
+}
+function drawGameScene() {
   const c = G.lvl.ch;
   ctx.drawImage(bg(c), 0, 0, W, H);
   if (COMIC) comicPaper();
@@ -13078,7 +13102,6 @@ function drawGame() {
   drawBanner();
   drawBossIntro();
   if (G.state === 'foe') drawFoeCard();
-  if (G.state === 'win' || G.state === 'lose') { UI = []; drawEnd(); }
 }
 
 function draw() {
@@ -13220,7 +13243,7 @@ function frame(now) {
   if (DEV && window.__pause) { last = now; nextFrame(frame); return; }
   const raw = now - last, dt = Math.min(.033, raw / 1000);
   last = now; T += dt;
-  if (!LOWFX && !DEV) { slowMs = raw > 45 ? slowMs + raw : Math.max(0, slowMs - raw); if (slowMs > 1500) LOWFX = true; }
+  if (!LOWFX && !DEV) { slowMs = raw > 45 ? slowMs + raw : Math.max(0, slowMs - raw); if (slowMs > 1500) { LOWFX = true; lowRes = true; resize(); } }
   try {
     update(dt);
     draw();
