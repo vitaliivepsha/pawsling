@@ -33,8 +33,8 @@
 <canvas id="game" tabindex="0" aria-label="Гра Pawsling. Потягни від героя назад і відпусти, щоб запустити його, як з рогатки."></canvas>
 <div id="boot" role="status">Завантаження…</div>
 <!--
-  This page only loads the game. Telegram's WebView caches pages hard, so the game's own files
-  are requested with a fresh query string on every launch: a push to main reaches players at once.
+  This page only loads the game. Telegram's WebView caches pages hard, so the game's own files are
+  requested with a query string that changes with every push (game.js: its ETag; game.css: the time).
 -->
 <script>
 (function () {
@@ -63,17 +63,33 @@
   var css = document.createElement('link');
   css.rel = 'stylesheet'; css.href = 'game.css?v=' + v;
   var started = false;
+  // game.js is about 1 MB. Its version is the server's ETag, asked for with a tiny HEAD request that skips every cache:
+  // while the file is unchanged the URL stays the same, so the WebView takes it (already compiled) from its cache, and
+  // a push changes the ETag, so the new game still arrives at once. No answer in time: a fresh copy, as before
+  var gameVer = null, verAsked = false;
+  function askVersion(done) {
+    if (verAsked) return; verAsked = true;
+    var t = setTimeout(done, 2500);
+    try {
+      fetch('game.js', { method: 'HEAD', cache: 'no-store' }).then(function (r) {
+        var tag = r.ok && (r.headers.get('ETag') || r.headers.get('Last-Modified'));
+        if (tag) gameVer = tag.replace(/[^\w-]/g, '');
+      }).catch(function () {}).then(function () { clearTimeout(t); done(); });
+    } catch (e) { clearTimeout(t); done(); }
+  }
+  var cssDone = false, verDone = false;
   function startGame() {
-    if (started) return;
+    if (started || !cssDone || !verDone) return;
     started = true; stage = 'js';
     var js = document.createElement('script');
-    js.src = 'game.js?v=' + v;
+    js.src = 'game.js?v=' + (gameVer || v);
     js.onload = function () { stage = 'run'; };
     js.onerror = function () { window.__bootErr('game.js not loaded'); };
     document.body.appendChild(js);
   }
-  css.onload = css.onerror = startGame;
-  setTimeout(startGame, 3000); // some WebViews never fire load events on stylesheets
+  askVersion(function () { if (!verDone) { verDone = true; startGame(); } });
+  css.onload = css.onerror = function () { cssDone = true; startGame(); };
+  setTimeout(function () { cssDone = true; startGame(); }, 3000); // some WebViews never fire load events on stylesheets
   document.head.appendChild(css);
 })();
 </script>
