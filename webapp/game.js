@@ -4371,6 +4371,13 @@ function iconBtn(x, y, kind, cb) {
   ctx.fillStyle = '#f4efe6'; ctx.strokeStyle = '#f4efe6'; ctx.lineWidth = 2.2; ctx.lineCap = 'round';
   if (kind === 'back') {
     ctx.beginPath(); ctx.moveTo(cx + 3, cy - 7); ctx.lineTo(cx - 4, cy); ctx.lineTo(cx + 3, cy + 7); ctx.stroke();
+  } else if (kind === 'gear') {
+    // eight square teeth round a wheel with a hole
+    ctx.fillStyle = '#c9c2e6'; ctx.beginPath();
+    for (let k = 0; k < 16; k++) { const a0 = (k - .5) / 16 * TAU, a1 = (k + .5) / 16 * TAU, rad = k % 2 ? 7.2 : 10.2; ctx.arc(cx, cy, rad, a0, a1); }
+    ctx.closePath(); ctx.fill();
+    ctx.fillStyle = '#251f4b'; circ(cx, cy, 3.6);
+    ctx.strokeStyle = 'rgba(255,255,255,.35)'; ctx.lineWidth = 1.2; ctx.beginPath(); ctx.arc(cx, cy, 5.6, Math.PI * 1.1, Math.PI * 1.6); ctx.stroke();
   } else if (kind === 'paw') {
     paw(cx, cy + 3, 15, '#ffc857');
   } else if (kind === 'bag') {
@@ -10372,19 +10379,8 @@ function drawMap() {
   iconBtn(W - 46, 13, 'sound', () => Snd.toggle());
   iconBtn(W - 90, 13, 'trophy', () => openBoard('week'));
   iconBtn(W - 134, 13, 'paw', () => setScreen('heroes'));
-  iconBtn(62, 13, 'bag', () => { SHOP.msg = null; setScreen('shop'); refreshInv(); });
-  langBtn();
-}
-function langBtn() {
-  const x = 12, y = 13, w = 44, h = 34;
-  UI.push({ x: x - 4, y: y - 4, w: w + 8, h: h + 8, cb: () => setScreen('lang') });
-  ctx.fillStyle = '#0d0b1d'; rr(x, y + 3, w, h, 10); ctx.fill();
-  const g = ctx.createLinearGradient(0, y, 0, y + h);
-  g.addColorStop(0, '#2e2859'); g.addColorStop(1, '#1f1a40');
-  ctx.fillStyle = g; rr(x, y, w, h, 10); ctx.fill();
-  ctx.strokeStyle = '#4a4278'; ctx.lineWidth = 1.5; rr(x, y, w, h, 10); ctx.stroke();
-  ctx.fillStyle = '#f4efe6'; ctx.font = `900 13px ${FD}`; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-  ctx.fillText(LANG.toUpperCase(), x + w / 2, y + h / 2 + 1);
+  iconBtn(56, 13, 'bag', () => { SHOP.msg = null; setScreen('shop'); refreshInv(); });
+  iconBtn(12, 13, 'gear', () => setScreen('lang'));
 }
 function applyLang(k) {
   LANG = k || autoLang();
@@ -10440,6 +10436,10 @@ function drawLang() {
   };
   const list = Object.entries(LANGS).sort((a, b) => a[1].localeCompare(b[1], 'en'));
   shopSection(tr('lang'), 88);
+  ctx.font = `900 11px ${FD}`; const code = LANG.toUpperCase(), cw2 = ctx.measureText(code).width + 16;
+  ctx.fillStyle = '#0c0a1a'; ctx.fillRect(W - 30 - cw2, 80, cw2 + 12, 16);
+  ctx.fillStyle = '#2a2548'; rr(W - 24 - cw2, 80, cw2, 16, 8); ctx.fill();
+  ctx.fillStyle = '#c9c2e6'; ctx.textAlign = 'center'; ctx.fillText(code, W - 24 - cw2 / 2, 88.5);
   uiBtn(40, 106, W - 80, 48, `${tr('langAuto')} · ${LANGS[autoLang()]}`, () => pick(null), auto);
   list.forEach(([k, name], i) => uiBtn(40, 166 + i * 58, W - 80, 48, name, () => pick(k), !auto && k === LANG));
   // graphics: a card like the booster rows, three tiles with icons, what the picked one does underneath
