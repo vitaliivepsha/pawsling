@@ -12,8 +12,8 @@ worker/             the leaderboard: a Cloudflare Worker with a D1 database
 
 ## Gameplay
 
-- 123 levels in 21 rooms, each room ends with a boss: Kitchen, Living room, Bedroom (4 levels each),
-  Bathroom, Balcony, Attic, Garage, Basement, Roof, Garden, Server room, Stairwell, Warehouse, Factory, Lab, Space station, Polar station, Underwater base, Power plant, Subway (6 levels each), Fun park (9 levels). The map scrolls.
+- 132 levels in 22 rooms, each room ends with a boss: Kitchen, Living room, Bedroom (4 levels each),
+  Bathroom, Balcony, Attic, Garage, Basement, Roof, Garden, Server room, Stairwell, Warehouse, Factory, Lab, Space station, Polar station, Underwater base, Power plant, Subway (6 levels each), Fun park, Junkyard (9 levels each). The map scrolls.
 - The basement mixes every enemy type (toughness ×3.39) and ends with the Web-Spinner: after each
   attack it webs the hero it hit, who skips their next turn unless an ally frees them with a shot.
 - The roof (toughness ×4.06) adds magnets that pull heroes in and bend their shots, and ends with
@@ -72,7 +72,7 @@ worker/             the leaderboard: a Cloudflare Worker with a D1 database
   Mid-boss on level 119: the Grabber claw machine; after attacking it grabs the hero it hit, who loses another
   heart (never the last) and is dropped somewhere else. Boss on level 123: the Whirl Ferris wheel; after attacking
   it turns every mirror toward the heroes.
-- The junkyard (room 22, levels 124-132, toughness ×10, attack ×3.75 with a harder mechanic, the hardest room) opens
+- The junkyard (room 22, levels 124-132, toughness ×10, attack ×3.75 with a harder mechanic, the hardest room) opened
   for everyone on Friday 13 November 2026 at 09:00 Kyiv, the same way. The press walls close in from both sides every
   turn (up to 85 px each) and open again with each wave: a hero they reach loses a heart (never the last) and a robot
   20% of its health (a boss 5%). Scrap bots leave a pile of scrap heroes bounce off until the wave ends. Mid-boss on
