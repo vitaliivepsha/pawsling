@@ -58,7 +58,7 @@ const BOOSTERS = ['heart', 'meter', 'wind', 'armor', 'hourglass']; // the only i
 // login bonus by day of the streak (the 7th day restarts the cycle)
 // the chest ripens every 6 hours; inside: a heart or a quick start, and now and then a free Second wind
 // the robot album: each card's tiers (10 / 50 / 200 wins) pay out once
-const ALBUM_TYPES = ['vac', 'spray', 'mop', 'brush', 'fan', 'rc', 'shield', 'split', 'magnet', 'mole', 'printer', 'bomb', 'mimic', 'turret', 'tesla', 'warp', 'cryo', 'jelly', 'battery', 'signal', 'mirror', 'junk', 'boss'];
+const ALBUM_TYPES = ['vac', 'spray', 'mop', 'brush', 'fan', 'rc', 'shield', 'split', 'magnet', 'mole', 'printer', 'bomb', 'mimic', 'turret', 'tesla', 'warp', 'cryo', 'jelly', 'battery', 'signal', 'mirror', 'junk', 'boss', 'rush', 'cheer'];
 const ALBUM_GIFTS = [null, { meter: 1 }, { heart: 1 }, { wind: 1 }];
 // weekly quests: three a week; each pays once, all three add a free Second wind
 const QUEST_GIFTS = { knots: { meter: 1 }, robots: { heart: 1 }, bosses: { heart: 1 }, noko: { meter: 1 }, stars3: { heart: 1 }, night: { meter: 1 }, combos: { meter: 1 }, lasers: { meter: 1 } };
@@ -1175,10 +1175,10 @@ const CH_FEED_DAYS = [2, 4, 6], CH_HOUR = 15, CH_WEEK_HOUR = 9;
 const CH_NEW_FROM = 18;
 // rooms that open for everyone at a set time (as SUBWAY_OPEN_AT in game.js): until then the channels act as if they
 // were not there, and the announcement goes out on the first cron run after the opening instead of at CH_HOUR
-const CH_OPEN = { 19: Date.UTC(2026, 9, 30, 7, 0), 20: Date.UTC(2026, 10, 6, 7, 0), 21: Date.UTC(2026, 10, 13, 7, 0) }; // = ROOM_OPEN_AT in game.js
+const CH_OPEN = { 19: Date.UTC(2026, 9, 30, 7, 0), 20: Date.UTC(2026, 10, 6, 7, 0), 21: Date.UTC(2026, 10, 13, 7, 0), 22: Date.UTC(2026, 10, 23, 7, 0) }; // = ROOM_OPEN_AT in game.js
 // a room's levels: the first three rooms have 4, the others 6 unless CH_ROOM_SIZE says otherwise (as LEVELS in game.js);
 // CH_MID_BOSS: a room's second boss, before its last level
-const CH_ROOM_SIZE = { 20: 9, 21: 9 }, CH_MID_BOSS = { 20: 119, 21: 128 };
+const CH_ROOM_SIZE = { 20: 9, 21: 9, 22: 9 }, CH_MID_BOSS = { 20: 119, 21: 128, 22: 137 };
 const roomSize = i => i < 3 ? 4 : CH_ROOM_SIZE[i] || 6;
 function roomLevels(i) {
   let first = 1;
