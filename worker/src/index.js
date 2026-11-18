@@ -1511,9 +1511,14 @@ async function sendChannelPost(env, chat, lang, kind, post, thread = null, via =
   const v = post.video, media = v
     ? ['sendVideo', { video: ART + v.src, cover: ART + v.cover, width: v.width, height: v.height, duration: v.duration, supports_streaming: true }]
     : ['sendPhoto', { photo: ART + post.img }];
-  return tg(env, media[0], { chat_id: chat, ...media[1], caption: post.caption, parse_mode: 'HTML', ...(thread ? { message_thread_id: thread } : {}),
+  const r = await tg(env, media[0], { chat_id: chat, ...media[1], caption: post.caption, parse_mode: 'HTML', ...(thread ? { message_thread_id: thread } : {}),
     reply_markup: { inline_keyboard: post.kb || [[{ text: CH_TEXT[lang].play, url: `https://t.me/${botName}?startapp=${src}` }]] } });
+  // a new post in a channel gets the channel's own ❤ right away (anonymous there; not in the group, where it would show the bot)
+  if (r.ok && !thread && channels(env).some(c => c.chat === chat))
+    await tg(env, 'setMessageReaction', { chat_id: chat, message_id: r.result.message_id, reaction: [{ type: 'emoji', emoji: CH_HEART }] }).catch(() => null);
+  return r;
 }
+const CH_HEART = '❤';
 // the group's announcement is due once the channel has grown to CH_GROUP_AT subscribers (and the group has its topics)
 // the newest room's announcement, once per room, when its raid poster is on Pages: at CH_HOUR, or for a room with an
 // opening time (CH_OPEN) on the first run after it
