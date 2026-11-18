@@ -1213,11 +1213,11 @@ const CH_GROUP_AT = 100, CH_GROUP_HOUR = 12;
 const CH_TEXT = {
   uk: {
     mods: { wind: 'хуртовина', acid: 'кислота', meteors: 'метеорити', fences: 'лазерні бар\'єри', belts: 'конвеєрні стрічки' },
-    bosses: ['блендер «Мегамікс»', 'Телебос 3000', 'Будильник-Дзвонар', 'пралька «Барабан»', 'повітродув «Шквал»', 'пилосос-привид', 'Робо-бос 9000', 'павук «Тенета»', 'дрон «Грім»', 'косарка «Стриж»', 'хаб «Розумний дім»', 'ліфт «Експрес»', 'сортувальник «Мегасклад»', 'збирач «Прайм»', 'професор «Колба»', 'командор «Орбіта»', 'снігоочисник «Завірюха»', 'кракен «Глибина»', 'турбіна «Гігават»', 'локомотив «Комета»', ['автомат «Хапун»', 'колесо огляду «Вихор»'], ['кран «Гак»', 'прес «Моноліт»']],
+    bosses: ['блендер «Мегамікс»', 'Телебос 3000', 'Будильник-Дзвонар', 'пралька «Барабан»', 'повітродув «Шквал»', 'пилосос-привид', 'Робо-бос 9000', 'павук «Тенета»', 'дрон «Грім»', 'косарка «Стриж»', 'хаб «Розумний дім»', 'ліфт «Експрес»', 'сортувальник «Мегасклад»', 'збирач «Прайм»', 'професор «Колба»', 'командор «Орбіта»', 'снігоочисник «Завірюха»', 'кракен «Глибина»', 'турбіна «Гігават»', 'локомотив «Комета»', ['автомат «Хапун»', 'колесо огляду «Вихор»'], ['кран «Гак»', 'прес «Моноліт»'], ['тренажер «Таран»', 'квотербек «Бліц»']],
     play: '🐾 Грати', medals: ['🥇', '🥈', '🥉'],
     // filled into {levels}, {rooms}, {bosses} and {to} from the newest open room; the hardest room and the finale follow it too
     nLevels: n => `${n} ${ukPl(n, 'рівень', 'рівні', 'рівнів')}`, nRooms: n => `${n} ${ukPl(n, 'кімнаті', 'кімнатах', 'кімнатах')}`, nBosses: n => `${n} ${ukPl(n, 'бос', 'боси', 'босів')}`,
-    to: { 18: 'електростанції', 19: 'метро', 20: 'парку атракціонів', 21: 'звалища' }, names: { 19: 'Метро', 20: 'Парк атракціонів', 21: 'Звалище' },
+    to: { 18: 'електростанції', 19: 'метро', 20: 'парку атракціонів', 21: 'звалища', 22: 'стадіону' }, names: { 19: 'Метро', 20: 'Парк атракціонів', 21: 'Звалище', 22: 'Стадіон' },
     hardest: 'Найважча кімната: ', finale: n => ` Це фінал гри: рівень ${n}.`,
     weekHead: '📅 <b>Підсумки тижня в Pawsling</b>',
     night: rows => `🌙 <b>Турнір «Нічної зміни»</b>\n${rows.map((r, i) => `${CH_TEXT.uk.medals[i]} ${r.name} — ${r.night} ${ukWaves(r.night)}`).join('\n')}`,
@@ -1268,6 +1268,7 @@ const CH_TEXT = {
       'По коліях ходять потяги, а лампи на колії показують, скільки ходів лишилось, і червоніють перед потягом. Хто стоїть на коліях, коли проходить потяг, втрачає серце й відлітає вбік, а роботи на коліях втрачають 30% міцності. Поки живий семафор, потяги ходять кожні 2 ходи замість 3. Бос після атаки пускає потяг по колії, де найбільше героїв.',
       'Тут уперше дев\'ять рівнів і два боси. Бампери, як у пінболі, відкидають героя й розганяють його: кожен відскок від бампера додає удару 10%, до +40%. Дзеркальні боти блокують усе, що в них влучає, і щоходу повертаються на чверть оберту, тож бий збоку чи ззаду. Проміжний бос хапає вдареного героя, забирає ще одне серце й кидає його в інше місце, а фінальний після атаки розвертає всі дзеркала до героїв.',
       'Стіни преса щоходу зсуваються з обох боків, і поле вужчає до кінця хвилі. Кого притисне, той втрачає серце, а роботи — 20% міцності; з новою хвилею стіни розходяться. Зламаний брухтобот лишає купу брухту, від якої герої відскакують до кінця хвилі. Проміжний бос скидає дві купи брухту біля вдареного героя, а фінальний після атаки зсуває стіни одразу на дві поділки.',
+      'Американський футбол у квартирі! Герой, що зачепить м\'яч, б\'є по ньому, і м\'яч летить далі сам і б\'є роботів, а між стійками воріт угорі — «Тачдаун!» і +30 до шкали «Бешкету». Лайнбекери щоходу біжать до героїв і збивають найближчого з ніг (−1 серце, але не останнє), а поки на полі чирлідер, вони біжать удвічі далі. Проміжний бос після атаки ставить стінку з трьох манекенів між собою й героями, а фінальний кличе на поле до двох лайнбекерів, і всі вони роблять ще один ривок.',
     ],
     tips: {
       slingshot: '🎯 <b>Як грати</b>\n\nТягни героя назад, цілься й відпускай. Герої відбиваються від стін і прошивають роботів наскрізь — найкращі постріли зачіпають кількох одразу.',
@@ -1286,10 +1287,10 @@ const CH_TEXT = {
   },
   en: {
     mods: { wind: 'blizzard', acid: 'acid', meteors: 'meteors', fences: 'laser fences', belts: 'conveyor belts' },
-    bosses: ['Megamix Blender', 'Teleboss 3000', 'Bellringer Alarm', 'Drum Washer', 'Gale Blower', 'Ghost Vacuum', 'Robo-Boss 9000', 'Web-Spinner', 'Thunder Drone', 'Swift Mower', 'Smart Home Hub', 'Express Lift', 'Mega Sorter', 'Assembler Prime', 'Professor Flask', 'Commander Orbit', 'Blizzard Snowplough', 'Kraken Deep', 'Gigawatt Turbine', 'Comet Locomotive', ['Grabber Claw Machine', 'Whirl Ferris Wheel'], ['Hook Crane', 'Monolith Press']],
+    bosses: ['Megamix Blender', 'Teleboss 3000', 'Bellringer Alarm', 'Drum Washer', 'Gale Blower', 'Ghost Vacuum', 'Robo-Boss 9000', 'Web-Spinner', 'Thunder Drone', 'Swift Mower', 'Smart Home Hub', 'Express Lift', 'Mega Sorter', 'Assembler Prime', 'Professor Flask', 'Commander Orbit', 'Blizzard Snowplough', 'Kraken Deep', 'Gigawatt Turbine', 'Comet Locomotive', ['Grabber Claw Machine', 'Whirl Ferris Wheel'], ['Hook Crane', 'Monolith Press'], ['Battering Sled', 'Blitz Quarterback']],
     play: '🐾 Play', medals: ['🥇', '🥈', '🥉'],
     nLevels: n => `${n} levels`, nRooms: n => `${n} rooms`, nBosses: n => `${n} bosses`,
-    to: { 18: 'the power plant', 19: 'the subway', 20: 'the fun park', 21: 'the junkyard' }, names: { 19: 'Subway', 20: 'Fun park', 21: 'Junkyard' },
+    to: { 18: 'the power plant', 19: 'the subway', 20: 'the fun park', 21: 'the junkyard', 22: 'the stadium' }, names: { 19: 'Subway', 20: 'Fun park', 21: 'Junkyard', 22: 'Stadium' },
     hardest: 'The hardest room: ', finale: n => ` This is the finale of the game: level ${n}.`,
     weekHead: '📅 <b>The week in Pawsling</b>',
     night: rows => `🌙 <b>Night Shift tournament</b>\n${rows.map((r, i) => `${CH_TEXT.en.medals[i]} ${r.name} — ${r.night} waves`).join('\n')}`,
@@ -1340,6 +1341,7 @@ const CH_TEXT = {
       'Trains run along the tracks, and lamps on the track count down the turns and turn red before a train. A hero standing on the tracks when a train passes loses a heart and is thrown aside, and robots on the tracks lose 30% of their health. While a signal bot is alive, trains come every 2 turns instead of 3. After each attack the boss sends a train down the track with the most heroes.',
       'Nine levels and two bosses for the first time. Pinball bumpers bounce heroes off and speed them up: every bounce adds 10% to the hit, up to +40%. Mirror bots block everything that hits them and turn a quarter every turn, so hit them from the side or the back. The mid-boss grabs the hero it hit, takes one more heart and drops them somewhere else, and the final boss turns every mirror toward the heroes after each attack.',
       'The press walls close in from both sides every turn, and the field keeps narrowing until the wave ends. A hero caught between them loses a heart and a robot 20% of its health; a new wave pushes the walls back. A broken scrap bot leaves a pile of scrap that heroes bounce off until the wave ends. The mid-boss drops two scrap piles next to the hero it hit, and the final boss moves the walls two marks at once after each attack.',
+      'American football in the flat! A hero who touches the ball kicks it, and the ball flies on by itself, hitting robots; send it between the goalposts at the top for a touchdown and +30 Mischief. Linebackers rush at the heroes every turn and tackle the nearest one (−1 heart, never the last), and while a cheerleader is on the field they run twice as far. The mid-boss sets a wall of three tackling dummies between itself and the heroes after each attack, and the final boss calls up to two linebackers onto the field and gives every one of them an extra rush.',
     ],
     tips: {
       slingshot: '🎯 <b>How to play</b>\n\nPull a hero back, aim and let go. Heroes bounce off walls and pierce right through robots: the best shots hit several at once.',
@@ -1368,7 +1370,7 @@ const CH_FEED = [
   { tip: 'night', img: shot('6-night') }, { room: 6 }, { tip: 'quests', img: feed('quests') }, { room: 7 },
   { tip: 'bosses', img: shot('3-bosses') }, { room: 8 }, { tip: 'raids', img: 'raid/raid-8.jpg' }, { room: 9 },
   { tip: 'album', img: feed('album') }, { room: 10 }, { tip: 'streak', img: feed('streak') }, { room: 11 },
-  { room: 12 }, { room: 13 }, { room: 14 }, { room: 15 }, { room: 16 }, { room: 17 }, { room: 18 }, { room: 19 }, { room: 20 }, { room: 21 },
+  { room: 12 }, { room: 13 }, { room: 14 }, { room: 15 }, { room: 16 }, { room: 17 }, { room: 18 }, { room: 19 }, { room: 20 }, { room: 21 }, { room: 22 },
 ];
 // one-off posts at a set time (UTC, the first cron run from then on, between CH_SCHED_HOURS), each once, channels only;
 // `gate` (optional) holds one back until the owner's /chan <gate> on; `video` (with its `cover`) goes out as a clip
