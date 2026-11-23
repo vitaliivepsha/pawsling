@@ -12,8 +12,8 @@ worker/             the leaderboard: a Cloudflare Worker with a D1 database
 
 ## Gameplay
 
-- 132 levels in 22 rooms, each room ends with a boss: Kitchen, Living room, Bedroom (4 levels each),
-  Bathroom, Balcony, Attic, Garage, Basement, Roof, Garden, Server room, Stairwell, Warehouse, Factory, Lab, Space station, Polar station, Underwater base, Power plant, Subway (6 levels each), Fun park, Junkyard (9 levels each). The map scrolls.
+- 141 levels in 23 rooms, each room ends with a boss: Kitchen, Living room, Bedroom (4 levels each),
+  Bathroom, Balcony, Attic, Garage, Basement, Roof, Garden, Server room, Stairwell, Warehouse, Factory, Lab, Space station, Polar station, Underwater base, Power plant, Subway (6 levels each), Fun park, Junkyard, Stadium (9 levels each). The map scrolls.
 - The basement mixes every enemy type (toughness ×3.39) and ends with the Web-Spinner: after each
   attack it webs the hero it hit, who skips their next turn unless an ally frees them with a shot.
 - The roof (toughness ×4.06) adds magnets that pull heroes in and bend their shots, and ends with
@@ -78,6 +78,11 @@ worker/             the leaderboard: a Cloudflare Worker with a D1 database
   20% of its health (a boss 5%). Scrap bots leave a pile of scrap heroes bounce off until the wave ends. Mid-boss on
   level 128: the Hook Crane drops two piles by the hero it hit. Boss on level 132: the Monolith Press moves the walls
   two marks at once. No portal boxes here, the walls would swallow them.
+- The stadium (room 23, levels 133-141) opened for everyone on Monday 23 November 2026 at 09:00 Kyiv, the same way. Nine levels:
+  heroes are footballers, a kick sends the ball flying on by itself to hit robots, and between the goalposts at the top it scores a
+  touchdown (+30 Mischief). Linebackers rush at the heroes every turn and tackle the one they reach (-1 heart, never the last);
+  cheerleaders make them run twice as far. Mid-boss on level 137: the Battering Sled sets a wall of tackling dummies. Boss on
+  level 141: the Blitz Quarterback calls linebackers and makes them rush.
   The last level is always the finale, and the weekly challenge keeps a fixed count of 19 rooms (CHAL_ROOMS).
 - Weekly challenge (from level 12, on the Daily screen's week tab): one level a week, the same for
   everyone, in a room from the balcony on with two modifiers from the newer rooms (blizzard, acid,
@@ -249,8 +254,8 @@ The weekly challenge post uses the same fixed `CHAL_ROOMS` as the game (19 for n
 A room with an opening time in `CH_OPEN` (the subway: 30 Oct 07:00 UTC, as `SUBWAY_OPEN_AT` in the game) does not exist for the
 channels before it: level and boss counts, the map tip, "the hardest room" and the finale all follow the newest open room,
 and its announcement goes out on the first run after the opening.
-The fun park (room 21, 6 Nov) and the junkyard (room 22, 13 Nov) open at 07:00 UTC the same way. Rooms can differ in size (`CH_ROOM_SIZE`, 9 levels in both) and have a
-mid-room boss (`CH_MID_BOSS`, levels 119 and 128), so level ranges and the boss count follow `LEVELS` in the game.
+The fun park (room 21, 6 Nov), the junkyard (room 22, 13 Nov) and the stadium (room 23, 23 Nov) open at 07:00 UTC the same way. Rooms can differ in size (`CH_ROOM_SIZE`, 9 levels in all three) and have a
+mid-room boss (`CH_MID_BOSS`, levels 119, 128 and 137), so level ranges and the boss count follow `LEVELS` in the game.
 One-off posts (`CH_SCHEDULED`: free boosters, the new Armour and Hourglass, the shop) go out from their date, one a day at most
 (a post with a `gate` waits for the owner's `/chan <gate> on`).
 Thanksgiving is a gated event in the channels: nothing goes out until the owner sends `/chan thanksgiving on`; then the
