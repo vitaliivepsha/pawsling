@@ -12904,6 +12904,8 @@ function evDaysLeft(ev, ts = Date.now()) {
 }
 function maybeEventPop() {
   if (EVPOP || CHEST || SCREEN !== 'map' || PROG.unlocked < 2) return;
+  // after the server's answer: it may open the daily screen (today's bonus) first, and the reminder waits for the map
+  if (serverOn() && !DAILY.loaded) return;
   const ev = activeEvent();
   if (!ev || !EVENT_LEVELS[ev.id]) return;
   const day = new Date().toDateString(), key = evKey(ev) + ':' + day;
