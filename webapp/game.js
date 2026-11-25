@@ -12914,25 +12914,74 @@ function maybeEventPop() {
   EVPOP = { ev, t0: T };
 }
 function drawEventPop() {
-  const { ev } = EVPOP, n = EVENT_LEVELS[ev.id].length, done = evDone(ev), k = Math.min(1, (T - EVPOP.t0) / .25);
+  // the once-a-day event reminder, festive and the same for every event: rays and sparkles in the event's colour, the
+  // event's icon with its hat as the prize, the name on a ribbon, days left, a dot per level, the harvest for a ranked
+  // event, a short note, then Play and Later. It springs in; the buttons sit still so taps land where they are drawn
+  const { ev } = EVPOP, n = EVENT_LEVELS[ev.id].length, done = evDone(ev), tt = RM ? 0 : T;
+  const k = RM ? 1 : Math.min(1, (T - EVPOP.t0) / .4), sc = RM ? 1 : easeOutBack(k);
   UI = [];
-  ctx.fillStyle = `rgba(8,6,18,${.78 * k})`; ctx.fillRect(0, 0, W, H);
-  const cw = W - 48, ch = 340, x = 24, y = 190 + (1 - k) * 30;
-  const g = ctx.createLinearGradient(x, y, x, y + ch);
-  g.addColorStop(0, ev.bg); g.addColorStop(1, '#15122a');
-  ctx.fillStyle = g; rr(x, y, cw, ch, 22); ctx.fill();
-  ctx.strokeStyle = ev.col; ctx.lineWidth = 3; rr(x, y, cw, ch, 22); ctx.stroke();
-  drawEventIcon(ev.id, W / 2, y + 62, 34);
-  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-  ctx.fillStyle = ev.col; fitFont(tr('ev.' + ev.id), cw - 40, 28); ctx.fillText(tr('ev.' + ev.id), W / 2, y + 122);
-  const left = evDaysLeft(ev);
-  ctx.fillStyle = left <= 1 ? '#ff8fb1' : '#ffc857'; fitFont(tr('evPopLeft', left), cw - 40, 16, 900, FD); ctx.fillText(tr('evPopLeft', left), W / 2, y + 156);
-  ctx.fillStyle = '#c9c2e6'; fitFont(tr('evSub', done, n), cw - 40, 13, 800, FB); ctx.fillText(tr('evSub', done, n), W / 2, y + 184);
+  ctx.fillStyle = `rgba(8,6,18,${.82 * Math.min(1, k * 2)})`; ctx.fillRect(0, 0, W, H);
+  const cw = W - 48, ch = ev.harvest ? 384 : 354, x = 24, y = 150, cx = W / 2, rgb = hexRgb(ev.col);
+  ctx.save(); ctx.globalAlpha = Math.min(1, k * 2.5);
+  ctx.translate(cx, y + ch / 2); ctx.scale(sc, sc); ctx.translate(-cx, -(y + ch / 2));
+  // the card
+  ctx.fillStyle = 'rgba(0,0,0,.4)'; rr(x, y + 6, cw, ch, 24); ctx.fill();
+  const g = ctx.createLinearGradient(x, y, x, y + ch); g.addColorStop(0, ev.bg); g.addColorStop(.6, '#1d1938'); g.addColorStop(1, '#15122a');
+  ctx.fillStyle = g; rr(x, y, cw, ch, 24); ctx.fill();
+  ctx.save(); rr(x, y, cw, ch, 24); ctx.clip();
+  // rays behind the icon
+  ctx.save(); ctx.translate(cx, y + 92); ctx.rotate(tt * .12);
+  for (let q = 0; q < 14; q++) { ctx.rotate(TAU / 14); ctx.fillStyle = `rgba(${rgb},.09)`; ctx.beginPath(); ctx.moveTo(0, 0); ctx.lineTo(-22, -260); ctx.lineTo(22, -260); ctx.closePath(); ctx.fill(); }
+  ctx.restore();
+  ctx.save(); ctx.globalCompositeOperation = 'lighter'; glowAt(cx, y + 92, 120, rgb, .35); ctx.restore();
+  // drifting sparkles
+  for (let q = 0; q < 12; q++) { const f = frac(tt * .15 + q * .27), sx = x + 20 + frac(q * .618) * (cw - 40), sy = y + ch - f * (ch - 30); star(sx, sy, 2.5 + (q % 3), `rgba(255,243,196,${.5 * Math.sin(f * Math.PI)})`); }
+  ctx.restore();
+  ctx.strokeStyle = ev.col; ctx.lineWidth = 3; rr(x, y, cw, ch, 24); ctx.stroke();
+  ctx.strokeStyle = 'rgba(255,255,255,.12)'; ctx.lineWidth = 1.5; rr(x + 5, y + 5, cw - 10, ch - 10, 20); ctx.stroke();
+  // the icon, bobbing, with the event's hat as the prize
+  const bob = RM ? 0 : Math.sin(tt * 2.2) * 4;
+  drawEventIcon(ev.id, cx - 10, y + 92 + bob, 40);
+  ctx.save(); ctx.translate(cx + 50, y + 74 - bob * .5); ctx.rotate(.25 + (RM ? 0 : Math.sin(tt * 1.7) * .06)); drawHat(ev.hat, 26); ctx.restore();
+  // the name on a ribbon
+  ctx.font = `900 24px ${FD}`; const name = tr('ev.' + ev.id); fitFont(name, cw - 90, 24);
+  const nw = Math.min(cw - 40, ctx.measureText(name).width + 56), ry = y + 160;
+  ctx.fillStyle = 'rgba(0,0,0,.35)'; for (const sd of [-1, 1]) { ctx.beginPath(); ctx.moveTo(cx + sd * nw / 2, ry - 12); ctx.lineTo(cx + sd * (nw / 2 + 18), ry - 12); ctx.lineTo(cx + sd * (nw / 2 + 10), ry + 4); ctx.lineTo(cx + sd * (nw / 2 + 18), ry + 20); ctx.lineTo(cx + sd * nw / 2, ry + 20); ctx.closePath(); ctx.fill(); }
+  ctx.fillStyle = ev.col; rr(cx - nw / 2, ry - 18, nw, 36, 8); ctx.fill();
+  ctx.fillStyle = 'rgba(255,255,255,.2)'; rr(cx - nw / 2 + 6, ry - 15, nw - 12, 9, 5); ctx.fill();
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillStyle = '#15122a'; ctx.fillText(name, cx, ry + 1);
+  // days left on a chip with a little clock
+  const left = evDaysLeft(ev), lt = tr('evPopLeft', left), lc = left <= 1 ? '#ff8fb1' : '#ffc857';
+  ctx.font = `900 14px ${FD}`; const lw = ctx.measureText(lt).width + 44, ly = y + 208;
+  ctx.fillStyle = 'rgba(0,0,0,.35)'; rr(cx - lw / 2, ly - 14, lw, 28, 14); ctx.fill();
+  ctx.strokeStyle = lc; ctx.lineWidth = 1.5; rr(cx - lw / 2, ly - 14, lw, 28, 14); ctx.stroke();
+  const kx = cx - lw / 2 + 17; ctx.strokeStyle = lc; ctx.lineWidth = 2; ctx.beginPath(); ctx.arc(kx, ly, 7, 0, TAU); ctx.moveTo(kx, ly); ctx.lineTo(kx, ly - 4.5); ctx.moveTo(kx, ly); ctx.lineTo(kx + 3.5, ly + 1.5); ctx.stroke();
+  ctx.fillStyle = lc; ctx.fillText(lt, cx + 10, ly + 1);
+  // a dot per level, then the count; the harvest for a ranked event
+  const dy = y + 244, dg = 26;
+  for (let q = 0; q < n; q++) { const dx = cx + (q - (n - 1) / 2) * dg, on = q < done; ctx.fillStyle = on ? ev.col : 'rgba(255,255,255,.12)'; circ(dx, dy, 8); if (on) { ctx.strokeStyle = '#15122a'; ctx.lineWidth = 2; ctx.beginPath(); ctx.moveTo(dx - 3.5, dy); ctx.lineTo(dx - 1, dy + 3); ctx.lineTo(dx + 4, dy - 3); ctx.stroke(); } }
+  ctx.fillStyle = '#c9c2e6'; fitFont(tr('evSub', done, n), cw - 40, 13, 800, FB); ctx.fillText(tr('evSub', done, n), cx, dy + 24);
+  let ty = y + 296;
+  if (ev.harvest) {
+    const hv = harvestNow(), hb = BOARD.data && BOARD.data.harvest && BOARD.data.harvest.top, me = hb && hb.find(r => r.me);
+    const ht = `${hv}` + (me ? `  ·  #${me.rank}` : '');
+    ctx.font = `900 16px ${FD}`; const hw = ctx.measureText(ht).width + 40;
+    drawEventIcon('harvest', cx - hw / 2 + 12, ty + 1, 9);
+    ctx.textAlign = 'left'; ctx.fillStyle = '#ffc857'; ctx.fillText(ht, cx - hw / 2 + 28, ty + 1); ctx.textAlign = 'center';
+    ty += 30;
+  }
+  // the note, clear of the buttons
   ctx.fillStyle = '#f4efe6'; ctx.font = `800 14px ${FB}`;
-  splitLines(tr('evPopBody'), cw - 60).slice(0, 2).forEach((ln, i) => ctx.fillText(ln, W / 2, y + 214 + i * 19));
+  splitLines(tr('evPopBody'), cw - 60).slice(0, 2).forEach((ln, q) => ctx.fillText(ln, cx, ty + q * 19));
+  ctx.restore();
+  // the buttons, fixed in place
   const close = () => { EVPOP = null; };
-  uiBtn(x + 24, y + ch - 96, cw - 48, 50, tr('play'), () => { close(); prepEvent(done >= n ? 0 : done); }, true);
-  uiBtn(x + 24, y + ch - 40, cw - 48, 34, tr('evPopLater'), close, false);
+  if (k > .5) {
+    ctx.save(); ctx.globalAlpha = Math.min(1, (k - .5) * 2);
+    uiBtn(x + 24, y + ch + 16, cw - 48, 52, tr('play'), () => { close(); prepEvent(done >= n ? 0 : done); }, true);
+    uiBtn(x + 60, y + ch + 80, cw - 120, 38, tr('evPopLater'), close, false);
+    ctx.restore();
+  }
 }
 function drawEventCard(ev, y) {
   const n = EVENT_LEVELS[ev.id].length, done = evDone(ev);
