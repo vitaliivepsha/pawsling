@@ -1430,7 +1430,7 @@ const I18N = {
     'item.hat_crown': 'Корона', 'itemd.hat_crown': 'Для всієї команди',
     'item.hat_bow': 'Бантик', 'itemd.hat_bow': 'Для всієї команди',
     'item.rainbow': 'Райдужна нитка', 'itemd.rainbow': 'Нитки переливаються веселкою',
-    'hero.spark.name': 'Іскра', 'hero.spark.skill': 'удар перескакує блискавкою на найближчого ворога', 'hero.spark.combo': 'Грозова хмара', secondWind: 'Друге дихання', secondWindSub: 'Повна міцність і всі герої на ногах', secondWindGo: 'Друге дихання!', almostWon: p => `Перемога була зовсім близько: роботам лишилося ${p}%!`, robotsLeft: p => `Роботам лишилося ${p}% міцності`, windFree: n => `безкоштовно${n > 1 ? ` (${n})` : ''}`, payWait: 'Відкриваю оплату…', payFailed: 'Оплата не пройшла. Спробуй ще раз', langAuto: 'Автоматично', chPrize: n => `Нагорода: +1 ${n}`, gfx: 'Графіка', 'gfx.auto': 'Авто', 'gfx.high': 'Висока', 'gfx.low': 'Економна', 'gfxd.auto': 'Ефекти спрощуються, якщо телефон не встигає', 'gfxd.high': 'Повна чіткість і всі ефекти завжди', 'gfxd.low': 'Менша чіткість, без ефектів: для старих телефонів',
+    'hero.spark.name': 'Іскра', 'hero.spark.skill': 'удар перескакує блискавкою на найближчого ворога', 'hero.spark.combo': 'Грозова хмара', secondWind: 'Друге дихання', secondWindSub: 'Повна міцність і всі герої на ногах', secondWindGo: 'Друге дихання!', almostWon: p => `Перемога була зовсім близько: роботам лишилося ${p}%!`, robotsLeft: p => `Роботам лишилося ${p}% міцності`, windFree: n => `безкоштовно${n > 1 ? ` (${n})` : ''}`, payWait: 'Відкриваю оплату…', payFailed: 'Оплата не пройшла. Спробуй ще раз', langAuto: 'Автоматично', evPopLeft: n => (n > 1 ? `Залишилось днів: ${n}` : 'Останній день!'), evPopBody: 'Святкові рівні й капелюх чекають! Картка події завжди вгорі мапи.', evPopLater: 'Пізніше', chPrize: n => `Нагорода: +1 ${n}`, gfx: 'Графіка', 'gfx.auto': 'Авто', 'gfx.high': 'Висока', 'gfx.low': 'Економна', 'gfxd.auto': 'Ефекти спрощуються, якщо телефон не встигає', 'gfxd.high': 'Повна чіткість і всі ефекти завжди', 'gfxd.low': 'Менша чіткість, без ефектів: для старих телефонів',
     aria: 'Гра Pawsling. Потягни від героя назад і відпусти, щоб запустити його, як з рогатки.',
     board: 'Рейтинг', boardNight: 'Нічна зміна', boardStars: 'Зірки', boardFriends: 'Друзі', boardFriendsEmpty: 'Тут з\'являться друзі, яких ти запросиш, і той, хто запросив тебе. Змагайтеся за зірки й хвилі «Нічної зміни»!', boardYou: 'ти', boardEmpty: 'Поки що нікого. Займи перше місце!',
     boardLoading: 'Завантаження…', boardError: 'Не вдалося завантажити рейтинг. Перевір інтернет і спробуй ще.',
@@ -1586,7 +1586,7 @@ const I18N = {
     'item.hat_crown': 'Crown', 'itemd.hat_crown': 'For the whole team',
     'item.hat_bow': 'Bow', 'itemd.hat_bow': 'For the whole team',
     'item.rainbow': 'Rainbow yarn', 'itemd.rainbow': 'Threads shimmer like a rainbow',
-    'hero.spark.name': 'Sparky', 'hero.spark.skill': 'each hit arcs like lightning to the nearest enemy', 'hero.spark.combo': 'Thundercloud', secondWind: 'Second wind', secondWindSub: 'Full home strength, every hero back up', secondWindGo: 'Second wind!', almostWon: p => `So close: the robots had only ${p}% left!`, robotsLeft: p => `The robots have ${p}% of their strength left`, windFree: n => `free${n > 1 ? ` (${n})` : ''}`, payWait: 'Opening payment…', payFailed: 'Payment failed. Try again', langAuto: 'Automatic', chPrize: n => `Reward: +1 ${n}`, gfx: 'Graphics', 'gfx.auto': 'Auto', 'gfx.high': 'High', 'gfx.low': 'Saver', 'gfxd.auto': 'Effects get simpler if the phone can\'t keep up', 'gfxd.high': 'Full sharpness and every effect, always', 'gfxd.low': 'Lower sharpness, no effects: for older phones',
+    'hero.spark.name': 'Sparky', 'hero.spark.skill': 'each hit arcs like lightning to the nearest enemy', 'hero.spark.combo': 'Thundercloud', secondWind: 'Second wind', secondWindSub: 'Full home strength, every hero back up', secondWindGo: 'Second wind!', almostWon: p => `So close: the robots had only ${p}% left!`, robotsLeft: p => `The robots have ${p}% of their strength left`, windFree: n => `free${n > 1 ? ` (${n})` : ''}`, payWait: 'Opening payment…', payFailed: 'Payment failed. Try again', langAuto: 'Automatic', evPopLeft: n => (n > 1 ? `${n} days left` : 'Last day!'), evPopBody: 'Festive levels and a hat are waiting! The event card is always at the top of the map.', evPopLater: 'Later', chPrize: n => `Reward: +1 ${n}`, gfx: 'Graphics', 'gfx.auto': 'Auto', 'gfx.high': 'High', 'gfx.low': 'Saver', 'gfxd.auto': 'Effects get simpler if the phone can\'t keep up', 'gfxd.high': 'Full sharpness and every effect, always', 'gfxd.low': 'Lower sharpness, no effects: for older phones',
     aria: 'Pawsling. Pull back from a hero and let go to launch it like a slingshot.',
     board: 'Leaderboard', boardNight: 'Night Shift', boardStars: 'Stars', boardFriends: 'Friends', boardFriendsEmpty: 'Friends you invite, and whoever invited you, show up here. Race each other for stars and Night Shift waves!', boardYou: 'you', boardEmpty: 'Nobody here yet. Be the first!',
     boardLoading: 'Loading…', boardError: 'Could not load the leaderboard. Check your connection and try again.',
@@ -1742,7 +1742,7 @@ const I18N = {
     'item.hat_crown': 'Korona', 'itemd.hat_crown': 'Dla całej drużyny',
     'item.hat_bow': 'Kokardka', 'itemd.hat_bow': 'Dla całej drużyny',
     'item.rainbow': 'Tęczowa włóczka', 'itemd.rainbow': 'Nitki mienią się tęczą',
-    'hero.spark.name': 'Iskra', 'hero.spark.skill': 'każde trafienie przeskakuje piorunem na najbliższego wroga', 'hero.spark.combo': 'Chmura burzowa', secondWind: 'Drugi oddech', secondWindSub: 'Pełna wytrzymałość i wszyscy bohaterowie na nogach', secondWindGo: 'Drugi oddech!', almostWon: p => `Tak blisko: robotom zostało tylko ${p}%!`, robotsLeft: p => `Robotom zostało ${p}% wytrzymałości`, windFree: n => `za darmo${n > 1 ? ` (${n})` : ''}`, payWait: 'Otwieram płatność…', payFailed: 'Płatność nie powiodła się. Spróbuj ponownie', langAuto: 'Automatycznie', chPrize: n => `Nagroda: +1 ${n}`, gfx: 'Grafika', 'gfx.auto': 'Auto', 'gfx.high': 'Wysoka', 'gfx.low': 'Oszczędna', 'gfxd.auto': 'Efekty upraszczają się, gdy telefon nie nadąża', 'gfxd.high': 'Pełna ostrość i wszystkie efekty, zawsze', 'gfxd.low': 'Mniejsza ostrość, bez efektów: dla starszych telefonów',
+    'hero.spark.name': 'Iskra', 'hero.spark.skill': 'każde trafienie przeskakuje piorunem na najbliższego wroga', 'hero.spark.combo': 'Chmura burzowa', secondWind: 'Drugi oddech', secondWindSub: 'Pełna wytrzymałość i wszyscy bohaterowie na nogach', secondWindGo: 'Drugi oddech!', almostWon: p => `Tak blisko: robotom zostało tylko ${p}%!`, robotsLeft: p => `Robotom zostało ${p}% wytrzymałości`, windFree: n => `za darmo${n > 1 ? ` (${n})` : ''}`, payWait: 'Otwieram płatność…', payFailed: 'Płatność nie powiodła się. Spróbuj ponownie', langAuto: 'Automatycznie', evPopLeft: n => (n > 1 ? `Zostało dni: ${n}` : 'Ostatni dzień!'), evPopBody: 'Świąteczne poziomy i czapka czekają! Karta wydarzenia jest zawsze na górze mapy.', evPopLater: 'Później', chPrize: n => `Nagroda: +1 ${n}`, gfx: 'Grafika', 'gfx.auto': 'Auto', 'gfx.high': 'Wysoka', 'gfx.low': 'Oszczędna', 'gfxd.auto': 'Efekty upraszczają się, gdy telefon nie nadąża', 'gfxd.high': 'Pełna ostrość i wszystkie efekty, zawsze', 'gfxd.low': 'Mniejsza ostrość, bez efektów: dla starszych telefonów',
     aria: 'Pawsling. Pociągnij od bohatera do tyłu i puść, żeby wystrzelić go jak z procy.',
     board: 'Ranking', boardNight: 'Nocna zmiana', boardStars: 'Gwiazdki', boardFriends: 'Znajomi', boardFriendsEmpty: 'Tu pojawią się znajomi, których zaprosisz, i osoba, która zaprosiła ciebie. Ścigajcie się o gwiazdki i fale Nocnej zmiany!', boardYou: 'ty', boardEmpty: 'Jeszcze nikogo tu nie ma. Bądź pierwszy!',
     boardLoading: 'Ładowanie…', boardError: 'Nie udało się wczytać rankingu. Sprawdź internet i spróbuj ponownie.',
@@ -1898,7 +1898,7 @@ const I18N = {
     'item.hat_crown': 'Krone', 'itemd.hat_crown': 'Für das ganze Team',
     'item.hat_bow': 'Schleife', 'itemd.hat_bow': 'Für das ganze Team',
     'item.rainbow': 'Regenbogenwolle', 'itemd.rainbow': 'Fäden schimmern wie ein Regenbogen',
-    'hero.spark.name': 'Funke', 'hero.spark.skill': 'jeder Treffer springt als Blitz auf den nächsten Gegner über', 'hero.spark.combo': 'Gewitterwolke', secondWind: 'Zweite Luft', secondWindSub: 'Volle Stärke und alle Helden wieder auf den Beinen', secondWindGo: 'Zweite Luft!', almostWon: p => `So knapp: die Roboter hatten nur noch ${p} %!`, robotsLeft: p => `Die Roboter haben noch ${p} % Stärke`, windFree: n => `gratis${n > 1 ? ` (${n})` : ''}`, payWait: 'Zahlung wird geöffnet…', payFailed: 'Zahlung fehlgeschlagen. Versuch es nochmal', langAuto: 'Automatisch', chPrize: n => `Belohnung: +1 ${n}`, gfx: 'Grafik', 'gfx.auto': 'Auto', 'gfx.high': 'Hoch', 'gfx.low': 'Sparsam', 'gfxd.auto': 'Effekte werden einfacher, wenn das Handy nicht mitkommt', 'gfxd.high': 'Volle Schärfe und alle Effekte, immer', 'gfxd.low': 'Weniger Schärfe, keine Effekte: für ältere Handys',
+    'hero.spark.name': 'Funke', 'hero.spark.skill': 'jeder Treffer springt als Blitz auf den nächsten Gegner über', 'hero.spark.combo': 'Gewitterwolke', secondWind: 'Zweite Luft', secondWindSub: 'Volle Stärke und alle Helden wieder auf den Beinen', secondWindGo: 'Zweite Luft!', almostWon: p => `So knapp: die Roboter hatten nur noch ${p} %!`, robotsLeft: p => `Die Roboter haben noch ${p} % Stärke`, windFree: n => `gratis${n > 1 ? ` (${n})` : ''}`, payWait: 'Zahlung wird geöffnet…', payFailed: 'Zahlung fehlgeschlagen. Versuch es nochmal', langAuto: 'Automatisch', evPopLeft: n => (n > 1 ? `Noch ${n} Tage` : 'Letzter Tag!'), evPopBody: 'Festliche Level und ein Hut warten! Die Event-Karte ist immer oben auf der Karte.', evPopLater: 'Später', chPrize: n => `Belohnung: +1 ${n}`, gfx: 'Grafik', 'gfx.auto': 'Auto', 'gfx.high': 'Hoch', 'gfx.low': 'Sparsam', 'gfxd.auto': 'Effekte werden einfacher, wenn das Handy nicht mitkommt', 'gfxd.high': 'Volle Schärfe und alle Effekte, immer', 'gfxd.low': 'Weniger Schärfe, keine Effekte: für ältere Handys',
     aria: 'Pawsling. Zieh vom Helden zurück und lass los, um ihn wie mit einer Schleuder abzufeuern.',
     board: 'Rangliste', boardNight: 'Nachtschicht', boardStars: 'Sterne', boardFriends: 'Freunde', boardFriendsEmpty: 'Hier erscheinen Freunde, die du einlädst, und wer dich eingeladen hat. Messt euch bei Sternen und Wellen der Nachtschicht!', boardYou: 'du', boardEmpty: 'Noch niemand hier. Sei der Erste!',
     boardLoading: 'Wird geladen…', boardError: 'Rangliste konnte nicht geladen werden. Prüfe die Verbindung und versuch es nochmal.',
@@ -2054,7 +2054,7 @@ const I18N = {
     'item.hat_crown': 'Corona', 'itemd.hat_crown': 'Para todo el equipo',
     'item.hat_bow': 'Lazo', 'itemd.hat_bow': 'Para todo el equipo',
     'item.rainbow': 'Hilo arcoíris', 'itemd.rainbow': 'Los hilos brillan como un arcoíris',
-    'hero.spark.name': 'Chispa', 'hero.spark.skill': 'cada golpe salta como un rayo al enemigo más cercano', 'hero.spark.combo': 'Nube de tormenta', secondWind: 'Segundo aliento', secondWindSub: 'Resistencia completa y todos los héroes en pie', secondWindGo: '¡Segundo aliento!', almostWon: p => `¡Casi: a los robots solo les quedaba un ${p}%!`, robotsLeft: p => `A los robots les queda un ${p}% de fuerza`, windFree: n => `gratis${n > 1 ? ` (${n})` : ''}`, payWait: 'Abriendo el pago…', payFailed: 'El pago falló. Inténtalo de nuevo', langAuto: 'Automático', chPrize: n => `Premio: +1 ${n}`, gfx: 'Gráficos', 'gfx.auto': 'Auto', 'gfx.high': 'Alta', 'gfx.low': 'Ahorro', 'gfxd.auto': 'Los efectos se simplifican si el móvil no da abasto', 'gfxd.high': 'Máxima nitidez y todos los efectos, siempre', 'gfxd.low': 'Menos nitidez y sin efectos: para móviles antiguos',
+    'hero.spark.name': 'Chispa', 'hero.spark.skill': 'cada golpe salta como un rayo al enemigo más cercano', 'hero.spark.combo': 'Nube de tormenta', secondWind: 'Segundo aliento', secondWindSub: 'Resistencia completa y todos los héroes en pie', secondWindGo: '¡Segundo aliento!', almostWon: p => `¡Casi: a los robots solo les quedaba un ${p}%!`, robotsLeft: p => `A los robots les queda un ${p}% de fuerza`, windFree: n => `gratis${n > 1 ? ` (${n})` : ''}`, payWait: 'Abriendo el pago…', payFailed: 'El pago falló. Inténtalo de nuevo', langAuto: 'Automático', evPopLeft: n => (n > 1 ? `Quedan ${n} días` : '¡Último día!'), evPopBody: '¡Te esperan niveles festivos y un sombrero! La tarjeta del evento está siempre arriba del mapa.', evPopLater: 'Más tarde', chPrize: n => `Premio: +1 ${n}`, gfx: 'Gráficos', 'gfx.auto': 'Auto', 'gfx.high': 'Alta', 'gfx.low': 'Ahorro', 'gfxd.auto': 'Los efectos se simplifican si el móvil no da abasto', 'gfxd.high': 'Máxima nitidez y todos los efectos, siempre', 'gfxd.low': 'Menos nitidez y sin efectos: para móviles antiguos',
     aria: 'Pawsling. Tira hacia atrás desde un héroe y suelta para lanzarlo como con un tirachinas.',
     board: 'Clasificación', boardNight: 'Turno de noche', boardStars: 'Estrellas', boardFriends: 'Amigos', boardFriendsEmpty: 'Aquí aparecerán los amigos que invites y quien te invitó a ti. ¡Competid por estrellas y oleadas del Turno de noche!', boardYou: 'tú', boardEmpty: 'Aún no hay nadie. ¡Sé el primero!',
     boardLoading: 'Cargando…', boardError: 'No se pudo cargar la clasificación. Revisa la conexión e inténtalo de nuevo.',
@@ -12893,6 +12893,47 @@ function drawEventIcon(id, x, y, s) {
     }
   }
 }
+// ---------- the event reminder: once a day, over the map ----------
+let EVPOP = null;
+// days left in an event, counting today (the last day says so)
+function evDaysLeft(ev, ts = Date.now()) {
+  const d = new Date(ts), [m, dd] = ev.to.split('-').map(Number);
+  let y = d.getUTCFullYear();
+  if (ev.from > ev.to && d.getUTCMonth() + 1 >= Number(ev.from.slice(0, 2))) y++; // runs over New Year
+  return Math.max(1, Math.ceil((Date.UTC(y, m - 1, dd + 1) - ts) / 864e5));
+}
+function maybeEventPop() {
+  if (EVPOP || CHEST || SCREEN !== 'map' || PROG.unlocked < 2) return;
+  const ev = activeEvent();
+  if (!ev || !EVENT_LEVELS[ev.id]) return;
+  const day = new Date().toDateString(), key = evKey(ev) + ':' + day;
+  if (lsGet('pawsling-evpop') === key) return;
+  // a finished event without a ranking has nothing left to remind of
+  if (evDone(ev) >= EVENT_LEVELS[ev.id].length && !ev.harvest) return;
+  lsSet('pawsling-evpop', key);
+  EVPOP = { ev, t0: T };
+}
+function drawEventPop() {
+  const { ev } = EVPOP, n = EVENT_LEVELS[ev.id].length, done = evDone(ev), k = Math.min(1, (T - EVPOP.t0) / .25);
+  UI = [];
+  ctx.fillStyle = `rgba(8,6,18,${.78 * k})`; ctx.fillRect(0, 0, W, H);
+  const cw = W - 48, ch = 340, x = 24, y = 190 + (1 - k) * 30;
+  const g = ctx.createLinearGradient(x, y, x, y + ch);
+  g.addColorStop(0, ev.bg); g.addColorStop(1, '#15122a');
+  ctx.fillStyle = g; rr(x, y, cw, ch, 22); ctx.fill();
+  ctx.strokeStyle = ev.col; ctx.lineWidth = 3; rr(x, y, cw, ch, 22); ctx.stroke();
+  drawEventIcon(ev.id, W / 2, y + 62, 34);
+  ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+  ctx.fillStyle = ev.col; fitFont(tr('ev.' + ev.id), cw - 40, 28); ctx.fillText(tr('ev.' + ev.id), W / 2, y + 122);
+  const left = evDaysLeft(ev);
+  ctx.fillStyle = left <= 1 ? '#ff8fb1' : '#ffc857'; fitFont(tr('evPopLeft', left), cw - 40, 16, 900, FD); ctx.fillText(tr('evPopLeft', left), W / 2, y + 156);
+  ctx.fillStyle = '#c9c2e6'; fitFont(tr('evSub', done, n), cw - 40, 13, 800, FB); ctx.fillText(tr('evSub', done, n), W / 2, y + 184);
+  ctx.fillStyle = '#f4efe6'; ctx.font = `800 14px ${FB}`;
+  splitLines(tr('evPopBody'), cw - 60).slice(0, 2).forEach((ln, i) => ctx.fillText(ln, W / 2, y + 214 + i * 19));
+  const close = () => { EVPOP = null; };
+  uiBtn(x + 24, y + ch - 96, cw - 48, 50, tr('play'), () => { close(); prepEvent(done >= n ? 0 : done); }, true);
+  uiBtn(x + 24, y + ch - 40, cw - 48, 34, tr('evPopLater'), close, false);
+}
 function drawEventCard(ev, y) {
   const n = EVENT_LEVELS[ev.id].length, done = evDone(ev);
   const g = ctx.createLinearGradient(12, y, W - 12, y + 88);
@@ -13640,6 +13681,7 @@ function draw() {
   else drawMap();
   if (DETAIL && (SCREEN === 'shop' || SCREEN === 'heroes' || SCREEN === 'daily')) drawDetail();
   if (CHEST && SCREEN === 'map') drawChest();
+  if (SCREEN === 'map') { maybeEventPop(); if (EVPOP) drawEventPop(); }
 }
 
 // ---------- input ----------
@@ -13654,7 +13696,7 @@ cv.addEventListener('pointerdown', ev => {
   Snd.init(); Snd.resume();
   const p = toGame(ev);
   // on the map, a press becomes either a tap (on release) or a scroll
-  if (SCREEN === 'map' && p.y < MAP_VIEW && !CHEST) {
+  if (SCREEN === 'map' && p.y < MAP_VIEW && !CHEST && !EVPOP) {
     mapDrag = { sy: p.y, y0: MAP.y, ly: p.y, lt: performance.now(), moved: false, p };
     MAP.v = 0;
     try { cv.setPointerCapture(ev.pointerId); } catch (e) {}
