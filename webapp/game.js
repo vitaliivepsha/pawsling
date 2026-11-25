@@ -12175,13 +12175,23 @@ function drawDaily() {
   // reward pill and the play button
   const by = Y2 + 138;
   const rtxt = tr('chPrize', tr(ch.reward === 'heart' ? 'boostHeart' : 'boostMeter')); // the reward for the task, not a switch
-  ctx.font = `800 13px ${FB}`;
-  const rw = Math.min(210, ctx.measureText(rtxt).width + 58);
-  ctx.fillStyle = '#15122a'; rr(32, by, rw, 40, 20); ctx.fill();
-  ctx.strokeStyle = '#3b3563'; ctx.lineWidth = 1.5; rr(32, by, rw, 40, 20); ctx.stroke();
-  if (ch.reward === 'heart') heart(54, by + 21, 9, '#ff5d7a');
-  else { ctx.fillStyle = '#231e44'; rr(42, by + 14, 24, 12, 6); ctx.fill(); ctx.fillStyle = '#ff8fb1'; rr(42, by + 14, 13, 12, 6); ctx.fill(); }
-  ctx.fillStyle = '#f4efe6'; fitFont(rtxt, rw - 58, 13, 800, FB); ctx.fillText(rtxt, 74, by + 21);
+  // drawn as a prize, not a switch: a gold-rimmed tag with a gift box, "Reward" small on top, "+1 Quick start" below
+  const cut = rtxt.indexOf(': '), rlab = cut > 0 ? rtxt.slice(0, cut) : '', rval = cut > 0 ? rtxt.slice(cut + 2) : rtxt;
+  ctx.font = `900 14px ${FD}`;
+  const rw = Math.min(210, Math.max(ctx.measureText(rval).width, 60) + 64);
+  ctx.fillStyle = 'rgba(0,0,0,.3)'; rr(32, by + 3, rw, 40, 14); ctx.fill();
+  const pg = ctx.createLinearGradient(0, by, 0, by + 40); pg.addColorStop(0, '#3a2b6b'); pg.addColorStop(1, '#241d4a');
+  ctx.fillStyle = pg; rr(32, by, rw, 40, 14); ctx.fill();
+  ctx.strokeStyle = '#ffc857'; ctx.lineWidth = 1.5; rr(32, by, rw, 40, 14); ctx.stroke();
+  // the gift: a box with a ribbon, the booster's icon on its front
+  const gx = 56, gy = by + 22;
+  ctx.fillStyle = ch.reward === 'heart' ? '#ff5d7a' : '#ff8fb1'; rr(gx - 15, gy - 9, 30, 21, 4); ctx.fill();
+  ctx.fillStyle = ch.reward === 'heart' ? '#ff8fa6' : '#ffb3cc'; rr(gx - 17, gy - 14, 34, 7, 3); ctx.fill();
+  ctx.fillStyle = '#ffd166'; ctx.fillRect(gx - 2, gy - 14, 4, 26);
+  ctx.strokeStyle = '#ffd166'; ctx.lineWidth = 2; ctx.beginPath(); ctx.ellipse(gx - 5, gy - 17, 5, 3, -.4, 0, TAU); ctx.ellipse(gx + 5, gy - 17, 5, 3, .4, 0, TAU); ctx.stroke();
+  ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+  if (rlab) { ctx.fillStyle = '#ffc857'; fitFont(rlab.toUpperCase(), rw - 64, 10, 900, FD); ctx.fillText(rlab.toUpperCase(), 80, by + 12); }
+  ctx.fillStyle = '#f4efe6'; fitFont(rval, rw - 64, 14, 900, FD); ctx.fillText(rval, 80, rlab ? by + 27 : by + 21);
   const bx = 32 + rw + 12, bw = W - 32 - bx;
   if (done) {
     ctx.fillStyle = 'rgba(92,225,198,.14)'; rr(bx, by, bw, 40, 20); ctx.fill();
